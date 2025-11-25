@@ -435,6 +435,7 @@
             <option value="Photography">Photography</option>
             <option value="Catering">Catering</option>
             <option value="Stylist">Stylist</option>
+            <option value="Attire">Attire</option>
           </select>
           <select class="form-select" id="search-sort">
             <option value="rating">Top Rated</option>
@@ -625,7 +626,6 @@
     </div>
 
     <script>
-      /* --- DATA STORE (MOCK DATABASE) --- */
       const mockVendors = [
         {
           id: 1,
@@ -671,6 +671,21 @@
           ],
           contact: "events@narrahill.com",
           map: "https://www.google.com/maps/embed?pb=...",
+        },
+        {
+          id: 4,
+          name: "Gideon Hermosa",
+          type: "Stylist",
+          location: "Makati",
+          price: 500000,
+          rating: 5.0,
+          desc: "Event styling that transforms spaces into magical worlds. The top choice for grand, luxurious setups.",
+          images: [
+            "https://images.unsplash.com/photo-1527529482837-4698179dc6ce?w=600",
+            "https://images.unsplash.com/photo-1522413452208-996ff3f3e740?w=600",
+          ],
+          contact: "gideon@events.com",
+          map: "",
         },
         {
           id: 4,
@@ -797,6 +812,11 @@
         // HOME & SEARCH
         renderHome: (list) => {
           const container = document.getElementById("vendor-list-container");
+          if (!list || list.length === 0) {
+            container.innerHTML = `<div style="padding:40px; text-align:center; color:#666;">No vendors found for this category.</div>`;
+            return;
+          }
+
           container.innerHTML = list
             .map(
               (v) => `
