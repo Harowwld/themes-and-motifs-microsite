@@ -396,10 +396,16 @@
   <body>
     <header>
       <div class="container nav-flex">
-        <div class="logo" onclick="app.navigate('home')">THEMES & MOTIFS</div>
+        <div class="logo" onclick="app.navigate('home')">
+          <img
+            src="https://themesnmotifs.com/wp-content/uploads/elementor/thumbs/T_M-Logo-1-qzxx62xvcaywvxz23bwwe4nm1tu4exw9i42ghzw8g6.png"
+            alt="Themes & Motifs"
+            style="height: 36px"
+          />
+        </div>
         <nav class="nav-links">
           <a class="nav-item" onclick="app.navigate('home')">Vendors</a>
-          <a class="nav-item">Bridal Fairs</a>
+          <a class="nav-item" onclick="app.navigate('fairs')">Bridal Fairs</a>
           <a
             class="nav-item"
             id="nav-admin"
@@ -451,7 +457,7 @@
             <option value="price_low">Price: Low to High</option>
             <option value="price_high">Price: High to Low</option>
           </select>
-          <button class="btn-primary" onclick="app.handleSearch()">
+          <button class="btn-primary" onclick="app.handleSearch(true)">
             Search
           </button>
         </div>
@@ -580,6 +586,42 @@
       <div id="detail-content"></div>
     </div>
 
+    <!-- Bridal Fairs View -->
+    <div id="view-fairs" class="container hidden" style="padding-top: 40px">
+      <h1 class="serif">Bridal Fairs</h1>
+      <p style="color: #666; margin-top: 10px">
+        This is a demo list of upcoming bridal fairs. (Prototype)
+      </p>
+      <div style="display: grid; gap: 12px; margin-top: 20px">
+        <div
+          style="
+            background: white;
+            border: 1px solid #eee;
+            padding: 15px;
+            border-radius: 8px;
+          "
+        >
+          <h3 style="margin: 0">Metro Bridal Expo</h3>
+          <p style="margin: 6px 0 0; color: #666; font-size: 0.9rem">
+            Dec 12, 2025 — SMX Convention Center
+          </p>
+        </div>
+        <div
+          style="
+            background: white;
+            border: 1px solid #eee;
+            padding: 15px;
+            border-radius: 8px;
+          "
+        >
+          <h3 style="margin: 0">Luxe Weddings Showcase</h3>
+          <p style="margin: 6px 0 0; color: #666; font-size: 0.9rem">
+            Jan 18, 2026 — The Manila Hotel
+          </p>
+        </div>
+      </div>
+    </div>
+
     <div id="view-login" class="container hidden">
       <div class="auth-container">
         <h2 class="serif">Welcome Back</h2>
@@ -642,7 +684,7 @@
       <button
         class="btn-primary"
         style="padding: 5px 15px; font-size: 0.8rem; margin-bottom: 10px"
-        onclick="alert('Feature: Add Vendor Modal would open here.')"
+        onclick="app.openAddVendorModal()"
       >
         + Add New
       </button>
@@ -657,6 +699,86 @@
         </thead>
         <tbody id="admin-v-list"></tbody>
       </table>
+    </div>
+
+    <!-- Add Vendor Modal (hidden) -->
+    <div
+      id="add-vendor-modal"
+      style="
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.4);
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+      "
+    >
+      <div
+        style="
+          background: white;
+          width: 460px;
+          max-width: 95%;
+          padding: 20px;
+          border-radius: 8px;
+          position: relative;
+        "
+      >
+        <button
+          onclick="app.closeAddVendorModal()"
+          style="
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            border: none;
+            background: transparent;
+            font-size: 1.2rem;
+          "
+        >
+          ×
+        </button>
+        <h3 class="serif">Add New Vendor (Prototype)</h3>
+        <div style="display: grid; gap: 8px; margin-top: 12px">
+          <input id="new-v-name" class="form-input" placeholder="Vendor name" />
+          <select id="new-v-type" class="form-select">
+            <option>Venue</option>
+            <option>Photography</option>
+            <option>Catering</option>
+            <option>Stylist</option>
+            <option>Attire</option>
+          </select>
+          <input
+            id="new-v-location"
+            class="form-input"
+            placeholder="Location"
+          />
+          <input
+            id="new-v-price"
+            class="form-input"
+            placeholder="Price (number)"
+          />
+          <input
+            id="new-v-contact"
+            class="form-input"
+            placeholder="Contact email"
+          />
+          <input id="new-v-image" class="form-input" placeholder="Image URL" />
+          <textarea
+            id="new-v-desc"
+            class="form-input"
+            placeholder="Description"
+            rows="3"
+          ></textarea>
+          <div style="display: flex; gap: 8px; justify-content: flex-end">
+            <button class="btn-primary" onclick="app.submitNewVendor()">
+              Create
+            </button>
+            <button class="btn-auth" onclick="app.closeAddVendorModal()">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script>
@@ -784,6 +906,26 @@
               app.handleSearch();
               app.updateCategoryUI();
             });
+          // Enter on search input triggers search (and clear after)
+          const searchInput = document.getElementById("search-text");
+          searchInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              app.handleSearch(true);
+            }
+          });
+
+          // Allow pressing Enter on login fields to submit login
+          const loginEmail = document.getElementById("login-email");
+          const loginPass = document.getElementById("login-pass");
+          [loginEmail, loginPass].forEach((el) => {
+            el.addEventListener("keydown", (e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                app.login();
+              }
+            });
+          });
         },
 
         // NAVIGATION
@@ -818,7 +960,8 @@
         // AUTH SYSTEM
         login: () => {
           const email = document.getElementById("login-email").value;
-          if (email.includes("admin")) {
+          // Prototype behavior: empty email -> default guest user
+          if (email && email.includes("admin")) {
             app.currentUser = {
               name: "Admin User",
               role: "admin",
@@ -826,12 +969,15 @@
             };
             document.getElementById("nav-admin").style.display = "block";
             app.navigate("admin");
-          } else if (email) {
-            app.currentUser = { name: "Jane Doe", role: "user", email: email };
-            app.navigate("home");
           } else {
-            alert("Please enter an email.");
-            return;
+            // if email provided use that name, otherwise default to Guest User
+            const userName = email ? email.split("@")[0] : "Guest User";
+            app.currentUser = {
+              name: userName,
+              role: "user",
+              email: email || "",
+            };
+            app.navigate("home");
           }
 
           // Update Header
@@ -887,7 +1033,7 @@
             .join("");
         },
 
-        handleSearch: () => {
+        handleSearch: (clearAfter = false) => {
           const txt = document
             .getElementById("search-text")
             .value.toLowerCase();
@@ -908,6 +1054,13 @@
           app.renderHome(filtered);
           // Update category UI (highlight selected card)
           if (app.updateCategoryUI) app.updateCategoryUI();
+
+          // If caller requested, clear search & filters after search
+          if (clearAfter) {
+            document.getElementById("search-text").value = "";
+            document.getElementById("search-type").value = "";
+            if (app.updateCategoryUI) app.updateCategoryUI();
+          }
         },
 
         filterByCat: (cat) => {
@@ -932,6 +1085,49 @@
               el.classList.remove("selected");
             }
           });
+        },
+
+        /* Add vendor modal controls */
+        openAddVendorModal: () => {
+          document.getElementById("add-vendor-modal").style.display = "flex";
+        },
+        closeAddVendorModal: () => {
+          document.getElementById("add-vendor-modal").style.display = "none";
+        },
+        submitNewVendor: () => {
+          const name =
+            document.getElementById("new-v-name").value || "New Vendor";
+          const type = document.getElementById("new-v-type").value || "Venue";
+          const location =
+            document.getElementById("new-v-location").value || "";
+          const price = parseInt(
+            document.getElementById("new-v-price").value || "0"
+          );
+          const rating = 0;
+          const contact = document.getElementById("new-v-contact").value || "";
+          const image = document.getElementById("new-v-image").value || "";
+          const desc = document.getElementById("new-v-desc").value || "";
+
+          const newId = mockVendors.reduce((m, v) => Math.max(m, v.id), 0) + 1;
+          mockVendors.push({
+            id: newId,
+            name: name,
+            type: type,
+            location: location,
+            price: price,
+            rating: rating,
+            desc: desc,
+            images: image
+              ? [image]
+              : ["https://via.placeholder.com/600x400?text=Vendor"],
+            contact: contact,
+            map: "",
+          });
+
+          alert("Vendor added (prototype).");
+          app.closeAddVendorModal();
+          app.renderAdmin();
+          app.renderHome(mockVendors);
         },
 
         // VENDOR DETAILS & BOOKING
