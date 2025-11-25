@@ -194,12 +194,21 @@
         justify-content: center;
         cursor: pointer;
         transition: 0.2s;
+        position: relative;
       }
       .cat-card:hover {
         transform: translateY(-5px);
         box-shadow: var(--shadow);
         border-color: var(--brand-brown);
       }
+
+      .cat-card.selected {
+        border-color: var(--brand-terra);
+        box-shadow: 0 8px 26px rgba(193, 122, 78, 0.15);
+        transform: translateY(-6px) scale(1.02);
+      }
+
+      /* Selection highlight only (badge/check removed) */
 
       .vendor-grid {
         display: grid;
@@ -449,7 +458,11 @@
       </div>
 
       <div class="category-grid">
-        <div class="cat-card" onclick="app.filterByCat('Venue')">
+        <div
+          class="cat-card"
+          data-cat="Venue"
+          onclick="app.filterByCat('Venue')"
+        >
           <svg
             class="cat-icon"
             viewBox="0 0 24 24"
@@ -462,10 +475,15 @@
               style="stroke-width: 1"
             ></path>
           </svg>
+
           <small>Venues</small>
         </div>
 
-        <div class="cat-card" onclick="app.filterByCat('Photography')">
+        <div
+          class="cat-card"
+          data-cat="Photography"
+          onclick="app.filterByCat('Photography')"
+        >
           <svg
             class="cat-icon"
             viewBox="0 0 24 24"
@@ -477,10 +495,15 @@
             <circle cx="12" cy="13" r="4"></circle>
             <path d="M4 6a1.5 1.5 0 0 1 2 2" style="stroke-width: 1"></path>
           </svg>
+
           <small>Photo</small>
         </div>
 
-        <div class="cat-card" onclick="app.filterByCat('Catering')">
+        <div
+          class="cat-card"
+          data-cat="Catering"
+          onclick="app.filterByCat('Catering')"
+        >
           <svg
             class="cat-icon"
             viewBox="0 0 24 24"
@@ -491,10 +514,15 @@
               d="M8 8v8M16 8v8M8 8a2 2 0 0 1-2-2M16 8a2 2 0 0 0 2-2M16 13h-8"
             ></path>
           </svg>
+
           <small>Catering</small>
         </div>
 
-        <div class="cat-card" onclick="app.filterByCat('Stylist')">
+        <div
+          class="cat-card"
+          data-cat="Stylist"
+          onclick="app.filterByCat('Stylist')"
+        >
           <svg
             class="cat-icon"
             viewBox="0 0 24 24"
@@ -508,10 +536,15 @@
             ></path>
             <path d="M10 16h4"></path>
           </svg>
+
           <small>Styling</small>
         </div>
 
-        <div class="cat-card" onclick="app.filterByCat('Attire')">
+        <div
+          class="cat-card"
+          data-cat="Attire"
+          onclick="app.filterByCat('Attire')"
+        >
           <svg
             class="cat-icon"
             viewBox="0 0 24 24"
@@ -521,6 +554,7 @@
             <path d="M7 7s-3 8-3 15h16c0-7-3-15-3-15"></path>
             <path d="M12 7v15"></path>
           </svg>
+
           <small>Attire</small>
         </div>
       </div>
@@ -736,12 +770,20 @@
         },
       ];
 
-      /* --- APP LOGIC --- */
       const app = {
         currentUser: null, // { name: 'User', role: 'user/admin' }
 
         init: () => {
           app.renderHome(mockVendors);
+          // keep category UI in sync with the select
+          app.updateCategoryUI();
+          // reflect manual changes to the select
+          document
+            .getElementById("search-type")
+            .addEventListener("change", () => {
+              app.handleSearch();
+              app.updateCategoryUI();
+            });
         },
 
         // NAVIGATION
@@ -864,11 +906,32 @@
           if (sort === "rating") filtered.sort((a, b) => b.rating - a.rating);
 
           app.renderHome(filtered);
+          // Update category UI (highlight selected card)
+          if (app.updateCategoryUI) app.updateCategoryUI();
         },
 
         filterByCat: (cat) => {
-          document.getElementById("search-type").value = cat;
+          const select = document.getElementById("search-type");
+          const current = select.value;
+          if (current === cat) {
+            // toggle off -> show all
+            select.value = "";
+          } else {
+            select.value = cat;
+          }
           app.handleSearch();
+        },
+
+        updateCategoryUI: () => {
+          const selected = document.getElementById("search-type").value;
+          document.querySelectorAll(".cat-card").forEach((el) => {
+            const cat = el.getAttribute("data-cat") || "";
+            if (cat === selected && selected !== "") {
+              el.classList.add("selected");
+            } else {
+              el.classList.remove("selected");
+            }
+          });
         },
 
         // VENDOR DETAILS & BOOKING
