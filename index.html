@@ -1263,7 +1263,11 @@
         submitVendorRegistration: (e) => {
           if (e) e.preventDefault();
 
+<<<<<<< HEAD:prototype.html
           const requiredIds = ["reg-vendor-name", "reg-contact"];
+=======
+          const requiredIds = ["reg-vendor-name", "reg-category", "reg-contact"];
+>>>>>>> 35407f4d8e45c812e245010a62d3e0180a71f05d:index.html
           for (const id of requiredIds) {
             const field = document.getElementById(id);
             if (field && !field.value) {
@@ -1272,6 +1276,7 @@
             }
           }
 
+<<<<<<< HEAD:prototype.html
           const selectedCats = document.querySelectorAll(
             'input[name="reg-category"]:checked'
           );
@@ -1285,6 +1290,8 @@
             return false;
           }
 
+=======
+>>>>>>> 35407f4d8e45c812e245010a62d3e0180a71f05d:index.html
           const modal = document.getElementById("plan-modal");
           if (modal) {
             modal.style.display = "flex";
@@ -1296,6 +1303,7 @@
               firstPlan.checked = true;
             }
           }
+<<<<<<< HEAD:prototype.html
           app.clearRegForm();
           return false;
         },
@@ -1308,6 +1316,11 @@
             .forEach((el) => (el.checked = false));
         },
 
+=======
+          return false;
+        },
+
+>>>>>>> 35407f4d8e45c812e245010a62d3e0180a71f05d:index.html
         openPlanModal: () => {
           const modal = document.getElementById("plan-modal");
           if (modal) {
@@ -1500,9 +1513,13 @@
           const searchBox = document.querySelector(".search-container");
           const input = document.getElementById("search-text");
           if (searchBox) {
+<<<<<<< HEAD:prototype.html
             const rect = searchBox.getBoundingClientRect();
             const offset = rect.top + window.scrollY - 80; // keep under sticky header
             window.scrollTo({ top: offset, behavior: "smooth" });
+=======
+            searchBox.scrollIntoView({ behavior: "smooth", block: "start" });
+>>>>>>> 35407f4d8e45c812e245010a62d3e0180a71f05d:index.html
           }
           if (input) input.focus();
           app.handleSearch();
