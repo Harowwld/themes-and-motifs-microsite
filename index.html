@@ -32,7 +32,7 @@
         padding: 0;
       }
       body {
-        background-color: var(--bg-cream);
+        background: radial-gradient(circle at 20% 20%, #fff7ed, #fcfbf9 40%, #f6f1ea 85%);
         font-family: "Lato", sans-serif;
         color: var(--text-dark);
         line-height: 1.6;
@@ -47,6 +47,10 @@
 
       .hidden {
         display: none !important;
+      }
+      .register-wrapper {
+        max-width: 100%;
+        margin: 20px 0 10px;
       }
       .container {
         max-width: 1200px;
@@ -132,6 +136,13 @@
         line-height: 1.1;
         margin-bottom: 20px;
       }
+      .hero-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 18px;
+        flex-wrap: wrap;
+      }
       .hero-img {
         flex: 1;
         height: 400px;
@@ -142,14 +153,41 @@
 
       .search-container {
         background: white;
-        padding: 18px;
-        border-radius: 14px;
+        padding: 20px;
         box-shadow: var(--shadow);
-        margin-top: -40px;
+        border-radius: 8px;
+        margin-top: -30px;
         position: relative;
-        z-index: 2;
-        scroll-margin-top: 96px;
+        z-index: 10;
+        border: 1px solid #eee;
+        scroll-margin-top: 90px;
       }
+      .search-container.highlight-pulse {
+        animation: searchPulse 1.2s ease-in-out 0s 2;
+        box-shadow: 0 12px 36px rgba(193, 122, 78, 0.25),
+          0 0 0 3px rgba(193, 122, 78, 0.15);
+        border-color: var(--brand-terra);
+      }
+      .search-container.highlight-pulse .form-input,
+      .search-container.highlight-pulse .form-select {
+        border-color: var(--brand-terra);
+        box-shadow: 0 0 0 3px rgba(193, 122, 78, 0.18);
+      }
+
+      @keyframes searchPulse {
+        0% {
+          box-shadow: var(--shadow);
+        }
+        50% {
+          box-shadow: 0 18px 40px rgba(193, 122, 78, 0.3),
+            0 0 0 5px rgba(193, 122, 78, 0.2);
+        }
+        100% {
+          box-shadow: var(--shadow);
+        }
+      }
+
+      /* Modified search grid columns since sort was removed */
       .search-grid {
         display: grid;
         grid-template-columns: 2fr 1fr auto;
@@ -173,6 +211,17 @@
       }
       .btn-primary:hover {
         background: #8e6a46;
+      }
+      .btn-secondary {
+        background: transparent;
+        color: var(--brand-brown);
+        border: 1px solid var(--brand-brown);
+        padding: 11px 22px;
+        border-radius: 6px;
+        font-weight: 700;
+      }
+      .btn-secondary:hover {
+        background: #f8f1e8;
       }
 
       .category-grid {
@@ -387,12 +436,13 @@
       /* --- AUTH & ADMIN --- */
       .auth-container {
         max-width: 400px;
-        margin: 60px auto;
+        width: 100%;
         background: white;
-        padding: 40px;
-        border-radius: 8px;
-        box-shadow: var(--shadow);
-        text-align: center;
+        padding: 36px;
+        border-radius: 14px;
+        box-shadow: 0 16px 50px rgba(0, 0, 0, 0.08);
+        text-align: left;
+        border: 1px solid #f0ebe4;
       }
       .admin-table {
         width: 100%;
@@ -425,209 +475,228 @@
         color: #1565c0;
       }
 
-      /* --- VENDOR REGISTRATION --- */
-      .vendor-reg {
-        background: linear-gradient(135deg, #fdf7f1 0%, #ffffff 60%);
-        border: 1px solid #edd8c4;
-        border-radius: 14px;
-        padding: 32px;
-        margin: 60px 0;
-        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.05);
-        display: flex;
+      /* --- AUTH / REGISTER LAYOUT --- */
+      .auth-shell {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
         gap: 24px;
-        align-items: stretch;
-        flex-wrap: wrap;
+        margin: 40px auto 30px;
+        align-items: start;
       }
-      .vendor-reg > div {
-        flex: 1 1 320px;
+      .auth-side {
+        background: white;
+        border: 1px solid #eee4da;
+        border-radius: 14px;
+        padding: 26px;
+        box-shadow: 0 12px 36px rgba(0, 0, 0, 0.05);
       }
-
-      .vendor-reg h2 {
-        margin-bottom: 12px;
-      }
-      .vendor-reg p.lead {
-        color: #5c4b3e;
-        margin-bottom: 18px;
-        max-width: 560px;
-      }
-      .reg-badges {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-        margin-bottom: 16px;
-      }
-      .reg-badge {
-        background: #fff6e8;
-        color: #8a6236;
-        border: 1px solid #f1e1cf;
-        padding: 6px 12px;
-        border-radius: 999px;
-        font-size: 0.85rem;
-        font-weight: 700;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
+      .register-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 18px;
+        margin: 16px 0 12px;
       }
       .reg-card {
-        background: white;
-        border: 1px solid #f0e6db;
+        background: #fffaf5;
+        border: 1px solid #f0e5d9;
         border-radius: 12px;
-        padding: 18px;
-        box-shadow: var(--shadow);
-      }
-      .reg-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-      }
-      .reg-grid .full {
-        grid-column: 1 / -1;
-      }
-      .fee-box {
-        background: #0f172a;
-        color: white;
-        border-radius: 12px;
-        padding: 20px;
+        padding: 14px 14px 18px;
         display: grid;
         gap: 10px;
+        box-shadow: 0 10px 28px rgba(0, 0, 0, 0.05);
       }
-      .fee-pill {
-        display: inline-block;
-        background: rgba(255, 255, 255, 0.12);
-        padding: 4px 10px;
-        border-radius: 999px;
-        font-size: 0.85rem;
+      .reg-card h4 {
+        margin: 0;
       }
-      .fee-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        font-weight: 700;
+      .reg-card .muted {
+        color: #777;
       }
-      .tiny-note {
-        font-size: 0.85rem;
-        color: #6b7280;
+      .benefit-list {
+        margin: 12px 0 18px;
+        padding-left: 18px;
+        color: #555;
+        line-height: 1.5;
       }
-      .btn-ghost {
-        border: 1px solid #caa27a;
-        color: #8a6236;
-        background: white;
-        padding: 10px 18px;
-        border-radius: 6px;
-        font-weight: 700;
-      }
-      .plan-options {
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-        margin: 8px 0 4px;
-      }
-      .plan-pill {
-        border: 1px solid #e0cbb2;
-        border-radius: 10px;
-        padding: 10px 12px;
-        background: #fffaf4;
-        cursor: pointer;
+      .pill {
         display: inline-flex;
         align-items: center;
         gap: 6px;
+        background: #f3ede6;
+        color: var(--brand-brown);
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-weight: 700;
+        font-size: 0.8rem;
+        letter-spacing: 0.02em;
       }
-      .plan-pill input {
-        margin: 0;
-      }
-      /* Modal for plan selection */
-      .reg-modal {
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.55);
-        display: none;
+      .badge-premium {
+        display: inline-flex;
         align-items: center;
-        justify-content: center;
-        z-index: 3000;
-        padding: 16px;
+        gap: 6px;
+        background: #fff2e8;
+        color: #c17a4e;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-weight: 700;
+        font-size: 0.78rem;
+        width: fit-content;
       }
-      .reg-modal.active {
+      .section-intro {
+        margin: 24px 0 12px;
         display: flex;
+        flex-direction: column;
+        gap: 6px;
       }
-      .reg-modal-panel {
-        background: white;
-        border-radius: 12px;
-        padding: 22px;
-        max-width: 480px;
+      .form-label {
+        font-weight: 700;
+        font-size: 0.85rem;
+        color: #3a342f;
+        margin-bottom: 4px;
+      }
+      .form-input,
+      .form-select,
+      textarea.form-input {
+        transition: border-color 0.2s, box-shadow 0.2s;
+      }
+      .form-input:focus,
+      .form-select:focus,
+      textarea.form-input:focus {
+        outline: none;
+        border-color: var(--brand-brown);
+        box-shadow: 0 0 0 3px rgba(166, 124, 82, 0.15);
+      }
+      .file-input {
         width: 100%;
-        box-shadow: 0 18px 48px rgba(0, 0, 0, 0.14);
-        border: 1px solid #f0e6db;
+        padding: 10px;
+        border: 1px solid #e6d7c7;
+        border-radius: 8px;
+        background: #fffaf5;
+        font-family: inherit;
+        color: #3a342f;
       }
-      .modal-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 12px;
+      .file-input::file-selector-button {
+        background: var(--brand-brown);
+        color: white;
+        border: none;
+        padding: 9px 14px;
+        margin-right: 10px;
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
       }
-      .plan-list {
-        display: grid;
-        gap: 10px;
-        margin: 10px 0 4px;
+      .file-input:hover::file-selector-button {
+        background: #8e6a46;
       }
-      .plan-card {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border: 1px solid #e6d8c5;
+      .reg-card .reg-card {
+        margin-top: 8px;
+        background: #fff;
+        border: 1px dashed #e6d7c7;
+        box-shadow: none;
         border-radius: 10px;
-        padding: 12px 14px;
-        background: #fffaf4;
-        gap: 10px;
       }
-      .plan-info small {
-        color: #8a6236;
+      .reg-card .reg-card strong {
         display: block;
+        margin-bottom: 4px;
       }
-      .modal-actions {
+      .service-options {
         display: flex;
-        gap: 10px;
-        justify-content: flex-end;
-        margin-top: 12px;
         flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 4px;
+      }
+      .check-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 10px;
+        border: 1px solid #e6d7c7;
+        border-radius: 10px;
+        background: #fff;
+        font-size: 0.9rem;
+        color: #3a342f;
+      }
+      .check-pill input {
+        accent-color: var(--brand-brown);
+      }
+      .service-other {
+        display: grid;
+        gap: 6px;
+        margin-top: 6px;
+      }
+      .span-2 {
+        grid-column: span 2;
       }
 
-      /* Category chips */
-      .category-grid {
+      /* --- PRICING MODAL --- */
+      #pricing-modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.45);
+        align-items: center;
+        justify-content: center;
+        padding: 18px;
+        z-index: 2000;
+      }
+      .pricing-content {
+        background: white;
+        width: min(960px, 100%);
+        padding: 28px;
+        border-radius: 16px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        position: relative;
+      }
+      .close-modal {
+        position: absolute;
+        right: 14px;
+        top: 10px;
+        border: none;
+        background: transparent;
+        font-size: 1.4rem;
+        cursor: pointer;
+        color: #666;
+      }
+      .pricing-head {
+        text-align: center;
+        margin-bottom: 22px;
+      }
+      .pricing-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 16px;
+      }
+      .plan-card {
+        border: 1px solid #eee4da;
+        border-radius: 12px;
+        padding: 18px;
+        background: #fffdf9;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.05);
+        display: grid;
         gap: 10px;
       }
-      .category-chip {
-        border: 1px solid #e2d6c6;
-        background: #fffaf4;
-        border-radius: 10px;
-        padding: 10px 12px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        cursor: pointer;
-        transition: all 0.2s ease;
+      .plan-card.featured {
+        border-color: var(--brand-brown);
+        box-shadow: 0 16px 46px rgba(166, 124, 82, 0.16);
       }
-      .category-chip:hover {
-        border-color: #c9a36a;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+      .plan-meta {
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        font-size: 0.75rem;
+        color: #8b6a45;
+        font-weight: 700;
       }
-      .category-chip input {
-        accent-color: var(--brand-brown);
-        width: 18px;
-        height: 18px;
-        margin: 0;
+      .plan-price {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--brand-brown);
       }
-      .category-helper {
-        margin: 6px 0 4px;
-        font-size: 0.85rem;
-        color: #7a5a32;
-      }
-      .field-error {
-        outline: 2px solid #e55353;
-        border-radius: 10px;
-        transition: outline 0.2s ease;
+      .plan-features {
+        list-style: disc;
+        margin: 0 0 0 18px;
+        padding: 0;
+        color: #555;
+        display: grid;
+        gap: 6px;
       }
 
       /* Mobile */
@@ -640,21 +709,16 @@
           display: flex;
           flex-direction: column;
         }
-        .vendor-reg {
-          flex-direction: column;
-          padding: 24px;
-        }
-
-        .plan-options {
-          flex-direction: column;
-        }
         .hero-img {
           width: 100%;
           height: 250px;
         }
-
         .nav-links {
-          display: none;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          background: white;
+          padding: 12px 0 0;
         }
         .search-grid {
           display: flex;
@@ -668,6 +732,9 @@
         .sort-wrapper {
           width: 100%;
           justify-content: space-between;
+        }
+        .auth-shell {
+          grid-template-columns: 1fr;
         }
       }
     </style>
@@ -693,7 +760,7 @@
           >
           <div id="auth-section">
             <button class="btn-auth" onclick="app.navigate('login')">
-              Sign In / Register
+              Sign In
             </button>
           </div>
         </nav>
@@ -711,10 +778,12 @@
             >
           </h1>
           <p>Search over 1,000 verified wedding vendors with real reviews.</p>
-          <div style="margin-top: 16px; display: flex; gap: 12px; flex-wrap: wrap">
-            <button class="btn-primary" onclick="app.goToSearch()">Start Searching</button>
-            <button class="btn-ghost" onclick="app.scrollToVendorRegistration()">
-              Become a Vendor
+          <div class="hero-actions">
+            <button class="btn-primary" onclick="app.scrollToSearch()">
+              Start searching
+            </button>
+            <button class="btn-secondary" onclick="app.navigate('register')">
+              Become a vendor
             </button>
           </div>
         </div>
@@ -744,148 +813,155 @@
         </div>
       </div>
 
-      <div class="vendor-grid" id="vendor-list-container"></div>
-      <!-- VENDOR REGISTRATION SECTION -->
-      <section id="vendor-registration" class="vendor-reg">
-        <div>
-          <h2 class="serif">List your services on Themes & Motifs</h2>
-          <p class="lead">
-            Join the country’s premier wedding marketplace. Showcase your work, get in front of engaged couples, and receive warm inquiries daily.
-          </p>
-          <div class="reg-badges">
-            <span class="reg-badge">✅ Featured placement</span>
-            <span class="reg-badge">💬 Direct inquiries</span>
-            <span class="reg-badge">📊 Lead dashboard</span>
-          </div>
-
-          <div class="reg-card">
-            <form id="vendor-reg-form">
-              <div class="reg-grid">
-                <input
-                  class="form-input"
-                  id="reg-vendor-name"
-                  placeholder="Business / Brand name"
-                  required
-                />
-                <div class="full">
-                  <div class="category-helper">
-                    Select all categories that apply
-                  </div>
-                  <div class="category-grid" id="reg-category-group">
-                    <label class="category-chip">
-                      <input type="checkbox" name="reg-category" value="Venue" />
-                      Venue
-                    </label>
-                    <label class="category-chip">
-                      <input
-                        type="checkbox"
-                        name="reg-category"
-                        value="Photography"
-                      />
-                      Photography
-                    </label>
-                    <label class="category-chip">
-                      <input type="checkbox" name="reg-category" value="Catering" />
-                      Catering
-                    </label>
-                    <label class="category-chip">
-                      <input type="checkbox" name="reg-category" value="Stylist" />
-                      Stylist
-                    </label>
-                    <label class="category-chip">
-                      <input type="checkbox" name="reg-category" value="Attire" />
-                      Attire
-                    </label>
-                    <label class="category-chip">
-                      <input type="checkbox" name="reg-category" value="Music" />
-                      Music
-                    </label>
-                    <label class="category-chip">
-                      <input type="checkbox" name="reg-category" value="Décor" />
-                      Décor
-                    </label>
-                    <label class="category-chip">
-                      <input type="checkbox" name="reg-category" value="Others" />
-                      Others
-                    </label>
-                  </div>
-                </div>
-
-                <input
-                  class="form-input"
-                  id="reg-contact"
-                  placeholder="Contact email"
-                  type="email"
-                  required
-                />
-                <input
-                  class="form-input"
-                  id="reg-phone"
-                  placeholder="Mobile number"
-                  type="tel"
-                />
-                <input
-                  class="form-input full"
-                  id="reg-site"
-                  placeholder="Website / Instagram / Portfolio link"
-                />
-                <textarea
-              class="form-input full"
-              id="reg-notes"
-              rows="3"
-              placeholder="Tell us about your services or preferred launch month (optional)"
-                ></textarea>
-              </div>
-
-              <div style="display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap">
-                <button type="submit" class="btn-primary">Submit Registration</button>
-              </div>
-              <p class="tiny-note" style="margin-top: 8px">
-                Prototype only — plans will appear in a pop-up after you submit.
-              </p>
-            </form>
-          </div>
+      <div class="category-grid">
+        <div
+          class="cat-card"
+          data-cat="Venue"
+          onclick="app.filterByCat('Venue')"
+        >
+          <!-- New Home/Building Icon -->
+          <svg
+            class="cat-icon"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            fill="none"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          <small>Venues</small>
         </div>
-      </section>
-    </div>
 
-    <!-- PLAN SELECTION MODAL -->
-    <div id="plan-modal" class="reg-modal">
-      <div class="reg-modal-panel">
-        <div class="modal-header">
-          <h3 class="serif" style="margin: 0">Choose a plan</h3>
-          <button class="btn-ghost" style="padding: 6px 10px; font-size: 0.9rem" onclick="app.closePlanModal()">Close</button>
+        <div
+          class="cat-card"
+          data-cat="Photography"
+          onclick="app.filterByCat('Photography')"
+        >
+          <!-- New Camera Icon -->
+          <svg
+            class="cat-icon"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            fill="none"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"
+            ></path>
+            <circle cx="12" cy="13" r="4"></circle>
+          </svg>
+          <small>Photo</small>
         </div>
-        <p style="color:#6b4c32; margin-bottom: 8px;">Prototype: pick a plan to proceed.</p>
-        <div class="plan-list" id="plan-options-modal">
-          <label class="plan-card">
-            <div class="plan-info">
-              <strong>Starter</strong>
-              <small>₱4,500 registration · Core listing</small>
-            </div>
-            <input type="radio" name="modal-plan" value="Starter" checked />
-          </label>
-          <label class="plan-card">
-            <div class="plan-info">
-              <strong>Premium</strong>
-              <small>₱7,500 registration · Featured slots</small>
-            </div>
-            <input type="radio" name="modal-plan" value="Premium" />
-          </label>
-          <label class="plan-card">
-            <div class="plan-info">
-              <strong>Expo Bundle</strong>
-              <small>₱9,500 registration · Expo priority</small>
-            </div>
-            <input type="radio" name="modal-plan" value="Expo Bundle" />
-          </label>
+
+        <div
+          class="cat-card"
+          data-cat="Catering"
+          onclick="app.filterByCat('Catering')"
+        >
+          <!-- New Cutlery Icon -->
+          <svg
+            class="cat-icon"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            fill="none"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path>
+            <path d="M7 2v20"></path>
+            <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path>
+          </svg>
+          <small>Catering</small>
         </div>
-        <div class="modal-actions">
-          <button class="btn-primary" onclick="app.confirmPlan()">Continue</button>
-          <button class="btn-ghost" onclick="app.closePlanModal()">Cancel</button>
+
+        <div
+          class="cat-card"
+          data-cat="Stylist"
+          onclick="app.filterByCat('Stylist')"
+        >
+          <!-- New Wand/Sparkles Icon -->
+          <svg
+            class="cat-icon"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            fill="none"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M15 4V2"></path>
+            <path d="M15 16v-2"></path>
+            <path d="M8 9h2"></path>
+            <path d="M20 9h2"></path>
+            <path d="M17.8 11.8L19 13"></path>
+            <path d="M15 9h0"></path>
+            <path d="M17.8 6.2L19 5"></path>
+            <path d="M3 21l9-9"></path>
+            <path d="M12.2 6.2L11 5"></path>
+          </svg>
+          <small>Styling</small>
         </div>
-        <p class="tiny-note" style="margin-top:6px;">Prototype only — no payments are processed.</p>
+
+        <div
+          class="cat-card"
+          data-cat="Attire"
+          onclick="app.filterByCat('Attire')"
+        >
+          <!-- New Hanger Icon -->
+          <svg
+            class="cat-icon"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            fill="none"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M12 3a5 5 0 0 0-5 5v1h10V8a5 5 0 0 0-5-5z"></path>
+            <path d="M3 14l3-3h12l3 3v8H3v-8z"></path>
+          </svg>
+          <small>Attire</small>
+        </div>
       </div>
+
+      <!-- New Sort and Count Toolbar above Vendor Grid -->
+      <div class="grid-toolbar">
+        <h2 class="serif" style="margin: 0">
+          Featured Vendors
+          <span
+            id="vendor-count"
+            style="
+              font-size: 0.9rem;
+              color: #888;
+              font-family: 'Lato', sans-serif;
+              font-weight: normal;
+            "
+          ></span>
+        </h2>
+        <div class="sort-wrapper">
+          <label for="search-sort" style="font-size: 0.9rem; color: #666"
+            >Sort by:</label
+          >
+          <select
+            class="form-select"
+            id="search-sort"
+            style="width: auto; padding: 8px"
+            onchange="app.handleSearch()"
+          >
+            <option value="rating">Top Rated</option>
+            <option value="price_low">Price: Low to High</option>
+            <option value="price_high">Price: High to Low</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="vendor-grid" id="vendor-list-container"></div>
     </div>
 
     <!-- DETAIL VIEW -->
@@ -918,13 +994,14 @@
       </div>
     </div>
 
-    <!-- LOGIN VIEW -->
+    <!-- LOGIN & REGISTRATION VIEW -->
     <div id="view-login" class="container hidden">
-      <div class="auth-container">
+      <div class="auth-container" style="margin: 40px auto">
         <h2 class="serif">Welcome Back</h2>
-        <p style="margin-bottom: 20px; color: #666">
-          Sign in to save vendors and leave reviews.
+        <p style="margin-bottom: 18px; color: #666">
+          Sign in to save vendors, leave reviews, and manage deals.
         </p>
+        <label class="form-label" for="login-email">Email</label>
         <input
           type="email"
           id="login-email"
@@ -932,19 +1009,179 @@
           placeholder="Email Address"
           style="margin-bottom: 10px"
         />
+        <label class="form-label" for="login-pass">Password</label>
         <input
           type="password"
           id="login-pass"
           class="form-input"
           placeholder="Password"
-          style="margin-bottom: 20px"
+          style="margin-bottom: 16px"
         />
         <button class="btn-primary" style="width: 100%" onclick="app.login()">
           Sign In
         </button>
-        <p style="margin-top: 15px; font-size: 0.8rem">
+        <p style="margin-top: 14px; font-size: 0.8rem; color: #666">
           Try <strong>admin@themes.com</strong> for Admin Access.
         </p>
+        <p style="margin-top: 14px; font-size: 0.85rem; color: #555">
+          Are you a vendor? <a style="color: var(--brand-brown); cursor: pointer;" onclick="app.navigate('register')">Register here</a>.
+        </p>
+      </div>
+    </div>
+
+    <!-- REGISTRATION VIEW -->
+    <div id="view-register" class="container hidden">
+      <div class="auth-shell" style="grid-template-columns: 1fr">
+        <div class="auth-side">
+          <div class="pill">Vendor onboarding</div>
+          <div class="section-intro">
+            <h2 class="serif" style="margin: 0">Register your business</h2>
+            <p class="muted">
+              Complete the essentials to appear on Themes & Motifs and request a
+              Verified Badge.
+            </p>
+          </div>
+
+          <div class="register-grid">
+            <div class="reg-card span-2">
+              <h4 class="serif">Business Details</h4>
+              <p class="muted">General business information.</p>
+              <input
+                id="reg-business-name"
+                class="form-input"
+                placeholder="Business Name *"
+              />
+              <input
+                id="reg-business-email"
+                class="form-input"
+                placeholder="Business Email *"
+                type="email"
+              />
+              <input
+                id="reg-business-phone"
+                class="form-input"
+                placeholder="Contact Number"
+              />
+              <div>
+                <label class="form-label">Type of Services *</label>
+                <div class="service-options">
+                  <label class="check-pill"
+                    ><input type="checkbox" value="Venue" /> Venue</label
+                  >
+                  <label class="check-pill"
+                    ><input type="checkbox" value="Photography" /> Photography</label
+                  >
+                  <label class="check-pill"
+                    ><input type="checkbox" value="Catering" /> Catering</label
+                  >
+                  <label class="check-pill"
+                    ><input type="checkbox" value="Stylist" /> Stylist</label
+                  >
+                  <label class="check-pill"
+                    ><input type="checkbox" value="Attire" /> Attire</label
+                  >
+                  <label class="check-pill"
+                    ><input type="checkbox" value="Other" /> Other</label
+                  >
+                </div>
+                <div class="service-other">
+                  <label class="form-label" for="reg-service-other"
+                    >If Other, please specify</label
+                  >
+                  <input
+                    id="reg-service-other"
+                    class="form-input"
+                    placeholder="Describe other services"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="reg-card">
+              <h4 class="serif">Rates</h4>
+              <p class="muted">Starting rate or package price.</p>
+              <input
+                id="reg-rate"
+                class="form-input"
+                type="number"
+                min="0"
+                placeholder="Starting Rate (₱) *"
+              />
+              <textarea
+                id="reg-faqs"
+                class="form-input"
+                rows="3"
+                placeholder="FAQs (cancellation, coverage, inclusions) *"
+              ></textarea>
+            </div>
+
+            <div class="reg-card">
+              <h4 class="serif">Map & Album</h4>
+              <p class="muted">
+                Share a Google Maps embed link or full address, plus sample work.
+              </p>
+              <input
+                id="reg-map"
+                class="form-input"
+                placeholder="Map link or address *"
+              />
+              <div class="reg-card" style="padding: 10px; background: #fafafa">
+                <strong>Album</strong>
+                <p class="muted">Upload sample photos of your work.</p>
+                <input
+                  id="reg-album"
+                  class="file-input"
+                  type="file"
+                  accept="image/*"
+                  multiple
+                />
+              </div>
+            </div>
+
+            <div class="reg-card">
+              <h4 class="serif">Marketplace</h4>
+              <p class="muted">
+                Deals posting (Premium accounts). Describe your promo.
+              </p>
+              <textarea
+                id="reg-marketplace"
+                class="form-input"
+                rows="4"
+                placeholder="Deal headline, validity dates, inclusions"
+              ></textarea>
+              <div class="badge-premium">Premium Feature</div>
+              <textarea
+                id="reg-premium-entries"
+                class="form-input"
+                rows="3"
+                placeholder="Premium Directory Entries (admin field)"
+              ></textarea>
+            </div>
+
+            <div class="reg-card">
+              <h4 class="serif">Verification Documents</h4>
+              <p class="muted">Upload to request a Verified Badge.</p>
+              <label class="muted">Business Permit *</label>
+              <input id="reg-permit" class="file-input" type="file" />
+              <label class="muted">DTI Registration *</label>
+              <input id="reg-dti" class="file-input" type="file" />
+              <label class="muted">SEC Registration *</label>
+              <input id="reg-sec" class="file-input" type="file" />
+            </div>
+          </div>
+
+          <div class="reg-actions">
+            <button class="btn-secondary" onclick="app.openPricingModal()">
+              View Plan Pricing
+            </button>
+            <button class="btn-primary" onclick="app.submitRegistration()">
+              Submit Registration
+            </button>
+          </div>
+          <p class="muted" style="margin-top: 8px; font-size: 0.85rem">
+            Files are reviewed privately before anything is shown publicly.
+          </p>
+        </div>
       </div>
     </div>
 
@@ -1079,6 +1316,52 @@
       </div>
     </div>
 
+    <!-- Pricing Modal -->
+    <div id="pricing-modal">
+      <div class="pricing-content">
+        <button class="close-modal" onclick="app.closePricingModal()">×</button>
+        <div class="pricing-head">
+          <div class="pill" style="margin: 0 auto 6px">Choose your plan</div>
+          <h2 class="serif" style="margin: 6px 0 4px">Plans for every vendor</h2>
+          <p style="color: #666; max-width: 640px; margin: 0 auto">
+            Start on Standard for a basic public listing, then upgrade to Premium for boosted visibility and direct contact.
+          </p>
+        </div>
+
+        <div class="pricing-grid">
+          <div class="plan-card">
+            <div class="plan-meta">Standard (Free)</div>
+            <h4 class="serif">Standard</h4>
+            <div class="plan-price">₱0 / mo</div>
+            <ul class="plan-features">
+              <li>Basic public listing</li>
+              <li>Visible profile, limited photo gallery (max 3)</li>
+              <li>Internal inquiry form only (no direct contact)</li>
+            </ul>
+            <button class="btn-secondary" onclick="app.choosePlan('Standard')">
+              Stay on Standard
+            </button>
+          </div>
+
+          <div class="plan-card featured">
+            <div class="plan-meta">Premium (Paid)</div>
+            <h4 class="serif">Premium</h4>
+            <div class="plan-price">₱2,499 / mo</div>
+            <ul class="plan-features">
+              <li>Boosted sort and enhanced visibility</li>
+              <li>Unlimited photos</li>
+              <li>Direct contact unlocked (phone, email, website)</li>
+              <li>Active social media links</li>
+              <li>Deals posting enabled</li>
+            </ul>
+            <button class="btn-primary" onclick="app.choosePlan('Premium')">
+              Choose Premium
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script>
       const mockVendors = [
         {
@@ -1106,7 +1389,7 @@
           desc: "Experience the taste of luxury. Known for their impeccable service and the famous roast beef station.",
           images: [
             "https://images.unsplash.com/photo-1555244162-803834f70033?w=600",
-            "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600",
+            "https://images.unsplash.com/photo-1504674900247-1645062cd958?w=600",
           ],
           contact: "info@juancarlo.ph",
           map: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3859.717306885943!2d121.0648817!3d14.671977799999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397b7b1b96dfd45%3A0xaccb0094540ee603!2sJuan%20Carlo%20the%20Caterer!5e0!3m2!1sen!2sph!4v1764139352872!5m2!1sen!2sph",
@@ -1135,11 +1418,11 @@
           rating: 5.0,
           desc: "Event styling that transforms spaces into magical worlds. The top choice for grand, luxurious setups.",
           images: [
-            "https://images.unsplash.com/photo-1527529482837-4387d4b0b4c6?w=600",
+            "https://images.unsplash.com/photo-1527529482837-4698179dc6ce?w=600",
             "https://images.unsplash.com/photo-1522413452208-996ff3f3e740?w=600",
           ],
           contact: "gideon@events.com",
-          map: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3834.501866464829!2d120.33251907578385!3d16.03992614023384!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x33915d56d91f0771%3A0x4412384e5abc5cc1!2sThe%20Events%20Studio%20By%20Gideon%20Hermosa!5e0!3m2!1sen!2sph!4v1764139401427!5m2!1sen!2sph",
+          map: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3834.501866464829!2d120.33251907578385!3d16.03942614023384!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x33915d56d91f0771%3A0x4412384e5abc5cc1!2sThe%20Events%20Studio%20By%20Gideon%20Hermosa!5e0!3m2!1sen!2sph!4v1764139401427!5m2!1sen!2sph",
         },
         {
           id: 5,
@@ -1223,7 +1506,6 @@
 
       const app = {
         currentUser: null,
-        pendingRegName: null,
 
         init: () => {
           app.renderHome(mockVendors);
@@ -1242,11 +1524,6 @@
             }
           });
 
-          const regForm = document.getElementById("vendor-reg-form");
-          if (regForm) {
-            regForm.addEventListener("submit", app.submitVendorRegistration);
-          }
-
           const loginEmail = document.getElementById("login-email");
           const loginPass = document.getElementById("login-pass");
           [loginEmail, loginPass].forEach((el) => {
@@ -1259,97 +1536,6 @@
           });
         },
 
-        // VENDOR REGISTRATION FLOW (prototype)
-        submitVendorRegistration: (e) => {
-          if (e) e.preventDefault();
-
-<<<<<<< HEAD:prototype.html
-          const requiredIds = ["reg-vendor-name", "reg-contact"];
-=======
-          const requiredIds = ["reg-vendor-name", "reg-category", "reg-contact"];
->>>>>>> 35407f4d8e45c812e245010a62d3e0180a71f05d:index.html
-          for (const id of requiredIds) {
-            const field = document.getElementById(id);
-            if (field && !field.value) {
-              field.focus();
-              return false;
-            }
-          }
-
-<<<<<<< HEAD:prototype.html
-          const selectedCats = document.querySelectorAll(
-            'input[name="reg-category"]:checked'
-          );
-          if (!selectedCats.length) {
-            const group = document.getElementById("reg-category-group");
-            if (group) {
-              group.scrollIntoView({ behavior: "smooth", block: "center" });
-              group.classList.add("field-error");
-              setTimeout(() => group.classList.remove("field-error"), 1200);
-            }
-            return false;
-          }
-
-=======
->>>>>>> 35407f4d8e45c812e245010a62d3e0180a71f05d:index.html
-          const modal = document.getElementById("plan-modal");
-          if (modal) {
-            modal.style.display = "flex";
-            const firstPlan = modal.querySelector('input[name="modal-plan"]');
-            if (
-              firstPlan &&
-              !modal.querySelector('input[name="modal-plan"]:checked')
-            ) {
-              firstPlan.checked = true;
-            }
-          }
-<<<<<<< HEAD:prototype.html
-          app.clearRegForm();
-          return false;
-        },
-
-        clearRegForm: () => {
-          const form = document.getElementById("vendor-reg-form");
-          if (form) form.reset();
-          document
-            .querySelectorAll('input[name="reg-category"]')
-            .forEach((el) => (el.checked = false));
-        },
-
-=======
-          return false;
-        },
-
->>>>>>> 35407f4d8e45c812e245010a62d3e0180a71f05d:index.html
-        openPlanModal: () => {
-          const modal = document.getElementById("plan-modal");
-          if (modal) {
-            modal.style.display = "flex";
-            const firstPlan = modal.querySelector('input[name="modal-plan"]');
-            if (
-              firstPlan &&
-              !modal.querySelector('input[name="modal-plan"]:checked')
-            ) {
-              firstPlan.checked = true;
-            }
-          }
-        },
-
-        closePlanModal: () => {
-          const modal = document.getElementById("plan-modal");
-          if (modal) modal.style.display = "none";
-        },
-
-        confirmPlan: () => {
-          const selected =
-            document.querySelector('input[name="modal-plan"]:checked') || {};
-          const plan = selected.value || "Starter";
-          alert(
-            `You chose the ${plan} plan. We’ll reach out with next steps (prototype).`
-          );
-          app.closePlanModal();
-        },
-
         // NAVIGATION
         navigate: (viewId) => {
           document.querySelectorAll(".container").forEach((el) => {
@@ -1357,6 +1543,7 @@
               el.id !== "view-home" &&
               el.id !== "view-detail" &&
               el.id !== "view-login" &&
+              el.id !== "view-register" &&
               el.id !== "view-admin" &&
               el.id !== "view-fairs"
             )
@@ -1371,6 +1558,8 @@
             document.getElementById("view-fairs").classList.remove("hidden");
           } else if (viewId === "login") {
             document.getElementById("view-login").classList.remove("hidden");
+          } else if (viewId === "register") {
+            document.getElementById("view-register").classList.remove("hidden");
           } else if (viewId === "admin") {
             if (app.currentUser && app.currentUser.role === "admin") {
               app.renderAdmin();
@@ -1437,6 +1626,65 @@
             "auth-section"
           ).innerHTML = `<button class="btn-auth" onclick="app.navigate('login')">Sign In / Register</button>`;
           app.navigate("home");
+        },
+
+        // REGISTRATION & PRICING
+        openPricingModal: () => {
+          const modal = document.getElementById("pricing-modal");
+          if (modal) modal.style.display = "flex";
+        },
+        closePricingModal: () => {
+          const modal = document.getElementById("pricing-modal");
+          if (modal) modal.style.display = "none";
+        },
+        choosePlan: (plan) => {
+          alert(`You selected the ${plan} plan. A representative will follow up.`);
+          app.closePricingModal();
+        },
+        submitRegistration: () => {
+          const requiredFields = [
+            "reg-business-name",
+            "reg-business-email",
+            "reg-description",
+            "reg-rate",
+            "reg-map",
+            "reg-faqs",
+            "reg-permit",
+            "reg-dti",
+            "reg-sec",
+          ];
+
+          const missing = requiredFields.filter((id) => {
+            const el = document.getElementById(id);
+            if (!el) return true;
+            if (el.type === "file") {
+              return !(el.files && el.files.length);
+            }
+            return !el.value || el.value.trim() === "";
+          });
+
+          if (missing.length > 0) {
+            alert("Please complete all required fields and uploads before submitting.");
+            return;
+          }
+
+          const payload = {
+            business: document.getElementById("reg-business-name").value,
+            email: document.getElementById("reg-business-email").value,
+            phone: document.getElementById("reg-business-phone").value,
+            description: document.getElementById("reg-description").value,
+            rate: document.getElementById("reg-rate").value,
+            faqs: document.getElementById("reg-faqs").value,
+            map: document.getElementById("reg-map").value,
+            marketplace: document.getElementById("reg-marketplace").value,
+            premiumEntries: document.getElementById("reg-premium-entries").value,
+          };
+
+          console.log("Registration submitted (prototype):", payload);
+          alert(
+            "Registration submitted! Our team will review your details and reach out within 1-2 business days."
+          );
+          app.openPricingModal();
         },
 
         // HOME & SEARCH
@@ -1506,29 +1754,6 @@
             document.getElementById("search-text").value = "";
             document.getElementById("search-type").value = "";
             if (app.updateCategoryUI) app.updateCategoryUI();
-          }
-        },
-
-        goToSearch: () => {
-          const searchBox = document.querySelector(".search-container");
-          const input = document.getElementById("search-text");
-          if (searchBox) {
-<<<<<<< HEAD:prototype.html
-            const rect = searchBox.getBoundingClientRect();
-            const offset = rect.top + window.scrollY - 80; // keep under sticky header
-            window.scrollTo({ top: offset, behavior: "smooth" });
-=======
-            searchBox.scrollIntoView({ behavior: "smooth", block: "start" });
->>>>>>> 35407f4d8e45c812e245010a62d3e0180a71f05d:index.html
-          }
-          if (input) input.focus();
-          app.handleSearch();
-        },
-
-        scrollToVendorRegistration: () => {
-          const section = document.getElementById("vendor-registration");
-          if (section) {
-            section.scrollIntoView({ behavior: "smooth", block: "start" });
           }
         },
 
