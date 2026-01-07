@@ -1688,6 +1688,25 @@
         },
 
         // HOME & SEARCH
+        scrollToSearch: () => {
+          const searchBox = document.querySelector(".search-container");
+          const input = document.getElementById("search-text");
+
+          if (!searchBox) return;
+
+          // restart highlight animation
+          searchBox.classList.remove("highlight-pulse");
+          // force reflow for animation restart
+          void searchBox.offsetWidth;
+          searchBox.classList.add("highlight-pulse");
+
+          searchBox.scrollIntoView({ behavior: "smooth", block: "start" });
+          if (input) input.focus();
+
+          // clean up highlight after animation
+          setTimeout(() => searchBox.classList.remove("highlight-pulse"), 1600);
+        },
+
         renderHome: (list) => {
           const container = document.getElementById("vendor-list-container");
           const countLabel = document.getElementById("vendor-count");
