@@ -1,0 +1,13 @@
+		Free	Premium	
+Nickname of Bride				Always Public
+Nickkname of Groom				Always Public
+Date of Wedding				Private but with choice to make public
+Venue of Wedding  (dropdown using Areas)				Private but with choice to make public
+Location (based on ceremony venue)				Always Public
+Public or Private				
+Agree to Terms & Conditions				
+Access to Exclusive Deals			/	
+Album		only 1 album and max 10 pics	Unlimited album  pics	Private but with choice to make public
+Rating			/	Always Public
+Review			/	Always Public
+				
