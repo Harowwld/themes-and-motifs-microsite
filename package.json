@@ -1,0 +1,9 @@
+{
+	"dependencies": {
+		"@supabase/supabase-js": "^2.95.3",
+		"@supabase/ssr": "^0.8.0",
+		"date-fns": "^4.1.0",
+		"clsx": "^2.1.1",
+		"tailwind-merge": "^3.4.1"
+	}
+}
