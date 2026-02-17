@@ -1,0 +1,570 @@
+================================================================================
+THEMES & MOTIFS — DATABASE CONTEXT
+Wedding Marketplace / Vendor Directory (Philippines)
+Platform: Supabase (PostgreSQL)
+================================================================================
+
+PROJECT OVERVIEW
+----------------
+Themes & Motifs is a wedding supplier marketplace for the Philippines. Couples
+(soon-to-weds) can discover, save, and review vendors. Vendors can manage their
+listings, promos, and leads. Admins manage the platform.
+
+Authentication is handled by Supabase Auth. The public.users table mirrors
+auth.users and extends it with role and profile data. Row Level Security (RLS)
+is enabled on all tables.
+
+================================================================================
+USER ROLES
+================================================================================
+
+  soon_to_wed  — Couples planning their wedding.
+                 Can: browse vendors, save vendors/promos, write reviews,
+                      manage their profile and photo albums, send inquiries,
+                      register for bridal fairs.
+
+  supplier     — Business/vendor accounts.
+                 Can: manage their own vendor listing, upload gallery photos,
+                      create promos, view and respond to inquiries,
+                      upload verification documents, view their analytics.
+
+  admin        — Platform administrators.
+                 Can: full access to all tables, approve vendor registrations,
+                      review verification documents, moderate reviews,
+                      manage categories/affiliations/plans/bridal fairs.
+
+================================================================================
+TABLE REFERENCE
+================================================================================
+
+All tables are in the public schema unless noted.
+ID types: SERIAL (integer) for most tables; UUID for users (linked to auth.users).
+
+--------------------------------------------------------------------------------
+REFERENCE / LOOKUP TABLES
+--------------------------------------------------------------------------------
+
+plans
+  id            SERIAL PK
+  name          VARCHAR(50) UNIQUE          e.g. 'Standard', 'Premium'
+  price         DECIMAL(10,2)               monthly price in PHP
+  description   TEXT
+  features      JSONB                       feature flags (see Feature Flags below)
+  created_at, updated_at
+
+categories
+  id            SERIAL PK
+  name          VARCHAR(100) UNIQUE         e.g. 'Photography', 'Venue'
+  slug          VARCHAR(100) UNIQUE
+  description   TEXT
+  icon          VARCHAR(255)
+  display_order INT
+  created_at
+
+  Seeded with 15 categories: Venue, Catering, Photography, Videography,
+  Styling & Coordination, Bridal Gowns, Suits & Barong, Hair & Makeup,
+  Invitations, Flowers & Decor, Entertainment, Photo Booth, Cake & Desserts,
+  Wedding Rings, Gifts & Favors.
+
+affiliations
+  id            SERIAL PK
+  name          VARCHAR(100) UNIQUE         e.g. 'T&M Verified'
+  slug          VARCHAR(100) UNIQUE
+  badge_icon    VARCHAR(255)
+  description   TEXT
+  created_at
+
+  Seeded with: T&M Verified, Preferred Supplier, Bridal Fair Partner.
+
+regions
+  id            SERIAL PK
+  name          VARCHAR(100) UNIQUE         e.g. 'Metro Manila', 'Visayas'
+  parent_id     INT → regions(id)           supports region hierarchy
+  created_at
+
+  Seeded with: Metro Manila, Luzon, Visayas, Mindanao.
+
+--------------------------------------------------------------------------------
+USER MANAGEMENT
+--------------------------------------------------------------------------------
+
+users
+  id            UUID PK → auth.users(id)   mirrors Supabase Auth user
+  email         VARCHAR(255) UNIQUE
+  role          VARCHAR(20)                 'soon_to_wed' | 'supplier' | 'admin'
+  email_verified BOOLEAN
+  is_active     BOOLEAN
+  created_at, updated_at, last_login_at
+
+  Note: No password_hash — auth is handled by Supabase Auth.
+  A trigger (handle_new_user) should be created to auto-insert into this
+  table when a new Supabase Auth user is created.
+
+soon_to_wed_profiles
+  user_id       UUID PK → users(id)        1:1 with users (role = soon_to_wed)
+  bride_nickname, groom_nickname  VARCHAR(100)
+  wedding_date  DATE
+  wedding_date_public    BOOLEAN           controls public visibility
+  wedding_venue_area     VARCHAR(255)
+  wedding_venue_public   BOOLEAN           controls public visibility
+  location      VARCHAR(255)
+  profile_visibility     VARCHAR(20)       'public' | 'private'
+  budget_range  VARCHAR(50)
+  wedding_style VARCHAR(100)
+  notes         TEXT
+  profile_photo_url      VARCHAR(500)
+  created_at, updated_at
+
+soon_to_wed_albums
+  id            SERIAL PK
+  user_id       UUID → users(id)
+  title         VARCHAR(255)
+  visibility    VARCHAR(20)               'public' | 'private'
+  created_at
+
+album_photos
+  id            SERIAL PK
+  album_id      INT → soon_to_wed_albums(id)
+  photo_url     VARCHAR(500)
+  caption       TEXT
+  display_order INT
+  created_at
+
+--------------------------------------------------------------------------------
+VENDOR MANAGEMENT
+--------------------------------------------------------------------------------
+
+vendors  (core business listing)
+  id                SERIAL PK
+  user_id           UUID → users(id)        the supplier who owns this listing
+  business_name     VARCHAR(255)
+  slug              VARCHAR(255) UNIQUE     used in URLs
+  description       TEXT
+  location_text     VARCHAR(255)            human-readable location
+  region_id         INT → regions(id)
+  city              VARCHAR(100)
+  address           TEXT
+  map_url           VARCHAR(500)
+  latitude          DECIMAL(10,8)
+  longitude         DECIMAL(11,8)
+  starting_price    DECIMAL(10,2)
+  price_range       VARCHAR(50)
+  contact_email     VARCHAR(255)            may be gated by plan
+  contact_phone     VARCHAR(50)             may be gated by plan
+  website_url       VARCHAR(500)
+  verified_status   VARCHAR(20)             'unverified' | 'pending' | 'verified' | 'rejected'
+  plan_id           INT → plans(id)
+  is_active         BOOLEAN
+  is_featured       BOOLEAN
+  view_count        INT                     denormalized counter
+  save_count        INT                     denormalized counter
+  inquiry_count     INT                     denormalized counter
+  click_count       INT                     denormalized counter
+  average_rating    DECIMAL(3,2)            denormalized, recalculated on review changes
+  review_count      INT                     denormalized counter
+  created_at, updated_at
+
+vendor_categories  (many-to-many)
+  vendor_id     INT → vendors(id)
+  category_id   INT → categories(id)
+  is_primary    BOOLEAN                     one category can be flagged primary
+  PK: (vendor_id, category_id)
+
+vendor_affiliations  (many-to-many)
+  vendor_id       INT → vendors(id)
+  affiliation_id  INT → affiliations(id)
+  awarded_at      TIMESTAMP
+  PK: (vendor_id, affiliation_id)
+
+vendor_images
+  id            SERIAL PK
+  vendor_id     INT → vendors(id)
+  image_url     VARCHAR(500)
+  caption       TEXT
+  display_order INT
+  is_cover      BOOLEAN                     marks the main/cover image
+  created_at
+
+vendor_social_links
+  id            SERIAL PK
+  vendor_id     INT → vendors(id)
+  platform      VARCHAR(50)                 'facebook' | 'instagram' | 'tiktok' | etc.
+  url           VARCHAR(500)
+  created_at
+
+--------------------------------------------------------------------------------
+PROMOS / DEALS
+--------------------------------------------------------------------------------
+
+promos
+  id                SERIAL PK
+  vendor_id         INT → vendors(id)
+  title             VARCHAR(255)
+  summary           TEXT
+  terms             TEXT
+  valid_from        DATE
+  valid_to          DATE
+  is_featured       BOOLEAN                 shown on homepage featured section
+  image_url         VARCHAR(500)
+  discount_percentage INT
+  save_count        INT                     denormalized counter
+  is_active         BOOLEAN
+  created_at, updated_at
+
+--------------------------------------------------------------------------------
+REVIEWS & RATINGS
+--------------------------------------------------------------------------------
+
+reviews
+  id            SERIAL PK
+  vendor_id     INT → vendors(id)
+  user_id       UUID → users(id)
+  rating        INT (1–5)
+  review_text   TEXT
+  status        VARCHAR(20)               'published' | 'pending' | 'flagged' | 'removed'
+  helpful_count INT
+  created_at, updated_at
+
+  Constraint: UNIQUE(vendor_id, user_id) — one review per user per vendor.
+  When a review is inserted/updated/deleted, recalculate vendors.average_rating
+  and vendors.review_count in application logic or a trigger.
+
+--------------------------------------------------------------------------------
+USER ENGAGEMENT (Saved Items)
+--------------------------------------------------------------------------------
+
+saved_vendors
+  user_id       UUID → users(id)
+  vendor_id     INT → vendors(id)
+  created_at
+  PK: (user_id, vendor_id)
+
+saved_promos
+  user_id       UUID → users(id)
+  promo_id      INT → promos(id)
+  created_at
+  PK: (user_id, promo_id)
+
+--------------------------------------------------------------------------------
+LEADS / INQUIRIES
+--------------------------------------------------------------------------------
+
+inquiries
+  id            SERIAL PK
+  vendor_id     INT → vendors(id)
+  user_id       UUID → users(id)           nullable — allows guest submissions
+  name          VARCHAR(255)               captured for guest inquiries
+  email         VARCHAR(255)               captured for guest inquiries
+  phone         VARCHAR(50)
+  wedding_date  DATE
+  message       TEXT
+  status        VARCHAR(20)               'new' | 'read' | 'replied' | 'archived'
+  created_at, updated_at
+
+--------------------------------------------------------------------------------
+VENDOR ONBOARDING
+--------------------------------------------------------------------------------
+
+vendor_registrations  (staging before a vendor listing goes live)
+  id                    SERIAL PK
+  submitted_by_user_id  UUID → users(id)
+  business_name         VARCHAR(255)
+  contact_email         VARCHAR(255)
+  contact_phone         VARCHAR(50)
+  category_id           INT → categories(id)
+  location              VARCHAR(255)
+  description           TEXT
+  website_url           VARCHAR(500)
+  plan_id               INT → plans(id)
+  status                VARCHAR(20)       'submitted' | 'in_review' | 'approved' | 'rejected'
+  admin_notes           TEXT
+  created_at, updated_at
+  reviewed_at           TIMESTAMP
+  reviewed_by           UUID → users(id)  admin who reviewed
+
+verification_documents
+  id              SERIAL PK
+  vendor_id       INT → vendors(id)           set after registration is approved
+  registration_id INT → vendor_registrations(id)  set during onboarding
+  doc_type        VARCHAR(50)               'business_permit' | 'dti' | 'sec' | 'bir' | 'other'
+  file_url        VARCHAR(500)              storage path/URL
+  file_name       VARCHAR(255)
+  status          VARCHAR(20)               'pending' | 'approved' | 'rejected'
+  uploaded_at     TIMESTAMP
+  reviewed_at     TIMESTAMP
+  notes           TEXT
+
+--------------------------------------------------------------------------------
+SUBSCRIPTIONS / BILLING
+--------------------------------------------------------------------------------
+
+subscriptions
+  id                        SERIAL PK
+  vendor_id                 INT → vendors(id)
+  plan_id                   INT → plans(id)
+  status                    VARCHAR(20)   'trial' | 'active' | 'past_due' | 'canceled' | 'expired'
+  start_date                DATE
+  end_date                  DATE
+  renewal_date              DATE
+  provider                  VARCHAR(50)   e.g. 'paymongo', 'stripe'
+  provider_customer_id      VARCHAR(255)
+  provider_subscription_id  VARCHAR(255)
+  created_at, updated_at
+
+--------------------------------------------------------------------------------
+BRIDAL FAIRS / EVENTS
+--------------------------------------------------------------------------------
+
+bridal_fairs
+  id                SERIAL PK
+  title             VARCHAR(255)
+  slug              VARCHAR(255) UNIQUE
+  description       TEXT
+  start_date        DATE
+  end_date          DATE
+  venue             VARCHAR(255)
+  venue_address     TEXT
+  venue_map_url     VARCHAR(500)
+  image_url         VARCHAR(500)
+  registration_url  VARCHAR(500)
+  is_featured       BOOLEAN
+  is_active         BOOLEAN
+  created_at, updated_at
+
+fair_registrations
+  id            SERIAL PK
+  fair_id       INT → bridal_fairs(id)
+  user_id       UUID → users(id)           nullable — allows guest pre-registration
+  name          VARCHAR(255)
+  email         VARCHAR(255)
+  phone         VARCHAR(50)
+  wedding_date  DATE
+  notes         TEXT
+  created_at
+
+--------------------------------------------------------------------------------
+ANALYTICS
+--------------------------------------------------------------------------------
+
+vendor_analytics  (daily rollup per vendor)
+  id                SERIAL PK
+  vendor_id         INT → vendors(id)
+  date              DATE
+  views             INT
+  saves             INT
+  inquiries         INT
+  website_clicks    INT
+  phone_clicks      INT
+  created_at
+  UNIQUE: (vendor_id, date)
+
+================================================================================
+VIEWS
+================================================================================
+
+vendor_details
+  Joins vendors → plans → users.
+  Filters: is_active = TRUE.
+  Returns: id, business_name, slug, description, location_text, starting_price,
+           contact_email, contact_phone, website_url, verified_status, is_featured,
+           average_rating, review_count, view_count, save_count, plan_name, owner_email.
+
+active_promos
+  Joins promos → vendors.
+  Filters: is_active = TRUE AND valid dates include today.
+  Returns: all promo fields + vendor_name, vendor_slug.
+
+================================================================================
+FEATURE FLAGS (plans.features JSONB)
+================================================================================
+
+  contact_visible   BOOLEAN   Whether contact_email/contact_phone are shown publicly
+  max_photos        INT       Max gallery images allowed (5 for Standard, 999 for Premium)
+  promo_posts       INT       Max active promos allowed
+  featured_boost    BOOLEAN   Whether vendor can be boosted to featured placement
+  priority_support  BOOLEAN   (Premium only)
+
+Standard plan:  contact_visible=false, max_photos=5,   promo_posts=1,   featured_boost=false
+Premium plan:   contact_visible=true,  max_photos=999, promo_posts=999, featured_boost=true
+
+Note: Feature gating is enforced in the application layer, not via RLS.
+
+================================================================================
+ROW LEVEL SECURITY SUMMARY
+================================================================================
+
+RLS is ENABLED on all tables. Helper functions in public schema:
+
+  public.is_admin()              → TRUE if current user's role = 'admin'
+  public.is_supplier()           → TRUE if current user's role = 'supplier'
+  public.owns_vendor(vendor_id)  → TRUE if vendors.user_id = auth.uid()
+  public.user_role()             → returns role string for current user
+
+Access rules summary:
+
+  TABLE                   PUBLIC  SOON_TO_WED         SUPPLIER              ADMIN
+  ----------------------- ------- ------------------- --------------------- -----
+  plans                   SELECT  SELECT              SELECT                ALL
+  categories              SELECT  SELECT              SELECT                ALL
+  affiliations            SELECT  SELECT              SELECT                ALL
+  regions                 SELECT  SELECT              SELECT                ALL
+  users                   —       own row only        own row only          ALL
+  soon_to_wed_profiles    public* own row             —                     ALL
+  soon_to_wed_albums      public* own row             —                     ALL
+  album_photos            public* own albums          —                     ALL
+  vendors                 SELECT  —                   own listing           ALL
+  vendor_categories       SELECT  —                   own vendor            ALL
+  vendor_affiliations     SELECT  —                   —                     ALL
+  vendor_images           SELECT  —                   own vendor            ALL
+  vendor_social_links     SELECT  —                   own vendor            ALL
+  promos                  SELECT  —                   own vendor            ALL
+  reviews                 SELECT* own reviews         —                     ALL
+  saved_vendors           —       own rows            —                     ALL
+  saved_promos            —       own rows            —                     ALL
+  inquiries               —       own submissions     own vendor's inbound  ALL
+  vendor_registrations    —       own submissions     own submissions       ALL
+  verification_documents  —       —                   own vendor            ALL
+  subscriptions           —       —                   own vendor (read)     ALL
+  bridal_fairs            SELECT  SELECT              SELECT                ALL
+  fair_registrations      —       own rows            —                     ALL
+  vendor_analytics        —       —                   own vendor (read)     ALL
+
+  * public = row-level filter applies (e.g. profile_visibility='public',
+             status='published', is_active=TRUE)
+
+================================================================================
+STORAGE BUCKETS (Supabase Storage)
+================================================================================
+
+  vendor-images       PUBLIC    Vendor gallery photos, logos
+                                Path structure: vendor-images/{vendor_id}/{filename}
+
+  promo-images        PUBLIC    Promo/deal images
+                                Path structure: promo-images/{vendor_id}/{filename}
+
+  verification-docs   PRIVATE   Business permits, DTI, SEC documents
+                                Path structure: verification-docs/{vendor_id}/{filename}
+
+  user-photos         PRIVATE   User profile photos and album images
+                                Path structure: user-photos/{user_id}/{filename}
+
+================================================================================
+KEY RELATIONSHIPS (ENTITY MAP)
+================================================================================
+
+  auth.users (Supabase)
+      └── users (1:1, UUID FK)
+              ├── soon_to_wed_profiles (1:1)
+              │       └── soon_to_wed_albums (1:many)
+              │               └── album_photos (1:many)
+              ├── vendors (1:many, as supplier)
+              │       ├── vendor_categories → categories (many-to-many)
+              │       ├── vendor_affiliations → affiliations (many-to-many)
+              │       ├── vendor_images (1:many)
+              │       ├── vendor_social_links (1:many)
+              │       ├── promos (1:many)
+              │       ├── inquiries (1:many, inbound)
+              │       ├── reviews (1:many, inbound)
+              │       ├── subscriptions → plans (1:many)
+              │       ├── verification_documents (1:many)
+              │       └── vendor_analytics (1:many, daily)
+              ├── reviews (1:many, as author)
+              ├── inquiries (1:many, as sender)
+              ├── saved_vendors → vendors (many-to-many)
+              ├── saved_promos → promos (many-to-many)
+              ├── vendor_registrations (1:many)
+              │       └── verification_documents (1:many)
+              └── fair_registrations → bridal_fairs (many-to-many)
+
+================================================================================
+COMMON QUERY PATTERNS
+================================================================================
+
+-- Vendor search with filters
+SELECT v.*, r.name as region_name
+FROM vendors v
+LEFT JOIN regions r ON v.region_id = r.id
+WHERE v.is_active = TRUE
+  AND v.verified_status = 'verified'
+  AND v.region_id = $1                      -- location filter
+ORDER BY v.average_rating DESC;
+
+-- Vendor with categories (aggregated)
+SELECT v.*, array_agg(c.name) as categories
+FROM vendors v
+JOIN vendor_categories vc ON vc.vendor_id = v.id
+JOIN categories c ON c.id = vc.category_id
+WHERE v.id = $1
+GROUP BY v.id;
+
+-- Vendor full detail (single page)
+SELECT v.*, p.name as plan_name,
+       p.features->>'contact_visible' as contact_visible
+FROM vendors v
+JOIN plans p ON p.id = v.plan_id
+WHERE v.slug = $1 AND v.is_active = TRUE;
+
+-- Reviews for a vendor
+SELECT r.*, u.email
+FROM reviews r
+JOIN users u ON u.id = r.user_id
+WHERE r.vendor_id = $1 AND r.status = 'published'
+ORDER BY r.created_at DESC;
+
+-- Supplier's inbox
+SELECT * FROM inquiries
+WHERE vendor_id = $1
+ORDER BY created_at DESC;
+
+-- Featured vendors for homepage
+SELECT * FROM vendors
+WHERE is_featured = TRUE AND is_active = TRUE
+ORDER BY average_rating DESC LIMIT 8;
+
+-- Featured/active promos
+SELECT * FROM active_promos
+WHERE is_featured = TRUE LIMIT 6;
+
+-- User's saved vendors
+SELECT v.*
+FROM saved_vendors sv
+JOIN vendors v ON v.id = sv.vendor_id
+WHERE sv.user_id = $1;
+
+================================================================================
+NOTES FOR DEVELOPERS
+================================================================================
+
+1. User sync: When a user signs up via Supabase Auth, a trigger
+   (handle_new_user) must insert a corresponding row into public.users
+   with a default role of 'soon_to_wed'. Suppliers are upgraded
+   via admin action or a separate registration flow.
+
+2. Rating recalculation: vendors.average_rating and vendors.review_count
+   are denormalized for query performance. Recalculate them whenever a
+   review is inserted, updated, or deleted:
+     UPDATE vendors SET
+       average_rating = (SELECT AVG(rating) FROM reviews WHERE vendor_id = $1 AND status = 'published'),
+       review_count = (SELECT COUNT(*) FROM reviews WHERE vendor_id = $1 AND status = 'published')
+     WHERE id = $1;
+
+3. Plan feature gating: RLS does not enforce plan features (e.g. contact
+   visibility, photo limits). This must be enforced in application code
+   by reading plans.features JSONB.
+
+4. Guest submissions: inquiries.user_id and fair_registrations.user_id
+   are nullable to support non-authenticated submissions. Always capture
+   name and email in those cases.
+
+5. Soft vs hard deletes: The schema uses is_active flags on vendors,
+   promos, and bridal_fairs rather than hard deletes, preserving
+   referential integrity for reviews, inquiries, and analytics.
+
+6. Counters: view_count, save_count, inquiry_count, click_count on vendors
+   and save_count on promos are denormalized counters. Increment them
+   via Supabase Edge Functions or application middleware rather than
+   relying on joins at read time.
+
+================================================================================
+END OF DATABASE CONTEXT
+================================================================================

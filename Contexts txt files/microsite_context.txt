@@ -1,0 +1,268 @@
+Themes & Motifs Microsite — Product & Feature Context (for stack + database planning)
+
+1) What the website is for (product goal)
+Themes & Motifs is a wedding marketplace / directory for the Philippines.
+
+The core value proposition shown in the prototype:
+- Help couples discover and compare wedding suppliers (vendors) using search + filters.
+- Let users evaluate suppliers via ratings/reviews and view details (gallery, contact, map).
+- Enable demand generation for vendors via inquiries/leads.
+- Promote time-bound vendor deals/promos.
+- Support vendor onboarding/verification and plan-based features (Standard vs Premium).
+- Support bridal fair listings with pre-registration call-to-action.
+
+2) Primary user roles
+- Public visitor (anonymous)
+  - Browse vendors/promos, view details.
+  - Cannot post reviews (must login).
+
+- Soon-to-weds (end user / couple)
+  - Create account/profile.
+  - Save suppliers and promos.
+  - Leave reviews.
+  - Manage profile visibility + public/private fields.
+  - Upload profile photo and album (with optional public visibility).
+  - Premium concept exists (Exclusive Deals), but is disabled in the demo.
+
+- Supplier (vendor account)
+  - Manage listing (edit business details in dashboard).
+  - Receive leads/inquiries (status new/read).
+  - Create/promote promos (mark featured).
+  - View simple analytics (views/saves/inquiries/clicks) — mock in prototype.
+
+- Admin
+  - Access admin dashboard.
+  - View total vendor + review counts.
+  - Manage vendor entries (add/delete; edit is placeholder).
+  - Review/approve vendor registration and verification docs is implied by the registration flow.
+
+3) Key user journeys / workflows
+- Discovery & search
+  - Keyword search by vendor name.
+  - Filter by category (type), location, affiliation.
+  - Sort by rating, name, price.
+
+- Vendor detail
+  - View gallery images.
+  - View description, starting price, affiliations/verified status.
+  - View contact info + social links (conceptually Premium-gated).
+  - View promos and save promos.
+  - View map/embed.
+  - Read reviews; write/delete own review (requires login).
+  - Send booking inquiry / “check availability” (prototype alert; concept is lead capture).
+
+- Saved items (soon-to-weds dashboard)
+  - View saved suppliers.
+  - View saved promos.
+  - Remove saved items.
+
+- Supplier management
+  - Login as supplier.
+  - Edit listing fields (name/category/location/price/email/phone/website/description).
+  - Manage promos: create, delete, toggle featured.
+  - Manage leads: read/reply (mailto), mark as read.
+
+- Vendor onboarding / verification
+  - Vendor registers business details.
+  - Uploads verification documents (business permit, DTI, SEC).
+  - Submits registration for review.
+  - Chooses plan (Standard vs Premium).
+
+- Bridal fairs
+  - View upcoming fairs list (date/venue/description).
+  - Pre-register concept (UI copy indicates pre-registration).
+
+4) Features implied by the prototype (what you likely need to build)
+- Vendor directory
+  - Vendor profiles, categories, location/region, pricing.
+  - Image gallery.
+  - Affiliations/badges (e.g., T&M Verified, Preferred Supplier, Bridal Fair Partner).
+  - Verified status and verification workflow.
+  - Contact information and optional gating by plan.
+  - Social links.
+  - Map/location embed/link.
+
+- Search / browse UX
+  - Filtering by multiple facets.
+  - Sorting.
+  - “Featured vendors” and “Featured promos”.
+
+- Reviews & ratings
+  - User-generated reviews tied to vendors.
+  - Star rating + text.
+  - Basic moderation needs (admin removal, spam handling) implied.
+
+- Deals / promos
+  - Promos tied to vendor.
+  - Validity dates + terms.
+  - Featured flag for homepage placement.
+  - Save promos to user profile.
+
+- Accounts & permissions
+  - Authentication for soon-to-weds, suppliers, admins.
+  - Authorization (role-based access).
+
+- Leads / inquiries
+  - Inquiry capture with wedding date + message.
+  - Delivery mechanism (email notification and/or in-app inbox).
+  - Supplier-side status tracking (new/read).
+
+- Pricing / subscription plans
+  - At minimum: plan type per supplier (Standard/Premium).
+  - Feature gating:
+    - Premium: direct contact details, unlimited photos, deals posting, boosted visibility.
+
+- Bridal fairs
+  - Fair listings.
+  - Pre-registration records (user details, fair id, timestamps).
+
+5) Database planning — suggested entities
+(Based directly on features present/implied by the prototype)
+
+Core marketplace
+- Vendors
+  - id
+  - business_name
+  - description
+  - categories (many-to-many) OR primary_category + additional_categories
+  - location_text + structured region/city
+  - starting_price (numeric)
+  - verified_status (enum: unverified/pending/verified/rejected)
+  - affiliations/badges (many-to-many)
+  - contact_email, contact_phone, website_url (possibly gated)
+  - social_links (separate table or JSON)
+  - map_url / address
+  - plan_id (Standard/Premium)
+  - created_at, updated_at
+
+- VendorImages
+  - id, vendor_id
+  - url (or storage key)
+  - order
+  - created_at
+
+- Promos
+  - id, vendor_id
+  - title, summary
+  - terms
+  - valid_from, valid_to
+  - featured (bool)
+  - image_url (or storage key)
+  - created_at, updated_at
+
+Users & roles
+- Users
+  - id
+  - email, password_hash (or external auth provider id)
+  - role (soon_to_wed, supplier, admin)
+  - created_at, last_login_at
+
+- SoonToWedProfiles (1:1 with Users where role=soon_to_wed)
+  - user_id
+  - bride_nickname, groom_nickname
+  - wedding_date, wedding_date_public
+  - wedding_venue_area, wedding_venue_public
+  - location
+  - profile_visibility (public/private)
+  - budget, style, notes
+  - profile_photo (url/storage key)
+
+- SoonToWedAlbums
+  - id, user_id
+  - visibility (public/private)
+  - created_at
+
+- SoonToWedAlbumPhotos
+  - id, album_id
+  - photo_url (or storage key)
+  - created_at
+
+Engagement
+- Reviews
+  - id
+  - vendor_id
+  - user_id
+  - rating (1..5)
+  - text
+  - created_at
+  - (Optional) status/moderation fields
+
+- SavedVendors
+  - user_id, vendor_id (composite unique)
+  - created_at
+
+- SavedPromos
+  - user_id, promo_id (composite unique)
+  - created_at
+
+Leads
+- Inquiries
+  - id
+  - vendor_id
+  - user_id (nullable if guest inquiries allowed)
+  - name, email (if guest)
+  - wedding_date
+  - message
+  - status (new/read/archived)
+  - created_at
+
+Operations / onboarding
+- VendorRegistrations (if registrations are staged before creating a live Vendor)
+  - id
+  - submitted_by_user_id (or contact email)
+  - payload fields (or normalized)
+  - status (submitted/in_review/approved/rejected)
+  - created_at
+
+- VerificationDocuments
+  - id
+  - vendor_id (or registration_id)
+  - doc_type (permit/dti/sec/other)
+  - file_url/storage_key
+  - created_at
+
+Billing (if you implement plans for real)
+- Plans
+  - id, name, price
+  - feature flags (or separate table)
+
+- Subscriptions
+  - id
+  - vendor_id
+  - plan_id
+  - status
+  - start_at, end_at, renewal_at
+  - provider_customer_id, provider_subscription_id
+
+Events
+- BridalFairs
+  - id
+  - title
+  - start_date/end_date or date_text
+  - venue
+  - description
+  - image
+
+- FairRegistrations
+  - id
+  - fair_id
+  - user_id (nullable)
+  - name/email/phone
+  - created_at
+
+6) Data considerations (what affects stack choices)
+- File uploads:
+  - Vendor logo, vendor gallery images, verification documents, user profile photo, user album photos.
+  - Suggest object storage (S3/GCS/Azure Blob) + CDN.
+
+- Search & filtering:
+  - Start with relational DB + indexed columns.
+  - If you need advanced search (typo tolerance, ranking), add a search engine later.
+
+- Analytics:
+  - The prototype shows vendor analytics; at minimum you may store page views, saves, inquiry counts, and website clicks.
+
+- Permissions & gating:
+  - Plan-based access control around contact details, promos posting, and gallery limits.
+
+End of context.
