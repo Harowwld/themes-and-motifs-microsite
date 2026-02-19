@@ -62,11 +62,11 @@ function isPromoCurrentlyValid(promo: FeaturedPromo) {
 export default async function LandingPage({
   searchParams,
 }: {
-  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+  searchParams?: Record<string, string | string[] | undefined>;
 }) {
   const supabase = createSupabaseServerClient();
 
-  const resolvedSearchParams = (await searchParams) ?? {};
+  const resolvedSearchParams = searchParams ?? {};
 
   const pageSize = 9;
   const rawPage = (resolvedSearchParams.vendorsPage as string | undefined) ?? "1";
