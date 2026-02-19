@@ -1,10 +1,10 @@
-import Image from "next/image";
 import { createSupabaseServerClient } from "../lib/supabaseServer";
 import CategoryBrowser from "./CategoryBrowser";
 import SiteHeader from "./sections/SiteHeader";
 import HeroSection from "./sections/HeroSection";
 import FeaturedVendorsSection from "./sections/FeaturedVendorsSection";
 import PromosSection from "./sections/PromosSection";
+import VendorsSection from "./sections/VendorsSection";
 import VendorPlansSection from "./sections/VendorPlansSection";
 import SiteFooter from "./sections/SiteFooter";
 
@@ -37,6 +37,18 @@ type Category = {
   display_order: number | null;
 };
 
+type VendorListItem = {
+  id: number;
+  business_name: string;
+  slug: string;
+  average_rating: number | null;
+  review_count: number | null;
+  location_text: string | null;
+  city: string | null;
+};
+
+type SortKey = "alpha" | "rating";
+
 function isPromoCurrentlyValid(promo: FeaturedPromo) {
   const now = new Date();
   const from = promo.valid_from ? new Date(`${promo.valid_from}T00:00:00Z`) : null;
@@ -47,8 +59,20 @@ function isPromoCurrentlyValid(promo: FeaturedPromo) {
   return true;
 }
 
-export default async function LandingPage() {
+export default async function LandingPage({
+  searchParams,
+}: {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const supabase = createSupabaseServerClient();
+
+  const resolvedSearchParams = (await searchParams) ?? {};
+
+  const pageSize = 9;
+  const rawPage = (resolvedSearchParams.vendorsPage as string | undefined) ?? "1";
+  const rawSort = (resolvedSearchParams.vendorsSort as string | undefined) ?? "rating";
+  const page = Math.max(1, Number(rawPage) || 1);
+  const sort: SortKey = rawSort === "alpha" ? "alpha" : "rating";
 
   const planFeatures = [
     { label: "Company name + address + contact person", free: true, premium: true },
@@ -72,8 +96,13 @@ export default async function LandingPage() {
     { label: "Exclusive deals/marketplace: unlimited promos", free: false, premium: true },
   ];
 
-  const [{ data: featuredVendors }, { data: featuredPromos }, { data: categoriesData }, { data: locationRows }] =
-    await Promise.all([
+  const [
+    { data: featuredVendors },
+    { data: featuredPromos },
+    { data: categoriesData },
+    { data: locationRows },
+    { data: pagedVendors, count: pagedVendorsCount },
+  ] = await Promise.all([
       supabase
         .from("vendors")
         .select("id,business_name,slug,average_rating,review_count,location_text,city")
@@ -95,9 +124,32 @@ export default async function LandingPage() {
         .order("name", { ascending: true })
         .limit(200),
       supabase.from("vendors").select("city,location_text").eq("is_active", true).limit(2000),
+      (() => {
+        const from = (page - 1) * pageSize;
+        const to = from + pageSize - 1;
+
+        let q = supabase
+          .from("vendors")
+          .select("id,business_name,slug,average_rating,review_count,location_text,city", { count: "exact" })
+          .eq("is_active", true);
+
+        if (sort === "alpha") {
+          q = q.order("business_name", { ascending: true }).order("id", { ascending: true });
+        } else {
+          q = q
+            .order("average_rating", { ascending: false, nullsFirst: false })
+            .order("review_count", { ascending: false, nullsFirst: false })
+            .order("business_name", { ascending: true })
+            .order("id", { ascending: true });
+        }
+
+        return q.range(from, to);
+      })(),
     ]);
 
   const vendors = (featuredVendors ?? []) as FeaturedVendor[];
+  const vendorPageItems = (pagedVendors ?? []) as VendorListItem[];
+  const vendorTotal = pagedVendorsCount ?? 0;
   const promos = ((featuredPromos ?? []) as FeaturedPromo[]).filter(isPromoCurrentlyValid).slice(0, 4);
   const categories = (categoriesData ?? []) as Category[];
 
@@ -125,6 +177,7 @@ export default async function LandingPage() {
           <CategoryBrowser categories={categories} />
           <FeaturedVendorsSection vendors={vendors} />
           <PromosSection promos={promos} />
+          <VendorsSection vendors={vendorPageItems} total={vendorTotal} page={page} pageSize={pageSize} sort={sort} />
           <VendorPlansSection planFeatures={planFeatures} />
         </main>
 

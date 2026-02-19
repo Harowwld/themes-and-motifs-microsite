@@ -39,7 +39,7 @@ export default function VendorPlansSection({ planFeatures }: { planFeatures: Pla
           <div className="rounded-[3px] border border-[#a67c52]/35 bg-[#fffaf5] shadow-sm p-5">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <div className="text-[12px] font-semibold text-[#6e4f33]">6-month trial / Premium</div>
+                <div className="text-[12px] font-semibold text-[#6e4f33]">15-days trial / Premium</div>
                 <div className="mt-1 text-[20px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">Boosted profile</div>
               </div>
               <div className="rounded-[999px] border border-[#a67c52]/35 bg-white px-2.5 py-1 text-[11px] font-semibold text-[#6e4f33]">
