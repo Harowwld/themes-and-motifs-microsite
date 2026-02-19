@@ -1,8 +1,35 @@
+"use client";
+
+import { usePathname, useRouter } from "next/navigation";
+
 export default function SiteHeader() {
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const goToHomeSection = (id: string) => {
+    if (pathname === "/") {
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
+      }
+    }
+
+    router.push(`/#${id}`);
+  };
+
   return (
     <header className="sticky top-0 z-50 -mx-5 sm:-mx-8 px-5 sm:px-8 backdrop-blur supports-[backdrop-filter]:bg-[#fcfbf9]/75 bg-[#fcfbf9]/95 border-b border-black/5">
       <div className="mx-auto max-w-6xl h-16 flex items-center justify-between">
-        <a className="flex items-center" href="#" aria-label="Themes & Motifs">
+        <a
+          className="flex items-center"
+          href="/"
+          aria-label="Themes & Motifs"
+          onClick={(e) => {
+            e.preventDefault();
+            router.push("/", { scroll: false });
+          }}
+        >
           <img
             src="https://themesnmotifs.com/wp-content/uploads/elementor/thumbs/T_M-Logo-1-qzxx62xvcaywvxz23bwwe4nm1tu4exw9i42ghzw8g6.png"
             alt="Themes & Motifs"
@@ -13,13 +40,34 @@ export default function SiteHeader() {
         </a>
 
         <nav className="hidden sm:flex items-center gap-6 text-[13px] font-medium text-black/60">
-          <a className="hover:text-black/80 transition-colors" href="#discover">
+          <a
+            className="hover:text-black/80 transition-colors"
+            href="/#discover"
+            onClick={(e) => {
+              e.preventDefault();
+              goToHomeSection("discover");
+            }}
+          >
             Discover
           </a>
-          <a className="hover:text-black/80 transition-colors" href="#featured">
+          <a
+            className="hover:text-black/80 transition-colors"
+            href="/#featured"
+            onClick={(e) => {
+              e.preventDefault();
+              goToHomeSection("featured");
+            }}
+          >
             Featured
           </a>
-          <a className="hover:text-black/80 transition-colors" href="#for-vendors">
+          <a
+            className="hover:text-black/80 transition-colors"
+            href="/#for-vendors"
+            onClick={(e) => {
+              e.preventDefault();
+              goToHomeSection("for-vendors");
+            }}
+          >
             For vendors
           </a>
         </nav>
@@ -33,7 +81,11 @@ export default function SiteHeader() {
           </a>
           <a
             className="h-9 inline-flex items-center justify-center px-3.5 rounded-[3px] bg-[#a67c52] text-white text-[13px] font-semibold hover:bg-[#8e6a46] transition-colors shadow-sm"
-            href="#discover"
+            href="/#discover"
+            onClick={(e) => {
+              e.preventDefault();
+              goToHomeSection("discover");
+            }}
           >
             Start searching
           </a>

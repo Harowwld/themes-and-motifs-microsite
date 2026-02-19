@@ -1,6 +1,42 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import {
+  Aperture,
+  BadgeCheck,
+  Building2,
+  Cake,
+  Camera,
+  Car,
+  Church,
+  ClipboardList,
+  Crown,
+  Diamond,
+  Drum,
+  Gift,
+  Glasses,
+  Handshake,
+  Headphones,
+  Hotel,
+  IdCard,
+  Image,
+  MapPin,
+  Mail,
+  Martini,
+  Mic,
+  Music,
+  Palette,
+  PartyPopper,
+  Printer,
+  Scissors,
+  Shirt,
+  Sparkles,
+  Ticket,
+  Truck,
+  UtensilsCrossed,
+  Video,
+} from "lucide-react";
 
 type Category = {
   id: number;
@@ -8,119 +44,69 @@ type Category = {
   slug: string;
 };
 
-function getCategoryIcon(categoryName: string, categorySlug: string) {
+function getCategoryIcon(categoryName: string, categorySlug: string, active: boolean) {
   const v = `${categoryName} ${categorySlug}`.toLowerCase();
-  const base = "h-5 w-5 text-black/55 group-hover:text-[#2c2c2c] transition-colors";
-  const common = {
-    fill: "none",
-    viewBox: "0 0 24 24",
-    stroke: "currentColor",
-    strokeWidth: 1.6,
-    strokeLinecap: "round" as const,
-    strokeLinejoin: "round" as const,
-    className: base,
-    "aria-hidden": true,
-  };
+  const iconClassName = active
+    ? "h-6 w-6 text-[#2c2c2c] transition-colors"
+    : "h-6 w-6 text-[#6e4f33] group-hover:text-[#2c2c2c] transition-colors";
+  const iconProps = { className: iconClassName, "aria-hidden": true as const, strokeWidth: 1.75 };
 
-  if (v.includes("photo") || v.includes("video") || v.includes("camera")) {
-    return (
-      <svg {...common}>
-        <path d="M6 7h3l2-2h2l2 2h3a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2Z" />
-        <path d="M12 17a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
-      </svg>
-    );
-  }
+  if (v.includes("photo") || v.includes("photograph")) return <Camera {...iconProps} />;
+  if (v.includes("video") || v.includes("cinema") || v.includes("film") || v.includes("videograph")) return <Video {...iconProps} />;
+  if (v.includes("studio") || v.includes("shoot") || v.includes("shooting")) return <Aperture {...iconProps} />;
 
-  if (v.includes("venue") || v.includes("hotel") || v.includes("church") || v.includes("reception")) {
-    return (
-      <svg {...common}>
-        <path d="M4 21V10l8-6 8 6v11" />
-        <path d="M9 21v-6h6v6" />
-      </svg>
-    );
-  }
+  if (v.includes("flor") || v.includes("flowers") || v.includes("bouquet")) return <Sparkles {...iconProps} />;
+  if (v.includes("decor") || v.includes("styling") || v.includes("design")) return <Palette {...iconProps} />;
 
-  if (v.includes("cake") || v.includes("dessert") || v.includes("catering") || v.includes("food")) {
-    return (
-      <svg {...common}>
-        <path d="M7 11h10" />
-        <path d="M6 11v7a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-7" />
-        <path d="M8 11V9a4 4 0 0 1 8 0v2" />
-        <path d="M12 6v-2" />
-      </svg>
-    );
-  }
+  if (v.includes("makeup") || v.includes("mua") || v.includes("beauty")) return <Sparkles {...iconProps} />;
+  if (v.includes("hair") || v.includes("stylist") || v.includes("salon")) return <Scissors {...iconProps} />;
 
-  if (v.includes("dress") || v.includes("gown") || v.includes("apparel") || v.includes("suit") || v.includes("wear")) {
-    return (
-      <svg {...common}>
-        <path d="M9 4h6l1 3-2 2v11H10V9L8 7l1-3Z" />
-        <path d="M10 9h4" />
-      </svg>
-    );
-  }
+  if (v.includes("dress") || v.includes("gown") || v.includes("apparel") || v.includes("suit") || v.includes("wear")) return <Shirt {...iconProps} />;
+  if (v.includes("accessor") || v.includes("veil") || v.includes("shoes")) return <Crown {...iconProps} />;
 
-  if (v.includes("makeup") || v.includes("hair") || v.includes("beauty") || v.includes("stylist")) {
-    return (
-      <svg {...common}>
-        <path d="M7 3h10" />
-        <path d="M9 3v9a3 3 0 1 0 6 0V3" />
-        <path d="M12 21v-6" />
-      </svg>
-    );
-  }
+  if (v.includes("cake") || v.includes("dessert") || v.includes("pastry")) return <Cake {...iconProps} />;
+  if (v.includes("catering") || v.includes("food")) return <UtensilsCrossed {...iconProps} />;
+  if (v.includes("bar") || v.includes("cocktail") || v.includes("drink")) return <Martini {...iconProps} />;
 
-  if (v.includes("flowers") || v.includes("flor") || v.includes("bouquet") || v.includes("decor")) {
-    return (
-      <svg {...common}>
-        <path d="M12 21V9" />
-        <path d="M12 9c2.5-3 6-3 7 0-1 3.5-4.5 3.5-7 0Z" />
-        <path d="M12 9c-2.5-3-6-3-7 0 1 3.5 4.5 3.5 7 0Z" />
-      </svg>
-    );
-  }
+  if (v.includes("invitation") || v.includes("invite")) return <Mail {...iconProps} />;
+  if (v.includes("print") || v.includes("stationery") || v.includes("souvenir")) return <Printer {...iconProps} />;
 
-  if (v.includes("invitation") || v.includes("print") || v.includes("stationery")) {
-    return (
-      <svg {...common}>
-        <path d="M4 6h16v12H4z" />
-        <path d="m4 7 8 6 8-6" />
-      </svg>
-    );
-  }
+  if (v.includes("rings") || v.includes("jewel") || v.includes("diamond")) return <Diamond {...iconProps} />;
+  if (v.includes("gift") || v.includes("giveaway")) return <Gift {...iconProps} />;
 
-  if (v.includes("rings") || v.includes("jewel")) {
-    return (
-      <svg {...common}>
-        <path d="M12 7c2.8 0 5 2.2 5 5s-2.2 6-5 6-5-3.2-5-6 2.2-5 5-5Z" />
-        <path d="M9.4 7.6 7 5" />
-        <path d="M14.6 7.6 17 5" />
-      </svg>
-    );
-  }
+  if (v.includes("music") || v.includes("band")) return <Music {...iconProps} />;
+  if (v.includes("dj") || v.includes("host") || v.includes("emcee") || v.includes("mc")) return <Mic {...iconProps} />;
+  if (v.includes("sound") || v.includes("lights") || v.includes("audio")) return <Headphones {...iconProps} />;
+  if (v.includes("drum") || v.includes("percussion")) return <Drum {...iconProps} />;
 
-  if (v.includes("music") || v.includes("dj") || v.includes("band") || v.includes("entertain")) {
-    return (
-      <svg {...common}>
-        <path d="M9 18a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" />
-        <path d="M15 16V6l6-2v10" />
-        <path d="M15 6l6-2" />
-        <path d="M15 16a2 2 0 1 0 0-4" />
-      </svg>
-    );
-  }
+  if (v.includes("transport") || v.includes("car") || v.includes("van") || v.includes("limo")) return <Car {...iconProps} />;
+  if (v.includes("deliver") || v.includes("logistic")) return <Truck {...iconProps} />;
 
-  return (
-    <svg {...common}>
-      <path d="M12 3 3 8l9 5 9-5-9-5Z" />
-      <path d="M3 8v8l9 5 9-5V8" />
-    </svg>
-  );
+  if (v.includes("planner") || v.includes("coord") || v.includes("organizer") || v.includes("coordination")) return <ClipboardList {...iconProps} />;
+  if (v.includes("package") || v.includes("bundle") || v.includes("promo")) return <Ticket {...iconProps} />;
+  if (v.includes("affiliation") || v.includes("partner") || v.includes("supplier")) return <Handshake {...iconProps} />;
+
+  if (v.includes("venue") || v.includes("reception") || v.includes("hall")) return <Building2 {...iconProps} />;
+  if (v.includes("church") || v.includes("chapel")) return <Church {...iconProps} />;
+  if (v.includes("hotel") || v.includes("resort")) return <Hotel {...iconProps} />;
+  if (v.includes("location") || v.includes("city") || v.includes("area") || v.includes("region")) return <MapPin {...iconProps} />;
+
+  if (v.includes("photo") || v.includes("gallery") || v.includes("album")) return <Image {...iconProps} />;
+  if (v.includes("id") || v.includes("registration")) return <IdCard {...iconProps} />;
+  if (v.includes("vip") || v.includes("premium")) return <BadgeCheck {...iconProps} />;
+  if (v.includes("glasses") || v.includes("eyewear")) return <Glasses {...iconProps} />;
+  if (v.includes("party") || v.includes("event")) return <PartyPopper {...iconProps} />;
+  if (v.includes("balloon")) return <PartyPopper {...iconProps} />;
+
+  return <Building2 {...iconProps} />;
 }
 
 export default function CategoryBrowser({ categories }: { categories: Category[] }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [expanded, setExpanded] = useState(false);
   const scrollerRef = useRef<HTMLDivElement | null>(null);
+  const activeCategory = (searchParams?.get("category") ?? "").trim().toLowerCase();
 
   const items = useMemo(() => {
     const safe = categories ?? [];
@@ -158,19 +144,38 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
         ) : expanded ? (
           <div className="grid gap-3 sm:gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
             {items.map((c) => (
+              (() => {
+                const isActive = activeCategory === (c.slug ?? "").trim().toLowerCase();
+                return (
               <a
                 key={c.id}
-                href="#discover"
-                className="group rounded-[3px] border border-black/10 bg-white shadow-sm hover:shadow-md hover:border-black/15 transition-all px-4 py-4 text-center"
+                href={`/vendors?category=${encodeURIComponent(c.slug)}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  router.push(`/vendors?category=${encodeURIComponent(c.slug)}`, { scroll: false });
+                }}
+                className={
+                  isActive
+                    ? "group rounded-[3px] border border-black/20 bg-[#fffaf2] shadow-sm hover:shadow-md transition-all px-4 py-4 text-center"
+                    : "group rounded-[3px] border border-black/10 bg-white shadow-sm hover:shadow-md hover:border-black/15 transition-all px-4 py-4 text-center"
+                }
                 aria-label={`Browse ${c.name}`}
               >
-                <div className="mx-auto inline-flex h-10 w-10 items-center justify-center rounded-[999px] bg-white border border-black/10 shadow-sm">
-                  {getCategoryIcon(c.name, c.slug)}
+                <div className="mx-auto inline-flex h-10 w-10 items-center justify-center">
+                  {getCategoryIcon(c.name, c.slug, isActive)}
                 </div>
-                <div className="mt-3 text-[13px] font-semibold text-[#6e4f33] group-hover:text-[#2c2c2c]">
+                <div
+                  className={
+                    isActive
+                      ? "mt-3 text-[13px] font-semibold text-[#2c2c2c]"
+                      : "mt-3 text-[13px] font-semibold text-[#6e4f33] group-hover:text-[#2c2c2c]"
+                  }
+                >
                   {c.name}
                 </div>
               </a>
+                );
+              })()
             ))}
           </div>
         ) : (
@@ -203,20 +208,39 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
               className="flex gap-3 overflow-x-auto scroll-smooth pb-2 px-12 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             >
               {items.map((c) => (
+                (() => {
+                  const isActive = activeCategory === (c.slug ?? "").trim().toLowerCase();
+                  return (
                 <a
                   key={c.id}
-                  href="#discover"
-                  className="group shrink-0 rounded-[3px] border border-black/10 bg-white shadow-sm hover:shadow-md hover:border-black/15 transition-all px-4 py-4 text-center w-45"
+                  href={`/vendors?category=${encodeURIComponent(c.slug)}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    router.push(`/vendors?category=${encodeURIComponent(c.slug)}`, { scroll: false });
+                  }}
+                  className={
+                    isActive
+                      ? "group shrink-0 rounded-[3px] border border-black/20 bg-[#fffaf2] shadow-sm hover:shadow-md transition-all px-4 py-4 text-center w-45"
+                      : "group shrink-0 rounded-[3px] border border-black/10 bg-white shadow-sm hover:shadow-md hover:border-black/15 transition-all px-4 py-4 text-center w-45"
+                  }
                   aria-label={`Browse ${c.name}`}
                   title={c.name}
                 >
-                  <div className="mx-auto inline-flex h-10 w-10 items-center justify-center rounded-[999px] bg-white border border-black/10 shadow-sm">
-                    {getCategoryIcon(c.name, c.slug)}
+                  <div className="mx-auto inline-flex h-10 w-10 items-center justify-center">
+                    {getCategoryIcon(c.name, c.slug, isActive)}
                   </div>
-                  <div className="mt-3 text-[13px] font-semibold text-[#6e4f33] group-hover:text-[#2c2c2c] line-clamp-2">
+                  <div
+                    className={
+                      isActive
+                        ? "mt-3 text-[13px] font-semibold text-[#2c2c2c] line-clamp-2"
+                        : "mt-3 text-[13px] font-semibold text-[#6e4f33] group-hover:text-[#2c2c2c] line-clamp-2"
+                    }
+                  >
                     {c.name}
                   </div>
                 </a>
+                  );
+                })()
               ))}
             </div>
 

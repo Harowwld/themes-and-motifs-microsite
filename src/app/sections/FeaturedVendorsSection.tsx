@@ -1,3 +1,7 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+
 type FeaturedVendor = {
   id: number;
   business_name: string;
@@ -9,6 +13,8 @@ type FeaturedVendor = {
 };
 
 export default function FeaturedVendorsSection({ vendors }: { vendors: FeaturedVendor[] }) {
+  const router = useRouter();
+
   return (
     <section id="featured" className="mt-12 sm:mt-16">
       <div className="flex items-end justify-between gap-6">
@@ -20,7 +26,14 @@ export default function FeaturedVendorsSection({ vendors }: { vendors: FeaturedV
             A curated snapshot of suppliers—designed to help couples decide faster.
           </p>
         </div>
-        <a className="text-[13px] font-semibold text-[#6e4f33] hover:underline" href="#discover">
+        <a
+          className="text-[13px] font-semibold text-[#6e4f33] hover:underline"
+          href="/vendors"
+          onClick={(e) => {
+            e.preventDefault();
+            router.push("/vendors", { scroll: false });
+          }}
+        >
           View all
         </a>
       </div>
