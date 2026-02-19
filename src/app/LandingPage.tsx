@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { createSupabaseServerClient } from "../lib/supabaseServer";
 import CategoryBrowser from "./CategoryBrowser";
 import SiteHeader from "./sections/SiteHeader";
@@ -174,7 +175,9 @@ export default async function LandingPage({
 
         <main className="py-10 sm:py-14">
           <HeroSection categories={categories} locations={locations} />
-          <CategoryBrowser categories={categories} />
+          <Suspense fallback={null}>
+            <CategoryBrowser categories={categories} />
+          </Suspense>
           <FeaturedVendorsSection vendors={vendors} />
           <PromosSection promos={promos} />
           <VendorsSection vendors={vendorPageItems} total={vendorTotal} page={page} pageSize={pageSize} sort={sort} />
