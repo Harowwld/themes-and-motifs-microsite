@@ -18,6 +18,13 @@ type VendorAffiliationRow = {
   vendor_id: number;
 };
 
+type VendorImageRow = {
+  vendor_id: number;
+  image_url: string;
+  is_cover: boolean | null;
+  display_order: number | null;
+};
+
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
 
@@ -129,8 +136,33 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
+  const vendorRows = (vendors ?? []) as Array<{ id: number }>;
+  const ids = vendorRows.map((v) => v.id);
+
+  const coverByVendorId = new Map<number, string>();
+  if (ids.length > 0) {
+    const { data: imageRows } = await supabase
+      .from("vendor_images")
+      .select("vendor_id,image_url,is_cover,display_order")
+      .in("vendor_id", ids)
+      .order("is_cover", { ascending: false })
+      .order("display_order", { ascending: true })
+      .limit(Math.min(500, ids.length * 3));
+
+    for (const row of ((imageRows ?? []) as VendorImageRow[])) {
+      if (!coverByVendorId.has(row.vendor_id)) {
+        coverByVendorId.set(row.vendor_id, row.image_url);
+      }
+    }
+  }
+
+  const withCovers = (vendors ?? []).map((v: any) => ({
+    ...v,
+    cover_image_url: coverByVendorId.get(v.id) ?? null,
+  }));
+
   return NextResponse.json({
-    vendors: vendors ?? [],
+    vendors: withCovers,
     total: count ?? 0,
     page,
     pageSize,

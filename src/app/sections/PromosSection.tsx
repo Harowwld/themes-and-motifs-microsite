@@ -35,7 +35,7 @@ export default function PromosSection({ promos }: { promos: FeaturedPromo[] }) {
           </div>
         ) : (
           promos.map((promo, i) => {
-            const tone = i % 3 === 0 ? "#7a8b6e" : i % 3 === 1 ? "#a67c52" : "#c17a4e";
+            const tone = i % 3 === 0 ? "#a67c52" : i % 3 === 1 ? "#c17a4e" : "#8e6a46";
             const vendorName = promo.vendors?.[0]?.business_name;
 
             return (

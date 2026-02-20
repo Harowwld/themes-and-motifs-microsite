@@ -15,6 +15,14 @@ type VendorListItem = {
   review_count: number | null;
   location_text: string | null;
   city: string | null;
+  cover_image_url?: string | null;
+};
+
+type VendorImageRow = {
+  vendor_id: number;
+  image_url: string;
+  is_cover: boolean | null;
+  display_order: number | null;
 };
 
 type CategoryRow = {
@@ -174,6 +182,29 @@ export default async function VendorsPage({
   const vendorPageItems = (vendors ?? []) as VendorListItem[];
   const vendorTotal = count ?? 0;
 
+  const vendorIdsForImages = vendorPageItems.map((v) => v.id);
+  const coverByVendorId = new Map<number, string>();
+  if (vendorIdsForImages.length > 0) {
+    const { data: imageRows } = await supabase
+      .from("vendor_images")
+      .select("vendor_id,image_url,is_cover,display_order")
+      .in("vendor_id", vendorIdsForImages)
+      .order("is_cover", { ascending: false })
+      .order("display_order", { ascending: true })
+      .limit(Math.min(500, vendorIdsForImages.length * 3));
+
+    for (const row of ((imageRows ?? []) as VendorImageRow[])) {
+      if (!coverByVendorId.has(row.vendor_id)) {
+        coverByVendorId.set(row.vendor_id, row.image_url);
+      }
+    }
+  }
+
+  const vendorPageItemsWithCovers = vendorPageItems.map((v) => ({
+    ...v,
+    cover_image_url: coverByVendorId.get(v.id) ?? null,
+  }));
+
   return (
     <div
       className="min-h-screen"
@@ -199,7 +230,7 @@ export default async function VendorsPage({
           <CategoryBrowser categories={categoriesList} />
 
           <VirtualizedVendorsList
-            initialVendors={vendorPageItems}
+            initialVendors={vendorPageItemsWithCovers}
             total={vendorTotal}
             pageSize={pageSize}
             initialPage={page}

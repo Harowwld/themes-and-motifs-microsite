@@ -26,6 +26,19 @@ type PromoRow = {
   vendors?: { business_name: string; slug: string } | { business_name: string; slug: string }[] | null;
 };
 
+type RegistrationRow = {
+  id: number;
+  business_name: string;
+  contact_email: string;
+  contact_phone: string | null;
+  category_id: number | null;
+  location: string | null;
+  website_url: string | null;
+  plan_id: number | null;
+  status: string | null;
+  created_at?: string;
+};
+
 function normalizeVendorRef(v: PromoRow["vendors"]) {
   if (!v) return null;
   if (Array.isArray(v)) return v[0] ?? null;
@@ -53,6 +66,7 @@ export default function AdminPage() {
   const [token, setToken] = useState("");
   const [vendors, setVendors] = useState<VendorRow[]>([]);
   const [promos, setPromos] = useState<PromoRow[]>([]);
+  const [registrations, setRegistrations] = useState<RegistrationRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
@@ -77,20 +91,56 @@ export default function AdminPage() {
     });
   }, [promos, query]);
 
+  const filteredRegistrations = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return registrations;
+    return registrations.filter((r) => `${r.business_name} ${r.contact_email} ${r.status ?? ""}`.toLowerCase().includes(q));
+  }, [registrations, query]);
+
   async function refresh() {
     setError(null);
     setLoading(true);
     try {
-      const [v, p] = await Promise.all([
+      const [v, p, r] = await Promise.all([
         apiFetch<{ vendors: VendorRow[] }>("/api/admin/vendors?limit=300", token),
         apiFetch<{ promos: PromoRow[] }>("/api/admin/promos?limit=300", token),
+        apiFetch<{ registrations: RegistrationRow[] }>("/api/admin/registrations?limit=300", token),
       ]);
       setVendors(v.vendors ?? []);
       setPromos(p.promos ?? []);
+      setRegistrations(r.registrations ?? []);
     } catch (e: any) {
       setError(e?.message ?? "Failed to load");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function patchRegistration(id: number, action: "approve" | "reject") {
+    setError(null);
+    const prev = registrations;
+    setRegistrations((rows) =>
+      rows.map((r) => (r.id === id ? ({ ...r, status: action === "approve" ? "approved" : "rejected" } as RegistrationRow) : r))
+    );
+
+    try {
+      const res = await apiFetch<{ registration: RegistrationRow; vendor?: { id: number; slug: string } }>(
+        "/api/admin/registrations",
+        token,
+        {
+          method: "PATCH",
+          body: JSON.stringify({ id, action }),
+        }
+      );
+
+      setRegistrations((rows) => rows.map((r) => (r.id === id ? res.registration : r)));
+
+      if (action === "approve") {
+        await refresh();
+      }
+    } catch (e: any) {
+      setRegistrations(prev);
+      setError(e?.message ?? "Update failed");
     }
   }
 
@@ -289,6 +339,64 @@ export default function AdminPage() {
                       <tr>
                         <td className="px-3 py-8 text-black/50" colSpan={6}>
                           No promos.
+                        </td>
+                      </tr>
+                    ) : null}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div className="grid gap-3 pt-2">
+              <div className="text-[13px] font-semibold text-[#2c2c2c]">Registrations</div>
+              <div className="overflow-auto rounded-[3px] border border-black/10">
+                <table className="min-w-[1100px] w-full text-left text-[13px]">
+                  <thead className="bg-[#fcfbf9] border-b border-black/10">
+                    <tr>
+                      <th className="px-3 py-2 font-semibold text-black/60">Business</th>
+                      <th className="px-3 py-2 font-semibold text-black/60">Email</th>
+                      <th className="px-3 py-2 font-semibold text-black/60">Phone</th>
+                      <th className="px-3 py-2 font-semibold text-black/60">Status</th>
+                      <th className="px-3 py-2 font-semibold text-black/60">Created</th>
+                      <th className="px-3 py-2 font-semibold text-black/60">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredRegistrations.map((r) => (
+                      <tr key={r.id} className="border-b border-black/5">
+                        <td className="px-3 py-2 font-semibold text-[#2c2c2c]">{r.business_name}</td>
+                        <td className="px-3 py-2 text-black/60">{r.contact_email}</td>
+                        <td className="px-3 py-2 text-black/60">{r.contact_phone ?? ""}</td>
+                        <td className="px-3 py-2 text-black/60">{r.status ?? ""}</td>
+                        <td className="px-3 py-2 text-black/60">
+                          {r.created_at ? new Date(r.created_at).toLocaleDateString() : ""}
+                        </td>
+                        <td className="px-3 py-2">
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              disabled={loading || token.trim().length === 0 || r.status === "approved"}
+                              onClick={() => patchRegistration(r.id, "approve")}
+                              className="h-8 px-3 rounded-[3px] bg-[#a67c52] text-white text-[12px] font-semibold hover:bg-[#8e6a46] disabled:opacity-60 transition-colors"
+                            >
+                              Approve
+                            </button>
+                            <button
+                              type="button"
+                              disabled={loading || token.trim().length === 0 || r.status === "rejected"}
+                              onClick={() => patchRegistration(r.id, "reject")}
+                              className="h-8 px-3 rounded-[3px] border border-black/10 bg-white text-[12px] font-semibold text-[#6e4f33] hover:bg-black/[0.02] disabled:opacity-60 transition-colors"
+                            >
+                              Reject
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                    {filteredRegistrations.length === 0 ? (
+                      <tr>
+                        <td className="px-3 py-8 text-black/50" colSpan={6}>
+                          No registrations.
                         </td>
                       </tr>
                     ) : null}

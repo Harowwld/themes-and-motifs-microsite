@@ -5,6 +5,37 @@
   --foreground: #171717;
 }
 
+@layer base {
+  input,
+  select,
+  textarea {
+    color: #2c2c2c;
+    background-color: #ffffff;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: rgba(0, 0, 0, 0.45);
+    opacity: 1;
+  }
+
+  select:invalid {
+    color: rgba(0, 0, 0, 0.55);
+  }
+
+  select option {
+    color: #2c2c2c;
+  }
+
+  input:focus,
+  select:focus,
+  textarea:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(166, 124, 82, 0.18);
+    border-color: rgba(166, 124, 82, 0.6);
+  }
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;

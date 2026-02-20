@@ -54,7 +54,7 @@ export default function VendorPlansSection({ planFeatures }: { planFeatures: Pla
                   key={f.label}
                   className={`flex gap-2 ${f.premium ? "text-black/60" : "text-black/30"}`}
                 >
-                  <span className={`${f.premium ? "text-[#7a8b6e]" : "text-black/25"}`}>{f.premium ? "✓" : "×"}</span>
+                  <span className={`${f.premium ? "text-[#a67c52]" : "text-black/25"}`}>{f.premium ? "✓" : "×"}</span>
                   {f.label}
                 </div>
               ))}
@@ -64,16 +64,10 @@ export default function VendorPlansSection({ planFeatures }: { planFeatures: Pla
 
         <div className="mt-4 flex flex-col sm:flex-row gap-3">
           <a
-            className="h-10 inline-flex items-center justify-center px-4 rounded-[3px] bg-[#7a8b6e] text-white text-[13px] font-semibold hover:bg-[#66785c] transition-colors"
-            href="#"
+            className="h-10 inline-flex items-center justify-center px-4 rounded-[3px] bg-[#a67c52] text-white text-[13px] font-semibold hover:bg-[#8e6a46] transition-colors"
+            href="/register"
           >
-            Apply to list your business
-          </a>
-          <a
-            className="h-10 inline-flex items-center justify-center px-4 rounded-[3px] border border-black/10 bg-white text-[13px] font-semibold text-black/70 hover:bg-black/[0.02] transition-colors"
-            href="#"
-          >
-            See plans
+            Register
           </a>
         </div>
       </div>
