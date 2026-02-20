@@ -17,6 +17,7 @@ type FeaturedVendor = {
   review_count: number | null;
   location_text: string | null;
   city: string | null;
+  cover_image_url?: string | null;
 };
 
 type FeaturedPromo = {
@@ -46,6 +47,14 @@ type VendorListItem = {
   review_count: number | null;
   location_text: string | null;
   city: string | null;
+  cover_image_url?: string | null;
+};
+
+type VendorImageRow = {
+  vendor_id: number;
+  image_url: string;
+  is_cover: boolean | null;
+  display_order: number | null;
 };
 
 type SortKey = "alpha" | "rating";
@@ -63,11 +72,11 @@ function isPromoCurrentlyValid(promo: FeaturedPromo) {
 export default async function LandingPage({
   searchParams,
 }: {
-  searchParams?: Record<string, string | string[] | undefined>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const supabase = createSupabaseServerClient();
 
-  const resolvedSearchParams = searchParams ?? {};
+  const resolvedSearchParams = (await searchParams) ?? {};
 
   const pageSize = 9;
   const rawPage = (resolvedSearchParams.vendorsPage as string | undefined) ?? "1";
@@ -154,6 +163,28 @@ export default async function LandingPage({
   const promos = ((featuredPromos ?? []) as FeaturedPromo[]).filter(isPromoCurrentlyValid).slice(0, 4);
   const categories = (categoriesData ?? []) as Category[];
 
+  const vendorIds = Array.from(new Set([...vendors.map((v) => v.id), ...vendorPageItems.map((v) => v.id)]));
+
+  const coverByVendorId = new Map<number, string>();
+  if (vendorIds.length > 0) {
+    const { data: imageRows } = await supabase
+      .from("vendor_images")
+      .select("vendor_id,image_url,is_cover,display_order")
+      .in("vendor_id", vendorIds)
+      .order("is_cover", { ascending: false })
+      .order("display_order", { ascending: true })
+      .limit(Math.min(500, vendorIds.length * 3));
+
+    for (const row of ((imageRows ?? []) as VendorImageRow[])) {
+      if (!coverByVendorId.has(row.vendor_id)) {
+        coverByVendorId.set(row.vendor_id, row.image_url);
+      }
+    }
+  }
+
+  const featuredWithCovers = vendors.map((v) => ({ ...v, cover_image_url: coverByVendorId.get(v.id) ?? null }));
+  const pageWithCovers = vendorPageItems.map((v) => ({ ...v, cover_image_url: coverByVendorId.get(v.id) ?? null }));
+
   const locations = Array.from(
     new Set(
       ((locationRows ?? []) as { city: string | null; location_text: string | null }[])
@@ -178,9 +209,9 @@ export default async function LandingPage({
           <Suspense fallback={null}>
             <CategoryBrowser categories={categories} />
           </Suspense>
-          <FeaturedVendorsSection vendors={vendors} />
+          <FeaturedVendorsSection vendors={featuredWithCovers} />
           <PromosSection promos={promos} />
-          <VendorsSection vendors={vendorPageItems} total={vendorTotal} page={page} pageSize={pageSize} sort={sort} />
+          <VendorsSection vendors={pageWithCovers} total={vendorTotal} page={page} pageSize={pageSize} sort={sort} />
           <VendorPlansSection planFeatures={planFeatures} />
         </main>
 

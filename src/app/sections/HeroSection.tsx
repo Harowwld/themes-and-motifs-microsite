@@ -214,7 +214,7 @@ export default function HeroSection({
 
       <div className="relative z-10 pt-2">
         <div className="inline-flex items-center gap-2 rounded-[999px] border border-black/10 bg-white px-3 py-1 text-[12px] font-semibold text-black/60 shadow-sm">
-          <span className="h-1.5 w-1.5 rounded-full bg-[#7a8b6e]" aria-hidden />
+          <span className="h-1.5 w-1.5 rounded-full bg-[#a67c52]" aria-hidden />
           Verified vendors • real reviews • promos
         </div>
 

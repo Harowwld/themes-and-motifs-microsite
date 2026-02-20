@@ -13,6 +13,7 @@ type VendorListItem = {
   review_count: number | null;
   location_text: string | null;
   city: string | null;
+  cover_image_url?: string | null;
 };
 
 type Props = {
@@ -41,17 +42,23 @@ const ROW_HEIGHT_PX = 200;
 const ROW_SLOT_PX = ROW_HEIGHT_PX + ROW_GAP_PX;
 
 function VendorCard({ vendor }: { vendor: VendorListItem }) {
-  const tone = vendor.id % 3 === 0 ? "#7a8b6e" : vendor.id % 3 === 1 ? "#a67c52" : "#c17a4e";
+  const tone = vendor.id % 3 === 0 ? "#a67c52" : vendor.id % 3 === 1 ? "#c17a4e" : "#8e6a46";
   const rating = vendor.average_rating ?? 0;
   const reviews = vendor.review_count ?? 0;
   const location = vendor.city ?? vendor.location_text;
 
   return (
-    <div className="h-[200px] rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden flex flex-col">
+    <a
+      href={`/vendors/${encodeURIComponent(vendor.slug)}`}
+      className="h-[200px] rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow"
+      aria-label={`View ${vendor.business_name}`}
+    >
       <div
         className="h-24"
         style={{
-          background: `linear-gradient(135deg, ${tone}22, #ffffff 65%)`,
+          background: vendor.cover_image_url
+            ? `linear-gradient(135deg, rgba(166,124,82,0.22), rgba(255,255,255,0.88)), url(${vendor.cover_image_url}) center/cover no-repeat`
+            : `linear-gradient(135deg, ${tone}22, #ffffff 65%)`,
         }}
       />
       <div className="p-5 flex-1 flex flex-col min-h-0">
@@ -59,16 +66,16 @@ function VendorCard({ vendor }: { vendor: VendorListItem }) {
         <div className="mt-1 text-[15px] font-semibold text-[#2c2c2c]">{vendor.business_name}</div>
         <div className="mt-auto flex items-center justify-between pt-3">
           <div className="inline-flex items-center gap-1 text-[12px] font-semibold text-black/55">
-            <span className="text-[#7a8b6e]">{rating.toFixed(1)}</span>
+            <span className="text-[#a67c52]">{rating.toFixed(1)}</span>
             <span className="text-black/30">•</span>
             <span>{reviews} reviews</span>
           </div>
-          <a className="text-[13px] font-semibold text-[#6e4f33] hover:underline" href="#discover">
+          <span className="text-[13px] font-semibold text-[#6e4f33] hover:underline">
             Explore
-          </a>
+          </span>
         </div>
       </div>
-    </div>
+    </a>
   );
 }
 
