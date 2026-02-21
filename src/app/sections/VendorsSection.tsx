@@ -6,6 +6,7 @@ type VendorListItem = {
   id: number;
   business_name: string;
   slug: string;
+  logo_url?: string | null;
   average_rating: number | null;
   review_count: number | null;
   location_text: string | null;
@@ -127,7 +128,18 @@ export default function VendorsSection({
                 />
                 <div className="p-5">
                   <div className="text-[12px] font-semibold text-black/45">{location ? location : "Philippines"}</div>
-                  <div className="mt-1 text-[15px] font-semibold text-[#2c2c2c]">{vendor.business_name}</div>
+                  <div className="mt-1 flex items-center gap-2">
+                    {vendor.logo_url ? (
+                      <img
+                        src={vendor.logo_url}
+                        alt={`${vendor.business_name} logo`}
+                        className="h-8 w-8 rounded-[3px] border border-black/10 bg-white object-contain"
+                        loading="lazy"
+                        referrerPolicy="no-referrer"
+                      />
+                    ) : null}
+                    <div className="text-[15px] font-semibold text-[#2c2c2c]">{vendor.business_name}</div>
+                  </div>
                   <div className="mt-3 flex items-center justify-between">
                     <div className="inline-flex items-center gap-1 text-[12px] font-semibold text-black/55">
                       <span className="text-[#a67c52]">{rating.toFixed(1)}</span>

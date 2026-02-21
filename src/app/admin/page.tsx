@@ -11,7 +11,11 @@ type VendorRow = {
   average_rating: number | null;
   review_count: number | null;
   updated_at?: string;
+  plan_id?: number | null;
+  plan?: { id: number; name: string } | { id: number; name: string }[] | null;
 };
+
+type PlanRow = { id: number; name: string };
 
 type PromoRow = {
   id: number;
@@ -65,11 +69,14 @@ async function apiFetch<T>(url: string, token: string, init?: RequestInit): Prom
 export default function AdminPage() {
   const [token, setToken] = useState("");
   const [vendors, setVendors] = useState<VendorRow[]>([]);
+  const [plans, setPlans] = useState<PlanRow[]>([]);
   const [promos, setPromos] = useState<PromoRow[]>([]);
   const [registrations, setRegistrations] = useState<RegistrationRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
+  const [activeTab, setActiveTab] = useState<"vendors" | "promos" | "registrations">("vendors");
+  const [registrationStatusTab, setRegistrationStatusTab] = useState<"all" | "submitted" | "approved" | "rejected">("all");
 
   useEffect(() => {
     const saved = window.localStorage.getItem("tm_admin_token");
@@ -97,16 +104,22 @@ export default function AdminPage() {
     return registrations.filter((r) => `${r.business_name} ${r.contact_email} ${r.status ?? ""}`.toLowerCase().includes(q));
   }, [registrations, query]);
 
+  const visibleRegistrations = useMemo(() => {
+    if (registrationStatusTab === "all") return filteredRegistrations;
+    return filteredRegistrations.filter((r) => (r.status ?? "") === registrationStatusTab);
+  }, [filteredRegistrations, registrationStatusTab]);
+
   async function refresh() {
     setError(null);
     setLoading(true);
     try {
       const [v, p, r] = await Promise.all([
-        apiFetch<{ vendors: VendorRow[] }>("/api/admin/vendors?limit=300", token),
+        apiFetch<{ vendors: VendorRow[]; plans: PlanRow[] }>("/api/admin/vendors?limit=300", token),
         apiFetch<{ promos: PromoRow[] }>("/api/admin/promos?limit=300", token),
         apiFetch<{ registrations: RegistrationRow[] }>("/api/admin/registrations?limit=300", token),
       ]);
       setVendors(v.vendors ?? []);
+      setPlans(v.plans ?? []);
       setPromos(p.promos ?? []);
       setRegistrations(r.registrations ?? []);
     } catch (e: any) {
@@ -144,7 +157,10 @@ export default function AdminPage() {
     }
   }
 
-  async function patchVendor(id: number, patch: Partial<Pick<VendorRow, "is_active" | "is_featured">>) {
+  async function patchVendor(
+    id: number,
+    patch: Partial<Pick<VendorRow, "is_active" | "is_featured" | "plan_id">>
+  ) {
     setError(null);
     const prev = vendors;
     setVendors((rows) => rows.map((r) => (r.id === id ? ({ ...r, ...patch } as VendorRow) : r)));
@@ -158,6 +174,12 @@ export default function AdminPage() {
       setVendors(prev);
       setError(e?.message ?? "Update failed");
     }
+  }
+
+  function normalizePlanRef(v: VendorRow["plan"]) {
+    if (!v) return null;
+    if (Array.isArray(v)) return v[0] ?? null;
+    return v;
   }
 
   async function patchPromo(
@@ -220,10 +242,46 @@ export default function AdminPage() {
                 <input
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Filter vendors/promos"
+                  placeholder="Filter vendors/promos/registrations"
                   className="h-10 rounded-[3px] border border-black/10 bg-white px-3 text-[14px] text-[#2c2c2c] placeholder:text-black/35 outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15"
                 />
               </label>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => setActiveTab("vendors")}
+                className={`h-9 px-3.5 rounded-[3px] text-[13px] font-semibold border transition-colors ${
+                  activeTab === "vendors"
+                    ? "bg-[#a67c52] text-white border-[#a67c52]"
+                    : "bg-white text-[#6e4f33] border-black/10 hover:bg-black/[0.02]"
+                }`}
+              >
+                Vendors
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("promos")}
+                className={`h-9 px-3.5 rounded-[3px] text-[13px] font-semibold border transition-colors ${
+                  activeTab === "promos"
+                    ? "bg-[#a67c52] text-white border-[#a67c52]"
+                    : "bg-white text-[#6e4f33] border-black/10 hover:bg-black/[0.02]"
+                }`}
+              >
+                Promos
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("registrations")}
+                className={`h-9 px-3.5 rounded-[3px] text-[13px] font-semibold border transition-colors ${
+                  activeTab === "registrations"
+                    ? "bg-[#a67c52] text-white border-[#a67c52]"
+                    : "bg-white text-[#6e4f33] border-black/10 hover:bg-black/[0.02]"
+                }`}
+              >
+                Registrations
+              </button>
             </div>
 
             {error ? (
@@ -232,6 +290,7 @@ export default function AdminPage() {
               </div>
             ) : null}
 
+            {activeTab === "vendors" ? (
             <div className="grid gap-3">
               <div className="text-[13px] font-semibold text-[#2c2c2c]">Featured vendors</div>
               <div className="overflow-auto rounded-[3px] border border-black/10">
@@ -241,6 +300,7 @@ export default function AdminPage() {
                       <th className="px-3 py-2 font-semibold text-black/60">Vendor</th>
                       <th className="px-3 py-2 font-semibold text-black/60">Slug</th>
                       <th className="px-3 py-2 font-semibold text-black/60">Rating</th>
+                      <th className="px-3 py-2 font-semibold text-black/60">Plan</th>
                       <th className="px-3 py-2 font-semibold text-black/60">Active</th>
                       <th className="px-3 py-2 font-semibold text-black/60">Featured</th>
                     </tr>
@@ -252,6 +312,27 @@ export default function AdminPage() {
                         <td className="px-3 py-2 text-black/60">{v.slug}</td>
                         <td className="px-3 py-2 text-black/60">
                           {v.average_rating ?? 0} ({v.review_count ?? 0})
+                        </td>
+                        <td className="px-3 py-2">
+                          <select
+                            value={String(v.plan_id ?? "")}
+                            onChange={(e) => {
+                              const raw = e.target.value;
+                              const next = raw === "" ? null : Number(raw);
+                              patchVendor(v.id, { plan_id: Number.isFinite(Number(next)) ? next : null });
+                            }}
+                            className="h-9 rounded-[3px] border border-black/10 bg-white px-2 text-[13px] text-[#2c2c2c]"
+                          >
+                            <option value="">Unassigned</option>
+                            {plans.map((p) => (
+                              <option key={p.id} value={String(p.id)}>
+                                {p.name}
+                              </option>
+                            ))}
+                          </select>
+                          <div className="mt-1 text-[11px] text-black/45">
+                            Current: {normalizePlanRef(v.plan)?.name ?? ""}
+                          </div>
                         </td>
                         <td className="px-3 py-2">
                           <input
@@ -271,7 +352,7 @@ export default function AdminPage() {
                     ))}
                     {filteredVendors.length === 0 ? (
                       <tr>
-                        <td className="px-3 py-8 text-black/50" colSpan={5}>
+                        <td className="px-3 py-8 text-black/50" colSpan={6}>
                           No vendors.
                         </td>
                       </tr>
@@ -280,8 +361,10 @@ export default function AdminPage() {
                 </table>
               </div>
             </div>
+            ) : null}
 
-            <div className="grid gap-3 pt-2">
+            {activeTab === "promos" ? (
+            <div className="grid gap-3">
               <div className="text-[13px] font-semibold text-[#2c2c2c]">Featured promos</div>
               <div className="overflow-auto rounded-[3px] border border-black/10">
                 <table className="min-w-[1100px] w-full text-left text-[13px]">
@@ -346,9 +429,57 @@ export default function AdminPage() {
                 </table>
               </div>
             </div>
+            ) : null}
 
-            <div className="grid gap-3 pt-2">
+            {activeTab === "registrations" ? (
+            <div className="grid gap-3">
               <div className="text-[13px] font-semibold text-[#2c2c2c]">Registrations</div>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => setRegistrationStatusTab("all")}
+                  className={`h-9 px-3.5 rounded-[3px] text-[13px] font-semibold border transition-colors ${
+                    registrationStatusTab === "all"
+                      ? "bg-[#a67c52] text-white border-[#a67c52]"
+                      : "bg-white text-[#6e4f33] border-black/10 hover:bg-black/[0.02]"
+                  }`}
+                >
+                  All
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setRegistrationStatusTab("submitted")}
+                  className={`h-9 px-3.5 rounded-[3px] text-[13px] font-semibold border transition-colors ${
+                    registrationStatusTab === "submitted"
+                      ? "bg-[#a67c52] text-white border-[#a67c52]"
+                      : "bg-white text-[#6e4f33] border-black/10 hover:bg-black/[0.02]"
+                  }`}
+                >
+                  Submitted
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setRegistrationStatusTab("approved")}
+                  className={`h-9 px-3.5 rounded-[3px] text-[13px] font-semibold border transition-colors ${
+                    registrationStatusTab === "approved"
+                      ? "bg-[#a67c52] text-white border-[#a67c52]"
+                      : "bg-white text-[#6e4f33] border-black/10 hover:bg-black/[0.02]"
+                  }`}
+                >
+                  Approved
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setRegistrationStatusTab("rejected")}
+                  className={`h-9 px-3.5 rounded-[3px] text-[13px] font-semibold border transition-colors ${
+                    registrationStatusTab === "rejected"
+                      ? "bg-[#a67c52] text-white border-[#a67c52]"
+                      : "bg-white text-[#6e4f33] border-black/10 hover:bg-black/[0.02]"
+                  }`}
+                >
+                  Rejected
+                </button>
+              </div>
               <div className="overflow-auto rounded-[3px] border border-black/10">
                 <table className="min-w-[1100px] w-full text-left text-[13px]">
                   <thead className="bg-[#fcfbf9] border-b border-black/10">
@@ -362,7 +493,7 @@ export default function AdminPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredRegistrations.map((r) => (
+                    {visibleRegistrations.map((r) => (
                       <tr key={r.id} className="border-b border-black/5">
                         <td className="px-3 py-2 font-semibold text-[#2c2c2c]">{r.business_name}</td>
                         <td className="px-3 py-2 text-black/60">{r.contact_email}</td>
@@ -393,7 +524,7 @@ export default function AdminPage() {
                         </td>
                       </tr>
                     ))}
-                    {filteredRegistrations.length === 0 ? (
+                    {visibleRegistrations.length === 0 ? (
                       <tr>
                         <td className="px-3 py-8 text-black/50" colSpan={6}>
                           No registrations.
@@ -404,6 +535,7 @@ export default function AdminPage() {
                 </table>
               </div>
             </div>
+            ) : null}
           </div>
         </div>
       </div>

@@ -75,16 +75,16 @@ export default function SiteHeader() {
         <div className="flex items-center gap-2">
           <a
             className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-[3px] border border-black/10 bg-white text-[13px] font-semibold text-black/70 hover:bg-black/[0.02] transition-colors"
-            href="#"
+            href="/vendor/signin"
           >
             Sign in
           </a>
           <a
             className="h-9 inline-flex items-center justify-center px-3.5 rounded-[3px] bg-[#a67c52] text-white text-[13px] font-semibold hover:bg-[#8e6a46] transition-colors shadow-sm"
-            href="/#discover"
+            href="/vendors"
             onClick={(e) => {
               e.preventDefault();
-              goToHomeSection("discover");
+              router.push("/vendors", { scroll: false });
             }}
           >
             Start searching

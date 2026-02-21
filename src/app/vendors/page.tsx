@@ -11,6 +11,7 @@ type VendorListItem = {
   id: number;
   business_name: string;
   slug: string;
+  logo_url?: string | null;
   average_rating: number | null;
   review_count: number | null;
   location_text: string | null;
@@ -135,7 +136,7 @@ export default async function VendorsPage({
 
   let query = supabase
     .from("vendors")
-    .select("id,business_name,slug,average_rating,review_count,location_text,city", { count: "exact" })
+    .select("id,business_name,slug,logo_url,average_rating,review_count,location_text,city", { count: "exact" })
     .eq("is_active", true);
 
   if (vendorIds) {
@@ -151,7 +152,12 @@ export default async function VendorsPage({
   }
 
   if (location) {
-    query = query.or(`city.ilike.%${location}%,location_text.ilike.%${location}%`);
+    const locationLike = location
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)
+      .join("%");
+    query = query.or(`city.ilike.%${locationLike}%,location_text.ilike.%${locationLike}%,address.ilike.%${locationLike}%`);
   }
 
   if (region) {

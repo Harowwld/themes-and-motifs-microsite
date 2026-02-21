@@ -52,12 +52,7 @@ export async function POST(req: Request) {
     .filter(Boolean)
     .join(" | ");
 
-  const descriptionText = [
-    (body.description ?? "").trim(),
-    body.extra ? `\n\n---\nEXTRA_JSON:${JSON.stringify(body.extra)}` : "",
-  ]
-    .filter(Boolean)
-    .join("");
+  const descriptionText = (body.description ?? "").trim();
 
   const supabase = createSupabaseAdminClient();
 
@@ -70,6 +65,7 @@ export async function POST(req: Request) {
       category_id: Number.isFinite(categoryIdNum) ? categoryIdNum : null,
       location: locationStr || null,
       description: descriptionText || null,
+      extra: body.extra ?? null,
       website_url: (body.websiteUrl ?? "").trim() || null,
       plan_id: Number.isFinite(planIdNum) ? planIdNum : null,
       status: "submitted",

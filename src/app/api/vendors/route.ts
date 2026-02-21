@@ -88,7 +88,7 @@ export async function GET(req: Request) {
 
   let query = supabase
     .from("vendors")
-    .select("id,business_name,slug,average_rating,review_count,location_text,city", { count: "exact" })
+    .select("id,business_name,slug,logo_url,average_rating,review_count,location_text,city", { count: "exact" })
     .eq("is_active", true);
 
   if (vendorIds) {
@@ -104,7 +104,12 @@ export async function GET(req: Request) {
   }
 
   if (location) {
-    query = query.or(`city.ilike.%${location}%,location_text.ilike.%${location}%`);
+    const locationLike = location
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)
+      .join("%");
+    query = query.or(`city.ilike.%${locationLike}%,location_text.ilike.%${locationLike}%,address.ilike.%${locationLike}%`);
   }
 
   if (region) {

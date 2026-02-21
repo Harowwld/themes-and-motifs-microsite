@@ -115,7 +115,7 @@ export default async function LandingPage({
   ] = await Promise.all([
       supabase
         .from("vendors")
-        .select("id,business_name,slug,average_rating,review_count,location_text,city")
+        .select("id,business_name,slug,logo_url,average_rating,review_count,location_text,city")
         .eq("is_active", true)
         .eq("is_featured", true)
         .order("average_rating", { ascending: false })
@@ -140,7 +140,7 @@ export default async function LandingPage({
 
         let q = supabase
           .from("vendors")
-          .select("id,business_name,slug,average_rating,review_count,location_text,city", { count: "exact" })
+          .select("id,business_name,slug,logo_url,average_rating,review_count,location_text,city", { count: "exact" })
           .eq("is_active", true);
 
         if (sort === "alpha") {
