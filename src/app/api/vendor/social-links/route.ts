@@ -13,6 +13,12 @@ export async function PUT(req: Request) {
     const { supabase, user } = await assertVendor(req);
     const vendor = await getVendorForUser(supabase, user.id);
 
+    const planName = String((vendor as any)?.plan?.name ?? "").trim().toLowerCase();
+    const isPremium = planName.includes("premium");
+    if (!isPremium) {
+      return Response.json({ error: "Social links are available on Premium plans only." }, { status: 403 });
+    }
+
     const body = ((await req.json()) ?? {}) as PutBody;
     const socials = Array.isArray(body.socials) ? body.socials : [];
 

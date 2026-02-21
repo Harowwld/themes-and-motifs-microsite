@@ -11,6 +11,7 @@ type VendorRow = {
   id: number;
   business_name: string;
   slug: string;
+  logo_url: string | null;
   description: string | null;
   location_text: string | null;
   city: string | null;
@@ -20,6 +21,7 @@ type VendorRow = {
   contact_phone: string | null;
   average_rating: number | null;
   review_count: number | null;
+  plan?: { id: number; name: string } | { id: number; name: string }[] | null;
 };
 
 type VendorImageRow = {
@@ -57,7 +59,7 @@ export default async function VendorDetailPage({ params }: Props) {
   const { data: vendor } = await supabase
     .from("vendors")
     .select(
-      "id,business_name,slug,description,location_text,city,address,website_url,contact_email,contact_phone,average_rating,review_count"
+      "id,business_name,slug,logo_url,description,location_text,city,address,website_url,contact_email,contact_phone,average_rating,review_count,plan:plans(id,name)"
     )
     .eq("slug", slug)
     .eq("is_active", true)
@@ -115,6 +117,11 @@ export default async function VendorDetailPage({ params }: Props) {
   const location = vendor.city ?? vendor.location_text;
   const cover = images.find((i) => i.is_cover) ?? images[0];
 
+  const planName = String((Array.isArray(vendor.plan) ? vendor.plan?.[0]?.name : vendor.plan?.name) ?? "")
+    .trim()
+    .toLowerCase();
+  const isPremium = planName.includes("premium");
+
   return (
     <div
       className="min-h-screen"
@@ -138,20 +145,31 @@ export default async function VendorDetailPage({ params }: Props) {
 
             <div className="p-6">
               <div className="text-[12px] font-semibold text-black/45">{location ? location : "Philippines"}</div>
-              <h1 className="mt-1 text-[22px] sm:text-[26px] font-semibold tracking-[-0.02em] text-[#2c2c2c]">
-                {vendor.business_name}
-              </h1>
+              <div className="mt-1 flex items-center gap-3">
+                {isPremium && vendor.logo_url ? (
+                  <img
+                    src={vendor.logo_url}
+                    alt={`${vendor.business_name} logo`}
+                    className="h-12 w-12 rounded-[3px] border border-black/10 bg-white object-contain"
+                    loading="lazy"
+                    referrerPolicy="no-referrer"
+                  />
+                ) : null}
+                <h1 className="text-[22px] sm:text-[26px] font-semibold tracking-[-0.02em] text-[#2c2c2c]">
+                  {vendor.business_name}
+                </h1>
+              </div>
 
               <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-[13px] font-semibold text-black/55">
                 <span>
                   <span className="text-[#a67c52]">{(vendor.average_rating ?? 0).toFixed(1)}</span> · {vendor.review_count ?? 0} reviews
                 </span>
-                {vendor.website_url ? (
+                {isPremium && vendor.website_url ? (
                   <a className="text-[#6e4f33] hover:underline" href={withProtocol(vendor.website_url)} target="_blank" rel="noreferrer">
                     Website
                   </a>
                 ) : null}
-                {vendor.contact_phone ? (
+                {isPremium && vendor.contact_phone ? (
                   <a className="text-[#6e4f33] hover:underline" href={`tel:${vendor.contact_phone}`}>
                     Call
                   </a>
@@ -189,7 +207,7 @@ export default async function VendorDetailPage({ params }: Props) {
                 </div>
               ) : null}
 
-              {socials.length > 0 ? (
+              {isPremium && socials.length > 0 ? (
                 <div className="mt-4 flex flex-wrap gap-3">
                   {socials.map((s) => (
                     <a

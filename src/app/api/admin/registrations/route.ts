@@ -27,7 +27,7 @@ export async function GET(req: Request) {
 
     const { data, error } = await supabase
       .from("vendor_registrations")
-      .select("id,business_name,contact_email,contact_phone,category_id,location,website_url,plan_id,status,created_at")
+      .select("id,business_name,contact_email,contact_phone,category_id,location,website_url,plan_id,status,created_at,extra")
       .order("created_at", { ascending: false })
       .limit(limit);
 
@@ -64,7 +64,7 @@ export async function PATCH(req: Request) {
 
     const { data: reg, error: regErr } = await supabase
       .from("vendor_registrations")
-      .select("id,business_name,contact_email,contact_phone,category_id,location,description,website_url,plan_id,status")
+      .select("id,business_name,contact_email,contact_phone,category_id,location,description,website_url,plan_id,status,extra")
       .eq("id", body.id)
       .single();
 

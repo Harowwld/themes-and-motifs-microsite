@@ -4,12 +4,15 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { createSupabaseBrowserClient } from "../../../lib/supabaseBrowser";
+import SiteFooter from "../../sections/SiteFooter";
+import SiteHeader from "../../sections/SiteHeader";
 
 type VendorProfile = {
   id: number;
   user_id: string;
   business_name: string;
   slug: string;
+  logo_url?: string | null;
   description: string | null;
   location_text: string | null;
   city: string | null;
@@ -20,6 +23,7 @@ type VendorProfile = {
   plan_id: number | null;
   is_active: boolean | null;
   verified_status: string | null;
+  plan?: { id: number; name: string } | { id: number; name: string }[] | null;
 };
 
 type SocialLink = { id: number; platform: string; url: string };
@@ -61,6 +65,7 @@ export default function VendorDashboardPage() {
   const [vendor, setVendor] = useState<VendorProfile | null>(null);
   const [form, setForm] = useState({
     business_name: "",
+    logo_url: "",
     description: "",
     location_text: "",
     city: "",
@@ -76,6 +81,11 @@ export default function VendorDashboardPage() {
   const [images, setImages] = useState<Array<{ image_url: string; caption: string; is_cover: boolean; display_order: number }>>([
     { image_url: "", caption: "", is_cover: true, display_order: 1 },
   ]);
+
+  const planName = String((Array.isArray(vendor?.plan) ? vendor?.plan?.[0]?.name : vendor?.plan?.name) ?? "")
+    .trim()
+    .toLowerCase();
+  const isPremium = planName.includes("premium");
 
   useEffect(() => {
     let cancelled = false;
@@ -110,6 +120,7 @@ export default function VendorDashboardPage() {
           setVendor(json.vendor);
           setForm({
             business_name: json.vendor.business_name ?? "",
+            logo_url: (json.vendor as any).logo_url ?? "",
             description: json.vendor.description ?? "",
             location_text: json.vendor.location_text ?? "",
             city: json.vendor.city ?? "",
@@ -157,6 +168,7 @@ export default function VendorDashboardPage() {
         method: "PATCH",
         body: JSON.stringify({
           business_name: form.business_name,
+          logo_url: form.logo_url || null,
           description: form.description || null,
           location_text: form.location_text || null,
           city: form.city || null,
@@ -175,6 +187,10 @@ export default function VendorDashboardPage() {
 
   async function saveSocials() {
     if (!token) return;
+    if (!isPremium) {
+      setError("Social links are available on Premium plans only.");
+      return;
+    }
     setError(null);
     setSaving(true);
     try {
@@ -237,32 +253,55 @@ export default function VendorDashboardPage() {
         background: "radial-gradient(circle at 20% 10%, #fff7ed, #fcfbf9 42%, #f6f1ea 92%)",
       }}
     >
-      <div className="mx-auto w-full max-w-4xl px-5 sm:px-8 py-12">
-        <div className="rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden">
-          <div className="px-6 py-5 border-b border-black/5">
-            <div className="text-[18px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">Vendor dashboard</div>
-            <div className="mt-1 text-[12px] text-black/45">
-              Signed in as <span className="font-semibold text-[#2c2c2c]">{email ?? ""}</span>
-              {vendor?.slug ? (
-                <>
-                  {" "}
-                  · Public page: <a className="text-[#6e4f33] hover:underline" href={`/vendors/${vendor.slug}`} target="_blank" rel="noreferrer">/vendors/{vendor.slug}</a>
-                </>
-              ) : null}
-            </div>
-          </div>
+      <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
+        <SiteHeader />
 
-          <div className="p-6 grid gap-6">
-            {loading ? <div className="text-[13px] text-black/60">Loading…</div> : null}
-            {error ? (
-              <div className="rounded-[3px] border border-[#c17a4e]/30 bg-[#fff7ed] px-4 py-3 text-[13px] text-[#6e4f33]">
-                {error}
+        <main className="py-12">
+          <div className="mx-auto w-full max-w-4xl">
+            <div className="rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden">
+              <div className="px-6 py-5 border-b border-black/5">
+                <div className="text-[18px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">Vendor dashboard</div>
+                <div className="mt-1 text-[12px] text-black/45">
+                  Signed in as <span className="font-semibold text-[#2c2c2c]">{email ?? ""}</span>
+                  {vendor?.slug ? (
+                    <>
+                      {" "}
+                      · Public page:{" "}
+                      <a
+                        className="text-[#6e4f33] hover:underline"
+                        href={`/vendors/${vendor.slug}`}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        /vendors/{vendor.slug}
+                      </a>
+                    </>
+                  ) : null}
+                </div>
               </div>
-            ) : null}
 
-            {!loading ? (
-              <>
-                <section className="rounded-[3px] border border-black/10 bg-white overflow-hidden">
+              <div className="p-6 grid gap-6">
+                {loading ? <div className="text-[13px] text-black/60">Loading…</div> : null}
+                {error ? (
+                  <div className="rounded-[3px] border border-[#c17a4e]/30 bg-[#fff7ed] px-4 py-3 text-[13px] text-[#6e4f33]">
+                    {error}
+                  </div>
+                ) : null}
+
+                {!loading && vendor ? (
+                  <div className="rounded-[3px] border border-black/10 bg-[#fcfbf9] px-4 py-3 text-[13px] text-black/60">
+                    Plan: <span className="font-semibold text-[#2c2c2c]">{(Array.isArray(vendor.plan) ? vendor.plan?.[0]?.name : vendor.plan?.name) ?? ""}</span>
+                    {!isPremium ? (
+                      <span className="ml-2 text-black/50">
+                        (Some fields are Premium-only)
+                      </span>
+                    ) : null}
+                  </div>
+                ) : null}
+
+                {!loading ? (
+                  <>
+                    <section className="rounded-[3px] border border-black/10 bg-white overflow-hidden">
                   <div className="px-4 py-3 border-b border-black/5">
                     <div className="text-[13px] font-semibold text-[#2c2c2c]">Profile</div>
                     <div className="mt-1 text-[12px] text-black/45">Edit the details that show on your vendor page.</div>
@@ -277,6 +316,16 @@ export default function VendorDashboardPage() {
                       </Field>
                     </div>
 
+                    <Field label="Logo URL">
+                      <input
+                        className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]"
+                        value={form.logo_url}
+                        onChange={(e) => setForm((p) => ({ ...p, logo_url: e.target.value }))}
+                        placeholder="https://..."
+                        disabled={!isPremium}
+                      />
+                    </Field>
+
                     <Field label="Description">
                       <textarea className="min-h-24 w-full rounded-[3px] border border-black/10 px-3 py-2 text-[13px]" value={form.description} onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))} />
                     </Field>
@@ -289,7 +338,7 @@ export default function VendorDashboardPage() {
                         <input className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]" value={form.city} onChange={(e) => setForm((p) => ({ ...p, city: e.target.value }))} />
                       </Field>
                       <Field label="Phone">
-                        <input className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]" value={form.contact_phone} onChange={(e) => setForm((p) => ({ ...p, contact_phone: e.target.value }))} />
+                        <input className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]" value={form.contact_phone} onChange={(e) => setForm((p) => ({ ...p, contact_phone: e.target.value }))} disabled={!isPremium} />
                       </Field>
                     </div>
 
@@ -298,7 +347,7 @@ export default function VendorDashboardPage() {
                         <input className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]" value={form.address} onChange={(e) => setForm((p) => ({ ...p, address: e.target.value }))} />
                       </Field>
                       <Field label="Website">
-                        <input className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]" value={form.website_url} onChange={(e) => setForm((p) => ({ ...p, website_url: e.target.value }))} placeholder="https://..." />
+                        <input className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]" value={form.website_url} onChange={(e) => setForm((p) => ({ ...p, website_url: e.target.value }))} placeholder="https://..." disabled={!isPremium} />
                       </Field>
                     </div>
 
@@ -383,7 +432,11 @@ export default function VendorDashboardPage() {
               </>
             ) : null}
           </div>
-        </div>
+            </div>
+          </div>
+        </main>
+
+        <SiteFooter />
       </div>
     </div>
   );
