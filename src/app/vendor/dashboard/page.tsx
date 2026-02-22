@@ -35,6 +35,82 @@ type VendorImage = {
   display_order: number | null;
 };
 
+const SOCIAL_PLATFORM_OPTIONS = ["facebook", "instagram", "tiktok", "x", "pinterest", "youtube", "website"] as const;
+type SocialPlatformOption = (typeof SOCIAL_PLATFORM_OPTIONS)[number] | "other";
+
+function isKnownPlatform(p: string) {
+  return SOCIAL_PLATFORM_OPTIONS.includes((p ?? "").trim().toLowerCase() as any);
+}
+
+function Spinner({ className = "" }: { className?: string }) {
+  return (
+    <span
+      className={`inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent ${className}`}
+      aria-hidden="true"
+    />
+  );
+}
+
+function DashboardSkeleton() {
+  return (
+    <div className="grid gap-6">
+      <div className="rounded-[3px] border border-black/10 bg-[#fcfbf9] px-4 py-3">
+        <div className="h-4 w-48 rounded bg-black/10 animate-pulse" />
+      </div>
+
+      <section className="rounded-[3px] border border-black/10 bg-white overflow-hidden">
+        <div className="px-4 py-3 border-b border-black/5">
+          <div className="h-4 w-20 rounded bg-black/10 animate-pulse" />
+          <div className="mt-2 h-3 w-56 rounded bg-black/10 animate-pulse" />
+        </div>
+        <div className="p-4 grid gap-4">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-1.5">
+              <div className="h-3 w-28 rounded bg-black/10 animate-pulse" />
+              <div className="h-10 w-full rounded-[3px] bg-black/10 animate-pulse" />
+            </div>
+            <div className="grid gap-1.5">
+              <div className="h-3 w-36 rounded bg-black/10 animate-pulse" />
+              <div className="h-10 w-full rounded-[3px] bg-black/10 animate-pulse" />
+            </div>
+          </div>
+          <div className="grid gap-1.5">
+            <div className="h-3 w-16 rounded bg-black/10 animate-pulse" />
+            <div className="min-h-24 w-full rounded-[3px] bg-black/10 animate-pulse" />
+          </div>
+          <div className="flex justify-end">
+            <div className="h-9 w-28 rounded-[3px] bg-black/10 animate-pulse" />
+          </div>
+        </div>
+      </section>
+
+      <section className="rounded-[3px] border border-black/10 bg-white overflow-hidden">
+        <div className="px-4 py-3 border-b border-black/5">
+          <div className="h-4 w-24 rounded bg-black/10 animate-pulse" />
+          <div className="mt-2 h-3 w-60 rounded bg-black/10 animate-pulse" />
+        </div>
+        <div className="p-4 grid gap-3">
+          <div className="grid gap-3 sm:grid-cols-[180px_1fr_auto] sm:items-end">
+            <div className="grid gap-1.5">
+              <div className="h-3 w-20 rounded bg-black/10 animate-pulse" />
+              <div className="h-10 w-full rounded-[3px] bg-black/10 animate-pulse" />
+            </div>
+            <div className="grid gap-1.5">
+              <div className="h-3 w-12 rounded bg-black/10 animate-pulse" />
+              <div className="h-10 w-full rounded-[3px] bg-black/10 animate-pulse" />
+            </div>
+            <div className="h-10 w-20 rounded-[3px] bg-black/10 animate-pulse" />
+          </div>
+          <div className="flex justify-between pt-2">
+            <div className="h-9 w-24 rounded-[3px] bg-black/10 animate-pulse" />
+            <div className="h-9 w-40 rounded-[3px] bg-black/10 animate-pulse" />
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
+
 async function apiFetch<T>(url: string, token: string, init?: RequestInit): Promise<T> {
   const res = await fetch(url, {
     ...init,
@@ -78,6 +154,8 @@ export default function VendorDashboardPage() {
     { platform: "instagram", url: "" },
     { platform: "tiktok", url: "" },
   ]);
+  const [socialPlatformChoices, setSocialPlatformChoices] = useState<SocialPlatformOption[]>(["facebook", "instagram", "tiktok"]);
+  const [socialCustomPlatforms, setSocialCustomPlatforms] = useState<string[]>(["", "", ""]);
   const [images, setImages] = useState<Array<{ image_url: string; caption: string; is_cover: boolean; display_order: number }>>([
     { image_url: "", caption: "", is_cover: true, display_order: 1 },
   ]);
@@ -130,7 +208,20 @@ export default function VendorDashboardPage() {
           });
 
           const s = (json.socials ?? []).map((x) => ({ platform: x.platform, url: x.url }));
-          setSocials(s.length > 0 ? s : [{ platform: "facebook", url: "" }]);
+          const normalizedSocials = s.length > 0 ? s : [{ platform: "facebook", url: "" }];
+          setSocials(normalizedSocials);
+          setSocialPlatformChoices(
+            normalizedSocials.map((row) => {
+              const p = (row.platform ?? "").trim().toLowerCase();
+              return isKnownPlatform(p) ? (p as SocialPlatformOption) : "other";
+            })
+          );
+          setSocialCustomPlatforms(
+            normalizedSocials.map((row) => {
+              const p = (row.platform ?? "").trim();
+              return isKnownPlatform(p) ? "" : p;
+            })
+          );
 
           const normalizedImgs = (json.images ?? []).map((img, idx) => ({
             image_url: img.image_url,
@@ -194,13 +285,27 @@ export default function VendorDashboardPage() {
     setError(null);
     setSaving(true);
     try {
+      const payload = socials.map((s) => ({ platform: s.platform, url: s.url }));
       const res = await apiFetch<{ socials: SocialLink[] }>("/api/vendor/social-links", token, {
         method: "PUT",
-        body: JSON.stringify({ socials }),
+        body: JSON.stringify({ socials: payload }),
       });
 
       const s = (res.socials ?? []).map((x) => ({ platform: x.platform, url: x.url }));
-      setSocials(s.length > 0 ? s : [{ platform: "facebook", url: "" }]);
+      const normalizedSocials = s.length > 0 ? s : [{ platform: "facebook", url: "" }];
+      setSocials(normalizedSocials);
+      setSocialPlatformChoices(
+        normalizedSocials.map((row) => {
+          const p = (row.platform ?? "").trim().toLowerCase();
+          return isKnownPlatform(p) ? (p as SocialPlatformOption) : "other";
+        })
+      );
+      setSocialCustomPlatforms(
+        normalizedSocials.map((row) => {
+          const p = (row.platform ?? "").trim();
+          return isKnownPlatform(p) ? "" : p;
+        })
+      );
     } catch (e: any) {
       setError(e?.message ?? "Failed to save social links.");
     } finally {
@@ -281,7 +386,7 @@ export default function VendorDashboardPage() {
               </div>
 
               <div className="p-6 grid gap-6">
-                {loading ? <div className="text-[13px] text-black/60">Loading…</div> : null}
+                {loading ? <DashboardSkeleton /> : null}
                 {error ? (
                   <div className="rounded-[3px] border border-[#c17a4e]/30 bg-[#fff7ed] px-4 py-3 text-[13px] text-[#6e4f33]">
                     {error}
@@ -353,7 +458,10 @@ export default function VendorDashboardPage() {
 
                     <div className="flex justify-end">
                       <button type="button" onClick={saveProfile} disabled={saving} className="h-9 px-4 rounded-[3px] bg-[#a67c52] text-white text-[13px] font-semibold hover:bg-[#8e6a46] transition-colors disabled:opacity-60">
-                        {saving ? "Saving…" : "Save profile"}
+                        <span className="inline-flex items-center gap-2">
+                          {saving ? <Spinner className="text-white/90" /> : null}
+                          <span>{saving ? "Saving…" : "Save profile"}</span>
+                        </span>
                       </button>
                     </div>
                   </div>
@@ -368,23 +476,79 @@ export default function VendorDashboardPage() {
                     {socials.map((s, idx) => (
                       <div key={idx} className="grid gap-3 sm:grid-cols-[180px_1fr_auto] sm:items-end">
                         <Field label="Platform">
-                          <input className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]" value={s.platform} onChange={(e) => setSocials((rows) => rows.map((r, i) => (i === idx ? { ...r, platform: e.target.value } : r)))} />
+                          <div className="grid gap-2">
+                            <select
+                              className="h-10 w-full rounded-[3px] border border-black/10 bg-white px-3 text-[13px]"
+                              value={socialPlatformChoices[idx] ?? "other"}
+                              onChange={(e) => {
+                                const next = e.target.value as SocialPlatformOption;
+                                setSocialPlatformChoices((rows) => rows.map((r, i) => (i === idx ? next : r)));
+                                if (next === "other") {
+                                  const custom = (socialCustomPlatforms[idx] ?? "").trim();
+                                  setSocials((rows) => rows.map((r, i) => (i === idx ? { ...r, platform: custom } : r)));
+                                } else {
+                                  setSocialCustomPlatforms((rows) => rows.map((r, i) => (i === idx ? "" : r)));
+                                  setSocials((rows) => rows.map((r, i) => (i === idx ? { ...r, platform: next } : r)));
+                                }
+                              }}
+                            >
+                              {SOCIAL_PLATFORM_OPTIONS.map((p) => (
+                                <option key={p} value={p}>
+                                  {p === "x" ? "X" : p.charAt(0).toUpperCase() + p.slice(1)}
+                                </option>
+                              ))}
+                              <option value="other">Other</option>
+                            </select>
+
+                            <input
+                              className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]"
+                              value={socialCustomPlatforms[idx] ?? ""}
+                              onChange={(e) => {
+                                const next = e.target.value;
+                                setSocialCustomPlatforms((rows) => rows.map((r, i) => (i === idx ? next : r)));
+                                if ((socialPlatformChoices[idx] ?? "other") === "other") {
+                                  setSocials((rows) => rows.map((r, i) => (i === idx ? { ...r, platform: next } : r)));
+                                }
+                              }}
+                              placeholder="Custom platform"
+                              disabled={(socialPlatformChoices[idx] ?? "other") !== "other"}
+                            />
+                          </div>
                         </Field>
                         <Field label="URL">
                           <input className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]" value={s.url} onChange={(e) => setSocials((rows) => rows.map((r, i) => (i === idx ? { ...r, url: e.target.value } : r)))} placeholder="https://..." />
                         </Field>
-                        <button type="button" onClick={() => setSocials((rows) => rows.filter((_, i) => i !== idx))} className="h-10 px-3 rounded-[3px] border border-black/10 bg-white text-[12px] font-semibold text-[#6e4f33] hover:bg-black/[0.02] transition-colors">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSocials((rows) => rows.filter((_, i) => i !== idx));
+                            setSocialPlatformChoices((rows) => rows.filter((_, i) => i !== idx));
+                            setSocialCustomPlatforms((rows) => rows.filter((_, i) => i !== idx));
+                          }}
+                          className="h-10 px-3 rounded-[3px] border border-black/10 bg-white text-[12px] font-semibold text-[#6e4f33] hover:bg-black/[0.02] transition-colors"
+                        >
                           Remove
                         </button>
                       </div>
                     ))}
 
                     <div className="flex flex-wrap gap-2 justify-between pt-2">
-                      <button type="button" onClick={() => setSocials((rows) => [...rows, { platform: "", url: "" }])} className="h-9 px-3 rounded-[3px] border border-black/10 bg-white text-[12px] font-semibold text-[#6e4f33] hover:bg-black/[0.02] transition-colors">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSocials((rows) => [...rows, { platform: "facebook", url: "" }]);
+                          setSocialPlatformChoices((rows) => [...rows, "facebook"]);
+                          setSocialCustomPlatforms((rows) => [...rows, ""]);
+                        }}
+                        className="h-9 px-3 rounded-[3px] border border-black/10 bg-white text-[12px] font-semibold text-[#6e4f33] hover:bg-black/[0.02] transition-colors"
+                      >
                         Add link
                       </button>
                       <button type="button" onClick={saveSocials} disabled={saving} className="h-9 px-4 rounded-[3px] bg-[#a67c52] text-white text-[13px] font-semibold hover:bg-[#8e6a46] transition-colors disabled:opacity-60">
-                        {saving ? "Saving…" : "Save social links"}
+                        <span className="inline-flex items-center gap-2">
+                          {saving ? <Spinner className="text-white/90" /> : null}
+                          <span>{saving ? "Saving…" : "Save social links"}</span>
+                        </span>
                       </button>
                     </div>
                   </div>
@@ -424,7 +588,10 @@ export default function VendorDashboardPage() {
                         Add photo
                       </button>
                       <button type="button" onClick={saveImages} disabled={saving} className="h-9 px-4 rounded-[3px] bg-[#a67c52] text-white text-[13px] font-semibold hover:bg-[#8e6a46] transition-colors disabled:opacity-60">
-                        {saving ? "Saving…" : "Save photos"}
+                        <span className="inline-flex items-center gap-2">
+                          {saving ? <Spinner className="text-white/90" /> : null}
+                          <span>{saving ? "Saving…" : "Save photos"}</span>
+                        </span>
                       </button>
                     </div>
                   </div>

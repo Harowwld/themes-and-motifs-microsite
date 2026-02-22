@@ -2,20 +2,11 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
+import { useSearchParams } from "next/navigation";
+import VendorCard from "../../features/vendors/components/VendorCard";
+import type { VendorListItem } from "../../features/vendors/types";
 
 type SortKey = "alpha" | "rating" | "newest" | "saves" | "views";
-
-type VendorListItem = {
-  id: number;
-  business_name: string;
-  slug: string;
-  logo_url?: string | null;
-  average_rating: number | null;
-  review_count: number | null;
-  location_text: string | null;
-  city: string | null;
-  cover_image_url?: string | null;
-};
 
 type Props = {
   initialVendors: VendorListItem[];
@@ -42,55 +33,6 @@ const ROW_GAP_PX = 16;
 const ROW_HEIGHT_PX = 200;
 const ROW_SLOT_PX = ROW_HEIGHT_PX + ROW_GAP_PX;
 
-function VendorCard({ vendor }: { vendor: VendorListItem }) {
-  const tone = vendor.id % 3 === 0 ? "#a67c52" : vendor.id % 3 === 1 ? "#c17a4e" : "#8e6a46";
-  const rating = vendor.average_rating ?? 0;
-  const reviews = vendor.review_count ?? 0;
-  const location = vendor.city ?? vendor.location_text;
-
-  return (
-    <a
-      href={`/vendors/${encodeURIComponent(vendor.slug)}`}
-      className="h-[200px] rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow"
-      aria-label={`View ${vendor.business_name}`}
-    >
-      <div
-        className="h-24"
-        style={{
-          background: vendor.cover_image_url
-            ? `linear-gradient(135deg, rgba(166,124,82,0.22), rgba(255,255,255,0.88)), url(${vendor.cover_image_url}) center/cover no-repeat`
-            : `linear-gradient(135deg, ${tone}22, #ffffff 65%)`,
-        }}
-      />
-      <div className="p-5 flex-1 flex flex-col min-h-0">
-        <div className="text-[12px] font-semibold text-black/45">{location ? location : "Philippines"}</div>
-        <div className="mt-1 flex items-center gap-2">
-          {vendor.logo_url ? (
-            <img
-              src={vendor.logo_url}
-              alt={`${vendor.business_name} logo`}
-              className="h-8 w-8 rounded-[3px] border border-black/10 bg-white object-contain"
-              loading="lazy"
-              referrerPolicy="no-referrer"
-            />
-          ) : null}
-          <div className="text-[15px] font-semibold text-[#2c2c2c]">{vendor.business_name}</div>
-        </div>
-        <div className="mt-auto flex items-center justify-between pt-3">
-          <div className="inline-flex items-center gap-1 text-[12px] font-semibold text-black/55">
-            <span className="text-[#a67c52]">{rating.toFixed(1)}</span>
-            <span className="text-black/30">•</span>
-            <span>{reviews} reviews</span>
-          </div>
-          <span className="text-[13px] font-semibold text-[#6e4f33] hover:underline">
-            Explore
-          </span>
-        </div>
-      </div>
-    </a>
-  );
-}
-
 export default function VirtualizedVendorsList({
   initialVendors,
   total,
@@ -99,6 +41,7 @@ export default function VirtualizedVendorsList({
   query,
   initialPage,
 }: Props) {
+  const sp = useSearchParams();
   const [vendors, setVendors] = useState<VendorListItem[]>(initialVendors);
   const [loadedPages, setLoadedPages] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -118,7 +61,9 @@ export default function VirtualizedVendorsList({
     setLoadedPages(Math.max(1, initialPage));
     setLoading(false);
     setLoadError(null);
-    rowVirtualizer.scrollToIndex(0, { align: "start" });
+    if (sp?.get("scroll") === "results") {
+      rowVirtualizer.scrollToIndex(0, { align: "start" });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     initialPage,
@@ -131,6 +76,7 @@ export default function VirtualizedVendorsList({
     query.location,
     query.region,
     query.affiliation,
+    sp,
   ]);
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
@@ -264,7 +210,7 @@ export default function VirtualizedVendorsList({
               >
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" style={{ height: ROW_HEIGHT_PX }}>
                   {row.map((v) => (
-                    <VendorCard key={v.id} vendor={v} />
+                    <VendorCard key={v.id} vendor={v} fixedHeight />
                   ))}
                   {cols > row.length
                     ? Array.from({ length: cols - row.length }).map((_, i) => <div key={`spacer-${rowIndex}-${i}`} />)

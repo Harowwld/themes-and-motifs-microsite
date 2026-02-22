@@ -41,8 +41,8 @@
 - ~~**Plan gating (Free vs Premium)**~~
   - ~~Enforce feature access based on `plan_id` (e.g. website/social links/phone numbers/albums/promos).~~
 
-- **Public email via contact form**
-  - Replace `mailto:` with a contact form flow (spam protection + vendor notification).
+- ~~**Public email via contact form**~~
+  - ~~Replace `mailto:` with a contact form flow (spam protection + vendor notification).~~
   
 - **Admin-only contact fields**
   - Store admin email + admin phone separately from public contact fields.

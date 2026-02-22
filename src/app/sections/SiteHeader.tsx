@@ -84,7 +84,7 @@ export default function SiteHeader() {
             href="/vendors"
             onClick={(e) => {
               e.preventDefault();
-              router.push("/vendors", { scroll: false });
+              router.push("/vendors");
             }}
           >
             Start searching
