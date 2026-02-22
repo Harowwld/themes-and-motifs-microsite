@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 type VendorImage = {
   id: number;
@@ -25,25 +25,51 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
   const [activeIndex, setActiveIndex] = useState(initialIndex);
   const stripRef = useRef<HTMLDivElement | null>(null);
   const thumbRefs = useRef<Record<number, HTMLButtonElement | null>>({});
+  const intervalRef = useRef<number | null>(null);
+
+  const stopAutoplay = useCallback(() => {
+    if (intervalRef.current == null) return;
+    window.clearInterval(intervalRef.current);
+    intervalRef.current = null;
+  }, []);
+
+  const startAutoplay = useCallback(() => {
+    if (typeof window === "undefined") return;
+    if (normalized.length <= 1) return;
+    if (intervalRef.current != null) return;
+
+    intervalRef.current = window.setInterval(() => {
+      setActiveIndex((i) => (i + 1) % normalized.length);
+    }, intervalMs);
+  }, [intervalMs, normalized.length]);
+
+  const restartAutoplay = useCallback(() => {
+    stopAutoplay();
+    startAutoplay();
+  }, [startAutoplay, stopAutoplay]);
 
   useEffect(() => {
     setActiveIndex(initialIndex);
   }, [initialIndex]);
 
   useEffect(() => {
-    if (normalized.length <= 1) return;
-
-    const id = window.setInterval(() => {
-      setActiveIndex((i) => (i + 1) % normalized.length);
-    }, intervalMs);
-
-    return () => window.clearInterval(id);
-  }, [intervalMs, normalized.length]);
+    stopAutoplay();
+    startAutoplay();
+    return () => stopAutoplay();
+  }, [startAutoplay, stopAutoplay]);
 
   useEffect(() => {
+    const container = stripRef.current;
     const el = thumbRefs.current[normalized[activeIndex]?.id ?? -1];
-    if (!el) return;
-    el.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+    if (!container || !el) return;
+
+    const containerRect = container.getBoundingClientRect();
+    const elRect = el.getBoundingClientRect();
+
+    if (elRect.left < containerRect.left || elRect.right > containerRect.right) {
+      const left = el.offsetLeft - (container.clientWidth - el.clientWidth) / 2;
+      container.scrollTo({ left, behavior: "smooth" });
+    }
   }, [activeIndex, normalized]);
 
   const active = normalized[activeIndex];
@@ -63,7 +89,7 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
       </div>
 
       {normalized.length > 1 ? (
-        <div className="mt-3" ref={stripRef}>
+        <div className="mt-3">
           <div className="flex gap-2 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {normalized.map((img, idx) => {
               const isActive = idx === activeIndex;
@@ -75,7 +101,10 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
                   ref={(node) => {
                     thumbRefs.current[img.id] = node;
                   }}
-                  onClick={() => setActiveIndex(idx)}
+                  onClick={() => {
+                    setActiveIndex(idx);
+                    restartAutoplay();
+                  }}
                   className={
                     "relative shrink-0 rounded-[3px] border transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]/60 " +
                     (isActive ? "border-[#a67c52]" : "border-black/10 hover:border-black/20")

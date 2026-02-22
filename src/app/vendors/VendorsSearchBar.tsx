@@ -49,6 +49,7 @@ function buildHref({
   if (region) params.set("region", region);
   if (affiliation) params.set("affiliation", affiliation);
   if (sort !== "rating") params.set("vendorsSort", sort);
+  params.set("scroll", "results");
   const qs = params.toString();
   return `/vendors${qs ? `?${qs}` : ""}`;
 }

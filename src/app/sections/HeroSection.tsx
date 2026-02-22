@@ -181,6 +181,7 @@ export default function HeroSection({
     if (keyword.trim()) params.set("q", keyword.trim());
     if (category) params.set("category", category);
     if (location) params.set("location", location);
+    params.set("scroll", "results");
     const qs = params.toString();
     router.push(`/vendors${qs ? `?${qs}` : ""}`);
   };
