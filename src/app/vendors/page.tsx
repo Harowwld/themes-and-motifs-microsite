@@ -9,8 +9,18 @@ import VendorsScrollToResults from "./VendorsScrollToResults";
 import { attachCoverImages } from "../../features/vendors/coverImages.server";
 import type { VendorListItem } from "../../features/vendors/types";
 import { buildVendorsQuery } from "../../features/vendors/queries.server";
+import FadeInOnView from "../components/FadeInOnView";
 
 type SortKey = "alpha" | "rating" | "newest" | "saves" | "views";
+
+function sortWithImagesFirst<T extends { cover_image_url?: string | null; logo_url?: string | null }>(vendors: T[]) {
+  return [...vendors].sort((a, b) => {
+    const aHas = Boolean((a.cover_image_url ?? "").trim() || (a.logo_url ?? "").trim());
+    const bHas = Boolean((b.cover_image_url ?? "").trim() || (b.logo_url ?? "").trim());
+    if (aHas === bHas) return 0;
+    return aHas ? -1 : 1;
+  });
+}
 
 type CategoryListItem = {
   id: number;
@@ -111,37 +121,46 @@ async function VendorsPageData({
     sort,
   });
 
-  const { data: vendors, count } = await query.range(from, to);
-  const vendorPageItems = (vendors ?? []) as VendorListItem[];
+  const MAX_FETCH = 5000;
+  const { data: vendors, count } = await query.limit(MAX_FETCH);
+  const vendorAllItems = (vendors ?? []) as VendorListItem[];
   const vendorTotal = count ?? 0;
 
-  const vendorPageItemsWithCovers = await attachCoverImages(supabase, vendorPageItems);
+  const vendorAllItemsWithCovers = await attachCoverImages(supabase, vendorAllItems);
+  const vendorAllItemsSorted = sortWithImagesFirst(vendorAllItemsWithCovers as any);
+  const vendorPageItemsSorted = vendorAllItemsSorted.slice(from, to + 1);
 
   return (
     <>
-      <VendorsScrollToResults />
-      <VendorsSearchBar
-        initialQ={q}
-        initialCategory={category}
-        initialLocation={location}
-        initialRegion={region}
-        initialAffiliation={affiliation}
-        initialSort={sort}
-        regions={regionsList}
-        affiliations={affiliationsList}
-      />
+      <FadeInOnView>
+        <VendorsScrollToResults />
+        <VendorsSearchBar
+          initialQ={q}
+          initialCategory={category}
+          initialLocation={location}
+          initialRegion={region}
+          initialAffiliation={affiliation}
+          initialSort={sort}
+          regions={regionsList}
+          affiliations={affiliationsList}
+        />
+      </FadeInOnView>
 
-      <CategoryBrowser categories={categoriesList} />
+      <FadeInOnView>
+        <CategoryBrowser categories={categoriesList} />
+      </FadeInOnView>
 
       <div id="vendors-results" />
-      <VirtualizedVendorsList
-        initialVendors={vendorPageItemsWithCovers}
-        total={vendorTotal}
-        pageSize={pageSize}
-        initialPage={page}
-        sort={sort}
-        query={{ q, category, location, region, affiliation }}
-      />
+      <FadeInOnView>
+        <VirtualizedVendorsList
+          initialVendors={vendorPageItemsSorted as any}
+          total={vendorTotal}
+          pageSize={pageSize}
+          initialPage={page}
+          sort={sort}
+          query={{ q, category, location, region, affiliation }}
+        />
+      </FadeInOnView>
     </>
   );
 }

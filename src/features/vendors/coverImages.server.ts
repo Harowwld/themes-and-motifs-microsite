@@ -11,17 +11,21 @@ export async function getCoverImagesByVendorId(
   const coverByVendorId = new Map<number, string>();
   if (ids.length === 0) return coverByVendorId;
 
-  const { data: imageRows } = await supabase
-    .from("vendor_images")
-    .select("vendor_id,image_url,is_cover,display_order")
-    .in("vendor_id", ids)
-    .order("is_cover", { ascending: false })
-    .order("display_order", { ascending: true })
-    .limit(Math.min(500, ids.length * 3));
+  const CHUNK_SIZE = 500;
+  for (let i = 0; i < ids.length; i += CHUNK_SIZE) {
+    const chunk = ids.slice(i, i + CHUNK_SIZE);
+    const { data: imageRows } = await supabase
+      .from("vendor_images")
+      .select("vendor_id,image_url,is_cover,display_order")
+      .in("vendor_id", chunk)
+      .order("is_cover", { ascending: false })
+      .order("display_order", { ascending: true })
+      .limit(Math.min(5000, chunk.length * 50));
 
-  for (const row of ((imageRows ?? []) as VendorCoverImageRow[])) {
-    if (!coverByVendorId.has(row.vendor_id)) {
-      coverByVendorId.set(row.vendor_id, row.image_url);
+    for (const row of ((imageRows ?? []) as VendorCoverImageRow[])) {
+      if (!coverByVendorId.has(row.vendor_id)) {
+        coverByVendorId.set(row.vendor_id, row.image_url);
+      }
     }
   }
 

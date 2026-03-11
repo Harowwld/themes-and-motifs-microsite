@@ -30,7 +30,7 @@ function getCols(width: number) {
 }
 
 const ROW_GAP_PX = 16;
-const ROW_HEIGHT_PX = 200;
+const ROW_HEIGHT_PX = 220;
 const ROW_SLOT_PX = ROW_HEIGHT_PX + ROW_GAP_PX;
 
 export default function VirtualizedVendorsList({
@@ -93,7 +93,7 @@ export default function VirtualizedVendorsList({
   const rowVirtualizer = useWindowVirtualizer({
     count: rows.length + (hasMore ? 1 : 0),
     estimateSize: () => ROW_SLOT_PX,
-    overscan: 3,
+    overscan: 6,
     scrollMargin: parentRef.current?.offsetTop ?? 0,
   });
 
@@ -172,7 +172,7 @@ export default function VirtualizedVendorsList({
           <div className="mt-1 text-[13px] text-black/55">Try changing filters or check back later.</div>
         </div>
       ) : (
-        <div className="mt-5 relative" style={{ height: totalSize }}>
+        <div className="mt-5 relative bg-[#fcfbf9]" style={{ height: totalSize }}>
           {virtualItems.map((virtualRow) => {
             const rowIndex = virtualRow.index;
             const row = rows[rowIndex];
@@ -183,7 +183,7 @@ export default function VirtualizedVendorsList({
                 <div
                   key={virtualRow.key}
                   className="py-6 pb-10 text-center text-[13px] font-semibold text-black/45"
-                  style={{ position: "absolute", top, left: 0, width: "100%" }}
+                  style={{ position: "absolute", transform: `translateY(${top}px)`, left: 0, width: "100%", willChange: "transform" }}
                 >
                   {loadError ? (
                     <button
@@ -206,7 +206,14 @@ export default function VirtualizedVendorsList({
               <div
                 key={virtualRow.key}
                 className="pb-4"
-                style={{ position: "absolute", top, left: 0, width: "100%", height: ROW_SLOT_PX }}
+                style={{
+                  position: "absolute",
+                  transform: `translateY(${top}px)`,
+                  left: 0,
+                  width: "100%",
+                  height: ROW_SLOT_PX,
+                  willChange: "transform",
+                }}
               >
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" style={{ height: ROW_HEIGHT_PX }}>
                   {row.map((v) => (

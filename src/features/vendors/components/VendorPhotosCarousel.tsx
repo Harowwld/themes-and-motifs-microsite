@@ -15,8 +15,20 @@ type Props = {
   intervalMs?: number;
 };
 
+function proxiedImageUrl(url: string) {
+  const u = (url ?? "").trim();
+  if (!u) return u;
+  if (u.includes("drive.google.com")) {
+    return `/api/image-proxy?url=${encodeURIComponent(u)}`;
+  }
+  return u;
+}
+
 export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Props) {
-  const normalized = useMemo(() => images.filter((i) => Boolean(i?.image_url)), [images]);
+  const normalized = useMemo(
+    () => images.filter((i) => Boolean(i?.image_url)).map((i) => ({ ...i, image_url: proxiedImageUrl(i.image_url) })),
+    [images]
+  );
   const initialIndex = useMemo(() => {
     const coverIdx = normalized.findIndex((i) => i.is_cover);
     return coverIdx >= 0 ? coverIdx : 0;
@@ -80,10 +92,12 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
       <h2 className="text-[16px] font-semibold text-[#2c2c2c]">Photos</h2>
 
       <div className="mt-3 rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden">
-        <div
-          className="h-64 sm:h-[340px]"
-          style={{ background: `url(${active.image_url}) center/cover no-repeat` }}
-          aria-label={active.caption ?? "Vendor photo"}
+        <img
+          src={active.image_url}
+          alt={active.caption ?? "Vendor photo"}
+          className="h-64 sm:h-85 w-full object-cover"
+          loading="lazy"
+          referrerPolicy="no-referrer"
         />
         {active.caption ? <div className="px-4 py-3 text-[12px] text-black/55">{active.caption}</div> : null}
       </div>
@@ -111,9 +125,12 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
                   }
                   aria-label={img.caption ?? `Vendor photo ${idx + 1}`}
                 >
-                  <div
-                    className="h-16 w-24 sm:h-20 sm:w-32"
-                    style={{ background: `url(${img.image_url}) center/cover no-repeat` }}
+                  <img
+                    src={img.image_url}
+                    alt={img.caption ?? `Vendor photo ${idx + 1}`}
+                    className="h-16 w-24 sm:h-20 sm:w-32 object-cover"
+                    loading="lazy"
+                    referrerPolicy="no-referrer"
                   />
                   {isActive ? <div className="pointer-events-none absolute inset-0 ring-2 ring-[#a67c52]/55" /> : null}
                 </button>

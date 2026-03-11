@@ -10,6 +10,17 @@ import VendorPlansSection from "./sections/VendorPlansSection";
 import SiteFooter from "./sections/SiteFooter";
 import { attachCoverImages } from "../features/vendors/coverImages.server";
 import type { FeaturedVendor, VendorListItem } from "../features/vendors/types";
+import FadeInOnView from "./components/FadeInOnView";
+import ScrollToTopOnMount from "./components/ScrollToTopOnMount";
+
+function sortWithImagesFirst<T extends { cover_image_url?: string | null; logo_url?: string | null }>(vendors: T[]) {
+  return [...vendors].sort((a, b) => {
+    const aHas = Boolean((a.cover_image_url ?? "").trim() || (a.logo_url ?? "").trim());
+    const bHas = Boolean((b.cover_image_url ?? "").trim() || (b.logo_url ?? "").trim());
+    if (aHas === bHas) return 0;
+    return aHas ? -1 : 1;
+  });
+}
 
 type FeaturedPromo = {
   id: number;
@@ -156,8 +167,12 @@ async function LandingTopData() {
 
   return (
     <>
-      <HeroSection categories={categories} locations={locations} />
-      <CategoryBrowser categories={categories} />
+      <FadeInOnView>
+        <HeroSection categories={categories} locations={locations} />
+      </FadeInOnView>
+      <FadeInOnView delayMs={60}>
+        <CategoryBrowser categories={categories} />
+      </FadeInOnView>
     </>
   );
 }
@@ -186,11 +201,16 @@ async function LandingFeaturedData() {
   const promos = ((featuredPromos ?? []) as FeaturedPromo[]).filter(isPromoCurrentlyValid).slice(0, 4);
 
   const featuredWithCovers = await attachCoverImages(supabase, vendors);
+  const featuredSorted = sortWithImagesFirst(featuredWithCovers as any);
 
   return (
     <>
-      <FeaturedVendorsSection vendors={featuredWithCovers} />
-      <PromosSection promos={promos} />
+      <FadeInOnView>
+        <FeaturedVendorsSection vendors={featuredSorted as any} />
+      </FadeInOnView>
+      <FadeInOnView delayMs={60}>
+        <PromosSection promos={promos} />
+      </FadeInOnView>
     </>
   );
 }
@@ -216,13 +236,20 @@ async function LandingVendorsData({ page, pageSize, sort }: { page: number; page
       .order("id", { ascending: true });
   }
 
-  const { data: pagedVendors, count: pagedVendorsCount } = await q.range(from, to);
-  const vendorPageItems = (pagedVendors ?? []) as VendorListItem[];
-  const vendorTotal = pagedVendorsCount ?? 0;
+  const MAX_FETCH = 5000;
+  const { data: allVendors, count: allCount } = await q.limit(MAX_FETCH);
+  const vendorAllItems = (allVendors ?? []) as VendorListItem[];
+  const vendorTotal = allCount ?? 0;
 
-  const pageWithCovers = await attachCoverImages(supabase, vendorPageItems);
+  const allWithCovers = await attachCoverImages(supabase, vendorAllItems);
+  const allSorted = sortWithImagesFirst(allWithCovers as any);
+  const pageSorted = allSorted.slice(from, to + 1);
 
-  return <VendorsSection vendors={pageWithCovers} total={vendorTotal} page={page} pageSize={pageSize} sort={sort} />;
+  return (
+    <FadeInOnView>
+      <VendorsSection vendors={pageSorted as any} total={vendorTotal} page={page} pageSize={pageSize} sort={sort} />
+    </FadeInOnView>
+  );
 }
 
 export default async function LandingPage({
@@ -267,6 +294,7 @@ export default async function LandingPage({
         background: "radial-gradient(circle at 20% 10%, #fff7ed, #fcfbf9 42%, #f6f1ea 92%)",
       }}
     >
+      <ScrollToTopOnMount />
       <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
         <SiteHeader />
 
@@ -283,7 +311,9 @@ export default async function LandingPage({
             <LandingVendorsData page={page} pageSize={pageSize} sort={sort} />
           </Suspense>
 
-          <VendorPlansSection planFeatures={planFeatures} />
+          <FadeInOnView>
+            <VendorPlansSection planFeatures={planFeatures} />
+          </FadeInOnView>
         </main>
 
         <SiteFooter />

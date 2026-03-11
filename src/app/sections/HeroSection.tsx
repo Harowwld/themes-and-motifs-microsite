@@ -111,13 +111,13 @@ function SelectMenu({
         ? createPortal(
             <div
               role="listbox"
-              className="fixed z-[1000] rounded-[3px] border border-black/10 bg-white shadow-lg overflow-hidden"
+              className="fixed z-1000 rounded-[3px] border border-black/10 bg-white shadow-lg overflow-hidden"
               style={{ top: menuRect.top, left: menuRect.left, width: menuRect.width }}
             >
               <div className="overflow-auto py-1" style={{ maxHeight: menuRect.maxHeight }}>
                 <button
                   type="button"
-                  className={`w-full px-3 py-2 text-left text-[14px] leading-5 whitespace-normal break-words text-[#2c2c2c] hover:bg-[#a67c52]/10 ${
+                  className={`w-full px-3 py-2 text-left text-[14px] leading-5 whitespace-normal wrap-break-word text-[#2c2c2c] hover:bg-[#a67c52]/10 ${
                     value === "" ? "bg-[#a67c52]/10" : ""
                   }`}
                   onClick={() => {
@@ -131,7 +131,7 @@ function SelectMenu({
                   <button
                     key={opt.value}
                     type="button"
-                    className={`w-full px-3 py-2 text-left text-[14px] leading-5 whitespace-normal break-words text-[#2c2c2c] hover:bg-[#a67c52]/10 ${
+                    className={`w-full px-3 py-2 text-left text-[14px] leading-5 whitespace-normal wrap-break-word text-[#2c2c2c] hover:bg-[#a67c52]/10 ${
                       opt.value === value ? "bg-[#a67c52]/10" : ""
                     }`}
                     onClick={() => {
