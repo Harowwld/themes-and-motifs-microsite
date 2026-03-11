@@ -6,6 +6,8 @@ import SiteFooter from "../../sections/SiteFooter";
 import { createSupabaseServerClient } from "../../../lib/supabaseServer";
 import VendorPhotosCarousel from "../../../features/vendors/components/VendorPhotosCarousel";
 import ContactVendorForm from "../../../features/vendors/components/ContactVendorForm";
+import VendorReviewForm from "./VendorReviewForm";
+import FadeInOnView from "../../components/FadeInOnView";
 
 export const dynamic = "force-dynamic";
 
@@ -53,6 +55,15 @@ type ReviewRow = {
 type Props = {
   params: Promise<{ slug: string }>;
 };
+
+function proxiedImageUrl(url: string) {
+  const u = (url ?? "").trim();
+  if (!u) return u;
+  if (u.includes("drive.google.com")) {
+    return `/api/image-proxy?url=${encodeURIComponent(u)}`;
+  }
+  return u;
+}
 
 function VendorDetailSkeleton() {
   return (
@@ -164,6 +175,8 @@ async function VendorDetailData({ slug }: { slug: string }) {
 
   const location = vendor.city ?? vendor.location_text;
   const cover = images.find((i) => i.is_cover) ?? images[0];
+  const coverUrl = cover?.image_url ? proxiedImageUrl(cover.image_url) : "";
+  const logoUrl = vendor.logo_url ? proxiedImageUrl(vendor.logo_url) : null;
 
   const planName = String((Array.isArray(vendor.plan) ? vendor.plan?.[0]?.name : vendor.plan?.name) ?? "")
     .trim()
@@ -172,128 +185,137 @@ async function VendorDetailData({ slug }: { slug: string }) {
 
   return (
     <main className="py-10 sm:py-14">
-      <section className="rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden">
-        <div
-          className="h-32 sm:h-40"
-          style={{
-            background: cover
-              ? `linear-gradient(135deg, rgba(166,124,82,0.18), rgba(255,255,255,0.9)), url(${cover.image_url}) center/cover no-repeat`
-              : "linear-gradient(135deg, rgba(166,124,82,0.18), rgba(255,255,255,0.9))",
-          }}
-        />
+      <FadeInOnView>
+        <section className="rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden">
+          <div
+            className="h-32 sm:h-40"
+            style={{
+              background: cover
+                ? `linear-gradient(135deg, rgba(166,124,82,0.18), rgba(255,255,255,0.9)), url(${coverUrl}) center/cover no-repeat`
+                : "linear-gradient(135deg, rgba(166,124,82,0.18), rgba(255,255,255,0.9))",
+            }}
+          />
 
-        <div className="p-6">
-          <div className="text-[12px] font-semibold text-black/45">{location ? location : "Philippines"}</div>
-          <div className="mt-1 flex items-center gap-3">
-            {isPremium && vendor.logo_url ? (
-              <img
-                src={vendor.logo_url}
-                alt={`${vendor.business_name} logo`}
-                className="h-12 w-12 rounded-[3px] border border-black/10 bg-white object-contain"
-                loading="lazy"
-                referrerPolicy="no-referrer"
-              />
-            ) : null}
-            <h1 className="text-[22px] sm:text-[26px] font-semibold tracking-[-0.02em] text-[#2c2c2c]">{vendor.business_name}</h1>
-          </div>
+          <div className="p-6">
+            <div className="text-[12px] font-semibold text-black/45">{location ? location : "Philippines"}</div>
+            <div className="mt-1 flex items-center gap-3">
+              {isPremium && vendor.logo_url ? (
+                <img
+                  src={logoUrl ?? vendor.logo_url}
+                  alt={`${vendor.business_name} logo`}
+                  className="h-12 w-12 rounded-[3px] border border-black/10 bg-white object-contain"
+                  loading="lazy"
+                  referrerPolicy="no-referrer"
+                />
+              ) : null}
+              <h1 className="text-[22px] sm:text-[26px] font-semibold tracking-[-0.02em] text-[#2c2c2c]">{vendor.business_name}</h1>
+            </div>
 
-          <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-[13px] font-semibold text-black/55">
-            <span>
-              <span className="text-[#a67c52]">{(vendor.average_rating ?? 0).toFixed(1)}</span> · {vendor.review_count ?? 0} reviews
-            </span>
-            {isPremium && vendor.website_url ? (
-              <a className="text-[#6e4f33] hover:underline" href={withProtocol(vendor.website_url)} target="_blank" rel="noreferrer">
-                Website
-              </a>
-            ) : null}
-            {isPremium && vendor.contact_phone ? (
-              <a className="text-[#6e4f33] hover:underline" href={`tel:${vendor.contact_phone}`}>
-                Call
-              </a>
-            ) : null}
-            {vendor.contact_email ? (
-              <ContactVendorForm vendorId={vendor.id} vendorName={vendor.business_name} />
-            ) : null}
-          </div>
-
-          {vendor.description ? <p className="mt-4 text-[14px] leading-7 text-black/60">{vendor.description}</p> : null}
-
-          {categories.length > 0 ? (
-            <div className="mt-5 flex flex-wrap gap-2">
-              {categories.map((c) => (
-                <a
-                  key={c.id}
-                  className="inline-flex items-center rounded-[999px] border border-[#a67c52]/35 bg-[#fffaf5] px-3 py-1 text-[12px] font-semibold text-[#6e4f33] hover:bg-[#f8f1e8] transition-colors"
-                  href={`/vendors?category=${encodeURIComponent(c.slug)}`}
-                >
-                  {c.name}
+            <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-[13px] font-semibold text-black/55">
+              <span>
+                <span className="text-[#a67c52]">{(vendor.average_rating ?? 0).toFixed(1)}</span> · {vendor.review_count ?? 0} reviews
+              </span>
+              {isPremium && vendor.website_url ? (
+                <a className="text-[#6e4f33] hover:underline" href={withProtocol(vendor.website_url)} target="_blank" rel="noreferrer">
+                  Website
                 </a>
-              ))}
-            </div>
-          ) : null}
-
-          {affiliations.length > 0 ? (
-            <div className="mt-4 text-[13px] text-black/60">
-              <span className="font-semibold text-black/45">Affiliations:</span> {affiliations.map((a) => a.name).join(", ")}
-            </div>
-          ) : null}
-
-          {isPremium && socials.length > 0 ? (
-            <div className="mt-4 flex flex-wrap gap-3">
-              {socials.map((s) => (
-                <a
-                  key={s.id}
-                  className="inline-flex h-9 w-9 items-center justify-center text-[#6e4f33] hover:text-[#a67c52] transition-colors"
-                  href={withProtocol(s.url)}
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label={formatPlatform(s.platform)}
-                  title={formatPlatform(s.platform)}
-                >
-                  <span className="sr-only">{formatPlatform(s.platform)}</span>
-                  {getPlatformIcon(s.platform)}
+              ) : null}
+              {isPremium && vendor.contact_phone ? (
+                <a className="text-[#6e4f33] hover:underline" href={`tel:${vendor.contact_phone}`}>
+                  Call
                 </a>
-              ))}
+              ) : null}
+              {vendor.contact_email ? (
+                <ContactVendorForm vendorId={vendor.id} vendorName={vendor.business_name} />
+              ) : null}
             </div>
-          ) : null}
 
-          {vendor.address ? (
-            <div className="mt-4 text-[13px] text-black/60">
-              <span className="font-semibold text-black/45">Address:</span> {vendor.address}
-            </div>
-          ) : null}
-        </div>
-      </section>
+            {vendor.description ? <p className="mt-4 text-[14px] leading-7 text-black/60">{vendor.description}</p> : null}
 
-      {images.length > 0 ? <VendorPhotosCarousel images={images} /> : null}
-
-      <section className="mt-10">
-        <div className="flex items-end justify-between gap-6">
-          <div>
-            <h2 className="text-[18px] sm:text-[20px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">Reviews</h2>
-            <p className="mt-1 text-[13px] text-black/55 max-w-xl">Recent reviews from couples.</p>
-          </div>
-        </div>
-
-        <div className="mt-4 grid gap-4">
-          {reviews.length === 0 ? (
-            <div className="rounded-[3px] border border-black/10 bg-white shadow-sm p-6">
-              <div className="text-[13px] font-semibold text-[#2c2c2c]">No reviews yet</div>
-              <div className="mt-1 text-[13px] text-black/55">Be the first to review this vendor.</div>
-            </div>
-          ) : (
-            reviews.map((r) => (
-              <div key={r.id} className="rounded-[3px] border border-black/10 bg-white shadow-sm p-5">
-                <div className="flex items-center justify-between gap-4">
-                  <div className="text-[12px] font-semibold text-black/45">{r.users?.[0]?.email ? maskEmail(r.users[0].email) : "Verified couple"}</div>
-                  <div className="text-[12px] font-semibold text-black/55">{r.rating} / 5</div>
-                </div>
-                {r.review_text ? <div className="mt-3 text-[13px] leading-7 text-black/60">{r.review_text}</div> : null}
+            {categories.length > 0 ? (
+              <div className="mt-5 flex flex-wrap gap-2">
+                {categories.map((c) => (
+                  <a
+                    key={c.id}
+                    className="inline-flex items-center rounded-[999px] border border-[#a67c52]/35 bg-[#fffaf5] px-3 py-1 text-[12px] font-semibold text-[#6e4f33] hover:bg-[#f8f1e8] transition-colors"
+                    href={`/vendors?category=${encodeURIComponent(c.slug)}`}
+                  >
+                    {c.name}
+                  </a>
+                ))}
               </div>
-            ))
-          )}
-        </div>
-      </section>
+            ) : null}
+
+            {affiliations.length > 0 ? (
+              <div className="mt-4 text-[13px] text-black/60">
+                <span className="font-semibold text-black/45">Affiliations:</span> {affiliations.map((a) => a.name).join(", ")}
+              </div>
+            ) : null}
+
+            {isPremium && socials.length > 0 ? (
+              <div className="mt-4 flex flex-wrap gap-3">
+                {socials.map((s) => (
+                  <a
+                    key={s.id}
+                    className="inline-flex h-9 w-9 items-center justify-center text-[#6e4f33] hover:text-[#a67c52] transition-colors"
+                    href={withProtocol(s.url)}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={formatPlatform(s.platform)}
+                    title={formatPlatform(s.platform)}
+                  >
+                    <span className="sr-only">{formatPlatform(s.platform)}</span>
+                    {getPlatformIcon(s.platform)}
+                  </a>
+                ))}
+              </div>
+            ) : null}
+
+            {vendor.address ? (
+              <div className="mt-4 text-[13px] text-black/60">
+                <span className="font-semibold text-black/45">Address:</span> {vendor.address}
+              </div>
+            ) : null}
+          </div>
+        </section>
+      </FadeInOnView>
+
+      {images.length > 0 ? (
+        <FadeInOnView>
+          <VendorPhotosCarousel images={images} />
+        </FadeInOnView>
+      ) : null}
+
+      <FadeInOnView>
+        <section className="mt-10">
+          <div className="flex items-end justify-between gap-6">
+            <div>
+              <h2 className="text-[18px] sm:text-[20px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">Reviews</h2>
+              <p className="mt-1 text-[13px] text-black/55 max-w-xl">Recent reviews from couples.</p>
+            </div>
+          </div>
+
+          <div className="mt-4 grid gap-4">
+            <VendorReviewForm vendorId={vendor.id} vendorSlug={vendor.slug} />
+            {reviews.length === 0 ? (
+              <div className="rounded-[3px] border border-black/10 bg-white shadow-sm p-6">
+                <div className="text-[13px] font-semibold text-[#2c2c2c]">No reviews yet</div>
+                <div className="mt-1 text-[13px] text-black/55">Be the first to review this vendor.</div>
+              </div>
+            ) : (
+              reviews.map((r) => (
+                <div key={r.id} className="rounded-[3px] border border-black/10 bg-white shadow-sm p-5">
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="text-[12px] font-semibold text-black/45">{r.users?.[0]?.email ? maskEmail(r.users[0].email) : "Verified couple"}</div>
+                    <div className="text-[12px] font-semibold text-black/55">{r.rating} / 5</div>
+                  </div>
+                  {r.review_text ? <div className="mt-3 text-[13px] leading-7 text-black/60">{r.review_text}</div> : null}
+                </div>
+              ))
+            )}
+          </div>
+        </section>
+      </FadeInOnView>
     </main>
   );
 }
@@ -342,9 +364,9 @@ function getPlatformIcon(platform: string) {
   const common = {
     fill: "none",
     stroke: "currentColor",
-    strokeWidth: 2,
-    strokeLinecap: "round" as const,
-    strokeLinejoin: "round" as const,
+    strokeWidth: 1.6,
+    strokeLinecap: "square" as const,
+    strokeLinejoin: "miter" as const,
   };
 
   if (p === "facebook" || p === "fb") {

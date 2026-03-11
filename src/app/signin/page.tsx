@@ -1,13 +1,23 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
-import { createSupabaseBrowserClient } from "../../../lib/supabaseBrowser";
+import { createSupabaseBrowserClient } from "../../lib/supabaseBrowser";
 
-export default function VendorSignInPage() {
+function normalizeReturnTo(v: string | null) {
+  const raw = (v ?? "").trim();
+  if (!raw) return "/";
+  if (!raw.startsWith("/")) return "/";
+  return raw;
+}
+
+export default function SignInPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);
+
+  const returnTo = normalizeReturnTo(searchParams.get("returnTo"));
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,7 +30,7 @@ export default function VendorSignInPage() {
     async function run() {
       const { data } = await supabase.auth.getSession();
       if (!cancelled && data.session?.user) {
-        router.push("/vendor/dashboard");
+        router.push(returnTo);
       }
     }
 
@@ -29,7 +39,7 @@ export default function VendorSignInPage() {
     return () => {
       cancelled = true;
     };
-  }, [router, supabase]);
+  }, [router, supabase, returnTo]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -56,7 +66,7 @@ export default function VendorSignInPage() {
 
       if (signInErr) throw signInErr;
       setPassword("");
-      router.push("/vendor/dashboard");
+      router.push(returnTo);
     } catch (err: any) {
       setError(err?.message ?? "Failed to sign in.");
     } finally {
@@ -74,7 +84,7 @@ export default function VendorSignInPage() {
       <div className="mx-auto w-full max-w-3xl px-5 sm:px-8 py-12">
         <div className="rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden">
           <div className="p-7">
-            <div className="text-[18px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">Vendor sign in</div>
+            <div className="text-[18px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">Sign in to review</div>
             <div className="mt-2 text-[13px] text-black/60">Use your email and password to sign in.</div>
 
             {error ? (
@@ -91,7 +101,7 @@ export default function VendorSignInPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="h-10 rounded-[3px] border border-black/10 bg-white px-3 text-[14px] text-[#2c2c2c] placeholder:text-black/35 outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15"
-                  placeholder="you@company.com"
+                  placeholder="you@example.com"
                 />
               </label>
 
@@ -116,17 +126,17 @@ export default function VendorSignInPage() {
 
               <a
                 className="text-[12px] font-semibold text-[#6e4f33] hover:underline"
-                href={`/forgot-password?email=${encodeURIComponent(email.trim())}&next=${encodeURIComponent("/vendor/signin")}`}
+                href={`/forgot-password?email=${encodeURIComponent(email.trim())}&next=${encodeURIComponent(`/signin?returnTo=${encodeURIComponent(returnTo)}`)}`}
               >
                 Forgot password?
               </a>
 
-              <a className="text-[12px] font-semibold text-[#6e4f33] hover:underline" href="/vendor/signup-link">
-                Need access? Create dashboard account
+              <a className="text-[12px] font-semibold text-[#6e4f33] hover:underline" href={`/signup-link?returnTo=${encodeURIComponent(returnTo)}`}>
+                New here? Create an account
               </a>
 
-              <a className="text-[12px] font-semibold text-[#6e4f33] hover:underline" href="/register">
-                New vendor? Register your business
+              <a className="text-[12px] font-semibold text-[#6e4f33] hover:underline" href="/vendor/signin">
+                Are you a vendor? Sign in here
               </a>
             </form>
           </div>

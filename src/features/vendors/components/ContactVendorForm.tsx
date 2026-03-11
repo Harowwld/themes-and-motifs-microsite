@@ -150,7 +150,7 @@ export default function ContactVendorForm({ vendorId, vendorName }: Props) {
             <div className="flex items-center justify-between gap-3 pt-1">
               <button
                 type="button"
-                className="h-9 px-3 rounded-[3px] border border-black/10 bg-white text-[12px] font-semibold text-[#6e4f33] hover:bg-black/[0.02] transition-colors"
+                className="h-9 px-3 rounded-[3px] border border-black/10 bg-white text-[12px] font-semibold text-[#6e4f33] hover:bg-black/2 transition-colors"
                 onClick={() => setOpen(false)}
               >
                 Close

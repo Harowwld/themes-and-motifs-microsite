@@ -2,41 +2,6 @@
 
 import { useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import {
-  Aperture,
-  BadgeCheck,
-  Building2,
-  Cake,
-  Camera,
-  Car,
-  Church,
-  ClipboardList,
-  Crown,
-  Diamond,
-  Drum,
-  Gift,
-  Glasses,
-  Handshake,
-  Headphones,
-  Hotel,
-  IdCard,
-  Image,
-  MapPin,
-  Mail,
-  Martini,
-  Mic,
-  Music,
-  Palette,
-  PartyPopper,
-  Printer,
-  Scissors,
-  Shirt,
-  Sparkles,
-  Ticket,
-  Truck,
-  UtensilsCrossed,
-  Video,
-} from "lucide-react";
 
 type Category = {
   id: number;
@@ -44,61 +9,54 @@ type Category = {
   slug: string;
 };
 
-function getCategoryIcon(categoryName: string, categorySlug: string, active: boolean) {
+function getCategoryIconSrc(categoryName: string, categorySlug: string) {
   const v = `${categoryName} ${categorySlug}`.toLowerCase();
-  const iconClassName = active
-    ? "h-6 w-6 text-[#2c2c2c] transition-colors"
-    : "h-6 w-6 text-[#6e4f33] group-hover:text-[#2c2c2c] transition-colors";
-  const iconProps = { className: iconClassName, "aria-hidden": true as const, strokeWidth: 1.75 };
 
-  if (v.includes("photo") || v.includes("photograph")) return <Camera {...iconProps} />;
-  if (v.includes("video") || v.includes("cinema") || v.includes("film") || v.includes("videograph")) return <Video {...iconProps} />;
-  if (v.includes("studio") || v.includes("shoot") || v.includes("shooting")) return <Aperture {...iconProps} />;
+  if (v.includes("photographer")) return "/Icons/Photographers.png";
+  if (v.includes("videograph") || v.includes("videographer")) return "/Icons/Videographer.png";
+  if (v.includes("photo") || v.includes("video")) return "/Icons/Photo & video.png";
+  if (v.includes("studio") || v.includes("shoot")) return "/Icons/Studio.png";
 
-  if (v.includes("flor") || v.includes("flowers") || v.includes("bouquet")) return <Sparkles {...iconProps} />;
-  if (v.includes("decor") || v.includes("styling") || v.includes("design")) return <Palette {...iconProps} />;
+  if (v.includes("flor") || v.includes("flower") || v.includes("styl") || v.includes("decor"))
+    return "/Icons/Florists & Event Stylists.png";
 
-  if (v.includes("makeup") || v.includes("mua") || v.includes("beauty")) return <Sparkles {...iconProps} />;
-  if (v.includes("hair") || v.includes("stylist") || v.includes("salon")) return <Scissors {...iconProps} />;
+  if (v.includes("hair") || v.includes("makeup") || v.includes("beauty") || v.includes("mua")) return "/Icons/Hait & Makeup.png";
 
-  if (v.includes("dress") || v.includes("gown") || v.includes("apparel") || v.includes("suit") || v.includes("wear")) return <Shirt {...iconProps} />;
-  if (v.includes("accessor") || v.includes("veil") || v.includes("shoes")) return <Crown {...iconProps} />;
+  if (v.includes("apparel") || v.includes("dress") || v.includes("gown") || v.includes("suit")) return "/Icons/Wedding Apparel.png";
 
-  if (v.includes("cake") || v.includes("dessert") || v.includes("pastry")) return <Cake {...iconProps} />;
-  if (v.includes("catering") || v.includes("food")) return <UtensilsCrossed {...iconProps} />;
-  if (v.includes("bar") || v.includes("cocktail") || v.includes("drink")) return <Martini {...iconProps} />;
+  if (v.includes("planner") || v.includes("coord") || v.includes("organizer")) return "/Icons/Wedding Planner.png";
 
-  if (v.includes("invitation") || v.includes("invite")) return <Mail {...iconProps} />;
-  if (v.includes("print") || v.includes("stationery") || v.includes("souvenir")) return <Printer {...iconProps} />;
+  if (v.includes("ring") || v.includes("jewel")) return "/Icons/Wedding & Engagement Rings.png";
 
-  if (v.includes("rings") || v.includes("jewel") || v.includes("diamond")) return <Diamond {...iconProps} />;
-  if (v.includes("gift") || v.includes("giveaway")) return <Gift {...iconProps} />;
+  if (v.includes("cater") || v.includes("food")) return "/Icons/Caterers.png";
+  if (v.includes("cake") || v.includes("dessert") || v.includes("coffee") || v.includes("bar") || v.includes("cocktail"))
+    return "/Icons/Desserts, Coffee, Mobuile Bars.png";
 
-  if (v.includes("music") || v.includes("band")) return <Music {...iconProps} />;
-  if (v.includes("dj") || v.includes("host") || v.includes("emcee") || v.includes("mc")) return <Mic {...iconProps} />;
-  if (v.includes("sound") || v.includes("lights") || v.includes("audio")) return <Headphones {...iconProps} />;
-  if (v.includes("drum") || v.includes("percussion")) return <Drum {...iconProps} />;
+  if (v.includes("invitation") || v.includes("stationery")) return "/Icons/Invitations & Staionery.png";
+  if (v.includes("souvenir") || v.includes("keepsake")) return "/Icons/Souvenirs & keepsakes.png";
+  if (v.includes("gift") || v.includes("registry")) return "/Icons/Gifts & Gifts Registry.png";
 
-  if (v.includes("transport") || v.includes("car") || v.includes("van") || v.includes("limo")) return <Car {...iconProps} />;
-  if (v.includes("deliver") || v.includes("logistic")) return <Truck {...iconProps} />;
+  if (v.includes("transport") || v.includes("car") || v.includes("limo") || v.includes("van")) return "/Icons/Transportation.png";
 
-  if (v.includes("planner") || v.includes("coord") || v.includes("organizer") || v.includes("coordination")) return <ClipboardList {...iconProps} />;
-  if (v.includes("package") || v.includes("bundle") || v.includes("promo")) return <Ticket {...iconProps} />;
-  if (v.includes("affiliation") || v.includes("partner") || v.includes("supplier")) return <Handshake {...iconProps} />;
+  if (v.includes("entertain") || v.includes("dj") || v.includes("music") || v.includes("band") || v.includes("host") || v.includes("mc"))
+    return "/Icons/Entertainment.png";
 
-  if (v.includes("venue") || v.includes("reception") || v.includes("hall")) return <Building2 {...iconProps} />;
-  if (v.includes("church") || v.includes("chapel")) return <Church {...iconProps} />;
-  if (v.includes("hotel") || v.includes("resort")) return <Hotel {...iconProps} />;
-  if (v.includes("location") || v.includes("city") || v.includes("area") || v.includes("region")) return <MapPin {...iconProps} />;
+  if (v.includes("lights") || v.includes("sound") || v.includes("audio")) return "/Icons/lights-sounds.png";
+  if (v.includes("special effect") || v.includes("fx")) return "/Icons/Special Effects.png";
+  if (v.includes("equip") || v.includes("rental")) return "/Icons/Equipment Rental.png";
 
-  if (v.includes("photo") || v.includes("gallery") || v.includes("album")) return <Image {...iconProps} />;
-  if (v.includes("id") || v.includes("registration")) return <IdCard {...iconProps} />;
-  if (v.includes("vip") || v.includes("premium")) return <BadgeCheck {...iconProps} />;
-  if (v.includes("glasses") || v.includes("eyewear")) return <Glasses {...iconProps} />;
-  if (v.includes("party") || v.includes("event")) return <PartyPopper {...iconProps} />;
-  if (v.includes("balloon")) return <PartyPopper {...iconProps} />;
+  if (v.includes("venue") || v.includes("hall")) return "/Icons/Venue.png";
+  if (v.includes("hotel")) return "/Icons/Hotels.png";
+  if (v.includes("resort")) return "/Icons/Resort.png";
+  if (v.includes("travel") || v.includes("tour")) return "/Icons/Travel & Tours.png";
+  if (v.includes("honeymoon") || v.includes("destination")) return "/Icons/Wedding & Honeymoon Destinations.png";
 
-  return <Building2 {...iconProps} />;
+  if (v.includes("real estate")) return "/Icons/Real estate.gif";
+  if (v.includes("financial") || v.includes("finance")) return "/Icons/Financial Services.png";
+  if (v.includes("health") || v.includes("wellness")) return "/Icons/Health & Wellness.png";
+  if (v.includes("advoc")) return "/Icons/T&M Advocacies.png";
+
+  return "/Icons/Others.png";
 }
 
 export default function CategoryBrowser({ categories }: { categories: Category[] }) {
@@ -156,19 +114,25 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
                 }}
                 className={
                   isActive
-                    ? "group rounded-[3px] border border-black/20 bg-[#fffaf2] shadow-sm hover:shadow-md transition-all px-4 py-4 text-center"
-                    : "group rounded-[3px] border border-black/10 bg-white shadow-sm hover:shadow-md hover:border-black/15 transition-all px-4 py-4 text-center"
+                    ? "group rounded-[3px] border border-black/20 bg-[#fffaf2] shadow-sm hover:shadow-md transition-all px-3 py-3 text-center min-h-24"
+                    : "group rounded-[3px] border border-black/10 bg-white shadow-sm hover:shadow-md hover:border-black/15 transition-all px-3 py-3 text-center min-h-24"
                 }
                 aria-label={`Browse ${c.name}`}
               >
                 <div className="mx-auto inline-flex h-10 w-10 items-center justify-center">
-                  {getCategoryIcon(c.name, c.slug, isActive)}
+                  <img
+                    src={getCategoryIconSrc(c.name, c.slug)}
+                    alt=""
+                    aria-hidden
+                    className="h-10 w-10 object-contain"
+                    loading="lazy"
+                  />
                 </div>
                 <div
                   className={
                     isActive
-                      ? "mt-3 text-[13px] font-semibold text-[#2c2c2c]"
-                      : "mt-3 text-[13px] font-semibold text-[#6e4f33] group-hover:text-[#2c2c2c]"
+                      ? "mt-1 text-[12px] font-semibold text-[#2c2c2c] whitespace-nowrap overflow-hidden text-ellipsis"
+                      : "mt-1 text-[12px] font-semibold text-[#6e4f33] group-hover:text-[#2c2c2c] whitespace-nowrap overflow-hidden text-ellipsis"
                   }
                 >
                   {c.name}
@@ -186,7 +150,7 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
             <button
               type="button"
               onClick={() => scrollBy(-1)}
-              className="absolute left-1 top-1/2 -translate-y-1/2 z-10 h-9 w-9 rounded-[999px] border border-black/10 bg-white shadow-sm hover:shadow-md transition-shadow"
+              className="absolute left-1 top-1/2 -translate-y-1/2 z-10 h-9 w-9 rounded-[3px] border border-black/10 bg-white shadow-sm hover:shadow-md transition-shadow"
               aria-label="Scroll categories left"
             >
               <svg
@@ -195,9 +159,9 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
                 className="h-4 w-4 mx-auto text-black/60"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+                strokeWidth="1.6"
+                strokeLinecap="square"
+                strokeLinejoin="miter"
               >
                 <path d="M15 18l-6-6 6-6" />
               </svg>
@@ -220,20 +184,26 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
                   }}
                   className={
                     isActive
-                      ? "group shrink-0 rounded-[3px] border border-black/20 bg-[#fffaf2] shadow-sm hover:shadow-md transition-all px-4 py-4 text-center w-45"
-                      : "group shrink-0 rounded-[3px] border border-black/10 bg-white shadow-sm hover:shadow-md hover:border-black/15 transition-all px-4 py-4 text-center w-45"
+                      ? "group shrink-0 rounded-[3px] border border-black/20 bg-[#fffaf2] shadow-sm hover:shadow-md transition-all px-3 py-3 text-center w-45 min-h-24"
+                      : "group shrink-0 rounded-[3px] border border-black/10 bg-white shadow-sm hover:shadow-md hover:border-black/15 transition-all px-3 py-3 text-center w-45 min-h-24"
                   }
                   aria-label={`Browse ${c.name}`}
                   title={c.name}
                 >
                   <div className="mx-auto inline-flex h-10 w-10 items-center justify-center">
-                    {getCategoryIcon(c.name, c.slug, isActive)}
+                    <img
+                      src={getCategoryIconSrc(c.name, c.slug)}
+                      alt=""
+                      aria-hidden
+                      className="h-10 w-10 object-contain"
+                      loading="lazy"
+                    />
                   </div>
                   <div
                     className={
                       isActive
-                        ? "mt-3 text-[13px] font-semibold text-[#2c2c2c] line-clamp-2"
-                        : "mt-3 text-[13px] font-semibold text-[#6e4f33] group-hover:text-[#2c2c2c] line-clamp-2"
+                        ? "mt-1 text-[12px] font-semibold text-[#2c2c2c] whitespace-nowrap overflow-hidden text-ellipsis"
+                        : "mt-1 text-[12px] font-semibold text-[#6e4f33] group-hover:text-[#2c2c2c] whitespace-nowrap overflow-hidden text-ellipsis"
                     }
                   >
                     {c.name}
@@ -247,7 +217,7 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
             <button
               type="button"
               onClick={() => scrollBy(1)}
-              className="absolute right-1 top-1/2 -translate-y-1/2 z-10 h-9 w-9 rounded-[999px] border border-black/10 bg-white shadow-sm hover:shadow-md transition-shadow"
+              className="absolute right-1 top-1/2 -translate-y-1/2 z-10 h-9 w-9 rounded-[3px] border border-black/10 bg-white shadow-sm hover:shadow-md transition-shadow"
               aria-label="Scroll categories right"
             >
               <svg
@@ -256,9 +226,9 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
                 className="h-4 w-4 mx-auto text-black/60"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+                strokeWidth="1.6"
+                strokeLinecap="square"
+                strokeLinejoin="miter"
               >
                 <path d="M9 6l6 6-6 6" />
               </svg>

@@ -8,6 +8,15 @@ export const dynamic = "force-dynamic";
 
 type SortKey = "alpha" | "rating" | "newest" | "saves" | "views";
 
+function sortWithImagesFirst<T extends { cover_image_url?: string | null; logo_url?: string | null }>(vendors: T[]) {
+  return [...vendors].sort((a, b) => {
+    const aHas = Boolean((a.cover_image_url ?? "").trim() || (a.logo_url ?? "").trim());
+    const bHas = Boolean((b.cover_image_url ?? "").trim() || (b.logo_url ?? "").trim());
+    if (aHas === bHas) return 0;
+    return aHas ? -1 : 1;
+  });
+}
+
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
 
@@ -38,16 +47,19 @@ export async function GET(req: Request) {
     sort,
   });
 
-  const { data: vendors, count, error } = await query.range(from, to);
+  const MAX_FETCH = 5000;
+  const { data: vendors, count, error } = await query.limit(MAX_FETCH);
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
   const withCovers = await attachCoverImages(supabase, (vendors ?? []) as Array<{ id: number }>);
+  const sorted = sortWithImagesFirst(withCovers as any);
+  const pageSlice = sorted.slice(from, to + 1);
 
   return NextResponse.json({
-    vendors: withCovers,
+    vendors: pageSlice,
     total: count ?? 0,
     page,
     pageSize,

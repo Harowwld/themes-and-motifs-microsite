@@ -1,10 +1,67 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
+
+import { createSupabaseBrowserClient } from "../../lib/supabaseBrowser";
 
 export default function SiteHeader() {
   const router = useRouter();
   const pathname = usePathname();
+  const supabase = useMemo(() => createSupabaseBrowserClient(), []);
+
+  const [signedIn, setSignedIn] = useState(false);
+  const [isVendor, setIsVendor] = useState(false);
+  const [isSoonToWed, setIsSoonToWed] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function refresh() {
+      const { data } = await supabase.auth.getSession();
+      const session = data.session ?? null;
+
+      if (cancelled) return;
+
+      setSignedIn(Boolean(session?.user));
+
+      if (!session?.access_token) {
+        setIsVendor(false);
+        setIsSoonToWed(false);
+        return;
+      }
+
+      try {
+        const res = await fetch("/api/auth/me", {
+          headers: {
+            authorization: `Bearer ${session.access_token}`,
+          },
+        });
+        const json = (await res.json().catch(() => null)) as { isVendor?: boolean; isSoonToWed?: boolean } | null;
+        if (!cancelled) {
+          setIsVendor(Boolean(json?.isVendor));
+          setIsSoonToWed(Boolean(json?.isSoonToWed));
+        }
+      } catch {
+        if (!cancelled) {
+          setIsVendor(false);
+          setIsSoonToWed(false);
+        }
+      }
+    }
+
+    void refresh();
+
+    const { data: sub } = supabase.auth.onAuthStateChange(() => {
+      void refresh();
+    });
+
+    return () => {
+      cancelled = true;
+      sub.subscription.unsubscribe();
+    };
+  }, [supabase]);
 
   const goToHomeSection = (id: string) => {
     if (pathname === "/") {
@@ -16,6 +73,16 @@ export default function SiteHeader() {
     }
 
     router.push(`/#${id}`);
+  };
+
+  const signOut = async () => {
+    setSigningOut(true);
+    try {
+      await supabase.auth.signOut();
+    } finally {
+      setSigningOut(false);
+      router.push("/", { scroll: false });
+    }
   };
 
   return (
@@ -73,12 +140,48 @@ export default function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <a
-            className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-[3px] border border-black/10 bg-white text-[13px] font-semibold text-black/70 hover:bg-black/[0.02] transition-colors"
-            href="/vendor/signin"
-          >
-            Sign in
-          </a>
+          {isVendor ? (
+            <>
+              <a
+                className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-[3px] border border-black/10 bg-white text-[13px] font-semibold text-black/70 hover:bg-black/[0.02] transition-colors"
+                href="/vendor/dashboard"
+                onClick={(e) => {
+                  e.preventDefault();
+                  router.push("/vendor/dashboard", { scroll: false });
+                }}
+              >
+                Dashboard
+              </a>
+              <button
+                type="button"
+                disabled={signingOut}
+                onClick={() => void signOut()}
+                className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-[3px] border border-black/10 bg-white text-[13px] font-semibold text-black/70 hover:bg-black/[0.02] transition-colors disabled:opacity-60"
+              >
+                {signingOut ? "Signing out…" : "Sign out"}
+              </button>
+            </>
+          ) : null}
+
+          {signedIn && isSoonToWed && !isVendor ? (
+            <button
+              type="button"
+              disabled={signingOut}
+              onClick={() => void signOut()}
+              className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-[3px] border border-black/10 bg-white text-[13px] font-semibold text-black/70 hover:bg-black/[0.02] transition-colors disabled:opacity-60"
+            >
+              {signingOut ? "Signing out…" : "Sign out"}
+            </button>
+          ) : null}
+
+          {!signedIn ? (
+            <a
+              className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-[3px] border border-black/10 bg-white text-[13px] font-semibold text-black/70 hover:bg-black/[0.02] transition-colors"
+              href="/soon-to-wed/signin"
+            >
+              Sign in
+            </a>
+          ) : null}
           <a
             className="h-9 inline-flex items-center justify-center px-3.5 rounded-[3px] bg-[#a67c52] text-white text-[13px] font-semibold hover:bg-[#8e6a46] transition-colors shadow-sm"
             href="/vendors"

@@ -40,7 +40,7 @@ export default function FeaturedVendorsSection({ vendors }: { vendors: FeaturedV
           </div>
         ) : (
           vendors.map((vendor, i) => {
-            return <VendorCard key={vendor.id} vendor={vendor} toneSeed={i} />;
+            return <VendorCard key={vendor.id} vendor={vendor} toneSeed={i} fixedHeight />;
           })
         )}
       </div>
