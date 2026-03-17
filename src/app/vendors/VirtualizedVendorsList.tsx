@@ -217,7 +217,7 @@ export default function VirtualizedVendorsList({
               >
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" style={{ height: ROW_HEIGHT_PX }}>
                   {row.map((v) => (
-                    <VendorCard key={v.id} vendor={v} fixedHeight />
+                    <VendorCard key={v.id} vendor={v} />
                   ))}
                   {cols > row.length
                     ? Array.from({ length: cols - row.length }).map((_, i) => <div key={`spacer-${rowIndex}-${i}`} />)

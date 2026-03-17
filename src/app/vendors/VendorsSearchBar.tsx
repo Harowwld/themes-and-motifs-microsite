@@ -8,6 +8,12 @@ type RegionOption = {
   name: string;
 };
 
+type CityOption = {
+  id: number;
+  name: string;
+  region_id: number;
+};
+
 type AffiliationOption = {
   id: number;
   name: string;
@@ -24,6 +30,7 @@ type Props = {
   initialAffiliation: string;
   initialSort: SortKey;
   regions: RegionOption[];
+  cities: CityOption[];
   affiliations: AffiliationOption[];
 };
 
@@ -62,6 +69,7 @@ export default function VendorsSearchBar({
   initialAffiliation,
   initialSort,
   regions,
+  cities,
   affiliations,
 }: Props) {
   const router = useRouter();
@@ -73,6 +81,12 @@ export default function VendorsSearchBar({
   const [sort, setSort] = useState<SortKey>(initialSort);
 
   const regionOptions = useMemo(() => regions ?? [], [regions]);
+  const cityOptions = useMemo(() => {
+    const regionIdNum = Number(region);
+    const base = cities ?? [];
+    const filtered = Number.isFinite(regionIdNum) ? base.filter((c) => c.region_id === regionIdNum) : base;
+    return filtered.slice().sort((a, b) => a.name.localeCompare(b.name));
+  }, [cities, region]);
   const affiliationOptions = useMemo(() => affiliations ?? [], [affiliations]);
 
   const submit = () => {
@@ -112,7 +126,10 @@ export default function VendorsSearchBar({
             <span className="text-[12px] font-semibold text-black/55">Area</span>
             <select
               value={region}
-              onChange={(e) => setRegion(e.target.value)}
+              onChange={(e) => {
+                setRegion(e.target.value);
+                setLocation("");
+              }}
               className="h-10 rounded-[3px] border border-black/10 bg-white px-3 text-[14px] text-black/70 outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15"
             >
               <option value="">All areas</option>
@@ -125,13 +142,19 @@ export default function VendorsSearchBar({
           </label>
 
           <label className="grid gap-1">
-            <span className="text-[12px] font-semibold text-black/55">Location</span>
-            <input
+            <span className="text-[12px] font-semibold text-black/55">City</span>
+            <select
               value={location}
               onChange={(e) => setLocation(e.target.value)}
-              placeholder="City or venue"
-              className="h-10 rounded-[3px] border border-black/10 bg-white px-3 text-[14px] text-[#2c2c2c] placeholder:text-black/35 outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15"
-            />
+              className="h-10 rounded-[3px] border border-black/10 bg-white px-3 text-[14px] text-black/70 outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15"
+            >
+              <option value="">All cities</option>
+              {cityOptions.map((c) => (
+                <option key={c.id} value={c.name}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
           </label>
 
           <label className="grid gap-1">

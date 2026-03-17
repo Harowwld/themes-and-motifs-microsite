@@ -1,23 +1,9 @@
 import { createSupabaseAdminClient } from "../../../../lib/supabaseAdmin";
-
-function assertAdmin(req: Request) {
-  const token = req.headers.get("x-admin-token");
-  const expected = process.env.ADMIN_TOKEN;
-
-  if (!expected) {
-    throw new Error("Missing env var: ADMIN_TOKEN");
-  }
-
-  if (typeof token !== "string" || token.length === 0 || token !== expected) {
-    const err = new Error("Unauthorized") as Error & { statusCode?: number };
-    err.statusCode = 401;
-    throw err;
-  }
-}
+import { assertSuperadminRequest } from "../../../../lib/superadminAuth";
 
 export async function GET(req: Request) {
   try {
-    assertAdmin(req);
+    await assertSuperadminRequest(req);
 
     const { searchParams } = new URL(req.url);
     const limitRaw = searchParams.get("limit");
@@ -45,7 +31,7 @@ export async function GET(req: Request) {
 
 export async function PATCH(req: Request) {
   try {
-    assertAdmin(req);
+    await assertSuperadminRequest(req);
 
     const { id, is_active, is_featured, valid_from, valid_to, title, summary, image_url } = (await req.json()) ?? {};
 

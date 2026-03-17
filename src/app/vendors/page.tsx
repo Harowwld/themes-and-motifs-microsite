@@ -102,13 +102,34 @@ async function VendorsPageData({
 }) {
   const supabase = createSupabaseServerClient();
 
-  const [regionsRes, affiliationsRes, categoriesRes] = await Promise.all([
+  const [regionsRes, vendorLocationsRes, affiliationsRes, categoriesRes] = await Promise.all([
     supabase.from("regions").select("id,name").is("parent_id", null).order("name", { ascending: true }).limit(200),
+    supabase
+      .from("vendors")
+      .select("region_id,city,location_text")
+      .eq("is_active", true)
+      .limit(5000),
     supabase.from("affiliations").select("id,name,slug").order("name", { ascending: true }).limit(200),
     supabase.from("categories").select("id,name,slug").order("name", { ascending: true }).limit(200),
   ]);
 
   const regionsList = (regionsRes.data ?? []) as RegionRow[];
+  const vendorLocations = (vendorLocationsRes.data ?? []) as {
+    region_id: number | null;
+    city: string | null;
+    location_text: string | null;
+  }[];
+  const citiesList = Array.from(
+    new Map(
+      vendorLocations
+        .map((r) => ({
+          region_id: typeof r.region_id === "number" ? r.region_id : 0,
+          name: (r.city ?? r.location_text ?? "").trim(),
+        }))
+        .filter((r) => Boolean(r.name))
+        .map((r) => [`${r.region_id}::${r.name.toLowerCase()}`, r] as const)
+    ).values()
+  );
   const affiliationsList = (affiliationsRes.data ?? []) as AffiliationRow[];
   const categoriesList = (categoriesRes.data ?? []) as CategoryListItem[];
 
@@ -142,6 +163,7 @@ async function VendorsPageData({
           initialAffiliation={affiliation}
           initialSort={sort}
           regions={regionsList}
+          cities={Array.from(citiesList).map((c, i) => ({ id: i + 1, name: c.name, region_id: c.region_id }))}
           affiliations={affiliationsList}
         />
       </FadeInOnView>

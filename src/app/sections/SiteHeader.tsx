@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
 import { createSupabaseBrowserClient } from "../../lib/supabaseBrowser";
@@ -9,6 +9,9 @@ export default function SiteHeader() {
   const router = useRouter();
   const pathname = usePathname();
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);
+
+  const meCacheRef = useRef<{ token: string; at: number; isVendor: boolean; isSoonToWed: boolean } | null>(null);
+  const meInFlightRef = useRef<Promise<{ isVendor: boolean; isSoonToWed: boolean } | null> | null>(null);
 
   const [signedIn, setSignedIn] = useState(false);
   const [isVendor, setIsVendor] = useState(false);
@@ -32,16 +35,41 @@ export default function SiteHeader() {
         return;
       }
 
-      try {
-        const res = await fetch("/api/auth/me", {
-          headers: {
-            authorization: `Bearer ${session.access_token}`,
-          },
+      const token = session.access_token;
+      const now = Date.now();
+      const cached = meCacheRef.current;
+      const ttlMs = 30_000;
+      if (cached && cached.token === token && now - cached.at < ttlMs) {
+        setIsVendor(cached.isVendor);
+        setIsSoonToWed(cached.isSoonToWed);
+        return;
+      }
+
+      if (!meInFlightRef.current) {
+        meInFlightRef.current = (async () => {
+          try {
+            const res = await fetch("/api/auth/me", {
+              headers: {
+                authorization: `Bearer ${token}`,
+              },
+            });
+            const json = (await res.json().catch(() => null)) as { isVendor?: boolean; isSoonToWed?: boolean } | null;
+            return { isVendor: Boolean(json?.isVendor), isSoonToWed: Boolean(json?.isSoonToWed) };
+          } catch {
+            return null;
+          }
+        })().finally(() => {
+          meInFlightRef.current = null;
         });
-        const json = (await res.json().catch(() => null)) as { isVendor?: boolean; isSoonToWed?: boolean } | null;
+      }
+
+      try {
+        const me = await meInFlightRef.current;
+        if (!me) throw new Error("me fetch failed");
+        meCacheRef.current = { token, at: Date.now(), isVendor: me.isVendor, isSoonToWed: me.isSoonToWed };
         if (!cancelled) {
-          setIsVendor(Boolean(json?.isVendor));
-          setIsSoonToWed(Boolean(json?.isSoonToWed));
+          setIsVendor(me.isVendor);
+          setIsSoonToWed(me.isSoonToWed);
         }
       } catch {
         if (!cancelled) {
@@ -86,7 +114,7 @@ export default function SiteHeader() {
   };
 
   return (
-    <header className="sticky top-0 z-50 -mx-5 sm:-mx-8 px-5 sm:px-8 backdrop-blur supports-[backdrop-filter]:bg-[#fcfbf9]/75 bg-[#fcfbf9]/95 border-b border-black/5">
+    <header className="sticky top-0 z-50 -mx-5 sm:-mx-8 px-5 sm:px-8 backdrop-blur supports-backdrop-filter:bg-[#fcfbf9]/75 bg-[#fcfbf9]/95 border-b border-black/5">
       <div className="mx-auto max-w-6xl h-16 flex items-center justify-between">
         <a
           className="flex items-center"
@@ -143,7 +171,7 @@ export default function SiteHeader() {
           {isVendor ? (
             <>
               <a
-                className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-[3px] border border-black/10 bg-white text-[13px] font-semibold text-black/70 hover:bg-black/[0.02] transition-colors"
+                className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-[3px] border border-black/10 bg-white text-[13px] font-semibold text-black/70 hover:bg-black/2 transition-colors"
                 href="/vendor/dashboard"
                 onClick={(e) => {
                   e.preventDefault();
@@ -156,7 +184,7 @@ export default function SiteHeader() {
                 type="button"
                 disabled={signingOut}
                 onClick={() => void signOut()}
-                className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-[3px] border border-black/10 bg-white text-[13px] font-semibold text-black/70 hover:bg-black/[0.02] transition-colors disabled:opacity-60"
+                className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-[3px] border border-black/10 bg-white text-[13px] font-semibold text-black/70 hover:bg-black/2 transition-colors disabled:opacity-60"
               >
                 {signingOut ? "Signing out…" : "Sign out"}
               </button>
@@ -168,7 +196,7 @@ export default function SiteHeader() {
               type="button"
               disabled={signingOut}
               onClick={() => void signOut()}
-              className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-[3px] border border-black/10 bg-white text-[13px] font-semibold text-black/70 hover:bg-black/[0.02] transition-colors disabled:opacity-60"
+              className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-[3px] border border-black/10 bg-white text-[13px] font-semibold text-black/70 hover:bg-black/2 transition-colors disabled:opacity-60"
             >
               {signingOut ? "Signing out…" : "Sign out"}
             </button>
@@ -176,7 +204,7 @@ export default function SiteHeader() {
 
           {!signedIn ? (
             <a
-              className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-[3px] border border-black/10 bg-white text-[13px] font-semibold text-black/70 hover:bg-black/[0.02] transition-colors"
+              className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-[3px] border border-black/10 bg-white text-[13px] font-semibold text-black/70 hover:bg-black/2 transition-colors"
               href="/soon-to-wed/signin"
             >
               Sign in

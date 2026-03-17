@@ -11,6 +11,8 @@ type Category = {
 
 function getCategoryIconSrc(categoryName: string, categorySlug: string) {
   const v = `${categoryName} ${categorySlug}`.toLowerCase();
+  const tokens = v.split(/[^a-z0-9]+/g).filter(Boolean);
+  const hasToken = (t: string) => tokens.includes(t);
 
   if (v.includes("photographer")) return "/Icons/Photographers.png";
   if (v.includes("videograph") || v.includes("videographer")) return "/Icons/Videographer.png";
@@ -29,7 +31,8 @@ function getCategoryIconSrc(categoryName: string, categorySlug: string) {
   if (v.includes("ring") || v.includes("jewel")) return "/Icons/Wedding & Engagement Rings.png";
 
   if (v.includes("cater") || v.includes("food")) return "/Icons/Caterers.png";
-  if (v.includes("cake") || v.includes("dessert") || v.includes("coffee") || v.includes("bar") || v.includes("cocktail"))
+  if (hasToken("cake") || hasToken("cakes")) return "/Icons/cake-1.png";
+  if (v.includes("dessert") || v.includes("coffee") || v.includes("bar") || v.includes("cocktail"))
     return "/Icons/Desserts, Coffee, Mobuile Bars.png";
 
   if (v.includes("invitation") || v.includes("stationery")) return "/Icons/Invitations & Staionery.png";
@@ -37,6 +40,14 @@ function getCategoryIconSrc(categoryName: string, categorySlug: string) {
   if (v.includes("gift") || v.includes("registry")) return "/Icons/Gifts & Gifts Registry.png";
 
   if (v.includes("transport") || v.includes("car") || v.includes("limo") || v.includes("van")) return "/Icons/Transportation.png";
+
+  if (
+    v.includes("voiceover") ||
+    (hasToken("voice") && hasToken("over")) ||
+    v.includes("voice-over") ||
+    v.includes("emcee")
+  )
+    return "/Icons/Voiceover.png";
 
   if (v.includes("entertain") || v.includes("dj") || v.includes("music") || v.includes("band") || v.includes("host") || v.includes("mc"))
     return "/Icons/Entertainment.png";

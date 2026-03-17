@@ -10,6 +10,7 @@ type RegistrationPayload = {
   contactPhone?: string;
   categoryId?: string;
   websiteUrl?: string;
+  secDtiNumber?: string;
   planId?: string;
   description?: string;
   location?: {
@@ -31,6 +32,7 @@ export async function POST(req: Request) {
 
   const businessName = (body.businessName ?? "").trim();
   const contactEmail = (body.contactEmail ?? "").trim();
+  const coverPhotoUrl = String((body as any)?.extra?.cover_photo_url ?? "").trim();
 
   if (!businessName) {
     return NextResponse.json({ error: "Business name is required" }, { status: 400 });
@@ -38,6 +40,10 @@ export async function POST(req: Request) {
 
   if (!contactEmail) {
     return NextResponse.json({ error: "Email is required" }, { status: 400 });
+  }
+
+  if (!coverPhotoUrl) {
+    return NextResponse.json({ error: "Cover photo is required" }, { status: 400 });
   }
 
   const categoryIdNum = body.categoryId ? Number(body.categoryId) : null;
@@ -53,6 +59,15 @@ export async function POST(req: Request) {
     .join(" | ");
 
   const descriptionText = (body.description ?? "").trim();
+  if (descriptionText.length > 500) {
+    return NextResponse.json({ error: "Business description must be 500 characters or less" }, { status: 400 });
+  }
+
+  const extra = (body.extra ?? null) as any;
+  if (extra && typeof extra === "object") {
+    const raw = String(extra.affiliation_slug ?? "").trim();
+    extra.affiliation_slug = raw && raw.toLowerCase() !== "none" ? raw : null;
+  }
 
   const supabase = createSupabaseAdminClient();
 
@@ -65,8 +80,9 @@ export async function POST(req: Request) {
       category_id: Number.isFinite(categoryIdNum) ? categoryIdNum : null,
       location: locationStr || null,
       description: descriptionText || null,
-      extra: body.extra ?? null,
+      extra,
       website_url: (body.websiteUrl ?? "").trim() || null,
+      sec_dti_number: (body.secDtiNumber ?? "").trim() || null,
       plan_id: Number.isFinite(planIdNum) ? planIdNum : null,
       status: "submitted",
     })

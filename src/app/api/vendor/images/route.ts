@@ -39,6 +39,14 @@ export async function PUT(req: Request) {
       return { ...x, is_cover: isCover };
     });
 
+    if (normalized.length === 0) {
+      return Response.json({ error: "Cover photo is required." }, { status: 400 });
+    }
+
+    if (!normalized.some((x) => x.is_cover)) {
+      return Response.json({ error: "Cover photo is required." }, { status: 400 });
+    }
+
     const { error: delErr } = await supabase.from("vendor_images").delete().eq("vendor_id", vendor.id);
     if (delErr) return Response.json({ error: delErr.message }, { status: 500 });
 

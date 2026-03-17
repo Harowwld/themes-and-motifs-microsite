@@ -4,11 +4,35 @@ type FeaturedPromo = {
   summary: string | null;
   valid_from: string | null;
   valid_to: string | null;
+  image_url?: string | null;
+  discount_percentage?: number | null;
+  image_focus_x?: number | null;
+  image_focus_y?: number | null;
+  image_zoom?: number | null;
   vendors: {
     business_name: string;
     slug: string;
   }[];
 };
+
+function clampPct(v: number) {
+  if (!Number.isFinite(v)) return 50;
+  return Math.max(0, Math.min(100, v));
+}
+
+function clampZoom(v: number) {
+  if (!Number.isFinite(v)) return 1;
+  return Math.max(1, Math.min(3, v));
+}
+
+function proxiedImageUrl(url: string) {
+  const u = (url ?? "").trim();
+  if (!u) return u;
+  if (u.includes("drive.google.com")) {
+    return `/api/image-proxy?url=${encodeURIComponent(u)}`;
+  }
+  return u;
+}
 
 export default function PromosSection({ promos }: { promos: FeaturedPromo[] }) {
   return (
@@ -22,7 +46,7 @@ export default function PromosSection({ promos }: { promos: FeaturedPromo[] }) {
             Time-bound deals from suppliers—great for shortlisting with confidence.
           </p>
         </div>
-        <a className="text-[13px] font-semibold text-[#6e4f33] hover:underline" href="#discover">
+        <a className="text-[13px] font-semibold text-[#6e4f33] hover:underline" href="/promos">
           View all
         </a>
       </div>
@@ -37,34 +61,88 @@ export default function PromosSection({ promos }: { promos: FeaturedPromo[] }) {
           promos.map((promo, i) => {
             const tone = i % 3 === 0 ? "#a67c52" : i % 3 === 1 ? "#c17a4e" : "#8e6a46";
             const vendorName = promo.vendors?.[0]?.business_name;
+            const coverUrl = promo.image_url ? proxiedImageUrl(promo.image_url) : "";
+            const fx = clampPct(Number(promo.image_focus_x ?? 50));
+            const fy = clampPct(Number(promo.image_focus_y ?? 50));
+            const z = clampZoom(Number(promo.image_zoom ?? 1));
 
             return (
               <div
                 key={promo.id}
-                className="rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden"
+                className="rounded-md border-2 border-dashed border-[#c17a4e]/40 bg-linear-to-br from-[#fff7ed] to-white overflow-hidden relative"
               >
-                <div
-                  className="h-24"
-                  style={{
-                    background: `linear-gradient(135deg, ${tone}22, #ffffff 65%)`,
-                  }}
-                />
-                <div className="p-5">
-                  <div className="text-[12px] font-semibold text-black/45">
-                    {vendorName ? vendorName : "Featured promo"}
+                {/* Promo Badge */}
+                <div className="absolute top-0 left-0 z-10">
+                  <div className="bg-[#c17a4e] text-white text-[11px] font-bold px-3 py-1 rounded-br-md">
+                    PROMO
                   </div>
-                  <div className="mt-1 text-[15px] font-semibold text-[#2c2c2c]">{promo.title}</div>
-                  <div className="mt-2 text-[13px] text-black/55 line-clamp-2">
-                    {promo.summary ?? "Limited time • terms apply"}
-                  </div>
-                  <div className="mt-3 flex items-center justify-between">
-                    <div className="inline-flex items-center gap-2 text-[12px] font-semibold text-black/55">
-                      <span className="h-1.5 w-1.5 rounded-full bg-[#c17a4e]" aria-hidden />
-                      Limited time
+                </div>
+
+                <div className="flex">
+                  {/* Left: Image */}
+                  <div className="w-28 sm:w-32 shrink-0 relative overflow-hidden">
+                    <div className="h-full min-h-30">
+                      {coverUrl ? (
+                        <img
+                          src={coverUrl}
+                          alt=""
+                          className="h-full w-full object-cover"
+                          style={{ transformOrigin: `${fx}% ${fy}%`, transform: `scale(${z})` }}
+                          loading="lazy"
+                          decoding="async"
+                          referrerPolicy="no-referrer"
+                          draggable={false}
+                        />
+                      ) : (
+                        <div
+                          className="h-full w-full"
+                          style={{
+                            background: `linear-gradient(135deg, ${tone}33, ${tone}11)`,
+                          }}
+                        />
+                      )}
                     </div>
-                    <a className="text-[13px] font-semibold text-[#6e4f33] hover:underline" href="#discover">
-                      View
-                    </a>
+                  </div>
+
+                  {/* Right: Content */}
+                  <div className="flex-1 p-4">
+                    {/* Vendor name above title */}
+                    <div className="text-[11px] font-semibold text-[#a67c52] uppercase tracking-wide">
+                      {vendorName ? vendorName : "Featured Deal"}
+                    </div>
+
+                    <div className="mt-1 text-[15px] font-bold text-[#2c2c2c] leading-tight">
+                      {promo.title}
+                    </div>
+
+                    {promo.summary ? (
+                      <div className="mt-1.5 text-[12px] text-black/60 line-clamp-2">
+                        {promo.summary}
+                      </div>
+                    ) : null}
+
+                    <div className="mt-3 flex items-center justify-between">
+                      {/* Discount badge or time indicator */}
+                      <div className="flex items-center gap-2">
+                        {typeof promo.discount_percentage === "number" ? (
+                          <span className="inline-flex items-center rounded-sm bg-[#c17a4e] px-2 py-0.5 text-[12px] font-bold text-white">
+                            {promo.discount_percentage}% OFF
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-[#c17a4e]">
+                            <span className="h-1.5 w-1.5 rounded-full bg-[#c17a4e] animate-pulse" aria-hidden />
+                            Limited Time
+                          </span>
+                        )}
+                      </div>
+
+                      <a
+                        href={`/promos/${promo.id}`}
+                        className="text-[12px] font-bold text-[#6e4f33] hover:text-[#8e6a46] hover:underline"
+                      >
+                        View Deal →
+                      </a>
+                    </div>
                   </div>
                 </div>
               </div>

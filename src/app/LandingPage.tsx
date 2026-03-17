@@ -28,6 +28,11 @@ type FeaturedPromo = {
   summary: string | null;
   valid_from: string | null;
   valid_to: string | null;
+  image_url?: string | null;
+  discount_percentage?: number | null;
+  image_focus_x?: number | null;
+  image_focus_y?: number | null;
+  image_zoom?: number | null;
   vendors: {
     business_name: string;
     slug: string;
@@ -183,14 +188,18 @@ async function LandingFeaturedData() {
   const [{ data: featuredVendors }, { data: featuredPromos }] = await Promise.all([
     supabase
       .from("vendors")
-      .select("id,business_name,slug,logo_url,average_rating,review_count,location_text,city")
+      .select(
+        "id,business_name,slug,logo_url,average_rating,review_count,location_text,city,cover_focus_x,cover_focus_y,cover_zoom"
+      )
       .eq("is_active", true)
       .eq("is_featured", true)
       .order("average_rating", { ascending: false })
       .limit(6),
     supabase
       .from("promos")
-      .select("id,title,summary,valid_from,valid_to,vendors(business_name,slug)")
+      .select(
+        "id,title,summary,valid_from,valid_to,image_url,discount_percentage,image_focus_x,image_focus_y,image_zoom,vendors(business_name,slug)"
+      )
       .eq("is_active", true)
       .eq("is_featured", true)
       .order("updated_at", { ascending: false })
@@ -223,7 +232,10 @@ async function LandingVendorsData({ page, pageSize, sort }: { page: number; page
 
   let q = supabase
     .from("vendors")
-    .select("id,business_name,slug,logo_url,average_rating,review_count,location_text,city", { count: "exact" })
+    .select(
+      "id,business_name,slug,logo_url,average_rating,review_count,location_text,city,cover_focus_x,cover_focus_y,cover_zoom",
+      { count: "exact" }
+    )
     .eq("is_active", true);
 
   if (sort === "alpha") {

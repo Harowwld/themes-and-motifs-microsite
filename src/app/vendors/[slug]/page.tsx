@@ -23,8 +23,11 @@ type VendorRow = {
   website_url: string | null;
   contact_email: string | null;
   contact_phone: string | null;
+  sec_dti_number: string | null;
   average_rating: number | null;
   review_count: number | null;
+  verified_status: string | null;
+  updated_at: string;
   plan?: { id: number; name: string } | { id: number; name: string }[] | null;
 };
 
@@ -40,6 +43,27 @@ type VendorSocialLinkRow = {
   id: number;
   platform: string;
   url: string;
+};
+
+type PromoRow = {
+  id: number;
+  title: string;
+  summary: string | null;
+  terms: string | null;
+  valid_from: string | null;
+  valid_to: string | null;
+  image_url: string | null;
+  discount_percentage: number | null;
+  image_focus_x: number | null;
+  image_focus_y: number | null;
+  image_zoom: number | null;
+};
+
+type VerificationDocumentRow = {
+  id: number;
+  doc_type: string;
+  status: string;
+  uploaded_at: string;
 };
 
 type ReviewRow = {
@@ -63,6 +87,25 @@ function proxiedImageUrl(url: string) {
     return `/api/image-proxy?url=${encodeURIComponent(u)}`;
   }
   return u;
+}
+
+function clampPct(v: number) {
+  if (!Number.isFinite(v)) return 50;
+  return Math.max(0, Math.min(100, v));
+}
+
+function clampZoom(v: number) {
+  if (!Number.isFinite(v)) return 1;
+  return Math.max(1, Math.min(3, v));
+}
+
+function isPromoCurrentlyValid(promo: Pick<PromoRow, "valid_from" | "valid_to">) {
+  const now = new Date();
+  const from = promo.valid_from ? new Date(`${promo.valid_from}T00:00:00Z`) : null;
+  const to = promo.valid_to ? new Date(`${promo.valid_to}T23:59:59Z`) : null;
+  if (from && now < from) return false;
+  if (to && now > to) return false;
+  return true;
 }
 
 function VendorDetailSkeleton() {
@@ -114,7 +157,7 @@ async function VendorDetailData({ slug }: { slug: string }) {
   const { data: vendor } = await supabase
     .from("vendors")
     .select(
-      "id,business_name,slug,logo_url,description,location_text,city,address,website_url,contact_email,contact_phone,average_rating,review_count,plan:plans(id,name)"
+      "id,business_name,slug,logo_url,description,location_text,city,address,website_url,contact_email,contact_phone,sec_dti_number,average_rating,review_count,verified_status,updated_at,plan:plans(id,name)"
     )
     .eq("slug", slug)
     .eq("is_active", true)
@@ -122,7 +165,7 @@ async function VendorDetailData({ slug }: { slug: string }) {
 
   if (!vendor?.id) notFound();
 
-  const [categoriesRes, affiliationsRes, imagesRes, socialsRes, reviewsRes] = await Promise.all([
+  const [categoriesRes, affiliationsRes, imagesRes, socialsRes, reviewsRes, promosRes, verificationDocsRes] = await Promise.all([
     supabase
       .from("vendor_categories")
       .select("category:categories(id,name,slug)")
@@ -153,6 +196,19 @@ async function VendorDetailData({ slug }: { slug: string }) {
       .eq("status", "published")
       .order("created_at", { ascending: false })
       .limit(50),
+    supabase
+      .from("promos")
+      .select("id,title,summary,terms,valid_from,valid_to,image_url,discount_percentage,image_focus_x,image_focus_y,image_zoom,is_active")
+      .eq("vendor_id", vendor.id)
+      .eq("is_active", true)
+      .order("updated_at", { ascending: false })
+      .limit(24),
+    supabase
+      .from("verification_documents")
+      .select("id,doc_type,status,uploaded_at")
+      .eq("vendor_id", vendor.id)
+      .order("uploaded_at", { ascending: false })
+      .limit(50),
   ]);
 
   const categoryLinks = (categoriesRes.data ?? []) as unknown as {
@@ -164,6 +220,8 @@ async function VendorDetailData({ slug }: { slug: string }) {
   const images = (imagesRes.data ?? []) as VendorImageRow[];
   const socials = (socialsRes.data ?? []) as VendorSocialLinkRow[];
   const reviews = (reviewsRes.data ?? []) as unknown as ReviewRow[];
+  const promos = ((promosRes.data ?? []) as PromoRow[]).filter(isPromoCurrentlyValid).slice(0, 12);
+  const verificationDocs = (verificationDocsRes.data ?? []) as VerificationDocumentRow[];
 
   const categories = categoryLinks
     .flatMap((r) => (Array.isArray(r.category) ? r.category : r.category ? [r.category] : []))
@@ -182,137 +240,427 @@ async function VendorDetailData({ slug }: { slug: string }) {
     .trim()
     .toLowerCase();
   const isPremium = planName.includes("premium");
+  const websiteTooltip = "Website link is available for Premium vendors.";
+  const showPhone = isPremium && Boolean(vendor.contact_phone);
+
+  const verificationByType = verificationDocs.reduce<Record<string, VerificationDocumentRow | undefined>>((acc, doc) => {
+    const t = (doc.doc_type ?? "").trim().toLowerCase();
+    if (!t) return acc;
+    if (!acc[t]) acc[t] = doc;
+    return acc;
+  }, {});
+
+  const tinDoc = verificationByType["bir"]; // used as TIN/BIR cert
+  const secDoc = verificationByType["sec"];
+  const dtiDoc = verificationByType["dti"];
+
+  function formatDocStatus(doc?: VerificationDocumentRow) {
+    if (!doc) return "Not submitted";
+    const s = (doc.status ?? "").trim().toLowerCase();
+    if (s === "approved") return "Approved";
+    if (s === "rejected") return "Rejected";
+    return "Submitted";
+  }
+
+  function formatDate(value: string) {
+    const d = new Date(value);
+    if (Number.isNaN(d.getTime())) return value;
+    return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "2-digit" });
+  }
 
   return (
-    <main className="py-10 sm:py-14">
+    <main className="pb-10 sm:pb-14">
+      {/* Hero Section with Cover */}
       <FadeInOnView>
-        <section className="rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden">
+        <section className="relative">
           <div
-            className="h-32 sm:h-40"
+            className="h-48 sm:h-64 w-full"
             style={{
               background: cover
-                ? `linear-gradient(135deg, rgba(166,124,82,0.18), rgba(255,255,255,0.9)), url(${coverUrl}) center/cover no-repeat`
+                ? `linear-gradient(135deg, rgba(166,124,82,0.15), rgba(255,255,255,0.85)), url(${coverUrl}) center/cover no-repeat`
                 : "linear-gradient(135deg, rgba(166,124,82,0.18), rgba(255,255,255,0.9))",
             }}
           />
+        </section>
+      </FadeInOnView>
 
-          <div className="p-6">
-            <div className="text-[12px] font-semibold text-black/45">{location ? location : "Philippines"}</div>
-            <div className="mt-1 flex items-center gap-3">
-              {isPremium && vendor.logo_url ? (
-                <img
-                  src={logoUrl ?? vendor.logo_url}
-                  alt={`${vendor.business_name} logo`}
-                  className="h-12 w-12 rounded-[3px] border border-black/10 bg-white object-contain"
-                  loading="lazy"
-                  referrerPolicy="no-referrer"
-                />
-              ) : null}
-              <h1 className="text-[22px] sm:text-[26px] font-semibold tracking-[-0.02em] text-[#2c2c2c]">{vendor.business_name}</h1>
+      {/* Profile Header */}
+      <FadeInOnView>
+        <section className="relative -mt-16 sm:-mt-20 px-4 sm:px-6">
+          <div className="mx-auto max-w-4xl">
+            <div className="flex items-end gap-4">
+              {/* Logo */}
+              <div className="h-24 w-24 sm:h-32 sm:w-32 rounded-[3px] border-4 border-white bg-white shadow-lg overflow-hidden flex items-center justify-center shrink-0">
+                {logoUrl || vendor.logo_url ? (
+                  <img
+                    src={logoUrl ?? vendor.logo_url ?? ""}
+                    alt={`${vendor.business_name} logo`}
+                    className="h-full w-full object-contain"
+                    loading="lazy"
+                    referrerPolicy="no-referrer"
+                  />
+                ) : (
+                  <div className="h-full w-full bg-[#fcfbf9] flex items-center justify-center text-[24px] font-bold text-[#a67c52]">
+                    {vendor.business_name.charAt(0).toUpperCase()}
+                  </div>
+                )}
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex-1 flex items-center justify-end gap-2 pb-2">
+                {vendor.website_url ? (
+                  isPremium ? (
+                    <a
+                      className="hidden sm:inline-flex h-9 items-center gap-2 rounded-[3px] bg-[#a67c52] px-4 text-[13px] font-semibold text-white hover:bg-[#8e6a46] transition-colors"
+                      href={withProtocol(vendor.website_url)}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <GlobeIcon className="h-4 w-4" />
+                      Website
+                    </a>
+                  ) : (
+                    <span
+                      className="hidden sm:inline-flex h-9 items-center gap-2 rounded-[3px] border border-black/10 bg-black/3 px-4 text-[13px] font-semibold text-black/40 cursor-not-allowed"
+                      title={websiteTooltip}
+                      aria-disabled="true"
+                    >
+                      <GlobeIcon className="h-4 w-4" />
+                      Website
+                    </span>
+                  )
+                ) : null}
+              </div>
             </div>
 
-            <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-[13px] font-semibold text-black/55">
-              <span>
-                <span className="text-[#a67c52]">{(vendor.average_rating ?? 0).toFixed(1)}</span> · {vendor.review_count ?? 0} reviews
-              </span>
-              {isPremium && vendor.website_url ? (
-                <a className="text-[#6e4f33] hover:underline" href={withProtocol(vendor.website_url)} target="_blank" rel="noreferrer">
-                  Website
-                </a>
-              ) : null}
-              {isPremium && vendor.contact_phone ? (
-                <a className="text-[#6e4f33] hover:underline" href={`tel:${vendor.contact_phone}`}>
-                  Call
-                </a>
-              ) : null}
-              {vendor.contact_email ? (
-                <ContactVendorForm vendorId={vendor.id} vendorName={vendor.business_name} />
+            {/* Business Info */}
+            <div className="mt-4">
+              <h1 className="text-[24px] sm:text-[32px] font-bold tracking-[-0.02em] text-[#2c2c2c]">
+                {vendor.business_name}
+              </h1>
+
+              <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[14px] text-black/55">
+                {location ? (
+                  <span className="flex items-center gap-1">
+                    <MapPinIcon className="h-4 w-4" />
+                    {location}
+                  </span>
+                ) : null}
+                <span className="flex items-center gap-1">
+                  <StarIcon className="h-4 w-4 text-[#a67c52]" />
+                  <span className="font-semibold text-[#a67c52]">{(vendor.average_rating ?? 0).toFixed(1)}</span>
+                  <span>· {vendor.review_count ?? 0} reviews</span>
+                </span>
+              </div>
+
+              {/* Category Pills */}
+              {categories.length > 0 ? (
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {categories.map((c) => (
+                    <a
+                      key={c.id}
+                      className="inline-flex items-center rounded-[999px] border border-[#a67c52]/30 bg-white px-3 py-1.5 text-[12px] font-semibold text-[#6e4f33] hover:bg-[#fffaf5] transition-colors shadow-sm"
+                      href={`/vendors?category=${encodeURIComponent(c.slug)}`}
+                    >
+                      {c.name}
+                    </a>
+                  ))}
+                </div>
               ) : null}
             </div>
-
-            {vendor.description ? <p className="mt-4 text-[14px] leading-7 text-black/60">{vendor.description}</p> : null}
-
-            {categories.length > 0 ? (
-              <div className="mt-5 flex flex-wrap gap-2">
-                {categories.map((c) => (
-                  <a
-                    key={c.id}
-                    className="inline-flex items-center rounded-[999px] border border-[#a67c52]/35 bg-[#fffaf5] px-3 py-1 text-[12px] font-semibold text-[#6e4f33] hover:bg-[#f8f1e8] transition-colors"
-                    href={`/vendors?category=${encodeURIComponent(c.slug)}`}
-                  >
-                    {c.name}
-                  </a>
-                ))}
-              </div>
-            ) : null}
-
-            {affiliations.length > 0 ? (
-              <div className="mt-4 text-[13px] text-black/60">
-                <span className="font-semibold text-black/45">Affiliations:</span> {affiliations.map((a) => a.name).join(", ")}
-              </div>
-            ) : null}
-
-            {isPremium && socials.length > 0 ? (
-              <div className="mt-4 flex flex-wrap gap-3">
-                {socials.map((s) => (
-                  <a
-                    key={s.id}
-                    className="inline-flex h-9 w-9 items-center justify-center text-[#6e4f33] hover:text-[#a67c52] transition-colors"
-                    href={withProtocol(s.url)}
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-label={formatPlatform(s.platform)}
-                    title={formatPlatform(s.platform)}
-                  >
-                    <span className="sr-only">{formatPlatform(s.platform)}</span>
-                    {getPlatformIcon(s.platform)}
-                  </a>
-                ))}
-              </div>
-            ) : null}
-
-            {vendor.address ? (
-              <div className="mt-4 text-[13px] text-black/60">
-                <span className="font-semibold text-black/45">Address:</span> {vendor.address}
-              </div>
-            ) : null}
           </div>
         </section>
       </FadeInOnView>
 
-      {images.length > 0 ? (
-        <FadeInOnView>
-          <VendorPhotosCarousel images={images} />
-        </FadeInOnView>
-      ) : null}
-
+      {/* Content Grid */}
       <FadeInOnView>
-        <section className="mt-10">
-          <div className="flex items-end justify-between gap-6">
-            <div>
-              <h2 className="text-[18px] sm:text-[20px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">Reviews</h2>
-              <p className="mt-1 text-[13px] text-black/55 max-w-xl">Recent reviews from couples.</p>
-            </div>
-          </div>
-
-          <div className="mt-4 grid gap-4">
-            <VendorReviewForm vendorId={vendor.id} vendorSlug={vendor.slug} />
-            {reviews.length === 0 ? (
-              <div className="rounded-[3px] border border-black/10 bg-white shadow-sm p-6">
-                <div className="text-[13px] font-semibold text-[#2c2c2c]">No reviews yet</div>
-                <div className="mt-1 text-[13px] text-black/55">Be the first to review this vendor.</div>
-              </div>
-            ) : (
-              reviews.map((r) => (
-                <div key={r.id} className="rounded-[3px] border border-black/10 bg-white shadow-sm p-5">
-                  <div className="flex items-center justify-between gap-4">
-                    <div className="text-[12px] font-semibold text-black/45">{r.users?.[0]?.email ? maskEmail(r.users[0].email) : "Verified couple"}</div>
-                    <div className="text-[12px] font-semibold text-black/55">{r.rating} / 5</div>
-                  </div>
-                  {r.review_text ? <div className="mt-3 text-[13px] leading-7 text-black/60">{r.review_text}</div> : null}
+        <section className="mt-8 px-4 sm:px-6">
+          <div className="mx-auto max-w-4xl grid gap-6 lg:grid-cols-[1fr_320px] lg:gap-8">
+            {/* Main Content */}
+            <div className="grid gap-6">
+              {/* About */}
+              {vendor.description ? (
+                <div className="rounded-[3px] border border-black/10 bg-white p-5 shadow-sm">
+                  <h2 className="text-[16px] font-semibold text-[#2c2c2c]">About</h2>
+                  <p className="mt-3 text-[14px] leading-7 text-black/65 whitespace-pre-line">
+                    {vendor.description}
+                  </p>
                 </div>
-              ))
-            )}
+              ) : null}
+
+              {/* Photos - no label, carousel has its own */}
+              {images.length > 0 ? (
+                <div className="rounded-[3px] border border-black/10 bg-white p-5 shadow-sm">
+                  <VendorPhotosCarousel images={images} />
+                </div>
+              ) : null}
+
+              {/* Exclusive Deals / Marketplace */}
+              {promos.length > 0 ? (
+                <div className="rounded-[3px] border border-black/10 bg-white p-5 shadow-sm">
+                  <h2 className="text-[16px] font-semibold text-[#2c2c2c]">Exclusive Deals</h2>
+                  <p className="mt-1 text-[13px] text-black/55">Promos and marketplace deals from this vendor.</p>
+                  <div className="mt-4 grid gap-3">
+                    {promos.map((p) => (
+                      <div key={p.id} className="rounded-md border-2 border-dashed border-[#c17a4e]/40 bg-linear-to-br from-[#fff7ed] to-white overflow-hidden relative">
+                        {/* Promo Badge */}
+                        <div className="absolute top-0 left-0 z-10">
+                          <div className="bg-[#c17a4e] text-white text-[10px] font-bold px-2.5 py-0.5 rounded-br-md">
+                            PROMO
+                          </div>
+                        </div>
+
+                        <div className="flex">
+                          {/* Left: Image */}
+                          {p.image_url ? (
+                            <div className="w-24 sm:w-28 shrink-0 relative overflow-hidden">
+                              <div className="h-full min-h-25">
+                                <img
+                                  src={proxiedImageUrl(p.image_url)}
+                                  alt=""
+                                  className="h-full w-full object-cover"
+                                  style={{
+                                    transformOrigin: `${clampPct(Number(p.image_focus_x ?? 50))}% ${clampPct(Number(p.image_focus_y ?? 50))}%`,
+                                    transform: `scale(${clampZoom(Number(p.image_zoom ?? 1))})`,
+                                  }}
+                                  loading="lazy"
+                                  decoding="async"
+                                  referrerPolicy="no-referrer"
+                                  draggable={false}
+                                />
+                              </div>
+                            </div>
+                          ) : null}
+
+                          {/* Right: Content */}
+                          <div className="flex-1 p-3.5">
+                            <div className="text-[11px] font-semibold text-[#a67c52] uppercase tracking-wide">
+                              Exclusive Deal
+                            </div>
+
+                            <div className="mt-0.5 text-[14px] font-bold text-[#2c2c2c] leading-tight">
+                              {p.title}
+                            </div>
+
+                            {p.summary ? (
+                              <div className="mt-1 text-[12px] text-black/60 line-clamp-2">
+                                {p.summary}
+                              </div>
+                            ) : null}
+
+                            <div className="mt-2 flex items-center justify-between">
+                              {typeof p.discount_percentage === "number" ? (
+                                <span className="inline-flex items-center rounded-sm bg-[#c17a4e] px-2 py-0.5 text-[11px] font-bold text-white">
+                                  {p.discount_percentage}% OFF
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-[#c17a4e]">
+                                  <span className="h-1.5 w-1.5 rounded-full bg-[#c17a4e] animate-pulse" aria-hidden />
+                                  Limited Time
+                                </span>
+                              )}
+                            </div>
+
+                            {(p.valid_from || p.valid_to) ? (
+                              <div className="mt-2 text-[11px] text-black/45">
+                                {p.valid_from ? `From ${formatDate(p.valid_from)}` : null}
+                                {p.valid_from && p.valid_to ? " · " : null}
+                                {p.valid_to ? `Until ${formatDate(p.valid_to)}` : null}
+                              </div>
+                            ) : null}
+
+                            {p.terms ? <div className="mt-2 text-[11px] leading-5 text-black/50 whitespace-pre-line">{p.terms}</div> : null}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+
+              {/* Reviews */}
+              <div className="rounded-[3px] border border-black/10 bg-white p-5 shadow-sm">
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <h2 className="text-[16px] font-semibold text-[#2c2c2c]">Reviews</h2>
+                    <p className="mt-1 text-[13px] text-black/55">Recent feedback from couples</p>
+                  </div>
+                  <div className="flex items-center gap-1 text-[20px] font-bold text-[#a67c52]">
+                    <StarIcon className="h-5 w-5" />
+                    {(vendor.average_rating ?? 0).toFixed(1)}
+                  </div>
+                </div>
+
+                <div className="mt-5 grid gap-4">
+                  <VendorReviewForm vendorId={vendor.id} vendorSlug={vendor.slug} />
+                  {reviews.length === 0 ? (
+                    <div className="rounded-[3px] border border-black/5 bg-[#fcfbf9] p-6 text-center">
+                      <div className="text-[14px] font-semibold text-[#2c2c2c]">No reviews yet</div>
+                      <div className="mt-1 text-[13px] text-black/55">Be the first to review this vendor.</div>
+                    </div>
+                  ) : (
+                    reviews.map((r) => (
+                      <div key={r.id} className="rounded-[3px] border border-black/5 bg-[#fcfbf9] p-4">
+                        <div className="flex items-center justify-between gap-4">
+                          <div className="flex items-center gap-2">
+                            <div className="h-8 w-8 rounded-full bg-[#a67c52]/10 flex items-center justify-center">
+                              <UserIcon className="h-4 w-4 text-[#a67c52]" />
+                            </div>
+                            <span className="text-[13px] font-semibold text-black/70">
+                              {r.users?.[0]?.email ? maskEmail(r.users[0].email) : "Verified couple"}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-1 text-[13px] font-semibold text-[#a67c52]">
+                            <StarIcon className="h-3.5 w-3.5" />
+                            {r.rating}
+                          </div>
+                        </div>
+                        {r.review_text ? <div className="mt-3 text-[13px] leading-6 text-black/60 pl-10">{r.review_text}</div> : null}
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Sidebar */}
+            <div className="grid gap-4 content-start">
+              {/* Contact Card */}
+              <div className="rounded-[3px] border border-black/10 bg-white p-5 shadow-sm">
+                <h3 className="text-[14px] font-semibold text-[#2c2c2c]">Contact Information</h3>
+                
+                {/* Quick Action Buttons */}
+                <div className="mt-4 flex gap-2">
+                  {showPhone ? (
+                    <a
+                      href={`tel:${vendor.contact_phone}`}
+                      className="inline-flex h-10 w-10 items-center justify-center rounded-[3px] bg-[#a67c52] text-white hover:bg-[#8e6a46] transition-colors"
+                      title="Call"
+                    >
+                      <PhoneIcon className="h-4 w-4" />
+                    </a>
+                  ) : null}
+                  {vendor.contact_email ? (
+                    <ContactVendorForm 
+                      vendorId={vendor.id} 
+                      vendorName={vendor.business_name}
+                      className="inline-flex h-10 w-10 items-center justify-center rounded-[3px] bg-[#a67c52] text-white hover:bg-[#8e6a46] transition-colors"
+                    >
+                      <MailIcon className="h-4 w-4" />
+                    </ContactVendorForm>
+                  ) : null}
+                </div>
+
+                <div className="mt-4 grid gap-3">
+                  {vendor.address ? (
+                    <div className="flex items-start gap-3 text-[13px] text-black/65">
+                      <MapPinIcon className="h-4 w-4 shrink-0 mt-0.5 text-black/40" />
+                      <span>{vendor.address}</span>
+                    </div>
+                  ) : null}
+                  {showPhone ? (
+                    <a href={`tel:${vendor.contact_phone}`} className="flex items-center gap-3 text-[13px] text-[#6e4f33] hover:underline">
+                      <PhoneIcon className="h-4 w-4 shrink-0" />
+                      <span>{vendor.contact_phone}</span>
+                    </a>
+                  ) : null}
+                  {vendor.contact_email ? (
+                    <div className="flex items-center gap-3 text-[13px] text-black/65">
+                      <MailIcon className="h-4 w-4 shrink-0 text-black/40" />
+                      <span>{vendor.contact_email}</span>
+                    </div>
+                  ) : null}
+                  {vendor.website_url ? (
+                    isPremium ? (
+                      <a
+                        href={withProtocol(vendor.website_url)}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex items-center gap-3 text-[13px] text-[#6e4f33] hover:underline"
+                      >
+                        <GlobeIcon className="h-4 w-4 shrink-0" />
+                        <span className="truncate">{vendor.website_url}</span>
+                      </a>
+                    ) : (
+                      <div
+                        className="flex items-center gap-3 text-[13px] text-black/40 cursor-not-allowed"
+                        title={websiteTooltip}
+                        aria-disabled="true"
+                      >
+                        <GlobeIcon className="h-4 w-4 shrink-0" />
+                        <span className="truncate">{vendor.website_url}</span>
+                      </div>
+                    )
+                  ) : null}
+                </div>
+              </div>
+
+              {/* Business Verification */}
+              <div className="rounded-[3px] border border-black/10 bg-white p-5 shadow-sm">
+                <h3 className="text-[14px] font-semibold text-[#2c2c2c]">Business Verification</h3>
+                <div className="mt-4 grid gap-2 text-[13px] text-black/65">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-black/50">Last updated</span>
+                    <span className="font-semibold text-black/70">{vendor.updated_at ? formatDate(vendor.updated_at) : "—"}</span>
+                  </div>
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-black/50">TIN cert</span>
+                    <span className="font-semibold text-black/70">{formatDocStatus(tinDoc)}</span>
+                  </div>
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-black/50">SEC/DTI #</span>
+                    <span className={vendor.sec_dti_number ? "font-semibold text-black/70" : "font-semibold text-black/40"}>
+                      {vendor.sec_dti_number ? vendor.sec_dti_number : "—"}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-black/50">SEC cert</span>
+                    <span className="font-semibold text-black/70">{formatDocStatus(secDoc)}</span>
+                  </div>
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-black/50">DTI cert</span>
+                    <span className="font-semibold text-black/70">{formatDocStatus(dtiDoc)}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Social Links */}
+              {socials.length > 0 ? (
+                <div className="rounded-[3px] border border-black/10 bg-white p-5 shadow-sm">
+                  <h3 className="text-[14px] font-semibold text-[#2c2c2c]">Social Media</h3>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {socials.map((s) => (
+                      <a
+                        key={s.id}
+                        className="inline-flex h-10 w-10 items-center justify-center rounded-[3px] border border-black/10 bg-[#fcfbf9] text-[#6e4f33] hover:bg-[#a67c52] hover:text-white hover:border-[#a67c52] transition-colors"
+                        href={withProtocol(s.url)}
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label={formatPlatform(s.platform)}
+                        title={formatPlatform(s.platform)}
+                      >
+                        <span className="sr-only">{formatPlatform(s.platform)}</span>
+                        {getPlatformIcon(s.platform)}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+
+              {/* Affiliations */}
+              {affiliations.length > 0 ? (
+                <div className="rounded-[3px] border border-black/10 bg-white p-5 shadow-sm">
+                  <h3 className="text-[14px] font-semibold text-[#2c2c2c]">Affiliations</h3>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {affiliations.map((a) => (
+                      <span key={a.id} className="inline-flex items-center rounded-[3px] bg-[#fcfbf9] px-2.5 py-1 text-[12px] text-black/60">
+                        {a.name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+            </div>
           </div>
         </section>
       </FadeInOnView>
@@ -453,4 +801,57 @@ function maskEmail(email: string) {
   if (!user || !domain) return "User";
   const maskedUser = user.length <= 2 ? `${user[0]}*` : `${user.slice(0, 2)}***`;
   return `${maskedUser}@${domain}`;
+}
+
+function GlobeIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="2" y1="12" x2="22" y2="12"/>
+      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+    </svg>
+  );
+}
+
+function PhoneIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+    </svg>
+  );
+}
+
+function MapPinIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+      <circle cx="12" cy="10" r="3"/>
+    </svg>
+  );
+}
+
+function StarIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor" stroke="none">
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+    </svg>
+  );
+}
+
+function UserIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+      <circle cx="12" cy="7" r="4"/>
+    </svg>
+  );
+}
+
+function MailIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="4" width="20" height="16" rx="2"/>
+      <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+    </svg>
+  );
 }

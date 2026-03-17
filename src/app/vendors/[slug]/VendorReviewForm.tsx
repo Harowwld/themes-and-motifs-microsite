@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { createSupabaseBrowserClient } from "../../../lib/supabaseBrowser";
@@ -13,6 +13,9 @@ type Props = {
 export default function VendorReviewForm({ vendorId, vendorSlug }: Props) {
   const router = useRouter();
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);
+
+  const meCacheRef = useRef<{ token: string; at: number; isVendor: boolean } | null>(null);
+  const meInFlightRef = useRef<Promise<{ isVendor: boolean } | null> | null>(null);
 
   const [ready, setReady] = useState(false);
   const [signedIn, setSignedIn] = useState(false);
@@ -41,14 +44,39 @@ export default function VendorReviewForm({ vendorId, vendorSlug }: Props) {
         return;
       }
 
-      try {
-        const res = await fetch("/api/auth/me", {
-          headers: {
-            authorization: `Bearer ${session.access_token}`,
-          },
+      const token = session.access_token;
+      const now = Date.now();
+      const cached = meCacheRef.current;
+      const ttlMs = 30_000;
+      if (cached && cached.token === token && now - cached.at < ttlMs) {
+        setIsVendor(cached.isVendor);
+        setReady(true);
+        return;
+      }
+
+      if (!meInFlightRef.current) {
+        meInFlightRef.current = (async () => {
+          try {
+            const res = await fetch("/api/auth/me", {
+              headers: {
+                authorization: `Bearer ${token}`,
+              },
+            });
+            const json = (await res.json().catch(() => null)) as { isVendor?: boolean } | null;
+            return { isVendor: Boolean(json?.isVendor) };
+          } catch {
+            return null;
+          }
+        })().finally(() => {
+          meInFlightRef.current = null;
         });
-        const json = (await res.json().catch(() => null)) as { isVendor?: boolean } | null;
-        setIsVendor(Boolean(json?.isVendor));
+      }
+
+      try {
+        const me = await meInFlightRef.current;
+        if (!me) throw new Error("me fetch failed");
+        meCacheRef.current = { token, at: Date.now(), isVendor: me.isVendor };
+        setIsVendor(me.isVendor);
       } catch {
         setIsVendor(false);
       } finally {

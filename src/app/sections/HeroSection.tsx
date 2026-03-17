@@ -263,7 +263,7 @@ export default function HeroSection({
         <div className="px-5 py-4 border-b border-black/5">
           <div className="text-[13px] font-semibold text-[#2c2c2c]">Quick search</div>
           <div className="mt-1 text-[12px] text-black/50">
-            Keyword + filters (category, location, affiliation)
+            Keyword + filters (category, city, affiliation)
           </div>
         </div>
 
@@ -287,9 +287,9 @@ export default function HeroSection({
               onChange={setCategory}
             />
             <SelectMenu
-              label="Location"
+              label="City"
               value={location}
-              placeholder="All locations"
+              placeholder="All cities"
               options={locationMenuOptions}
               onChange={setLocation}
             />

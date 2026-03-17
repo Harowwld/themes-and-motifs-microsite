@@ -1,16 +1,20 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
 type Category = { id: number; name: string; slug: string };
 type Region = { id: number; name: string };
+type City = { id: number; name: string; region_id: number };
 type Plan = { id: number; name: string };
+type Affiliation = { id: number; name: string; slug: string };
 
 type Props = {
   categories: Category[];
   regions: Region[];
+  cities: City[];
   plans: Plan[];
+  affiliations: Affiliation[];
 };
 
 type FormState = {
@@ -20,13 +24,15 @@ type FormState = {
   contactEmail: string;
   contactPhone: string;
   websiteUrl: string;
+  secDtiNumber: string;
+  coverPhotoUrl: string;
   regionId: string;
   city: string;
   address: string;
   contactPerson: string;
   adminEmail: string;
   adminPhone: string;
-  affiliations: string;
+  affiliationSlug: string;
   description: string;
   planId: string;
   facebook: string;
@@ -45,13 +51,15 @@ const initialState: FormState = {
   contactEmail: "",
   contactPhone: "",
   websiteUrl: "",
+  secDtiNumber: "",
+  coverPhotoUrl: "",
   regionId: "",
   city: "",
   address: "",
   contactPerson: "",
   adminEmail: "",
   adminPhone: "",
-  affiliations: "",
+  affiliationSlug: "",
   description: "",
   planId: "",
   facebook: "",
@@ -63,12 +71,26 @@ const initialState: FormState = {
   agreeToTerms: false,
 };
 
-export default function RegisterForm({ categories, regions, plans }: Props) {
+export default function RegisterForm({ categories, regions, cities, plans, affiliations }: Props) {
   const router = useRouter();
   const [form, setForm] = useState<FormState>(initialState);
+  const [coverModalOpen, setCoverModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+
+  const cityOptions = useMemo(() => {
+    const regionIdNum = Number(form.regionId);
+    if (!Number.isFinite(regionIdNum)) return [] as City[];
+    return (cities ?? [])
+      .filter((c) => c.region_id === regionIdNum)
+      .slice()
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [cities, form.regionId]);
+
+  const affiliationOptions = useMemo(() => {
+    return (affiliations ?? []).slice().sort((a, b) => a.name.localeCompare(b.name));
+  }, [affiliations]);
 
   const categoryOptions = useMemo(() => {
     const safe = categories ?? [];
@@ -86,6 +108,8 @@ export default function RegisterForm({ categories, regions, plans }: Props) {
 
     if (!form.businessName.trim()) return setError("Business name is required.");
     if (!form.contactEmail.trim()) return setError("Email is required.");
+    if (!form.coverPhotoUrl.trim()) return setError("Cover photo is required.");
+    if (form.description.trim().length > 500) return setError("Business description must be 500 characters or less.");
     if (!form.agreeToTerms) return setError("You must agree to the Terms & Conditions.");
 
     setSubmitting(true);
@@ -100,6 +124,7 @@ export default function RegisterForm({ categories, regions, plans }: Props) {
           contactPhone: form.contactPhone,
           categoryId: form.categoryId,
           websiteUrl: form.websiteUrl,
+          secDtiNumber: form.secDtiNumber,
           planId: form.planId,
           description: form.description,
           location: {
@@ -111,8 +136,9 @@ export default function RegisterForm({ categories, regions, plans }: Props) {
             contactPerson: form.contactPerson,
             adminEmail: form.adminEmail,
             adminPhone: form.adminPhone,
-            affiliations: form.affiliations,
+            affiliation_slug: form.affiliationSlug.trim() || null,
             secondaryCategorySlugs: form.secondaryCategorySlugs,
+            cover_photo_url: form.coverPhotoUrl,
             social: {
               facebook: form.facebook,
               instagram: form.instagram,
@@ -224,6 +250,14 @@ export default function RegisterForm({ categories, regions, plans }: Props) {
           />
         </Field>
 
+        <Field label="SEC/DTI #">
+          <input
+            className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]"
+            value={form.secDtiNumber}
+            onChange={(e) => set("secDtiNumber", e.target.value)}
+          />
+        </Field>
+
         <Field label="Website" badge="Premium">
           <input
             className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]"
@@ -247,7 +281,11 @@ export default function RegisterForm({ categories, regions, plans }: Props) {
           <select
             className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px] bg-white"
             value={form.regionId}
-            onChange={(e) => set("regionId", e.target.value)}
+            onChange={(e) => {
+              const next = e.target.value;
+              set("regionId", next);
+              set("city", "");
+            }}
           >
             <option value="">Select</option>
             {regions.map((r) => (
@@ -258,11 +296,21 @@ export default function RegisterForm({ categories, regions, plans }: Props) {
           </select>
         </Field>
         <Field label="City">
-          <input
-            className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]"
+          <select
+            className={`h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px] bg-white ${
+              form.city ? "text-[#2c2c2c]" : "text-black/55"
+            }`}
             value={form.city}
             onChange={(e) => set("city", e.target.value)}
-          />
+            disabled={!form.regionId}
+          >
+            <option value="">{form.regionId ? "Select" : "Select region first"}</option>
+            {cityOptions.map((c) => (
+              <option key={c.id} value={c.name}>
+                {c.name}
+              </option>
+            ))}
+          </select>
         </Field>
         <Field label="Address">
           <input
@@ -273,13 +321,60 @@ export default function RegisterForm({ categories, regions, plans }: Props) {
         </Field>
       </div>
 
-      <Field label="Business description">
+      <Field label="Business description" hint={`${form.description.length}/500`}>
         <textarea
+          maxLength={500}
           className="min-h-24 w-full rounded-[3px] border border-black/10 px-3 py-2 text-[13px]"
           value={form.description}
           onChange={(e) => set("description", e.target.value)}
         />
       </Field>
+
+      <div className="grid gap-2">
+        <div className="flex items-end justify-between gap-4">
+          <div>
+            <div className="text-[12px] font-semibold text-black/55">
+              Cover photo <span className="text-[#b42318]">*</span>
+            </div>
+            <div className="mt-1 text-[12px] text-black/45">Required. Used as your cover photo during review.</div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setCoverModalOpen(true)}
+            className="h-9 px-3 rounded-[3px] border border-black/10 bg-white text-[12px] font-semibold text-[#6e4f33] hover:bg-black/2 transition-colors"
+          >
+            {form.coverPhotoUrl.trim() ? "Change cover photo" : "Add cover photo"}
+          </button>
+        </div>
+
+        <div className="rounded-[3px] border border-black/10 bg-white overflow-hidden">
+          <div className="h-44 sm:h-52 bg-[#fcfbf9] flex items-center justify-center">
+            {form.coverPhotoUrl.trim() ? (
+              <img
+                src={form.coverPhotoUrl.trim()}
+                alt="Cover preview"
+                className="h-full w-full object-cover"
+                loading="lazy"
+                decoding="async"
+                referrerPolicy="no-referrer"
+                draggable={false}
+              />
+            ) : (
+              <div className="text-[12px] font-semibold text-black/35">No cover photo yet</div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <CoverPhotoModal
+        open={coverModalOpen}
+        url={form.coverPhotoUrl}
+        onCancel={() => setCoverModalOpen(false)}
+        onSave={(url: string) => {
+          set("coverPhotoUrl", url);
+          setCoverModalOpen(false);
+        }}
+      />
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Admin email (optional)" badge="Premium">
@@ -299,12 +394,21 @@ export default function RegisterForm({ categories, regions, plans }: Props) {
         </Field>
       </div>
 
-      <Field label="Affiliations / associations" hint="Optional. Separate items with commas.">
-        <input
-          className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]"
-          value={form.affiliations}
-          onChange={(e) => set("affiliations", e.target.value)}
-        />
+      <Field label="Affiliations / associations" hint="Optional.">
+        <select
+          className={`h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px] bg-white ${
+            form.affiliationSlug ? "text-[#2c2c2c]" : "text-black/55"
+          }`}
+          value={form.affiliationSlug}
+          onChange={(e) => set("affiliationSlug", e.target.value)}
+        >
+          <option value="">None</option>
+          {affiliationOptions.map((a) => (
+            <option key={a.id} value={a.slug}>
+              {a.name}
+            </option>
+          ))}
+        </select>
       </Field>
 
       <div className="rounded-[3px] border border-black/10 bg-white p-4">
@@ -355,6 +459,80 @@ export default function RegisterForm({ categories, regions, plans }: Props) {
         Note: Document upload (DTI/SEC/TIN) will be added next once the storage bucket name is confirmed.
       </div>
     </form>
+  );
+}
+
+function CoverPhotoModal({
+  open,
+  url,
+  onCancel,
+  onSave,
+}: {
+  open: boolean;
+  url: string;
+  onCancel: () => void;
+  onSave: (url: string) => void;
+}) {
+  const [value, setValue] = useState(url);
+
+  useEffect(() => {
+    if (open) setValue(url);
+  }, [open, url]);
+
+  if (!open) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+      <div className="w-full max-w-md rounded-[3px] border border-black/10 bg-white shadow-lg">
+        <div className="px-4 py-3 border-b border-black/5">
+          <div className="text-[14px] font-semibold text-[#2c2c2c]">Cover photo</div>
+          <div className="mt-1 text-[12px] text-black/45">Paste an image URL for your cover photo.</div>
+        </div>
+        <div className="p-4 grid gap-4">
+          <div className="flex justify-center">
+            <div className="h-32 w-full max-w-[320px] rounded-[3px] border border-black/10 bg-white overflow-hidden flex items-center justify-center">
+              {value.trim() ? (
+                <img src={value.trim()} alt="Cover preview" className="h-full w-full object-cover" />
+              ) : (
+                <div className="h-full w-full bg-[#fcfbf9] flex items-center justify-center text-[11px] text-black/40">
+                  No image
+                </div>
+              )}
+            </div>
+          </div>
+          <label className="grid gap-1.5">
+            <span className="text-[12px] font-semibold text-black/55">Image URL</span>
+            <input
+              className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]"
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              placeholder="https://..."
+              autoFocus
+            />
+          </label>
+          <div className="flex justify-end gap-2 pt-2">
+            <button
+              type="button"
+              onClick={() => {
+                setValue(url);
+                onCancel();
+              }}
+              className="h-9 px-4 rounded-[3px] border border-black/10 bg-white text-[13px] font-semibold text-black/70 hover:bg-black/5 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={() => onSave(value.trim())}
+              disabled={!value.trim()}
+              className="h-9 px-4 rounded-[3px] bg-[#a67c52] text-white text-[13px] font-semibold hover:bg-[#8e6a46] transition-colors disabled:opacity-60"
+            >
+              Save
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 

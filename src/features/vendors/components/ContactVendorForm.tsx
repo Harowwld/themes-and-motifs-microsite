@@ -5,6 +5,8 @@ import { useMemo, useState } from "react";
 type Props = {
   vendorId: number;
   vendorName: string;
+  className?: string;
+  children?: React.ReactNode;
 };
 
 function Spinner({ className = "" }: { className?: string }) {
@@ -16,7 +18,7 @@ function Spinner({ className = "" }: { className?: string }) {
   );
 }
 
-export default function ContactVendorForm({ vendorId, vendorName }: Props) {
+export default function ContactVendorForm({ vendorId, vendorName, className, children }: Props) {
   const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);
@@ -78,10 +80,10 @@ export default function ContactVendorForm({ vendorId, vendorName }: Props) {
   }
 
   return (
-    <div className="w-full">
+    <div className={className ? "inline-flex" : "w-full"}>
       <button
         type="button"
-        className="text-[#6e4f33] hover:underline"
+        className={className ?? "text-[#6e4f33] hover:underline"}
         onClick={() => {
           setOpen((v) => {
             const next = !v;
@@ -91,7 +93,7 @@ export default function ContactVendorForm({ vendorId, vendorName }: Props) {
         }}
         aria-expanded={open}
       >
-        Contact
+        {children ?? "Contact"}
       </button>
 
       {open ? (

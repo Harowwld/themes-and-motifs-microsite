@@ -25,10 +25,11 @@ export default function SoonToWedSignupPage() {
 
   const returnTo = normalizeReturnTo(searchParams.get("returnTo"));
 
-  const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
+  const [email, setEmail] = useState("");
   const [brideNickname, setBrideNickname] = useState("");
   const [groomNickname, setGroomNickname] = useState("");
   const [weddingDate, setWeddingDate] = useState("");
@@ -45,42 +46,12 @@ export default function SoonToWedSignupPage() {
 
     async function run() {
       setError(null);
-      const { data, error: sessErr } = await supabase.auth.getSession();
-      if (sessErr) {
-        if (!cancelled) {
-          setError(sessErr.message);
-          setLoading(false);
-        }
-        return;
+      setSuccess(null);
+
+      const { data } = await supabase.auth.getSession();
+      if (!cancelled && data.session?.user) {
+        router.replace(returnTo);
       }
-
-      if (!data.session?.user) {
-        router.replace(`/soon-to-wed/signin?returnTo=${encodeURIComponent(returnTo)}`);
-        return;
-      }
-
-      const user = data.session.user;
-
-      const { data: existing } = await supabase
-        .from("soon_to_wed_profiles")
-        .select(
-          "bride_nickname,groom_nickname,wedding_date,wedding_date_public,wedding_venue_area,wedding_venue_public,location,profile_visibility"
-        )
-        .eq("user_id", user.id)
-        .maybeSingle<any>();
-
-      if (!cancelled && existing) {
-        setBrideNickname(existing.bride_nickname ?? "");
-        setGroomNickname(existing.groom_nickname ?? "");
-        setWeddingDate(existing.wedding_date ?? "");
-        setWeddingDatePublic(Boolean(existing.wedding_date_public));
-        setWeddingVenueArea(existing.wedding_venue_area ?? "");
-        setWeddingVenuePublic(Boolean(existing.wedding_venue_public));
-        setLocation(existing.location ?? "");
-        setProfileVisibility(normalizeVisibility(existing.profile_visibility ?? "private") as any);
-      }
-
-      if (!cancelled) setLoading(false);
     }
 
     void run();
@@ -93,11 +64,19 @@ export default function SoonToWedSignupPage() {
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    setSuccess(null);
+
+    const e1 = email.trim();
 
     const bride = brideNickname.trim();
     const groom = groomNickname.trim();
     const venue = weddingVenueArea.trim();
     const loc = location.trim();
+
+    if (!e1) {
+      setError("Email is required.");
+      return;
+    }
 
     if (!bride) {
       setError("Nickname of bride is required.");
@@ -127,17 +106,19 @@ export default function SoonToWedSignupPage() {
     setSubmitting(true);
 
     try {
-      const { data, error: sessErr } = await supabase.auth.getSession();
-      if (sessErr) throw sessErr;
+      const { data: signUpData, error: signUpErr } = await supabase.auth.signUp({
+        email: e1,
+        password,
+      });
 
-      const user = data.session?.user ?? null;
+      if (signUpErr) throw signUpErr;
+
+      const user = signUpData.session?.user ?? null;
       if (!user) {
-        router.replace(`/soon-to-wed/signin?returnTo=${encodeURIComponent(returnTo)}`);
+        setSuccess("Account created. Please check your email to confirm your account.");
+        setPassword("");
         return;
       }
-
-      const { error: updErr } = await supabase.auth.updateUser({ password });
-      if (updErr) throw updErr;
 
       const { error: upsertErr } = await supabase.from("soon_to_wed_profiles").upsert(
         {
@@ -166,26 +147,6 @@ export default function SoonToWedSignupPage() {
     }
   }
 
-  if (loading) {
-    return (
-      <div
-        className="min-h-screen"
-        style={{
-          background: "radial-gradient(circle at 20% 10%, #fff7ed, #fcfbf9 42%, #f6f1ea 92%)",
-        }}
-      >
-        <div className="mx-auto w-full max-w-3xl px-5 sm:px-8 py-12">
-          <div className="rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden">
-            <div className="p-7">
-              <div className="h-4 w-44 rounded bg-black/10 animate-pulse" />
-              <div className="mt-3 h-10 w-full rounded-[3px] bg-black/10 animate-pulse" />
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div
       className="min-h-screen"
@@ -196,8 +157,8 @@ export default function SoonToWedSignupPage() {
       <div className="mx-auto w-full max-w-3xl px-5 sm:px-8 py-12">
         <div className="rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden">
           <div className="p-7">
-            <div className="text-[18px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">Complete your profile</div>
-            <div className="mt-2 text-[13px] text-black/60">This is required before you can continue.</div>
+            <div className="text-[18px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">Create account</div>
+            <div className="mt-2 text-[13px] text-black/60">Create your account and complete your profile.</div>
 
             {error ? (
               <div className="mt-4 rounded-[3px] border border-[#b42318]/20 bg-[#fff1f3] px-4 py-3 text-[13px] text-[#7a271a]">
@@ -205,7 +166,24 @@ export default function SoonToWedSignupPage() {
               </div>
             ) : null}
 
+            {success ? (
+              <div className="mt-4 rounded-[3px] border border-black/10 bg-[#fcfbf9] px-4 py-3 text-[13px] text-black/70">
+                {success}
+              </div>
+            ) : null}
+
             <form onSubmit={onSubmit} className="mt-6 grid gap-4">
+              <label className="grid gap-1.5">
+                <span className="text-[12px] font-semibold text-black/55">Email</span>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="h-10 rounded-[3px] border border-black/10 bg-white px-3 text-[14px] text-[#2c2c2c] placeholder:text-black/35 outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15"
+                  placeholder="you@example.com"
+                />
+              </label>
+
               <label className="grid gap-1.5">
                 <span className="text-[12px] font-semibold text-black/55">Password</span>
                 <input

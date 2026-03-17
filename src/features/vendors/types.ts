@@ -20,6 +20,9 @@ export type VendorListItem = {
   location_text: string | null;
   city: string | null;
   cover_image_url?: string | null;
+  cover_focus_x?: number | null;
+  cover_focus_y?: number | null;
+  cover_zoom?: number | null;
 };
 
 export type FeaturedVendor = VendorListItem;

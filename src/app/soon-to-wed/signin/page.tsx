@@ -133,7 +133,7 @@ export default function SoonToWedSignInPage() {
 
               <a
                 className="text-[12px] font-semibold text-[#6e4f33] hover:underline"
-                href={`/soon-to-wed/signup-link?returnTo=${encodeURIComponent(returnTo)}`}
+                href={`/soon-to-wed/signup?returnTo=${encodeURIComponent(returnTo)}`}
               >
                 New here? Create an account
               </a>

@@ -11,6 +11,9 @@ type PatchBody = {
   address?: string | null;
   website_url?: string | null;
   contact_phone?: string | null;
+  cover_focus_x?: number | null;
+  cover_focus_y?: number | null;
+  cover_zoom?: number | null;
 };
 
 export async function GET(req: Request) {
@@ -70,6 +73,13 @@ export async function PATCH(req: Request) {
     if (typeof body.address === "string" || body.address === null) patch.address = body.address;
     if (typeof body.website_url === "string" || body.website_url === null) patch.website_url = body.website_url;
     if (typeof body.contact_phone === "string" || body.contact_phone === null) patch.contact_phone = body.contact_phone;
+    if (typeof body.cover_focus_x === "number" || body.cover_focus_x === null) {
+      patch.cover_focus_x = body.cover_focus_x === null ? null : Math.max(0, Math.min(100, Math.round(body.cover_focus_x)));
+    }
+    if (typeof body.cover_focus_y === "number" || body.cover_focus_y === null) {
+      patch.cover_focus_y = body.cover_focus_y === null ? null : Math.max(0, Math.min(100, Math.round(body.cover_focus_y)));
+    }
+    if (typeof body.cover_zoom === "number" || body.cover_zoom === null) patch.cover_zoom = body.cover_zoom;
 
     if (!isPremium) {
       delete patch.logo_url;
@@ -86,11 +96,29 @@ export async function PATCH(req: Request) {
       .update(patch)
       .eq("id", vendor.id)
       .select(
-        "id,user_id,business_name,slug,logo_url,description,location_text,region_id,city,address,contact_email,contact_phone,website_url,plan_id,is_active,verified_status"
+        "id,user_id,business_name,slug,logo_url,description,location_text,region_id,city,address,contact_email,contact_phone,website_url,plan_id,is_active,verified_status,cover_focus_x,cover_focus_y,cover_zoom"
       )
       .single();
 
-    if (error) return Response.json({ error: error.message }, { status: 500 });
+    if (error) {
+      const msg = String(error.message ?? "");
+      const isMissingCoverCols =
+        msg.toLowerCase().includes("column") &&
+        (msg.includes("cover_focus_x") || msg.includes("cover_focus_y") || msg.includes("cover_zoom"));
+
+      if (isMissingCoverCols) {
+        return Response.json(
+          {
+            error:
+              "Database schema missing cover crop fields. Add vendors.cover_focus_x, vendors.cover_focus_y, vendors.cover_zoom then retry.",
+            detail: msg,
+          },
+          { status: 500 }
+        );
+      }
+
+      return Response.json({ error: msg }, { status: 500 });
+    }
 
     return Response.json({ vendor: data }, { status: 200 });
   } catch (e: any) {

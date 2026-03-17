@@ -1,23 +1,9 @@
 import { createSupabaseAdminClient } from "../../../../lib/supabaseAdmin";
-
-function assertAdmin(req: Request) {
-  const token = req.headers.get("x-admin-token");
-  const expected = process.env.ADMIN_TOKEN;
-
-  if (!expected) {
-    throw new Error("Missing env var: ADMIN_TOKEN");
-  }
-
-  if (typeof token !== "string" || token.length === 0 || token !== expected) {
-    const err = new Error("Unauthorized") as Error & { statusCode?: number };
-    err.statusCode = 401;
-    throw err;
-  }
-}
+import { assertSuperadminRequest } from "../../../../lib/superadminAuth";
 
 export async function GET(req: Request) {
   try {
-    assertAdmin(req);
+    await assertSuperadminRequest(req);
 
     const { searchParams } = new URL(req.url);
     const limitRaw = searchParams.get("limit");
@@ -48,7 +34,7 @@ type PatchBody =
 
 export async function PATCH(req: Request) {
   try {
-    assertAdmin(req);
+    await assertSuperadminRequest(req);
 
     const body = ((await req.json()) ?? {}) as PatchBody;
 
@@ -64,7 +50,7 @@ export async function PATCH(req: Request) {
 
     const { data: reg, error: regErr } = await supabase
       .from("vendor_registrations")
-      .select("id,business_name,contact_email,contact_phone,category_id,location,description,website_url,plan_id,status,extra")
+      .select("id,business_name,contact_email,contact_phone,category_id,location,description,website_url,sec_dti_number,plan_id,status,extra")
       .eq("id", body.id)
       .single();
 
@@ -124,6 +110,7 @@ export async function PATCH(req: Request) {
         contact_email: reg.contact_email,
         contact_phone: reg.contact_phone ?? null,
         website_url: reg.website_url ?? null,
+        sec_dti_number: (reg as any).sec_dti_number ?? null,
         plan_id: reg.plan_id ?? null,
         verified_status: "unverified",
         is_active: true,
@@ -144,6 +131,27 @@ export async function PATCH(req: Request) {
       });
       if (catErr) {
         return Response.json({ error: catErr.message }, { status: 500 });
+      }
+    }
+
+    const affiliationSlugRaw = String((reg as any)?.extra?.affiliation_slug ?? "")
+      .trim()
+      .toLowerCase();
+    if (affiliationSlugRaw) {
+      const { data: aff } = await supabase
+        .from("affiliations")
+        .select("id")
+        .eq("slug", affiliationSlugRaw)
+        .maybeSingle<{ id: number }>();
+
+      if (aff?.id) {
+        const { error: affErr } = await supabase.from("vendor_affiliations").insert({
+          vendor_id: vendor.id,
+          affiliation_id: aff.id,
+        });
+        if (affErr) {
+          return Response.json({ error: affErr.message }, { status: 500 });
+        }
       }
     }
 

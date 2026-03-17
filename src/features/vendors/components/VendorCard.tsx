@@ -27,11 +27,15 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight }: Props) {
   const coverUrl = proxiedImageUrl(vendor.cover_image_url);
   const logoUrl = proxiedImageUrl(vendor.logo_url);
 
-  const rootClassName = fixedHeight
-    ? "h-[220px] rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow"
-    : "block rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden hover:shadow-md transition-shadow";
+  const focusX = Number.isFinite(Number(vendor.cover_focus_x)) ? Number(vendor.cover_focus_x) : 50;
+  const focusY = Number.isFinite(Number(vendor.cover_focus_y)) ? Number(vendor.cover_focus_y) : 50;
+  const coverObjectPosition = `${Math.max(0, Math.min(100, focusX))}% ${Math.max(0, Math.min(100, focusY))}%`;
+  const zoomRaw = Number.isFinite(Number(vendor.cover_zoom)) ? Number(vendor.cover_zoom) : 1;
+  const coverZoom = Math.max(1, Math.min(3, zoomRaw));
 
-  const contentClassName = fixedHeight ? "px-3 pt-2 pb-2 flex-1 flex flex-col min-h-0" : "p-5";
+  const rootClassName = fixedHeight
+    ? "h-[240px] rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow"
+    : "block rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden hover:shadow-md transition-shadow";
 
   return (
     <a
@@ -39,12 +43,13 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight }: Props) {
       className={rootClassName}
       aria-label={`View ${vendor.business_name}`}
     >
-      <div className="relative h-[154px] overflow-hidden">
+      <div className="relative h-[110px] overflow-hidden">
         {coverUrl ? (
           <img
             src={coverUrl}
             alt=""
             className="absolute inset-0 h-full w-full object-cover"
+            style={{ objectPosition: coverObjectPosition, transformOrigin: coverObjectPosition, transform: `scale(${coverZoom})` }}
             loading="lazy"
             decoding="async"
             referrerPolicy="no-referrer"
@@ -61,18 +66,11 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight }: Props) {
             }}
           />
         ) : null}
-
-        {location ? (
-          <div className="absolute bottom-2 left-2 right-2">
-            <div className="inline-flex max-w-full items-center rounded-[999px] bg-white/90 px-2.5 py-1 text-[10px] font-semibold text-black/60 shadow-sm backdrop-blur">
-              <span className="truncate">{location}</span>
-            </div>
-          </div>
-        ) : null}
       </div>
-      <div className={contentClassName}>
-        <div className="mt-1 flex items-center gap-2 min-h-0">
-          <div className="h-7 w-7 rounded-[3px] border border-black/10 bg-white overflow-hidden flex items-center justify-center shrink-0">
+
+      <div className="relative px-4 pt-0 pb-4">
+        <div className="relative -mt-10 mb-2 flex items-end justify-between">
+          <div className="h-20 w-20 rounded-[3px] border-2 border-white bg-white shadow-md overflow-hidden flex items-center justify-center shrink-0">
             {logoUrl ? (
               <img
                 src={logoUrl}
@@ -87,15 +85,23 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight }: Props) {
               <div className="h-full w-full bg-[#fcfbf9]" />
             )}
           </div>
-          <div className="text-[14px] font-semibold text-[#2c2c2c] leading-4 line-clamp-2">{vendor.business_name}</div>
-        </div>
-        <div className={fixedHeight ? "mt-auto flex items-center justify-between pt-1" : "mt-2 flex items-center justify-between"}>
-          <div className="inline-flex items-center gap-1 text-[10px] font-semibold text-black/55">
-            <span className="text-[#a67c52]">{rating.toFixed(1)}</span>
-            <span className="text-black/30">•</span>
-            <span className="truncate">{reviews} reviews</span>
-          </div>
           <span className="text-[12px] font-semibold text-[#6e4f33] hover:underline">Explore</span>
+        </div>
+
+        <div className="text-[15px] font-semibold text-[#2c2c2c] leading-5 line-clamp-1 mb-1">
+          {vendor.business_name}
+        </div>
+
+        <div className="flex items-center gap-1 text-[11px] text-black/55">
+          <span className="font-semibold text-[#a67c52]">{rating.toFixed(1)}</span>
+          <span className="text-black/30">•</span>
+          <span className="truncate">{reviews} reviews</span>
+          {location ? (
+            <>
+              <span className="text-black/30">•</span>
+              <span className="truncate">{location}</span>
+            </>
+          ) : null}
         </div>
       </div>
     </a>
