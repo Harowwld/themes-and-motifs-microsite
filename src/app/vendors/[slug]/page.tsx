@@ -336,7 +336,25 @@ async function VendorDetailData({ slug }: { slug: string }) {
             {/* Business Info */}
             <div className="mt-4">
               <h1 className="text-[24px] sm:text-[32px] font-bold tracking-[-0.02em] text-[#2c2c2c]">
-                {vendor.business_name}
+                <span className="inline-flex items-center gap-2">
+                  <span>{vendor.business_name}</span>
+                  {isPremium ? (
+                    <span
+                      className="inline-flex items-center justify-center h-4.5 w-4.5"
+                      title="Verified Premium Vendor"
+                      aria-label="Verified Premium Vendor"
+                    >
+                      <img
+                        src="/Icons/hd-blue-badge-verified-tick-mark-png-704081694710438adyvtbqafw.png"
+                        alt="Verified"
+                        className="h-full w-full"
+                        loading="lazy"
+                        decoding="async"
+                        draggable={false}
+                      />
+                    </span>
+                  ) : null}
+                </span>
               </h1>
 
               <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[14px] text-black/55">

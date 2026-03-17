@@ -43,6 +43,7 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
   const thumbRefs = useRef<Record<number, HTMLButtonElement | null>>({});
   const intervalRef = useRef<number | null>(null);
   const mainMediaRef = useRef<HTMLDivElement | null>(null);
+  const userInitiatedRef = useRef(false);
 
   const stopAutoplay = useCallback(() => {
     if (intervalRef.current == null) return;
@@ -76,14 +77,17 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
   }, [startAutoplay, stopAutoplay]);
 
   useEffect(() => {
+    if (!userInitiatedRef.current) return;
     const el = mainMediaRef.current;
     if (!el) return;
     window.setTimeout(() => {
       el.scrollIntoView({ behavior: "smooth", block: "center" });
     }, 0);
+    userInitiatedRef.current = false;
   }, [activeIndex]);
 
   useEffect(() => {
+    if (!userInitiatedRef.current) return;
     const container = stripRef.current;
     const el = thumbRefs.current[normalized[activeIndex]?.id ?? -1];
     if (!container || !el) return;
@@ -192,6 +196,7 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
                     thumbRefs.current[img.id] = node;
                   }}
                   onClick={() => {
+                    userInitiatedRef.current = true;
                     setActiveIndex(idx);
                     restartAutoplay();
                   }}

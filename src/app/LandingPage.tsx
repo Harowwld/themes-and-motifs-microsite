@@ -189,7 +189,7 @@ async function LandingFeaturedData() {
     supabase
       .from("vendors")
       .select(
-        "id,business_name,slug,logo_url,average_rating,review_count,location_text,city,cover_focus_x,cover_focus_y,cover_zoom"
+        "id,business_name,slug,logo_url,average_rating,review_count,location_text,city,cover_focus_x,cover_focus_y,cover_zoom,plan:plans(id,name)"
       )
       .eq("is_active", true)
       .eq("is_featured", true)
@@ -233,7 +233,7 @@ async function LandingVendorsData({ page, pageSize, sort }: { page: number; page
   let q = supabase
     .from("vendors")
     .select(
-      "id,business_name,slug,logo_url,average_rating,review_count,location_text,city,cover_focus_x,cover_focus_y,cover_zoom",
+      "id,business_name,slug,logo_url,average_rating,review_count,location_text,city,cover_focus_x,cover_focus_y,cover_zoom,plan:plans(id,name)",
       { count: "exact" }
     )
     .eq("is_active", true);

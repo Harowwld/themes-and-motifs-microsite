@@ -24,6 +24,11 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight }: Props) {
   const reviews = vendor.review_count ?? 0;
   const location = vendor.city ?? vendor.location_text;
 
+  const planName = String((Array.isArray(vendor.plan) ? vendor.plan?.[0]?.name : vendor.plan?.name) ?? "")
+    .trim()
+    .toLowerCase();
+  const isPremium = planName.includes("premium");
+
   const coverUrl = proxiedImageUrl(vendor.cover_image_url);
   const logoUrl = proxiedImageUrl(vendor.logo_url);
 
@@ -43,7 +48,7 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight }: Props) {
       className={rootClassName}
       aria-label={`View ${vendor.business_name}`}
     >
-      <div className="relative h-[110px] overflow-hidden">
+      <div className="relative h-27.5 overflow-hidden">
         {coverUrl ? (
           <img
             src={coverUrl}
@@ -88,8 +93,24 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight }: Props) {
           <span className="text-[12px] font-semibold text-[#6e4f33] hover:underline">Explore</span>
         </div>
 
-        <div className="text-[15px] font-semibold text-[#2c2c2c] leading-5 line-clamp-1 mb-1">
-          {vendor.business_name}
+        <div className="flex items-center gap-1 text-[15px] font-semibold text-[#2c2c2c] leading-5 line-clamp-1 mb-1">
+          <span className="truncate">{vendor.business_name}</span>
+          {isPremium ? (
+            <span
+              className="inline-flex items-center justify-center h-3.75 w-3.75 shrink-0"
+              title="Verified Premium Vendor"
+              aria-label="Verified Premium Vendor"
+            >
+              <img
+                src="/Icons/hd-blue-badge-verified-tick-mark-png-704081694710438adyvtbqafw.png"
+                alt="Verified"
+                className="h-full w-full"
+                loading="lazy"
+                decoding="async"
+                draggable={false}
+              />
+            </span>
+          ) : null}
         </div>
 
         <div className="flex items-center gap-1 text-[11px] text-black/55">
