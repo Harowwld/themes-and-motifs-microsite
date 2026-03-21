@@ -25,7 +25,7 @@ export async function POST(req: Request) {
       .from("superadmins")
       .select("id,password_hash")
       .eq("id", superadminId)
-      .maybeSingle<{ id: number; password_hash: string }>();
+      .maybeSingle<{ id: string; password_hash: string }>();
 
     if (fetchErr || !adminRow) {
       return NextResponse.json({ error: fetchErr?.message ?? "Superadmin not found." }, { status: 404 });
