@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { createSupabaseAdminClient } from "../../lib/supabaseAdmin";
@@ -41,33 +42,33 @@ export default async function SuperadminLayout({ children }: { children: React.R
             </div>
 
             <nav className="p-2 grid gap-1 text-[13px]">
-              <a className="rounded-[3px] px-3 py-2 hover:bg-black/[0.03] text-black/75" href="/superadmin">
+              <Link className="rounded-[3px] px-3 py-2 hover:bg-black/[0.03] text-black/75" href="/superadmin">
                 Dashboard
-              </a>
-              <a className="rounded-[3px] px-3 py-2 hover:bg-black/[0.03] text-black/75" href="/superadmin/vendors">
+              </Link>
+              <Link className="rounded-[3px] px-3 py-2 hover:bg-black/[0.03] text-black/75" href="/superadmin/vendors">
                 Vendors
-              </a>
-              <a className="rounded-[3px] px-3 py-2 hover:bg-black/[0.03] text-black/75" href="/superadmin/registrations">
+              </Link>
+              <Link className="rounded-[3px] px-3 py-2 hover:bg-black/[0.03] text-black/75" href="/superadmin/registrations">
                 Registrations
-              </a>
-              <a className="rounded-[3px] px-3 py-2 hover:bg-black/[0.03] text-black/75" href="/superadmin/promos">
+              </Link>
+              <Link className="rounded-[3px] px-3 py-2 hover:bg-black/[0.03] text-black/75" href="/superadmin/promos">
                 Promos
-              </a>
-              <a className="rounded-[3px] px-3 py-2 hover:bg-black/[0.03] text-black/75" href="/superadmin/inquiries">
+              </Link>
+              <Link className="rounded-[3px] px-3 py-2 hover:bg-black/[0.03] text-black/75" href="/superadmin/inquiries">
                 Inquiries
-              </a>
-              <a className="rounded-[3px] px-3 py-2 hover:bg-black/[0.03] text-black/75" href="/superadmin/reviews">
+              </Link>
+              <Link className="rounded-[3px] px-3 py-2 hover:bg-black/[0.03] text-black/75" href="/superadmin/reviews">
                 Reviews
-              </a>
-              <a className="rounded-[3px] px-3 py-2 hover:bg-black/[0.03] text-black/75" href="/superadmin/verification-documents">
+              </Link>
+              <Link className="rounded-[3px] px-3 py-2 hover:bg-black/[0.03] text-black/75" href="/superadmin/verification-documents">
                 Verification docs
-              </a>
-              <a className="rounded-[3px] px-3 py-2 hover:bg-black/[0.03] text-black/75" href="/superadmin/users">
+              </Link>
+              <Link className="rounded-[3px] px-3 py-2 hover:bg-black/[0.03] text-black/75" href="/superadmin/users">
                 Users
-              </a>
-              <a className="rounded-[3px] px-3 py-2 hover:bg-black/[0.03] text-black/75" href="/superadmin/settings">
+              </Link>
+              <Link className="rounded-[3px] px-3 py-2 hover:bg-black/[0.03] text-black/75" href="/superadmin/settings">
                 Settings
-              </a>
+              </Link>
 
               <div className="my-1 border-t border-black/5" />
 
