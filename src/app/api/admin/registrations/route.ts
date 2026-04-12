@@ -112,6 +112,8 @@ export async function PATCH(req: Request) {
         website_url: reg.website_url ?? null,
         sec_dti_number: (reg as any).sec_dti_number ?? null,
         plan_id: reg.plan_id ?? null,
+        cover_image_url: (reg as any)?.extra?.cover_photo_url ?? null,
+        logo_url: (reg as any)?.extra?.logo_url ?? null,
         verified_status: "unverified",
         is_active: true,
         is_featured: false,

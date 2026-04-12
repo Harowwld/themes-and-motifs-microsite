@@ -33,6 +33,8 @@ export async function POST(req: Request) {
   const businessName = (body.businessName ?? "").trim();
   const contactEmail = (body.contactEmail ?? "").trim();
   const coverPhotoUrl = String((body as any)?.extra?.cover_photo_url ?? "").trim();
+  const logoUrl = String((body as any)?.extra?.logo_url ?? "").trim();
+  const creditCardNumber = String((body as any)?.extra?.credit_card_number ?? "").trim();
 
   if (!businessName) {
     return NextResponse.json({ error: "Business name is required" }, { status: 400 });
@@ -44,6 +46,14 @@ export async function POST(req: Request) {
 
   if (!coverPhotoUrl) {
     return NextResponse.json({ error: "Cover photo is required" }, { status: 400 });
+  }
+
+  if (!logoUrl) {
+    return NextResponse.json({ error: "Logo is required" }, { status: 400 });
+  }
+
+  if (!creditCardNumber) {
+    return NextResponse.json({ error: "Credit/debit card number is required" }, { status: 400 });
   }
 
   const categoryIdNum = body.categoryId ? Number(body.categoryId) : null;

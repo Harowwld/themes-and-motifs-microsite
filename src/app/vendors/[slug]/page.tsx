@@ -157,7 +157,7 @@ async function VendorDetailData({ slug }: { slug: string }) {
   const { data: vendor } = await supabase
     .from("vendors")
     .select(
-      "id,business_name,slug,logo_url,description,location_text,city,address,website_url,contact_email,contact_phone,sec_dti_number,average_rating,review_count,verified_status,updated_at,plan:plans(id,name)"
+      "id,business_name,slug,logo_url,description,location_text,city,address,website_url,contact_email,sec_dti_number,average_rating,review_count,verified_status,updated_at,plan:plans(id,name)"
     )
     .eq("slug", slug)
     .eq("is_active", true)
@@ -241,7 +241,6 @@ async function VendorDetailData({ slug }: { slug: string }) {
     .toLowerCase();
   const isPremium = planName.includes("premium");
   const websiteTooltip = "Website link is available for Premium vendors.";
-  const showPhone = isPremium && Boolean(vendor.contact_phone);
 
   const verificationByType = verificationDocs.reduce<Record<string, VerificationDocumentRow | undefined>>((acc, doc) => {
     const t = (doc.doc_type ?? "").trim().toLowerCase();
@@ -255,11 +254,11 @@ async function VendorDetailData({ slug }: { slug: string }) {
   const dtiDoc = verificationByType["dti"];
 
   function formatDocStatus(doc?: VerificationDocumentRow) {
-    if (!doc) return "Not submitted";
+    if (!doc) return "Not verified";
     const s = (doc.status ?? "").trim().toLowerCase();
     if (s === "approved") return "Approved";
     if (s === "rejected") return "Rejected";
-    return "Submitted";
+    return "Verified";
   }
 
   function formatDate(value: string) {
@@ -308,8 +307,7 @@ async function VendorDetailData({ slug }: { slug: string }) {
 
               {/* Action Buttons */}
               <div className="flex-1 flex items-center justify-end gap-2 pb-2">
-                {vendor.website_url ? (
-                  isPremium ? (
+                {vendor.website_url && isPremium ? (
                     <a
                       className="hidden sm:inline-flex h-9 items-center gap-2 rounded-[3px] bg-[#a67c52] px-4 text-[13px] font-semibold text-white hover:bg-[#8e6a46] transition-colors"
                       href={withProtocol(vendor.website_url)}
@@ -319,16 +317,6 @@ async function VendorDetailData({ slug }: { slug: string }) {
                       <GlobeIcon className="h-4 w-4" />
                       Website
                     </a>
-                  ) : (
-                    <span
-                      className="hidden sm:inline-flex h-9 items-center gap-2 rounded-[3px] border border-black/10 bg-black/3 px-4 text-[13px] font-semibold text-black/40 cursor-not-allowed"
-                      title={websiteTooltip}
-                      aria-disabled="true"
-                    >
-                      <GlobeIcon className="h-4 w-4" />
-                      Website
-                    </span>
-                  )
                 ) : null}
               </div>
             </div>
@@ -549,15 +537,6 @@ async function VendorDetailData({ slug }: { slug: string }) {
                 
                 {/* Quick Action Buttons */}
                 <div className="mt-4 flex gap-2">
-                  {showPhone ? (
-                    <a
-                      href={`tel:${vendor.contact_phone}`}
-                      className="inline-flex h-10 w-10 items-center justify-center rounded-[3px] bg-[#a67c52] text-white hover:bg-[#8e6a46] transition-colors"
-                      title="Call"
-                    >
-                      <PhoneIcon className="h-4 w-4" />
-                    </a>
-                  ) : null}
                   {vendor.contact_email ? (
                     <ContactVendorForm 
                       vendorId={vendor.id} 
@@ -576,20 +555,13 @@ async function VendorDetailData({ slug }: { slug: string }) {
                       <span>{vendor.address}</span>
                     </div>
                   ) : null}
-                  {showPhone ? (
-                    <a href={`tel:${vendor.contact_phone}`} className="flex items-center gap-3 text-[13px] text-[#6e4f33] hover:underline">
-                      <PhoneIcon className="h-4 w-4 shrink-0" />
-                      <span>{vendor.contact_phone}</span>
-                    </a>
-                  ) : null}
                   {vendor.contact_email ? (
                     <div className="flex items-center gap-3 text-[13px] text-black/65">
                       <MailIcon className="h-4 w-4 shrink-0 text-black/40" />
                       <span>{vendor.contact_email}</span>
                     </div>
                   ) : null}
-                  {vendor.website_url ? (
-                    isPremium ? (
+                  {vendor.website_url && isPremium ? (
                       <a
                         href={withProtocol(vendor.website_url)}
                         target="_blank"
@@ -599,45 +571,10 @@ async function VendorDetailData({ slug }: { slug: string }) {
                         <GlobeIcon className="h-4 w-4 shrink-0" />
                         <span className="truncate">{vendor.website_url}</span>
                       </a>
-                    ) : (
-                      <div
-                        className="flex items-center gap-3 text-[13px] text-black/40 cursor-not-allowed"
-                        title={websiteTooltip}
-                        aria-disabled="true"
-                      >
-                        <GlobeIcon className="h-4 w-4 shrink-0" />
-                        <span className="truncate">{vendor.website_url}</span>
-                      </div>
-                    )
                   ) : null}
-                </div>
-              </div>
-
-              {/* Business Verification */}
-              <div className="rounded-[3px] border border-black/10 bg-white p-5 shadow-sm">
-                <h3 className="text-[14px] font-semibold text-[#2c2c2c]">Business Verification</h3>
-                <div className="mt-4 grid gap-2 text-[13px] text-black/65">
-                  <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center justify-between gap-3 pt-2 border-t border-black/5">
                     <span className="text-black/50">Last updated</span>
                     <span className="font-semibold text-black/70">{vendor.updated_at ? formatDate(vendor.updated_at) : "—"}</span>
-                  </div>
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="text-black/50">TIN cert</span>
-                    <span className="font-semibold text-black/70">{formatDocStatus(tinDoc)}</span>
-                  </div>
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="text-black/50">SEC/DTI #</span>
-                    <span className={vendor.sec_dti_number ? "font-semibold text-black/70" : "font-semibold text-black/40"}>
-                      {vendor.sec_dti_number ? vendor.sec_dti_number : "—"}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="text-black/50">SEC cert</span>
-                    <span className="font-semibold text-black/70">{formatDocStatus(secDoc)}</span>
-                  </div>
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="text-black/50">DTI cert</span>
-                    <span className="font-semibold text-black/70">{formatDocStatus(dtiDoc)}</span>
                   </div>
                 </div>
               </div>
@@ -664,6 +601,31 @@ async function VendorDetailData({ slug }: { slug: string }) {
                   </div>
                 </div>
               ) : null}
+
+              {/* Business Verification */}
+              <div className="rounded-[3px] border border-black/10 bg-white p-5 shadow-sm">
+                <h3 className="text-[14px] font-semibold text-[#2c2c2c]">Business Verification</h3>
+                <div className="mt-4 grid gap-2 text-[13px] text-black/65">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-black/50">TIN cert</span>
+                    <span className="font-semibold text-black/70">{formatDocStatus(tinDoc)}</span>
+                  </div>
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-black/50">SEC/DTI #</span>
+                    <span className={vendor.sec_dti_number ? "font-semibold text-black/70" : "font-semibold text-black/40"}>
+                      {vendor.sec_dti_number ? vendor.sec_dti_number : "—"}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-black/50">SEC cert</span>
+                    <span className="font-semibold text-black/70">{formatDocStatus(secDoc)}</span>
+                  </div>
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-black/50">DTI cert</span>
+                    <span className="font-semibold text-black/70">{formatDocStatus(dtiDoc)}</span>
+                  </div>
+                </div>
+              </div>
 
               {/* Affiliations */}
               {affiliations.length > 0 ? (
@@ -827,14 +789,6 @@ function GlobeIcon({ className }: { className?: string }) {
       <circle cx="12" cy="12" r="10"/>
       <line x1="2" y1="12" x2="22" y2="12"/>
       <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-    </svg>
-  );
-}
-
-function PhoneIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
     </svg>
   );
 }

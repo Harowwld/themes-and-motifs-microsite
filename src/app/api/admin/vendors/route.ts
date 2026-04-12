@@ -1,9 +1,9 @@
 import { createSupabaseAdminClient } from "../../../../lib/supabaseAdmin";
-import { assertSuperadminRequest } from "../../../../lib/superadminAuth";
+import { assertAdminOrEditorRequest } from "../../../../lib/editorAuth";
 
 export async function GET(req: Request) {
   try {
-    await assertSuperadminRequest(req);
+    await assertAdminOrEditorRequest(req);
 
     const { searchParams } = new URL(req.url);
     const limitRaw = searchParams.get("limit");
@@ -38,7 +38,7 @@ export async function GET(req: Request) {
 
 export async function PATCH(req: Request) {
   try {
-    await assertSuperadminRequest(req);
+    await assertAdminOrEditorRequest(req);
 
     const { id, is_active, is_featured, plan_id } = (await req.json()) ?? {};
 

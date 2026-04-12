@@ -40,7 +40,14 @@ export default function FeaturedVendorsSection({ vendors }: { vendors: FeaturedV
           </div>
         ) : (
           vendors.map((vendor, i) => {
-            return <VendorCard key={vendor.id} vendor={vendor} toneSeed={i} />;
+            return (
+              <div
+                key={vendor.id}
+                className="rounded-md border-2 border-dashed border-[#c17a4e]/40 bg-linear-to-br from-[#fff7ed] to-white overflow-hidden hover:shadow-md transition-shadow"
+              >
+                <VendorCard vendor={vendor} toneSeed={i} />
+              </div>
+            );
           })
         )}
       </div>

@@ -215,10 +215,10 @@ async function LandingFeaturedData() {
   return (
     <>
       <FadeInOnView>
-        <FeaturedVendorsSection vendors={featuredSorted as any} />
+        <PromosSection promos={promos} />
       </FadeInOnView>
       <FadeInOnView delayMs={60}>
-        <PromosSection promos={promos} />
+        <FeaturedVendorsSection vendors={featuredSorted as any} />
       </FadeInOnView>
     </>
   );
