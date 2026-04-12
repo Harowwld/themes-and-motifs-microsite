@@ -1,9 +1,19 @@
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 import { createSupabaseAdminClient } from "../../lib/supabaseAdmin";
 import { SUPERADMIN_COOKIE_NAME } from "../../lib/superadminAuth";
 import { EditorAuthCheck } from "./AuthCheck";
+
+async function getPathname(): Promise<string> {
+  try {
+    const headersList = await headers();
+    return headersList.get("x-invoke-path") ?? "";
+  } catch {
+    return "";
+  }
+}
 
 async function checkSuperadmin(): Promise<boolean> {
   const cookieStore = await cookies();
@@ -26,8 +36,14 @@ async function checkSuperadmin(): Promise<boolean> {
 export default async function SuperadminLayout({ children }: { children: React.ReactNode }) {
   const isSuperadmin = await checkSuperadmin();
 
-  // If not a superadmin, wrap in client-side auth check for editors
+  // If not a superadmin, check if accessing dashboard and redirect to vendors
   if (!isSuperadmin) {
+    const pathname = await getPathname();
+    // Redirect editors from dashboard to vendors page
+    if (pathname === "/superadmin" || pathname === "/superadmin/") {
+      redirect("/superadmin/vendors");
+    }
+
     return (
       <EditorAuthCheck>
         <LayoutContent isSuperadmin={false} isEditor={true}>

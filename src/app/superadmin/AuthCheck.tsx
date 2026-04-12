@@ -18,13 +18,11 @@ export function EditorAuthCheck({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      // Check if user is an editor
+      // Check if user is an editor (any entry in editors table)
       const { data: editorData } = await supabase
         .from("editors")
         .select("id")
         .eq("user_id", session.user.id)
-        .is("vendor_id", null)
-        .eq("can_edit_entries", true)
         .limit(1)
         .maybeSingle();
 

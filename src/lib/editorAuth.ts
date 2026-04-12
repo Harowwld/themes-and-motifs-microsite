@@ -29,10 +29,18 @@ export async function getAdminOrEditorAuth(req: Request): Promise<AuthResult> {
     }
   }
 
-  // Check for editor session (via Supabase auth cookie)
+  // Check for editor session (via Supabase auth cookie or Authorization header)
   // Supabase uses cookie names like: sb-<project-ref>-auth-token
   const cookieHeader = req.headers.get("cookie") ?? "";
-  const supabaseToken = findSupabaseToken(cookieHeader);
+  let supabaseToken = findSupabaseToken(cookieHeader);
+
+  // Also try Authorization header (bearer token)
+  if (!supabaseToken) {
+    const authHeader = req.headers.get("authorization") ?? "";
+    if (authHeader.startsWith("Bearer ")) {
+      supabaseToken = authHeader.slice(7);
+    }
+  }
 
   if (supabaseToken) {
     try {
@@ -41,15 +49,13 @@ export async function getAdminOrEditorAuth(req: Request): Promise<AuthResult> {
       const { data: { user }, error } = await supabase.auth.getUser(supabaseToken);
 
       if (user && !error) {
-        // Check if this user is an editor (global editor with null vendor_id)
+        // Check if this user is an editor (any entry in editors table)
         const { data: editorData } = await supabase
           .from("editors")
-          .select("id, can_edit_entries")
+          .select("id")
           .eq("user_id", user.id)
-          .is("vendor_id", null)
-          .eq("can_edit_entries", true)
           .limit(1)
-          .maybeSingle<{ id: string; can_edit_entries: boolean }>();
+          .maybeSingle<{ id: string }>();
 
         if (editorData) {
           return { type: "editor", userId: user.id, editorId: editorData.id };
@@ -108,6 +114,15 @@ function findSupabaseToken(cookieHeader: string): string | null {
   const cookies = parseCookies(cookieHeader);
   for (const [name, value] of Object.entries(cookies)) {
     if (name.startsWith("sb-") && (name.endsWith("-auth-token") || name === "sb-access-token")) {
+      // Cookie value might be a JSON string containing access_token
+      try {
+        const parsed = JSON.parse(value);
+        if (parsed.access_token) {
+          return parsed.access_token;
+        }
+      } catch {
+        // Not JSON, return as-is (might be raw token)
+      }
       return value;
     }
   }
