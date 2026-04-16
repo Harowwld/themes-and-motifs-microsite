@@ -1,10 +1,12 @@
 -- Ensure a premium plan exists (idempotent - won't duplicate if already present)
-INSERT INTO plans (id, name)
-SELECT 2, 'Premium'
-WHERE NOT EXISTS (SELECT 1 FROM plans WHERE id = 2)
-ON CONFLICT (id) DO NOTHING;
+-- TODO: Uncomment when plans table is created
+-- INSERT INTO plans (id, name)
+-- SELECT 2, 'Premium'
+-- WHERE NOT EXISTS (SELECT 1 FROM plans WHERE id = 2)
+-- ON CONFLICT (id) DO NOTHING;
 
 -- Assign premium plan (id=2) to all verified vendors
-UPDATE vendors
-SET plan_id = 2, updated_at = NOW()
-WHERE verified_status = 'verified' AND (plan_id IS NULL OR plan_id != 2);
+-- TODO: Uncomment when vendors table is created
+-- UPDATE vendors
+-- SET plan_id = 2, updated_at = NOW()
+-- WHERE verified_status = 'verified' AND (plan_id IS NULL OR plan_id != 2);

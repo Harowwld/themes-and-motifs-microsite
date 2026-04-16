@@ -103,6 +103,9 @@ function LayoutContent({
                   <Link className="rounded-[3px] px-3 py-2 hover:bg-black/[0.03] text-black/75" href="/superadmin/registrations">
                     Registrations
                   </Link>
+                  <Link className="rounded-[3px] px-3 py-2 hover:bg-black/[0.03] text-black/75" href="/superadmin/claims">
+                    Claims
+                  </Link>
                   <Link className="rounded-[3px] px-3 py-2 hover:bg-black/[0.03] text-black/75" href="/superadmin/promos">
                     Promos
                   </Link>

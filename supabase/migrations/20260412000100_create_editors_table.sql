@@ -3,7 +3,7 @@
 
 create table public.editors (
   id uuid primary key default gen_random_uuid(),
-  vendor_id bigint references public.vendors(id) on delete cascade,
+  vendor_id bigint,
   user_id uuid references auth.users(id) not null,
   can_edit_photos boolean default true,
   can_edit_entries boolean default true,

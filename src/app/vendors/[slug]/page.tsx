@@ -6,6 +6,7 @@ import SiteFooter from "../../sections/SiteFooter";
 import { createSupabaseServerClient } from "../../../lib/supabaseServer";
 import VendorPhotosCarousel from "../../../features/vendors/components/VendorPhotosCarousel";
 import ContactVendorForm from "../../../features/vendors/components/ContactVendorForm";
+import ClaimVendorButton from "../../../features/vendors/components/ClaimVendorButton";
 import VendorReviewForm from "./VendorReviewForm";
 import FadeInOnView from "../../components/FadeInOnView";
 
@@ -27,6 +28,7 @@ type VendorRow = {
   average_rating: number | null;
   review_count: number | null;
   verified_status: string | null;
+  user_id: string | null;
   updated_at: string;
   plan?: { id: number; name: string } | { id: number; name: string }[] | null;
 };
@@ -157,7 +159,7 @@ async function VendorDetailData({ slug }: { slug: string }) {
   const { data: vendor } = await supabase
     .from("vendors")
     .select(
-      "id,business_name,slug,logo_url,description,location_text,city,address,website_url,contact_email,sec_dti_number,average_rating,review_count,verified_status,updated_at,plan:plans(id,name)"
+      "id,business_name,slug,logo_url,description,location_text,city,address,website_url,contact_email,contact_phone,sec_dti_number,average_rating,review_count,verified_status,user_id,updated_at,plan:plans(id,name)"
     )
     .eq("slug", slug)
     .eq("is_active", true)
@@ -613,7 +615,7 @@ async function VendorDetailData({ slug }: { slug: string }) {
                   <div className="flex items-center justify-between gap-3">
                     <span className="text-black/50">SEC/DTI #</span>
                     <span className={vendor.sec_dti_number ? "font-semibold text-black/70" : "font-semibold text-black/40"}>
-                      {vendor.sec_dti_number ? vendor.sec_dti_number : "—"}
+                      {vendor.sec_dti_number ? vendor.sec_dti_number : "?"}
                     </span>
                   </div>
                   <div className="flex items-center justify-between gap-3">
@@ -626,6 +628,19 @@ async function VendorDetailData({ slug }: { slug: string }) {
                   </div>
                 </div>
               </div>
+
+              {/* Claim Button for unclaimed vendors */}
+              {!vendor.user_id && (
+                <div className="rounded-[3px] border border-[#a67c52]/30 bg-[#a67c52]/5 p-5 shadow-sm">
+                  <h3 className="text-[14px] font-semibold text-[#2c2c2c]">Are you the owner?</h3>
+                  <p className="mt-2 text-xs text-black/60">
+                    Claim this vendor listing to manage your business profile.
+                  </p>
+                  <div className="mt-4">
+                    <ClaimVendorButton vendorId={vendor.id} vendorName={vendor.business_name} />
+                  </div>
+                </div>
+              )}
 
               {/* Affiliations */}
               {affiliations.length > 0 ? (
