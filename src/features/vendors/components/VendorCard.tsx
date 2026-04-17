@@ -6,6 +6,7 @@ type Props = {
   vendor: VendorCardVendor;
   toneSeed?: number;
   fixedHeight?: boolean;
+  featured?: boolean;
 };
 
 function proxiedImageUrl(url: string | null | undefined) {
@@ -17,7 +18,7 @@ function proxiedImageUrl(url: string | null | undefined) {
   return u;
 }
 
-export default function VendorCard({ vendor, toneSeed, fixedHeight }: Props) {
+export default function VendorCard({ vendor, toneSeed, fixedHeight, featured }: Props) {
   const seed = toneSeed ?? vendor.id;
   const tone = seed % 2 === 0 ? "#a68b6a" : "#957a5c";
   const rating = vendor.average_rating ?? 0;
@@ -48,7 +49,7 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight }: Props) {
       className={rootClassName}
       aria-label={`View ${vendor.business_name}`}
     >
-      <div className="relative h-28 overflow-hidden">
+      <div className={`relative ${featured ? 'h-48' : 'h-28'} overflow-hidden`}>
         {coverUrl ? (
           <img
             src={coverUrl}

@@ -85,7 +85,7 @@ export async function buildVendorsQuery({
   let query = supabase
     .from("vendors")
     .select(
-      "id,business_name,slug,logo_url,average_rating,review_count,location_text,city,cover_focus_x,cover_focus_y,cover_zoom,plan:plans(id,name)",
+      "id,business_name,slug,logo_url,average_rating,review_count,location_text,city,cover_focus_x,cover_focus_y,cover_zoom,plan:plans(id,name),save_count,view_count,updated_at",
       {
       count: "exact",
       }

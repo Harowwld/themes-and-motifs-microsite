@@ -8,12 +8,64 @@ export const dynamic = "force-dynamic";
 
 type SortKey = "alpha" | "rating" | "newest" | "saves" | "views";
 
-function sortWithImagesFirst<T extends { cover_image_url?: string | null; logo_url?: string | null }>(vendors: T[]) {
+type VendorWithSortFields = {
+  id: number;
+  business_name: string;
+  slug: string;
+  logo_url: string | null;
+  average_rating: number | null;
+  review_count: number | null;
+  location_text: string | null;
+  city: string | null;
+  cover_focus_x: number | null;
+  cover_focus_y: number | null;
+  cover_zoom: number | null;
+  plan: { id: number; name: string } | { id: number; name: string }[] | null;
+  save_count: number | null;
+  view_count: number | null;
+  updated_at: string | null;
+};
+
+type VendorWithCoverImage = VendorWithSortFields & { cover_image_url: string | null };
+
+function hasImages(vendor: { cover_image_url?: string | null; logo_url?: string | null | null }) {
+  return Boolean((vendor.cover_image_url ?? "").trim() || (vendor.logo_url ?? "").trim());
+}
+
+function sortVendors<T extends VendorWithSortFields>(vendors: T[], sort: SortKey): T[] {
   return [...vendors].sort((a, b) => {
-    const aHas = Boolean((a.cover_image_url ?? "").trim() || (a.logo_url ?? "").trim());
-    const bHas = Boolean((b.cover_image_url ?? "").trim() || (b.logo_url ?? "").trim());
-    if (aHas === bHas) return 0;
-    return aHas ? -1 : 1;
+    const aHas = hasImages(a);
+    const bHas = hasImages(b);
+    if (aHas !== bHas) return aHas ? -1 : 1;
+
+    let primaryCmp = 0;
+
+    switch (sort) {
+      case "alpha":
+        primaryCmp = (a.business_name ?? "").localeCompare(b.business_name ?? "");
+        if (primaryCmp === 0) primaryCmp = a.id - b.id;
+        break;
+      case "newest":
+        const aDate = a.updated_at ? new Date(a.updated_at).getTime() : 0;
+        const bDate = b.updated_at ? new Date(b.updated_at).getTime() : 0;
+        primaryCmp = bDate - aDate || b.id - a.id;
+        break;
+      case "saves":
+        primaryCmp = (b.save_count ?? 0) - (a.save_count ?? 0) || b.id - a.id;
+        break;
+      case "views":
+        primaryCmp = (b.view_count ?? 0) - (a.view_count ?? 0) || b.id - a.id;
+        break;
+      case "rating":
+      default:
+        primaryCmp = (b.average_rating ?? 0) - (a.average_rating ?? 0);
+        if (primaryCmp === 0) primaryCmp = (b.review_count ?? 0) - (a.review_count ?? 0);
+        if (primaryCmp === 0) primaryCmp = (a.business_name ?? "").localeCompare(b.business_name ?? "");
+        if (primaryCmp === 0) primaryCmp = a.id - b.id;
+        break;
+    }
+
+    return primaryCmp;
   });
 }
 
@@ -38,27 +90,33 @@ export async function GET(req: Request) {
 
   const supabase = createSupabaseServerClient();
 
-  const from = (page - 1) * pageSize;
-  const to = from + pageSize - 1;
-
   const { query } = await buildVendorsQuery({
     supabase,
     filters: { q, category, location, region, affiliation },
     sort,
   });
 
-  const { data: vendors, count, error } = await query.range(from, to);
+  const MAX_FETCH = 5000;
+
+  const { data: vendors, count, error } = await query.limit(MAX_FETCH);
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  const withCovers = await attachCoverImages(supabase, (vendors ?? []) as Array<{ id: number }>);
-  const sorted = sortWithImagesFirst(withCovers as any);
+  const vendorAllItems = (vendors ?? []) as VendorWithSortFields[];
+  const vendorTotal = Math.min(count ?? 0, MAX_FETCH);
+
+  const withCovers = await attachCoverImages(supabase, vendorAllItems) as VendorWithCoverImage[];
+  const sorted = sortVendors(withCovers, sort);
+
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize;
+  const paginated = sorted.slice(from, to);
 
   return NextResponse.json({
-    vendors: sorted,
-    total: count ?? 0,
+    vendors: paginated,
+    total: vendorTotal,
     page,
     pageSize,
   });

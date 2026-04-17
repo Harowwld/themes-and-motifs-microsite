@@ -9,6 +9,7 @@ export default function VendorsScrollToResults() {
   useEffect(() => {
     if (!sp) return;
     if (sp.get("scroll") !== "results") return;
+    if (sp.get("from") !== "landing") return;
 
     const el = document.getElementById("vendors-results");
     if (!el) return;

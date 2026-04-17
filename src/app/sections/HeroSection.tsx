@@ -182,6 +182,7 @@ export default function HeroSection({
     if (category) params.set("category", category);
     if (location) params.set("location", location);
     params.set("scroll", "results");
+    params.set("from", "landing");
     const qs = params.toString();
     router.push(`/vendors${qs ? `?${qs}` : ""}`);
   };

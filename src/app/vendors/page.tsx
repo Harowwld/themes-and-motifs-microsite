@@ -12,12 +12,63 @@ import FadeInOnView from "../components/FadeInOnView";
 
 type SortKey = "alpha" | "rating" | "newest" | "saves" | "views";
 
-function sortWithImagesFirst<T extends { cover_image_url?: string | null; logo_url?: string | null }>(vendors: T[]) {
+type VendorWithSortFields = {
+  id: number;
+  business_name: string;
+  slug: string;
+  logo_url: string | null;
+  average_rating: number | null;
+  review_count: number | null;
+  location_text: string | null;
+  city: string | null;
+  cover_focus_x: number | null;
+  cover_focus_y: number | null;
+  cover_zoom: number | null;
+  plan: { id: number; name: string } | { id: number; name: string }[] | null;
+  save_count: number | null;
+  view_count: number | null;
+  updated_at: string | null;
+  cover_image_url?: string | null;
+};
+
+function hasImages(vendor: { cover_image_url?: string | null; logo_url?: string | null }) {
+  return Boolean((vendor.cover_image_url ?? "").trim() || (vendor.logo_url ?? "").trim());
+}
+
+function sortVendors<T extends VendorWithSortFields>(vendors: T[], sort: SortKey): T[] {
   return [...vendors].sort((a, b) => {
-    const aHas = Boolean((a.cover_image_url ?? "").trim() || (a.logo_url ?? "").trim());
-    const bHas = Boolean((b.cover_image_url ?? "").trim() || (b.logo_url ?? "").trim());
-    if (aHas === bHas) return 0;
-    return aHas ? -1 : 1;
+    const aHas = hasImages(a);
+    const bHas = hasImages(b);
+    if (aHas !== bHas) return aHas ? -1 : 1;
+
+    let primaryCmp = 0;
+
+    switch (sort) {
+      case "alpha":
+        primaryCmp = (a.business_name ?? "").localeCompare(b.business_name ?? "");
+        if (primaryCmp === 0) primaryCmp = a.id - b.id;
+        break;
+      case "newest":
+        const aDate = a.updated_at ? new Date(a.updated_at).getTime() : 0;
+        const bDate = b.updated_at ? new Date(b.updated_at).getTime() : 0;
+        primaryCmp = bDate - aDate || b.id - a.id;
+        break;
+      case "saves":
+        primaryCmp = (b.save_count ?? 0) - (a.save_count ?? 0) || b.id - a.id;
+        break;
+      case "views":
+        primaryCmp = (b.view_count ?? 0) - (a.view_count ?? 0) || b.id - a.id;
+        break;
+      case "rating":
+      default:
+        primaryCmp = (b.average_rating ?? 0) - (a.average_rating ?? 0);
+        if (primaryCmp === 0) primaryCmp = (b.review_count ?? 0) - (a.review_count ?? 0);
+        if (primaryCmp === 0) primaryCmp = (a.business_name ?? "").localeCompare(b.business_name ?? "");
+        if (primaryCmp === 0) primaryCmp = a.id - b.id;
+        break;
+    }
+
+    return primaryCmp;
   });
 }
 
@@ -38,41 +89,108 @@ type AffiliationRow = {
   slug: string;
 };
 
+function VendorCardSkeleton() {
+  return (
+    <div className="rounded-xl border border-black/5 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] overflow-hidden">
+      <div className="h-28 w-full bg-black/5 animate-pulse" />
+      <div className="relative px-4 pt-0 pb-4">
+        <div className="relative -mt-10 mb-2 flex items-end justify-between">
+          <div className="h-20 w-20 rounded-2xl border-4 border-white bg-black/5 shadow-lg overflow-hidden shrink-0 -ml-1" />
+          <div className="h-3.5 w-14 bg-black/5 rounded animate-pulse" />
+        </div>
+        <div className="h-5 w-3/4 rounded bg-black/5 animate-pulse mb-2" />
+        <div className="flex items-center gap-2">
+          <div className="h-3 w-10 rounded bg-black/5 animate-pulse" />
+          <div className="h-3 w-2 rounded bg-black/5 animate-pulse" />
+          <div className="h-3 w-16 rounded bg-black/5 animate-pulse" />
+          <div className="h-3 w-2 rounded bg-black/5 animate-pulse" />
+          <div className="h-3 w-20 rounded bg-black/5 animate-pulse" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CategoryCardSkeleton() {
+  return (
+    <div className="shrink-0 w-45 min-h-24 rounded-lg bg-white shadow-sm px-3 py-3 text-center">
+      <div className="mx-auto inline-flex h-10 w-10 items-center justify-center">
+        <div className="h-10 w-10 rounded bg-black/10 animate-pulse" />
+      </div>
+      <div className="mt-1 h-3 w-16 mx-auto rounded bg-black/10 animate-pulse" />
+    </div>
+  );
+}
+
+function VendorsSearchBarSkeleton() {
+  return (
+    <div className="rounded-lg border border-stone-200/60 bg-white/80 backdrop-blur-sm shadow-[0_2px_8px_rgba(0,0,0,0.04)] overflow-hidden">
+      <div className="px-6 py-5 border-b border-stone-100">
+        <div className="h-6 w-32 rounded bg-black/10 animate-pulse" />
+        <div className="mt-2 h-4 w-64 rounded bg-black/10 animate-pulse" />
+      </div>
+      <div className="p-6">
+        <div className="grid gap-4 lg:grid-cols-[1.2fr_0.9fr_0.9fr_0.9fr_0.7fr_auto] items-end">
+          <label className="grid gap-1.5">
+            <span className="text-xs font-medium text-stone-500 uppercase tracking-wide">Keyword</span>
+            <div className="h-11 rounded-md border border-stone-200 bg-stone-50 animate-pulse" />
+          </label>
+          <label className="grid gap-1.5">
+            <span className="text-xs font-medium text-stone-500 uppercase tracking-wide">Area</span>
+            <div className="h-11 rounded-md border border-stone-200 bg-stone-50 animate-pulse" />
+          </label>
+          <label className="grid gap-1.5">
+            <span className="text-xs font-medium text-stone-500 uppercase tracking-wide">City</span>
+            <div className="h-11 rounded-md border border-stone-200 bg-stone-50 animate-pulse" />
+          </label>
+          <label className="grid gap-1.5">
+            <span className="text-xs font-medium text-stone-500 uppercase tracking-wide">Affiliation</span>
+            <div className="h-11 rounded-md border border-stone-200 bg-stone-50 animate-pulse" />
+          </label>
+          <label className="grid gap-1.5">
+            <span className="text-xs font-medium text-stone-500 uppercase tracking-wide">Sort</span>
+            <div className="h-11 rounded-md border border-stone-200 bg-stone-50 animate-pulse" />
+          </label>
+          <div className="h-11 w-20 rounded-md bg-black/10 animate-pulse" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function VendorsPageSkeleton() {
   return (
     <div className="grid gap-8">
-      <section className="rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden">
-        <div className="px-6 py-5 border-b border-black/5">
-          <div className="h-6 w-44 rounded bg-black/10 animate-pulse" />
-          <div className="mt-2 h-4 w-80 rounded bg-black/10 animate-pulse" />
-        </div>
-        <div className="p-6 grid gap-4">
-          <div className="grid gap-3 sm:grid-cols-3">
-            <div className="h-10 w-full rounded-[3px] bg-black/10 animate-pulse" />
-            <div className="h-10 w-full rounded-[3px] bg-black/10 animate-pulse" />
-            <div className="h-10 w-full rounded-[3px] bg-black/10 animate-pulse" />
+      <VendorsSearchBarSkeleton />
+
+      <section className="mt-10 sm:mt-14">
+        <div className="flex items-end justify-between gap-6">
+          <div>
+            <div className="h-3.5 w-14 rounded bg-black/10 animate-pulse" />
+            <div className="mt-1 h-5 w-32 rounded bg-black/10 animate-pulse" />
           </div>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="h-12 rounded-[3px] bg-black/10 animate-pulse" />
+          <div className="h-4 w-16 rounded bg-black/10 animate-pulse" />
+        </div>
+        <div className="mt-6">
+          <div className="flex gap-3 overflow-x-auto">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <CategoryCardSkeleton key={i} />
             ))}
           </div>
         </div>
       </section>
 
-      <section className="rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden">
-        <div className="px-6 py-5 border-b border-black/5">
-          <div className="h-5 w-40 rounded bg-black/10 animate-pulse" />
+      <section className="mt-16 sm:mt-20">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <div className="h-5 w-20 rounded bg-black/10 animate-pulse" />
+            <div className="mt-2 h-4 w-64 rounded bg-black/10 animate-pulse" />
+          </div>
+          <div className="h-3 w-24 rounded bg-black/10 animate-pulse" />
         </div>
-        <div className="p-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 12 }).map((_, i) => (
-            <div key={i} className="rounded-[3px] border border-black/10 bg-white overflow-hidden">
-              <div className="h-28 w-full bg-black/10 animate-pulse" />
-              <div className="p-4 grid gap-2">
-                <div className="h-4 w-2/3 rounded bg-black/10 animate-pulse" />
-                <div className="h-3 w-1/2 rounded bg-black/10 animate-pulse" />
-              </div>
-            </div>
+            <VendorCardSkeleton key={i} />
           ))}
         </div>
       </section>
@@ -147,7 +265,7 @@ async function VendorsPageData({
   const vendorTotal = count ?? 0;
 
   const vendorAllItemsWithCovers = await attachCoverImages(supabase, vendorAllItems);
-  const vendorAllItemsSorted = sortWithImagesFirst(vendorAllItemsWithCovers as any);
+  const vendorAllItemsSorted = sortVendors(vendorAllItemsWithCovers as VendorWithSortFields[], sort);
   const vendorPageItemsSorted = vendorAllItemsSorted.slice(from, to + 1);
 
   return (

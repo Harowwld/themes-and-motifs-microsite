@@ -1,12 +1,27 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import VendorCard from "../components/VendorCard";
 import type { FeaturedVendor } from "../types";
 
-export default function FeaturedVendorsSection({ vendors }: { vendors: FeaturedVendor[] }) {
-  const router = useRouter();
+function clampPct(v: number) {
+  if (!Number.isFinite(v)) return 50;
+  return Math.max(0, Math.min(100, v));
+}
 
+function clampZoom(v: number) {
+  if (!Number.isFinite(v)) return 1;
+  return Math.max(1, Math.min(3, v));
+}
+
+function proxiedImageUrl(url: string | null | undefined) {
+  const u = (url ?? "").trim();
+  if (!u) return null;
+  if (u.includes("drive.google.com")) {
+    return `/api/image-proxy?url=${encodeURIComponent(u)}`;
+  }
+  return u;
+}
+
+export default function FeaturedVendorsSection({ vendors }: { vendors: FeaturedVendor[] }) {
   return (
     <section id="featured" className="mt-12 sm:mt-16">
       <div className="text-center">
@@ -18,23 +33,101 @@ export default function FeaturedVendorsSection({ vendors }: { vendors: FeaturedV
         </p>
       </div>
 
-      <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
+      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
         {vendors.length === 0 ? (
-          <div className="sm:col-span-2 lg:col-span-3 rounded-lg border border-gray-100 bg-white p-6">
-            <div className="text-[13px] font-medium text-gray-900">No featured vendors yet</div>
-            <div className="mt-1 text-[13px] text-gray-500">
-              Mark vendors as featured to have them appear here.
-            </div>
+          <div className="sm:col-span-2 lg:col-span-3 rounded-[3px] border border-black/10 bg-white shadow-sm p-6">
+            <div className="text-[13px] font-semibold text-[#2c2c2c]">No featured vendors yet</div>
+            <div className="mt-1 text-[13px] text-black/55">Mark vendors as featured to have them appear here.</div>
           </div>
         ) : (
           vendors.map((vendor, i) => {
+            const tone = i % 2 === 0 ? "#a68b6a" : "#957a5c";
+            const coverUrl = proxiedImageUrl(vendor.cover_image_url);
+            const logoUrl = proxiedImageUrl(vendor.logo_url);
+            const fx = clampPct(Number(vendor.cover_focus_x ?? 50));
+            const fy = clampPct(Number(vendor.cover_focus_y ?? 50));
+            const z = clampZoom(Number(vendor.cover_zoom ?? 1));
+            const rating = vendor.average_rating ?? 0;
+            const reviews = vendor.review_count ?? 0;
+            const location = vendor.city ?? vendor.location_text;
+
+            const planName = String((Array.isArray(vendor.plan) ? vendor.plan?.[0]?.name : vendor.plan?.name) ?? "")
+              .trim()
+              .toLowerCase();
+            const isPremium = planName.includes("premium");
+
             return (
-              <div
+              <a
                 key={vendor.id}
-                className="rounded-lg border border-gray-100 bg-white overflow-hidden hover:shadow-lg transition-shadow"
+                href={`/vendors/${encodeURIComponent(vendor.slug)}`}
+                className="group block rounded-[12px] overflow-hidden relative aspect-[3/4] shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] hover:shadow-[0_10px_25px_rgba(0,0,0,0.08),0_4px_10px_rgba(0,0,0,0.04)] hover:-translate-y-3 pt-3 transition-all duration-500"
               >
-                <VendorCard vendor={vendor} toneSeed={i} />
-              </div>
+                <div className="absolute inset-0">
+                  {coverUrl ? (
+                    <img
+                      src={coverUrl}
+                      alt=""
+                      className="h-full w-full object-cover"
+                      style={{ transformOrigin: `${fx}% ${fy}%`, transform: `scale(${z})` }}
+                      loading="lazy"
+                      decoding="async"
+                      referrerPolicy="no-referrer"
+                      draggable={false}
+                    />
+                  ) : (
+                    <div
+                      className="h-full w-full"
+                      style={{
+                        background: `linear-gradient(135deg, ${tone}33, ${tone}11)`,
+                      }}
+                    />
+                  )}
+                </div>
+
+                {isPremium && (
+                  <div className="absolute top-3 left-3 z-10">
+                    <div className="bg-[#a68b6a] text-white text-[10px] font-bold px-2.5 py-1 rounded-md">
+                      PREMIUM
+                    </div>
+                  </div>
+                )}
+
+                <div className="absolute bottom-3 left-3 z-20 w-[60%]">
+                  <div className="backdrop-blur-md bg-white/75 border border-white/40 rounded-[6px] p-3 shadow-lg">
+                    <div className="flex items-center gap-2">
+                      {logoUrl && (
+                        <div className="h-8 w-8 rounded-md overflow-hidden bg-white shrink-0">
+                          <img
+                            src={logoUrl}
+                            alt={`${vendor.business_name} logo`}
+                            className="h-full w-full object-contain"
+                            loading="lazy"
+                            decoding="async"
+                            referrerPolicy="no-referrer"
+                            draggable={false}
+                          />
+                        </div>
+                      )}
+                      <div className="min-w-0">
+                        <div className="text-[10px] font-semibold text-[#a68b6a] uppercase tracking-wide truncate">
+                          {vendor.business_name}
+                        </div>
+                        <div className="flex items-center gap-1 text-[10px] text-neutral-600">
+                          <span className="font-semibold text-[#a68b6a]">{rating.toFixed(1)}</span>
+                          <span className="text-neutral-300">·</span>
+                          <span>{reviews} reviews</span>
+                          {location && (
+                            <>
+                              <span className="text-neutral-300">·</span>
+                              <span className="truncate">{location}</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </a>
             );
           })
         )}

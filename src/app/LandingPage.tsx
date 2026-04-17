@@ -302,9 +302,9 @@ export default async function LandingPage({
       }}
     >
       <ScrollToTopOnMount />
-      <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
-        <SiteHeader />
+      <SiteHeader />
 
+      <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
         <main className="py-10 sm:py-14">
           <Suspense fallback={<LandingTopSkeleton />}>
             <LandingTopData />
@@ -322,9 +322,9 @@ export default async function LandingPage({
             <VendorPlansSection planFeatures={planFeatures} />
           </FadeInOnView>
         </main>
-
-        <SiteFooter />
       </div>
+
+      <SiteFooter />
     </div>
   );
 }
