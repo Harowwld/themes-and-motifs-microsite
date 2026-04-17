@@ -77,6 +77,10 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const activeCategory = (searchParams?.get("category") ?? "").trim().toLowerCase();
 
+  const prefetchCategory = (slug: string) => {
+    router.prefetch(`/vendors?category=${encodeURIComponent(slug)}`);
+  };
+
   const items = useMemo(() => {
     const safe = categories ?? [];
     return expanded ? safe : safe;
@@ -116,6 +120,7 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
                   e.preventDefault();
                   router.push(`/vendors?category=${encodeURIComponent(c.slug)}`, { scroll: false });
                 }}
+                onMouseEnter={() => prefetchCategory(c.slug)}
                 className={
                   isActive
                     ? "group rounded-lg bg-gray-50 shadow-sm hover:shadow-md transition-all px-3 py-3 text-center min-h-24"
@@ -166,6 +171,7 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
                     e.preventDefault();
                     router.push(`/vendors?category=${encodeURIComponent(c.slug)}`, { scroll: false });
                   }}
+                  onMouseEnter={() => prefetchCategory(c.slug)}
                   className={
                     isActive
                       ? "group shrink-0 rounded-lg bg-gray-50 shadow-sm hover:shadow-md transition-all px-3 py-3 text-center w-45 min-h-24"

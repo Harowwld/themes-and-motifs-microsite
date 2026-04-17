@@ -63,6 +63,9 @@ export default function VirtualizedVendorsList({
   const [loadError, setLoadError] = useState<string | null>(null);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   const loadingRef = useRef(false);
+  const loadedPagesRef = useRef(1);
+  const hasMoreRef = useRef(true);
+  const vendorIdsRef = useRef(new Set(initialVendors.map((v) => v.id)));
 
   const [cols, setCols] = useState(() => (typeof window === "undefined" ? 3 : getCols(window.innerWidth)));
 
@@ -79,20 +82,23 @@ export default function VirtualizedVendorsList({
     setLoading(false);
     setLoadError(null);
     loadingRef.current = false;
+    vendorIdsRef.current = new Set(initialVendors.map((v) => v.id));
     window.scrollTo({ top: 0, behavior: "instant" });
   }, [initialPage, initialVendors, total, pageSize, sort, query.q, query.category, query.location, query.region, query.affiliation]);
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const hasMore = loadedPages < totalPages;
+  hasMoreRef.current = hasMore;
+  loadedPagesRef.current = loadedPages;
 
   const loadNext = useCallback(async () => {
-    if (loadingRef.current || !hasMore) return;
+    if (loadingRef.current || !hasMoreRef.current) return;
     loadingRef.current = true;
     setLoading(true);
     setLoadError(null);
 
     try {
-      const nextPage = loadedPages + 1;
+      const nextPage = loadedPagesRef.current + 1;
       const params = new URLSearchParams();
       if (query.q.trim()) params.set("q", query.q.trim());
       if (query.category) params.set("category", query.category);
@@ -112,14 +118,13 @@ export default function VirtualizedVendorsList({
       const json = (await res.json()) as { vendors: VendorListItem[] };
       const newVendors = json.vendors ?? [];
 
-      setVendors((prev) => {
-        const seen = new Set(prev.map((v) => v.id));
-        const merged = [...prev];
-        for (const v of newVendors) {
-          if (!seen.has(v.id)) merged.push(v);
+      const uniqueNewVendors = newVendors.filter((v) => !vendorIdsRef.current.has(v.id));
+      if (uniqueNewVendors.length > 0) {
+        for (const v of uniqueNewVendors) {
+          vendorIdsRef.current.add(v.id);
         }
-        return merged;
-      });
+        setVendors((prev) => [...prev, ...uniqueNewVendors]);
+      }
       setLoadedPages(nextPage);
     } catch (e) {
       setLoadError(e instanceof Error ? e.message : "Failed to load more vendors");
@@ -127,7 +132,7 @@ export default function VirtualizedVendorsList({
       setLoading(false);
       loadingRef.current = false;
     }
-  }, [loadedPages, hasMore, pageSize, query, sort]);
+  }, [pageSize, query, sort]);
 
   useEffect(() => {
     const sentinel = sentinelRef.current;
@@ -135,7 +140,7 @@ export default function VirtualizedVendorsList({
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0]?.isIntersecting && hasMore && !loadingRef.current) {
+        if (entries[0]?.isIntersecting && hasMoreRef.current && !loadingRef.current) {
           void loadNext();
         }
       },
@@ -144,7 +149,7 @@ export default function VirtualizedVendorsList({
 
     observer.observe(sentinel);
     return () => observer.disconnect();
-  }, [hasMore, loadNext]);
+  }, [loadNext]);
 
   const rows: VendorListItem[][] = [];
   for (let i = 0; i < vendors.length; i += cols) {

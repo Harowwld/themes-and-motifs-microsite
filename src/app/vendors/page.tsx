@@ -1,5 +1,6 @@
-import { Suspense } from "react";
+import { Suspense, cache } from "react";
 import SiteHeader from "../sections/SiteHeader";
+import SiteFooter from "../sections/SiteFooter";
 import { createSupabaseServerClient } from "../../lib/supabaseServer";
 import CategoryBrowser from "../CategoryBrowser";
 import VendorsSearchBar from "./VendorsSearchBar";
@@ -9,6 +10,30 @@ import { attachCoverImages } from "../../features/vendors/coverImages.server";
 import type { VendorListItem } from "../../features/vendors/types";
 import { buildVendorsQuery } from "../../features/vendors/queries.server";
 import FadeInOnView from "../components/FadeInOnView";
+
+const getCachedRegions = cache(async () => {
+  const supabase = createSupabaseServerClient();
+  const { data } = await supabase.from("regions").select("id,name").is("parent_id", null).order("name", { ascending: true }).limit(200);
+  return (data ?? []) as RegionRow[];
+});
+
+const getCachedAffiliations = cache(async () => {
+  const supabase = createSupabaseServerClient();
+  const { data } = await supabase.from("affiliations").select("id,name,slug").order("name", { ascending: true }).limit(200);
+  return (data ?? []) as AffiliationRow[];
+});
+
+const getCachedCategories = cache(async () => {
+  const supabase = createSupabaseServerClient();
+  const { data } = await supabase.from("categories").select("id,name,slug").order("name", { ascending: true }).limit(200);
+  return (data ?? []) as CategoryListItem[];
+});
+
+const getCachedVendorLocations = cache(async () => {
+  const supabase = createSupabaseServerClient();
+  const { data } = await supabase.from("vendors").select("region_id,city,location_text").eq("is_active", true).limit(5000);
+  return data ?? [];
+});
 
 type SortKey = "alpha" | "rating" | "newest" | "saves" | "views";
 
@@ -219,26 +244,16 @@ async function VendorsPageData({
 }) {
   const supabase = createSupabaseServerClient();
 
-  const [regionsRes, vendorLocationsRes, affiliationsRes, categoriesRes] = await Promise.all([
-    supabase.from("regions").select("id,name").is("parent_id", null).order("name", { ascending: true }).limit(200),
-    supabase
-      .from("vendors")
-      .select("region_id,city,location_text")
-      .eq("is_active", true)
-      .limit(5000),
-    supabase.from("affiliations").select("id,name,slug").order("name", { ascending: true }).limit(200),
-    supabase.from("categories").select("id,name,slug").order("name", { ascending: true }).limit(200),
+  const [regionsList, vendorLocations, affiliationsList, categoriesList] = await Promise.all([
+    getCachedRegions(),
+    getCachedVendorLocations(),
+    getCachedAffiliations(),
+    getCachedCategories(),
   ]);
 
-  const regionsList = (regionsRes.data ?? []) as RegionRow[];
-  const vendorLocations = (vendorLocationsRes.data ?? []) as {
-    region_id: number | null;
-    city: string | null;
-    location_text: string | null;
-  }[];
   const citiesList = Array.from(
     new Map(
-      vendorLocations
+      (vendorLocations as { region_id: number | null; city: string | null; location_text: string | null }[])
         .map((r) => ({
           region_id: typeof r.region_id === "number" ? r.region_id : 0,
           name: (r.city ?? r.location_text ?? "").trim(),
@@ -247,26 +262,20 @@ async function VendorsPageData({
         .map((r) => [`${r.region_id}::${r.name.toLowerCase()}`, r] as const)
     ).values()
   );
-  const affiliationsList = (affiliationsRes.data ?? []) as AffiliationRow[];
-  const categoriesList = (categoriesRes.data ?? []) as CategoryListItem[];
-
-  const from = (page - 1) * pageSize;
-  const to = from + pageSize - 1;
 
   const { query } = await buildVendorsQuery({
     supabase,
     filters: { q, category, location, region, affiliation },
     sort,
+    from: (page - 1) * pageSize,
+    to: (page - 1) * pageSize + pageSize - 1,
   });
 
-  const MAX_FETCH = 5000;
-  const { data: vendors, count } = await query.limit(MAX_FETCH);
+  const { data: vendors, count: vendorTotal } = await query;
   const vendorAllItems = (vendors ?? []) as VendorListItem[];
-  const vendorTotal = count ?? 0;
 
   const vendorAllItemsWithCovers = await attachCoverImages(supabase, vendorAllItems);
-  const vendorAllItemsSorted = sortVendors(vendorAllItemsWithCovers as VendorWithSortFields[], sort);
-  const vendorPageItemsSorted = vendorAllItemsSorted.slice(from, to + 1);
+  const vendorPageItemsSorted = sortVendors(vendorAllItemsWithCovers as VendorWithSortFields[], sort);
 
   return (
     <>
@@ -326,11 +335,13 @@ export default async function VendorsPage({
 
   return (
     <div
-      className="min-h-screen bg-[#fafafa]"
+      style={{
+        background: "#fafafa",
+      }}
     >
-      <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
-        <SiteHeader />
+      <SiteHeader />
 
+      <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
         <main className="py-10 sm:py-14">
           <Suspense fallback={<VendorsPageSkeleton />}>
             <VendorsPageData
@@ -346,6 +357,8 @@ export default async function VendorsPage({
           </Suspense>
         </main>
       </div>
+
+      <SiteFooter />
     </div>
   );
 }

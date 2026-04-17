@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { Suspense, cache } from "react";
 import { createSupabaseServerClient } from "../lib/supabaseServer";
 import CategoryBrowser from "./CategoryBrowser";
 import SiteHeader from "./sections/SiteHeader";
@@ -6,12 +6,23 @@ import HeroSection from "./sections/HeroSection";
 import FeaturedVendorsSection from "../features/vendors/sections/FeaturedVendorsSection";
 import PromosSection from "./sections/PromosSection";
 import VendorsSection from "../features/vendors/sections/VendorsSection";
-import VendorPlansSection from "./sections/VendorPlansSection";
 import SiteFooter from "./sections/SiteFooter";
 import { attachCoverImages } from "../features/vendors/coverImages.server";
 import type { FeaturedVendor, VendorListItem } from "../features/vendors/types";
 import FadeInOnView from "./components/FadeInOnView";
 import ScrollToTopOnMount from "./components/ScrollToTopOnMount";
+
+const getCachedCategories = cache(async () => {
+  const supabase = createSupabaseServerClient();
+  const { data } = await supabase.from("categories").select("id,name,slug,display_order").order("display_order", { ascending: true }).order("name", { ascending: true }).limit(200);
+  return (data ?? []) as Category[];
+});
+
+const getCachedVendorLocations = cache(async () => {
+  const supabase = createSupabaseServerClient();
+  const { data } = await supabase.from("vendors").select("city,location_text").eq("is_active", true).limit(2000);
+  return data ?? [];
+});
 
 function sortWithImagesFirst<T extends { cover_image_url?: string | null; logo_url?: string | null }>(vendors: T[]) {
   return [...vendors].sort((a, b) => {
@@ -87,83 +98,130 @@ function LandingTopSkeleton() {
   );
 }
 
+function FeaturedPromoSkeleton() {
+  return (
+    <div className="rounded-[12px] overflow-hidden relative aspect-[3/4] shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)]">
+      <div className="absolute inset-0 bg-gradient-to-br from-[#a68b6a]/20 to-[#a68b6a]/5" />
+      <div className="absolute bottom-3 left-3 z-20 w-[60%]">
+        <div className="backdrop-blur-md bg-white/40 border border-white/20 rounded-[6px] p-3">
+          <div className="h-2.5 w-16 rounded bg-black/10 animate-pulse" />
+          <div className="mt-1.5 h-4 w-full rounded bg-black/10 animate-pulse" />
+          <div className="mt-2 h-5 w-14 rounded-sm bg-black/10 animate-pulse" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function FeaturedVendorSkeleton() {
+  return (
+    <div className="rounded-[12px] overflow-hidden relative aspect-[3/4] shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)]">
+      <div className="absolute inset-0 bg-gradient-to-br from-[#a68b6a]/20 to-[#a68b6a]/5" />
+      <div className="absolute bottom-3 left-3 z-20 w-[60%]">
+        <div className="backdrop-blur-md bg-white/40 border border-white/20 rounded-[6px] p-3">
+          <div className="flex items-center gap-2">
+            <div className="h-8 w-8 rounded-md bg-black/10 animate-pulse shrink-0" />
+            <div className="min-w-0">
+              <div className="h-2.5 w-20 rounded bg-black/10 animate-pulse" />
+              <div className="mt-1 h-2 w-24 rounded bg-black/10 animate-pulse" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function LandingFeaturedSkeleton() {
   return (
     <div className="grid gap-8">
-      <section className="rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden">
-        <div className="px-6 py-5 border-b border-black/5">
-          <div className="h-5 w-40 rounded bg-black/10 animate-pulse" />
+      <section className="mt-12 sm:mt-16">
+        <div className="text-center">
+          <div className="h-5 w-40 mx-auto rounded bg-black/10 animate-pulse" />
+          <div className="mt-1 h-4 w-64 mx-auto rounded bg-black/10 animate-pulse" />
         </div>
-        <div className="p-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="rounded-[3px] border border-black/10 bg-white overflow-hidden">
-              <div className="h-28 w-full bg-black/10 animate-pulse" />
-              <div className="p-4 grid gap-2">
-                <div className="h-4 w-2/3 rounded bg-black/10 animate-pulse" />
-                <div className="h-3 w-1/2 rounded bg-black/10 animate-pulse" />
-              </div>
-            </div>
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <FeaturedPromoSkeleton key={`promo-${i}`} />
           ))}
+        </div>
+        <div className="mt-6 text-center">
+          <div className="h-4 w-28 mx-auto rounded bg-black/10 animate-pulse" />
         </div>
       </section>
 
-      <section className="rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden">
-        <div className="px-6 py-5 border-b border-black/5">
-          <div className="h-5 w-48 rounded bg-black/10 animate-pulse" />
+      <div className="my-12 h-px bg-gradient-to-r from-transparent via-black/15 to-transparent" />
+
+      <section className="mt-12 sm:mt-16">
+        <div className="text-center">
+          <div className="h-5 w-40 mx-auto rounded bg-black/10 animate-pulse" />
+          <div className="mt-1 h-4 w-64 mx-auto rounded bg-black/10 animate-pulse" />
         </div>
-        <div className="p-6 grid gap-4 sm:grid-cols-2">
-          {Array.from({ length: 2 }).map((_, i) => (
-            <div key={i} className="rounded-[3px] border border-black/10 bg-[#fcfbf9] p-5">
-              <div className="h-4 w-2/3 rounded bg-black/10 animate-pulse" />
-              <div className="mt-2 h-3 w-full rounded bg-black/10 animate-pulse" />
-              <div className="mt-2 h-3 w-4/5 rounded bg-black/10 animate-pulse" />
-            </div>
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <FeaturedVendorSkeleton key={`vendor-${i}`} />
           ))}
+        </div>
+        <div className="mt-6 text-center">
+          <div className="h-4 w-28 mx-auto rounded bg-black/10 animate-pulse" />
         </div>
       </section>
     </div>
   );
 }
 
+function VendorCardSkeleton() {
+  return (
+    <div className="h-[240px] rounded-xl border border-black/5 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] overflow-hidden flex flex-col">
+      <div className="h-28 w-full bg-black/5 animate-pulse" />
+      <div className="relative px-4 pt-0 pb-4">
+        <div className="relative -mt-10 mb-2 flex items-end justify-between">
+          <div className="h-20 w-20 rounded-2xl border-4 border-white bg-[#fcfbf9] shadow-lg animate-pulse -ml-1" />
+          <div className="h-3.5 w-14 bg-black/5 animate-pulse rounded" />
+        </div>
+        <div className="h-5 w-3/4 rounded bg-black/5 animate-pulse mb-2" />
+        <div className="h-3.5 w-1/2 rounded bg-black/5 animate-pulse" />
+      </div>
+    </div>
+  );
+}
+
 function LandingVendorsSkeleton() {
   return (
-    <section className="rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden">
-      <div className="px-6 py-5 border-b border-black/5">
-        <div className="h-5 w-56 rounded bg-black/10 animate-pulse" />
-        <div className="mt-2 h-4 w-72 rounded bg-black/10 animate-pulse" />
+    <section className="mt-12 sm:mt-16">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <div className="h-5 w-20 rounded bg-black/10 animate-pulse" />
+          <div className="mt-1 h-4 w-64 rounded bg-black/10 animate-pulse" />
+        </div>
+        <div className="h-9 w-24 rounded-md border border-black/10 bg-white animate-pulse" />
       </div>
-      <div className="p-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
         {Array.from({ length: 9 }).map((_, i) => (
-          <div key={i} className="rounded-[3px] border border-black/10 bg-white overflow-hidden">
-            <div className="h-28 w-full bg-black/10 animate-pulse" />
-            <div className="p-4 grid gap-2">
-              <div className="h-4 w-2/3 rounded bg-black/10 animate-pulse" />
-              <div className="h-3 w-1/2 rounded bg-black/10 animate-pulse" />
-            </div>
-          </div>
+          <VendorCardSkeleton key={i} />
         ))}
+      </div>
+      <div className="mt-5 flex items-center justify-between">
+        <div className="h-3 w-20 rounded bg-black/10 animate-pulse" />
+        <div className="flex gap-2">
+          <div className="h-9 w-16 rounded-md border border-black/10 bg-white animate-pulse" />
+          <div className="h-9 w-16 rounded-md border border-black/10 bg-white animate-pulse" />
+        </div>
       </div>
     </section>
   );
 }
 
 async function LandingTopData() {
-  const supabase = createSupabaseServerClient();
-
-  const [{ data: categoriesData }, { data: locationRows }] = await Promise.all([
-    supabase
-      .from("categories")
-      .select("id,name,slug,display_order")
-      .order("display_order", { ascending: true })
-      .order("name", { ascending: true })
-      .limit(200),
-    supabase.from("vendors").select("city,location_text").eq("is_active", true).limit(2000),
+  const [categoriesData, locationRows] = await Promise.all([
+    getCachedCategories(),
+    getCachedVendorLocations(),
   ]);
 
-  const categories = (categoriesData ?? []) as Category[];
+  const categories = categoriesData;
   const locations = Array.from(
     new Set(
-      ((locationRows ?? []) as { city: string | null; location_text: string | null }[])
+      (locationRows as { city: string | null; location_text: string | null }[])
         .flatMap((r) => [r.city, r.location_text])
         .map((v) => (v ?? "").trim())
         .filter(Boolean)
@@ -217,6 +275,7 @@ async function LandingFeaturedData() {
       <FadeInOnView>
         <PromosSection promos={promos} />
       </FadeInOnView>
+      <div className="my-12 h-px bg-gradient-to-r from-transparent via-black/15 to-transparent" />
       <FadeInOnView delayMs={60}>
         <FeaturedVendorsSection vendors={featuredSorted as any} />
       </FadeInOnView>
@@ -248,18 +307,18 @@ async function LandingVendorsData({ page, pageSize, sort }: { page: number; page
       .order("id", { ascending: true });
   }
 
-  const MAX_FETCH = 5000;
-  const { data: allVendors, count: allCount } = await q.limit(MAX_FETCH);
-  const vendorAllItems = (allVendors ?? []) as VendorListItem[];
-  const vendorTotal = allCount ?? 0;
+  q = q.range(from, to);
+
+  const { data: vendors, count: vendorTotal } = await q;
+  const vendorAllItems = (vendors ?? []) as VendorListItem[];
+  const vendorTotalCount = vendorTotal ?? 0;
 
   const allWithCovers = await attachCoverImages(supabase, vendorAllItems);
-  const allSorted = sortWithImagesFirst(allWithCovers as any);
-  const pageSorted = allSorted.slice(from, to + 1);
+  const pageSorted = sortWithImagesFirst(allWithCovers as any);
 
   return (
     <FadeInOnView>
-      <VendorsSection vendors={pageSorted as any} total={vendorTotal} page={page} pageSize={pageSize} sort={sort} />
+      <VendorsSection vendors={pageSorted as any} total={vendorTotalCount} page={page} pageSize={pageSize} sort={sort} />
     </FadeInOnView>
   );
 }
@@ -277,23 +336,6 @@ export default async function LandingPage({
   const page = Math.max(1, Number(rawPage) || 1);
   const sort: SortKey = rawSort === "alpha" ? "alpha" : "rating";
 
-  const planFeatures = [
-    { label: "Company name, address & contact person", free: true, premium: true },
-    { label: "Up to 3 searchable categories", free: true, premium: true },
-    { label: "Ratings & reviews from couples", free: true, premium: true },
-    { label: "Affiliations & associations", free: true, premium: true },
-    { label: "Public email via contact form", free: true, premium: true },
-    { label: "Admin email", free: false, premium: true },
-    { label: "Public phone numbers", free: false, premium: true },
-    { label: "Admin-only phone numbers", free: false, premium: true },
-    { label: "Logo", free: false, premium: true },
-    { label: "Website link", free: false, premium: true },
-    { label: "Social media links", free: false, premium: true },
-    { label: "1 photo album with up to 10 photos", free: true, premium: false },
-    { label: "Unlimited albums & posts", free: false, premium: true },
-    { label: "1 promotional deal per day", free: true, premium: false },
-    { label: "Unlimited promotional deals", free: false, premium: true },
-  ];
 
   return (
     <div
@@ -310,17 +352,18 @@ export default async function LandingPage({
             <LandingTopData />
           </Suspense>
 
+          <div className="my-12 h-px bg-gradient-to-r from-transparent via-black/15 to-transparent" />
+
           <Suspense fallback={<LandingFeaturedSkeleton />}>
             <LandingFeaturedData />
           </Suspense>
+
+          <div className="my-12 h-px bg-gradient-to-r from-transparent via-black/15 to-transparent" />
 
           <Suspense fallback={<LandingVendorsSkeleton />}>
             <LandingVendorsData page={page} pageSize={pageSize} sort={sort} />
           </Suspense>
 
-          <FadeInOnView>
-            <VendorPlansSection planFeatures={planFeatures} />
-          </FadeInOnView>
         </main>
       </div>
 

@@ -90,32 +90,30 @@ export async function GET(req: Request) {
 
   const supabase = createSupabaseServerClient();
 
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+
   const { query } = await buildVendorsQuery({
     supabase,
     filters: { q, category, location, region, affiliation },
     sort,
+    from,
+    to,
   });
 
-  const MAX_FETCH = 5000;
-
-  const { data: vendors, count, error } = await query.limit(MAX_FETCH);
+  const { data: vendors, count: vendorTotal, error } = await query;
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
   const vendorAllItems = (vendors ?? []) as VendorWithSortFields[];
-  const vendorTotal = Math.min(count ?? 0, MAX_FETCH);
 
   const withCovers = await attachCoverImages(supabase, vendorAllItems) as VendorWithCoverImage[];
   const sorted = sortVendors(withCovers, sort);
 
-  const from = (page - 1) * pageSize;
-  const to = from + pageSize;
-  const paginated = sorted.slice(from, to);
-
   return NextResponse.json({
-    vendors: paginated,
+    vendors: sorted,
     total: vendorTotal,
     page,
     pageSize,

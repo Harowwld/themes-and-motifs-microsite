@@ -105,11 +105,13 @@ export default function SuperadminVendorsPage() {
   const [cropModalOpen, setCropModalOpen] = useState(false);
   const [croppingImageIdx, setCroppingImageIdx] = useState<number | null>(null);
 
-  async function refresh() {
+  async function refresh(searchQuery?: string) {
     setError(null);
     setLoading(true);
     try {
-      const res = await apiFetch<{ vendors: Vendor[]; plans: Plan[] }>("/api/admin/vendors?limit=500");
+      const q = searchQuery?.trim() || "";
+      const url = q ? `/api/admin/vendors?limit=1000&q=${encodeURIComponent(q)}` : "/api/admin/vendors?limit=1000";
+      const res = await apiFetch<{ vendors: Vendor[]; plans: Plan[] }>(url);
       setVendors(res.vendors ?? []);
       setPlans(res.plans ?? []);
     } catch (e: any) {
@@ -123,17 +125,12 @@ export default function SuperadminVendorsPage() {
     refresh();
   }, []);
 
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return vendors;
-    return vendors.filter((v) => {
-      return (
-        String(v.business_name ?? "").toLowerCase().includes(q) ||
-        String(v.slug ?? "").toLowerCase().includes(q) ||
-        String(v.id).includes(q)
-      );
-    });
-  }, [vendors, query]);
+  useEffect(() => {
+    const debounce = setTimeout(() => {
+      refresh(query);
+    }, 300);
+    return () => clearTimeout(debounce);
+  }, [query]);
 
   async function patchVendor(id: number, patch: Partial<Pick<Vendor, "is_active" | "is_featured" | "plan_id">>) {
     setError(null);
@@ -359,7 +356,7 @@ export default function SuperadminVendorsPage() {
             </label>
             <button
               type="button"
-              onClick={refresh}
+              onClick={() => refresh()}
               className="h-10 px-4 rounded-[3px] border border-black/10 bg-white text-[13px] font-semibold text-black/70 hover:bg-black/5 transition-colors"
             >
               Refresh
@@ -378,11 +375,11 @@ export default function SuperadminVendorsPage() {
 
             {loading ? (
               <div className="p-4 text-[13px] text-black/50">Loading…</div>
-            ) : filtered.length === 0 ? (
+            ) : vendors.length === 0 ? (
               <div className="p-4 text-[13px] text-black/50">No vendors found.</div>
             ) : (
               <div className="divide-y divide-black/5">
-                {filtered.map((v) => {
+                {vendors.map((v) => {
                   const planName = String(
                     (Array.isArray(v.plan) ? v.plan?.[0]?.name : v.plan?.name) ??
                       plans.find((p) => p.id === v.plan_id)?.name ??

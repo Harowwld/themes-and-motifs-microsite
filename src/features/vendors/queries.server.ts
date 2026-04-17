@@ -26,61 +26,60 @@ export async function buildVendorsQuery({
   supabase,
   filters,
   sort,
+  from,
+  to,
 }: {
   supabase: SupabaseClient;
   filters: VendorsQueryFilters;
   sort: VendorsSortKey;
-}): Promise<{ query: any }> {
+  from?: number;
+  to?: number;
+}): Promise<{ query: any; count: number }> {
   const q = (filters.q ?? "").trim();
   const category = (filters.category ?? "").trim();
   const location = (filters.location ?? "").trim();
   const region = (filters.region ?? "").trim();
   const affiliation = (filters.affiliation ?? "").trim();
 
-  let vendorIds: number[] | undefined;
-  let affiliationVendorIds: number[] | undefined;
+  const [categoryLookup, affiliationLookup] = await Promise.all([
+    category
+      ? (async () => {
+          const { data: cat } = await supabase
+            .from("categories")
+            .select("id")
+            .eq("slug", category)
+            .maybeSingle<CategoryRow>();
+          if (!cat?.id) return [-1];
+          const { data: vcRows } = await supabase
+            .from("vendor_categories")
+            .select("vendor_id")
+            .eq("category_id", cat.id)
+            .limit(5000);
+          const ids = ((vcRows ?? []) as VendorCategoryRow[]).map((r) => r.vendor_id);
+          return ids.length > 0 ? ids : [-1];
+        })()
+      : Promise.resolve<number[] | undefined>(undefined),
+    affiliation
+      ? (async () => {
+          const { data: aff } = await supabase
+            .from("affiliations")
+            .select("id")
+            .eq("slug", affiliation)
+            .maybeSingle<{ id: number }>();
+          if (!aff?.id) return [-1];
+          const { data: vaRows } = await supabase
+            .from("vendor_affiliations")
+            .select("vendor_id")
+            .eq("affiliation_id", aff.id)
+            .limit(5000);
+          const ids = ((vaRows ?? []) as VendorAffiliationRow[]).map((r) => r.vendor_id);
+          return ids.length > 0 ? ids : [-1];
+        })()
+      : Promise.resolve<number[] | undefined>(undefined),
+  ]);
 
-  if (category) {
-    const { data: cat } = await supabase
-      .from("categories")
-      .select("id")
-      .eq("slug", category)
-      .maybeSingle<CategoryRow>();
-
-    if (cat?.id) {
-      const { data: vcRows } = await supabase
-        .from("vendor_categories")
-        .select("vendor_id")
-        .eq("category_id", cat.id)
-        .limit(5000);
-
-      vendorIds = ((vcRows ?? []) as VendorCategoryRow[]).map((r) => r.vendor_id);
-      if (vendorIds.length === 0) vendorIds = [-1];
-    } else {
-      vendorIds = [-1];
-    }
-  }
-
-  if (affiliation) {
-    const { data: aff } = await supabase
-      .from("affiliations")
-      .select("id")
-      .eq("slug", affiliation)
-      .maybeSingle<{ id: number }>();
-
-    if (aff?.id) {
-      const { data: vaRows } = await supabase
-        .from("vendor_affiliations")
-        .select("vendor_id")
-        .eq("affiliation_id", aff.id)
-        .limit(5000);
-
-      affiliationVendorIds = ((vaRows ?? []) as VendorAffiliationRow[]).map((r) => r.vendor_id);
-      if (affiliationVendorIds.length === 0) affiliationVendorIds = [-1];
-    } else {
-      affiliationVendorIds = [-1];
-    }
-  }
+  const vendorIds = categoryLookup;
+  const affiliationVendorIds = affiliationLookup;
 
   let query = supabase
     .from("vendors")
@@ -92,8 +91,12 @@ export async function buildVendorsQuery({
     )
     .eq("is_active", true);
 
-  if (vendorIds) query = query.in("id", vendorIds);
-  if (affiliationVendorIds) query = query.in("id", affiliationVendorIds);
+  if (vendorIds) {
+    query = query.in("id", vendorIds);
+  }
+  if (affiliationVendorIds) {
+    query = query.in("id", affiliationVendorIds);
+  }
 
   if (q) {
     query = query.ilike("business_name", `%${q}%`);
@@ -134,5 +137,9 @@ export async function buildVendorsQuery({
       .order("id", { ascending: true });
   }
 
-  return { query };
+  if (from !== undefined && to !== undefined) {
+    query = query.range(from, to);
+  }
+
+  return { query, count: 0 };
 }

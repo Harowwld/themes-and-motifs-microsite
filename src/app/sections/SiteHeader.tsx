@@ -157,11 +157,7 @@ export default function SiteHeader() {
           </a>
           <a
             className="hover:text-[#a68b6a] transition-colors"
-            href="/#for-vendors"
-            onClick={(e) => {
-              e.preventDefault();
-              goToHomeSection("for-vendors");
-            }}
+            href="/vendors/plans"
           >
             For vendors
           </a>

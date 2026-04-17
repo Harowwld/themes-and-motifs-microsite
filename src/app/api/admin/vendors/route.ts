@@ -7,17 +7,23 @@ export async function GET(req: Request) {
 
     const { searchParams } = new URL(req.url);
     const limitRaw = searchParams.get("limit");
-    const limit = Math.max(1, Math.min(500, Number(limitRaw ?? 200) || 200));
+    const query = searchParams.get("q")?.trim() || "";
+    const limit = Math.max(1, Math.min(2000, Number(limitRaw ?? 1000) || 1000));
 
     const supabase = createSupabaseAdminClient();
 
+    let vendorsQuery = supabase
+      .from("vendors")
+      .select("id,business_name,slug,is_active,is_featured,average_rating,review_count,updated_at,plan_id,plan:plans(id,name)")
+      .order("is_featured", { ascending: false })
+      .order("updated_at", { ascending: false });
+
+    if (query) {
+      vendorsQuery = vendorsQuery.or(`business_name.ilike.*${query}*,slug.ilike.*${query}*`);
+    }
+
     const [{ data: vendors, error }, { data: plans, error: plansErr }] = await Promise.all([
-      supabase
-        .from("vendors")
-        .select("id,business_name,slug,is_active,is_featured,average_rating,review_count,updated_at,plan_id,plan:plans(id,name)")
-        .order("is_featured", { ascending: false })
-        .order("updated_at", { ascending: false })
-        .limit(limit),
+      query ? vendorsQuery.limit(limit) : vendorsQuery.limit(limit),
       supabase.from("plans").select("id,name").order("id", { ascending: true }).limit(50),
     ]);
 
