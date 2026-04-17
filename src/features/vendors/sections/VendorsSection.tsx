@@ -1,8 +1,25 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useTransition } from "react";
 import VendorCard from "../components/VendorCard";
 import type { VendorListItem } from "../types";
+
+function VendorCardSkeleton() {
+  return (
+    <div className="h-[240px] rounded-xl border border-black/5 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] overflow-hidden flex flex-col">
+      <div className="h-28 w-full bg-black/5 animate-pulse" />
+      <div className="relative px-4 pt-0 pb-4">
+        <div className="relative -mt-10 mb-2 flex items-end justify-between">
+          <div className="h-20 w-20 rounded-2xl border-4 border-white bg-[#fcfbf9] shadow-lg animate-pulse -ml-1" />
+          <div className="h-3.5 w-14 bg-black/5 animate-pulse rounded" />
+        </div>
+        <div className="h-5 w-3/4 rounded bg-black/5 animate-pulse mb-2" />
+        <div className="h-3.5 w-1/2 rounded bg-black/5 animate-pulse" />
+      </div>
+    </div>
+  );
+}
 
 type SortKey = "alpha" | "rating" | "newest" | "saves" | "views";
 
@@ -49,12 +66,15 @@ export default function VendorsSection({
   extraParams,
 }: VendorsSectionProps) {
   const router = useRouter();
+  const [isPending, startTransition] = useTransition();
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const hasPrev = page > 1;
   const hasNext = page < totalPages;
 
   const navigate = (href: string) => {
-    router.push(href, { scroll: false });
+    startTransition(() => {
+      router.push(href, { scroll: false });
+    });
   };
 
   return (
@@ -76,7 +96,7 @@ export default function VendorsSection({
             onChange={(e) => {
               navigate(makeHref({ page: 1, sort: e.target.value as SortKey, basePath, extraParams }));
             }}
-            className="h-9 rounded-[3px] border border-black/10 bg-white px-2 text-[13px] font-semibold text-black/70 outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15"
+            className="h-9 rounded-[3px] border border-black/10 bg-white px-2 text-[13px] font-semibold text-black/70 outline-none focus:border-[#a68b6a]/50 focus:ring-2 focus:ring-[#a68b6a]/15"
             aria-label="Sort vendors"
           >
             <option value="rating">Top rated</option>
@@ -88,8 +108,12 @@ export default function VendorsSection({
         </div>
       </div>
 
-      <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {vendors.length === 0 ? (
+      <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
+        {isPending ? (
+          Array.from({ length: pageSize }).map((_, i) => (
+            <VendorCardSkeleton key={`skeleton-${i}`} />
+          ))
+        ) : vendors.length === 0 ? (
           <div className="sm:col-span-2 lg:col-span-3 rounded-[3px] border border-black/10 bg-white shadow-sm p-6">
             <div className="text-[13px] font-semibold text-[#2c2c2c]">No vendors found</div>
             <div className="mt-1 text-[13px] text-black/55">Try another sort or check back later.</div>

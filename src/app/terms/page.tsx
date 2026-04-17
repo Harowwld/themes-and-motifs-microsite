@@ -6,10 +6,7 @@ export const dynamic = "force-dynamic";
 export default function TermsPage() {
   return (
     <div
-      className="min-h-screen"
-      style={{
-        background: "radial-gradient(circle at 20% 10%, #fff7ed, #fcfbf9 42%, #f6f1ea 92%)",
-      }}
+      className="min-h-screen bg-[#fafafa]"
     >
       <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
         <SiteHeader />

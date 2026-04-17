@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Noto_Serif, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import HashAuthRedirect from "./HashAuthRedirect";
+import ScrollContainer from "./components/ScrollContainer";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const notoSerif = Noto_Serif({
+  variable: "--font-noto-serif",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const plusJakarta = Plus_Jakarta_Sans({
+  variable: "--font-plus-jakarta",
   subsets: ["latin"],
 });
 
@@ -26,10 +27,12 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${notoSerif.variable} ${plusJakarta.variable} antialiased`}
       >
-        <HashAuthRedirect />
-        {children}
+        <ScrollContainer>
+          <HashAuthRedirect />
+          {children}
+        </ScrollContainer>
       </body>
     </html>
   );

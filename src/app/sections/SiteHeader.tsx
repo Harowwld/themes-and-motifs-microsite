@@ -114,7 +114,7 @@ export default function SiteHeader() {
   };
 
   return (
-    <header className="sticky top-0 z-50 -mx-5 sm:-mx-8 px-5 sm:px-8 backdrop-blur supports-backdrop-filter:bg-[#fcfbf9]/75 bg-[#fcfbf9]/95 border-b border-black/5">
+    <header className="sticky top-0 z-50 -mx-5 sm:-mx-8 px-5 sm:px-8 backdrop-blur-md bg-white/90 supports-backdrop-filter:bg-white/90">
       <div className="mx-auto max-w-6xl h-16 flex items-center justify-between">
         <a
           className="flex items-center"
@@ -134,9 +134,9 @@ export default function SiteHeader() {
           />
         </a>
 
-        <nav className="hidden sm:flex items-center gap-6 text-[13px] font-medium text-black/60">
+        <nav className="hidden sm:flex items-center gap-8 text-[13px] font-medium text-gray-500">
           <a
-            className="hover:text-black/80 transition-colors"
+            className="hover:text-[#a68b6a] transition-colors"
             href="/#discover"
             onClick={(e) => {
               e.preventDefault();
@@ -146,7 +146,7 @@ export default function SiteHeader() {
             Discover
           </a>
           <a
-            className="hover:text-black/80 transition-colors"
+            className="hover:text-[#a68b6a] transition-colors"
             href="/#featured"
             onClick={(e) => {
               e.preventDefault();
@@ -156,7 +156,7 @@ export default function SiteHeader() {
             Featured
           </a>
           <a
-            className="hover:text-black/80 transition-colors"
+            className="hover:text-[#a68b6a] transition-colors"
             href="/#for-vendors"
             onClick={(e) => {
               e.preventDefault();
@@ -171,7 +171,7 @@ export default function SiteHeader() {
           {isVendor ? (
             <>
               <a
-                className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-[3px] border border-black/10 bg-white text-[13px] font-semibold text-black/70 hover:bg-black/2 transition-colors"
+                className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-md text-[13px] font-medium text-gray-600 hover:text-gray-900 transition-colors"
                 href="/vendor/dashboard"
                 onClick={(e) => {
                   e.preventDefault();
@@ -184,7 +184,7 @@ export default function SiteHeader() {
                 type="button"
                 disabled={signingOut}
                 onClick={() => void signOut()}
-                className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-[3px] border border-black/10 bg-white text-[13px] font-semibold text-black/70 hover:bg-black/2 transition-colors disabled:opacity-60"
+                className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-md text-[13px] font-medium text-gray-600 hover:text-gray-900 transition-colors disabled:opacity-60"
               >
                 {signingOut ? "Signing out…" : "Sign out"}
               </button>
@@ -196,7 +196,7 @@ export default function SiteHeader() {
               type="button"
               disabled={signingOut}
               onClick={() => void signOut()}
-              className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-[3px] border border-black/10 bg-white text-[13px] font-semibold text-black/70 hover:bg-black/2 transition-colors disabled:opacity-60"
+              className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-md text-[13px] font-medium text-gray-600 hover:text-gray-900 transition-colors disabled:opacity-60"
             >
               {signingOut ? "Signing out…" : "Sign out"}
             </button>
@@ -204,14 +204,14 @@ export default function SiteHeader() {
 
           {!signedIn ? (
             <a
-              className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-[3px] border border-black/10 bg-white text-[13px] font-semibold text-black/70 hover:bg-black/2 transition-colors"
+              className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-md text-[13px] font-medium text-gray-600 hover:text-gray-900 transition-colors"
               href="/soon-to-wed/signin"
             >
               Sign in
             </a>
           ) : null}
           <a
-            className="h-9 inline-flex items-center justify-center px-3.5 rounded-[3px] bg-[#a67c52] text-white text-[13px] font-semibold hover:bg-[#8e6a46] transition-colors shadow-sm"
+            className="h-9 inline-flex items-center justify-center px-3.5 rounded-md bg-[#a68b6a] text-white text-[13px] font-medium hover:bg-[#957a5c] transition-colors"
             href="/vendors"
             onClick={(e) => {
               e.preventDefault();

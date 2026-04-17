@@ -161,7 +161,7 @@ export default function CoverCropperModal({
             <div className="flex justify-center">
               <div
                 ref={viewportRef}
-                className="relative w-full max-w-[360px] h-[154px] rounded-[6px] border border-black/20 bg-[#f3f4f6] overflow-hidden cursor-grab active:cursor-grabbing"
+                className="relative w-full max-w-[300px] aspect-[3/4] rounded-[6px] border border-black/20 bg-[#f3f4f6] overflow-hidden cursor-grab active:cursor-grabbing"
               >
                 <img
                   src={imageUrl}

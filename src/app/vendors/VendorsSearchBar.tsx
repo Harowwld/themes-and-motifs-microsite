@@ -104,33 +104,33 @@ export default function VendorsSearchBar({
   };
 
   return (
-    <div className="rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden">
-      <div className="px-5 py-4 border-b border-black/5">
-        <div className="text-[13px] font-semibold text-[#2c2c2c]">Search vendors</div>
-        <div className="mt-1 text-[12px] text-black/50">Refine by keyword, region, location, or affiliation.</div>
+    <div className="rounded-lg border border-stone-200/60 bg-white/80 backdrop-blur-sm shadow-[0_2px_8px_rgba(0,0,0,0.04)] overflow-hidden">
+      <div className="px-6 py-5 border-b border-stone-100">
+        <div className="text-lg font-semibold text-stone-800 font-headline">Search vendors</div>
+        <div className="mt-1 text-sm text-stone-500">Refine by keyword, region, location, or affiliation.</div>
       </div>
 
-      <div className="p-5 grid gap-3">
-        <div className="grid gap-3 lg:grid-cols-[1.2fr_0.9fr_0.9fr_0.9fr_0.7fr_auto] items-end">
-          <label className="grid gap-1">
-            <span className="text-[12px] font-semibold text-black/55">Keyword</span>
+      <div className="p-6">
+        <div className="grid gap-4 lg:grid-cols-[1.2fr_0.9fr_0.9fr_0.9fr_0.7fr_auto] items-end">
+          <label className="grid gap-1.5">
+            <span className="text-xs font-medium text-stone-500 uppercase tracking-wide">Keyword</span>
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Search vendor name"
-              className="h-10 rounded-[3px] border border-black/10 bg-white px-3 text-[14px] text-[#2c2c2c] placeholder:text-black/35 outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15"
+              className="h-11 rounded-md border border-stone-200 bg-stone-50 px-4 text-sm text-stone-700 placeholder:text-stone-400 outline-none transition-all focus:border-[#a68b6a] focus:bg-white focus:ring-2 focus:ring-[#a68b6a]/10"
             />
           </label>
 
-          <label className="grid gap-1">
-            <span className="text-[12px] font-semibold text-black/55">Area</span>
+          <label className="grid gap-1.5">
+            <span className="text-xs font-medium text-stone-500 uppercase tracking-wide">Area</span>
             <select
               value={region}
               onChange={(e) => {
                 setRegion(e.target.value);
                 setLocation("");
               }}
-              className="h-10 rounded-[3px] border border-black/10 bg-white px-3 text-[14px] text-black/70 outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15"
+              className="h-11 rounded-md border border-stone-200 bg-stone-50 px-4 text-sm text-stone-700 outline-none transition-all focus:border-[#a68b6a] focus:bg-white focus:ring-2 focus:ring-[#a68b6a]/10 appearance-none cursor-pointer"
             >
               <option value="">All areas</option>
               {regionOptions.map((r) => (
@@ -141,12 +141,12 @@ export default function VendorsSearchBar({
             </select>
           </label>
 
-          <label className="grid gap-1">
-            <span className="text-[12px] font-semibold text-black/55">City</span>
+          <label className="grid gap-1.5">
+            <span className="text-xs font-medium text-stone-500 uppercase tracking-wide">City</span>
             <select
               value={location}
               onChange={(e) => setLocation(e.target.value)}
-              className="h-10 rounded-[3px] border border-black/10 bg-white px-3 text-[14px] text-black/70 outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15"
+              className="h-11 rounded-md border border-stone-200 bg-stone-50 px-4 text-sm text-stone-700 outline-none transition-all focus:border-[#a68b6a] focus:bg-white focus:ring-2 focus:ring-[#a68b6a]/10 appearance-none cursor-pointer"
             >
               <option value="">All cities</option>
               {cityOptions.map((c) => (
@@ -157,12 +157,12 @@ export default function VendorsSearchBar({
             </select>
           </label>
 
-          <label className="grid gap-1">
-            <span className="text-[12px] font-semibold text-black/55">Affiliation</span>
+          <label className="grid gap-1.5">
+            <span className="text-xs font-medium text-stone-500 uppercase tracking-wide">Affiliation</span>
             <select
               value={affiliation}
               onChange={(e) => setAffiliation(e.target.value)}
-              className="h-10 rounded-[3px] border border-black/10 bg-white px-3 text-[14px] text-black/70 outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15"
+              className="h-11 rounded-md border border-stone-200 bg-stone-50 px-4 text-sm text-stone-700 outline-none transition-all focus:border-[#a68b6a] focus:bg-white focus:ring-2 focus:ring-[#a68b6a]/10 appearance-none cursor-pointer"
             >
               <option value="">Any affiliation</option>
               {affiliationOptions.map((a) => (
@@ -173,15 +173,15 @@ export default function VendorsSearchBar({
             </select>
           </label>
 
-          <label className="grid gap-1">
-            <span className="text-[12px] font-semibold text-black/55">Sort</span>
+          <label className="grid gap-1.5">
+            <span className="text-xs font-medium text-stone-500 uppercase tracking-wide">Sort</span>
             <select
               value={sort}
               onChange={(e) => setSort(e.target.value as SortKey)}
-              className="h-10 rounded-[3px] border border-black/10 bg-white px-3 text-[14px] text-black/70 outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15"
+              className="h-11 rounded-md border border-stone-200 bg-stone-50 px-4 text-sm text-stone-700 outline-none transition-all focus:border-[#a68b6a] focus:bg-white focus:ring-2 focus:ring-[#a68b6a]/10 appearance-none cursor-pointer"
             >
               <option value="rating">Top rated</option>
-              <option value="alpha">A–Z</option>
+              <option value="alpha">A-Z</option>
               <option value="newest">Newest</option>
               <option value="saves">Most saved</option>
               <option value="views">Most viewed</option>
@@ -191,7 +191,7 @@ export default function VendorsSearchBar({
           <button
             type="button"
             onClick={submit}
-            className="h-10 inline-flex items-center justify-center px-4 rounded-[3px] bg-[#a67c52] text-white text-[14px] font-semibold hover:bg-[#8e6a46] transition-colors shadow-sm"
+            className="h-11 inline-flex items-center justify-center px-6 rounded-md bg-[#a68b6a] text-white text-sm font-medium hover:bg-[#957a5c] transition-colors shadow-sm hover:shadow-md"
           >
             Search
           </button>

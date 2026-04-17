@@ -66,10 +66,7 @@ export default function VendorSignInPage() {
 
   return (
     <div
-      className="min-h-screen"
-      style={{
-        background: "radial-gradient(circle at 20% 10%, #fff7ed, #fcfbf9 42%, #f6f1ea 92%)",
-      }}
+      className="min-h-screen bg-[#fafafa]"
     >
       <div className="mx-auto w-full max-w-3xl px-5 sm:px-8 py-12">
         <div className="rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden">

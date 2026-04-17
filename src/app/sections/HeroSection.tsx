@@ -93,15 +93,15 @@ function SelectMenu({
 
   return (
     <div ref={rootRef} className="grid gap-1 min-w-0 relative">
-      <span className="text-[12px] font-semibold text-black/55">{label}</span>
+      <span className="text-[12px] font-medium text-white/70">{label}</span>
       <button
         ref={buttonRef}
         type="button"
         aria-haspopup="listbox"
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
-        className={`h-10 w-full rounded-[3px] border border-black/10 bg-white px-3 text-left text-[14px] outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15 ${
-          hasValue ? "text-[#2c2c2c]" : "text-black/55"
+        className={`h-10 w-full rounded-md border border-white/20 bg-white/15 backdrop-blur-sm px-3 text-left text-[14px] outline-none focus:border-white/50 focus:ring-1 focus:ring-white/30 ${
+          hasValue ? "text-white" : "text-white/50"
         }`}
       >
         <span className="block truncate">{currentLabel || placeholder}</span>
@@ -111,14 +111,14 @@ function SelectMenu({
         ? createPortal(
             <div
               role="listbox"
-              className="fixed z-1000 rounded-[3px] border border-black/10 bg-white shadow-lg overflow-hidden"
+              className="fixed z-1000 rounded-lg border border-white/20 bg-white/90 backdrop-blur-lg shadow-xl overflow-hidden"
               style={{ top: menuRect.top, left: menuRect.left, width: menuRect.width }}
             >
               <div className="overflow-auto py-1" style={{ maxHeight: menuRect.maxHeight }}>
                 <button
                   type="button"
-                  className={`w-full px-3 py-2 text-left text-[14px] leading-5 whitespace-normal wrap-break-word text-[#2c2c2c] hover:bg-[#a67c52]/10 ${
-                    value === "" ? "bg-[#a67c52]/10" : ""
+                  className={`w-full px-3 py-2 text-left text-[14px] leading-5 whitespace-normal wrap-break-word text-gray-700 hover:bg-gray-100 ${
+                    value === "" ? "bg-gray-100" : ""
                   }`}
                   onClick={() => {
                     onChange("");
@@ -131,8 +131,8 @@ function SelectMenu({
                   <button
                     key={opt.value}
                     type="button"
-                    className={`w-full px-3 py-2 text-left text-[14px] leading-5 whitespace-normal wrap-break-word text-[#2c2c2c] hover:bg-[#a67c52]/10 ${
-                      opt.value === value ? "bg-[#a67c52]/10" : ""
+                    className={`w-full px-3 py-2 text-left text-[14px] leading-5 whitespace-normal wrap-break-word text-gray-700 hover:bg-gray-100 ${
+                      opt.value === value ? "bg-gray-100" : ""
                     }`}
                     onClick={() => {
                       onChange(opt.value);
@@ -187,56 +187,51 @@ export default function HeroSection({
   };
 
   return (
-    <section className="relative overflow-hidden rounded-[3px] border border-black/5 bg-white/40 shadow-sm p-5 sm:p-8 grid gap-8 lg:grid-cols-[1.2fr_0.8fr] items-start">
+    <section className="relative overflow-hidden rounded-xl p-5 sm:p-8 grid gap-8 lg:grid-cols-[1.2fr_0.8fr] items-start">
       <div
         aria-hidden
         className="absolute inset-0"
         style={{
           backgroundImage:
-            "url(https://images.zola.com/6217d460-573c-49e4-85fe-2760f4baa964?w=1846&h=995&fit=clip&q=80&fm=webp)",
+            "url(https://thepennyslo.com/wp-content/uploads/2024/03/5-The-Penny-San-Luis-Obispo.webp)",
           backgroundSize: "cover",
           backgroundPosition: "center",
-          filter: "saturate(0.95)",
-          opacity: 1,
         }}
       />
       <div
         aria-hidden
         className="absolute inset-0"
         style={{
-          background:
-            "linear-gradient(90deg, rgba(252,251,249,0.92) 0%, rgba(252,251,249,0.84) 40%, rgba(252,251,249,0.70) 100%)",
+          background: "linear-gradient(90deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.25) 50%, rgba(0,0,0,0.20) 100%)",
         }}
       />
-      <div
-        aria-hidden
-        className="absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(255,255,255,0.55),transparent_45%)]"
-      />
-
       <div className="relative z-10 pt-2">
-        <div className="inline-flex items-center gap-2 rounded-[999px] border border-black/10 bg-white px-3 py-1 text-[12px] font-semibold text-black/60 shadow-sm">
-          <span className="h-1.5 w-1.5 rounded-full bg-[#a67c52]" aria-hidden />
-          Verified vendors • real reviews • promos
+        <div className="inline-flex items-center gap-2 rounded-[999px] border border-white/20 bg-white/10 backdrop-blur-sm px-3 py-1 text-[12px] font-medium text-white shadow-sm">
+          <span className="h-1.5 w-1.5 rounded-full bg-white/60" aria-hidden />
+          Verified vendors
         </div>
 
-        <h1 className="mt-5 text-[38px] leading-[1.06] sm:text-[52px] font-semibold tracking-[-0.02em] text-[#2c2c2c]">
+        <h1 className="mt-5 text-[38px] leading-[1.06] sm:text-[52px] font-medium tracking-[-0.02em] text-white">
           Plan your perfect day.
-          <span className="block text-[#a67c52] italic">Find the best suppliers.</span>
+          <span className="block text-white/80 italic">Find the best suppliers.</span>
         </h1>
 
-        <p className="mt-4 max-w-xl text-[15px] sm:text-[16px] leading-7 text-black/60">
+        <p className="mt-4 max-w-xl text-[15px] sm:text-[16px] leading-7 text-white/75">
           Search over 1,000 verified wedding vendors with real reviews.
         </p>
 
         <div className="mt-6 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
           <a
-            className="h-11 inline-flex items-center justify-center px-5 rounded-[3px] bg-[#a67c52] text-white text-[14px] font-semibold hover:bg-[#8e6a46] transition-colors shadow-sm"
+            className="h-11 inline-flex items-center justify-center px-5 rounded-md text-white text-[14px] font-medium transition-colors"
+            style={{ backgroundColor: 'var(--muted-brown)' }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--muted-brown-hover)'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--muted-brown)'}
             href="#discover"
           >
             Discover vendors
           </a>
           <a
-            className="h-11 inline-flex items-center justify-center px-5 rounded-[3px] border border-[#a67c52]/35 bg-white text-[#6e4f33] text-[14px] font-semibold hover:bg-[#f8f1e8] transition-colors"
+            className="h-11 inline-flex items-center justify-center px-5 rounded-md border border-white/30 bg-white/10 backdrop-blur-sm text-white text-[14px] font-medium hover:bg-white/20 transition-colors"
             href="#for-vendors"
           >
             Become a vendor
@@ -244,37 +239,37 @@ export default function HeroSection({
         </div>
 
         <div className="mt-7 grid grid-cols-3 gap-3 max-w-xl">
-          <div className="rounded-[3px] border border-black/10 bg-white px-3 py-3 shadow-sm">
-            <div className="text-[12px] font-semibold text-black/45">Browse</div>
-            <div className="mt-1 text-[14px] font-semibold text-[#2c2c2c]">Categories</div>
+          <div className="rounded-lg border border-white/20 bg-white/10 backdrop-blur-md px-3 py-3">
+            <div className="text-[12px] font-medium text-white/60">Browse</div>
+            <div className="mt-1 text-[14px] font-medium text-white">Categories</div>
           </div>
-          <div className="rounded-[3px] border border-black/10 bg-white px-3 py-3 shadow-sm">
-            <div className="text-[12px] font-semibold text-black/45">Compare</div>
-            <div className="mt-1 text-[14px] font-semibold text-[#2c2c2c]">Ratings</div>
+          <div className="rounded-lg border border-white/20 bg-white/10 backdrop-blur-md px-3 py-3">
+            <div className="text-[12px] font-medium text-white/60">Compare</div>
+            <div className="mt-1 text-[14px] font-medium text-white">Ratings</div>
           </div>
-          <div className="rounded-[3px] border border-black/10 bg-white px-3 py-3 shadow-sm">
-            <div className="text-[12px] font-semibold text-black/45">Save</div>
-            <div className="mt-1 text-[14px] font-semibold text-[#2c2c2c]">Promos</div>
+          <div className="rounded-lg border border-white/20 bg-white/10 backdrop-blur-md px-3 py-3">
+            <div className="text-[12px] font-medium text-white/60">Save</div>
+            <div className="mt-1 text-[14px] font-medium text-white">Promos</div>
           </div>
         </div>
       </div>
 
-      <div className="relative z-10 rounded-[3px] border border-black/10 bg-white shadow-sm overflow-visible">
-        <div className="px-5 py-4 border-b border-black/5">
-          <div className="text-[13px] font-semibold text-[#2c2c2c]">Quick search</div>
-          <div className="mt-1 text-[12px] text-black/50">
+      <div className="relative z-10 rounded-lg border border-white/20 bg-white/10 backdrop-blur-md overflow-visible">
+        <div className="px-5 py-4 border-b border-white/10">
+          <div className="text-[13px] font-medium text-white">Quick search</div>
+          <div className="mt-1 text-[12px] text-white/60">
             Keyword + filters (category, city, affiliation)
           </div>
         </div>
 
         <div className="p-5 grid gap-3 relative">
           <label className="grid gap-1">
-            <span className="text-[12px] font-semibold text-black/55">Keyword</span>
+            <span className="text-[12px] font-medium text-white/70">Keyword</span>
             <input
               placeholder="Search vendor name (e.g. Nice Print)"
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
-              className="h-10 rounded-[3px] border border-black/10 bg-white px-3 text-[14px] text-[#2c2c2c] placeholder:text-black/35 outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15"
+              className="h-10 rounded-md border border-white/20 bg-white/15 px-3 text-[14px] text-white placeholder:text-white/40 outline-none focus:border-white/50 focus:ring-1 focus:ring-white/30"
             />
           </label>
 
@@ -297,7 +292,10 @@ export default function HeroSection({
 
           <a
             id="discover"
-            className="mt-1 h-10 inline-flex items-center justify-center rounded-[3px] bg-[#a67c52] text-white text-[14px] font-semibold hover:bg-[#8e6a46] transition-colors"
+            className="mt-1 h-10 inline-flex items-center justify-center rounded-md text-white text-[14px] font-medium transition-colors"
+            style={{ backgroundColor: 'var(--muted-brown)' }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--muted-brown-hover)'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--muted-brown)'}
             href="#"
             onClick={(e) => {
               e.preventDefault();
@@ -307,12 +305,12 @@ export default function HeroSection({
             Search
           </a>
 
-          <div className="flex items-center justify-between text-[12px] text-black/45">
+          <div className="flex items-center justify-between text-[12px] text-white/50">
             <span className="inline-flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#c17a4e]" aria-hidden />
+              <span className="h-1.5 w-1.5 rounded-full bg-white/40" aria-hidden />
               Tip: start with a category
             </span>
-            <span className="font-semibold">Preview UI</span>
+            <span className="font-medium">Preview UI</span>
           </div>
         </div>
       </div>

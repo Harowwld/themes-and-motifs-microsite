@@ -19,7 +19,7 @@ function proxiedImageUrl(url: string | null | undefined) {
 
 export default function VendorCard({ vendor, toneSeed, fixedHeight }: Props) {
   const seed = toneSeed ?? vendor.id;
-  const tone = seed % 3 === 0 ? "#a67c52" : seed % 3 === 1 ? "#c17a4e" : "#8e6a46";
+  const tone = seed % 2 === 0 ? "#a68b6a" : "#957a5c";
   const rating = vendor.average_rating ?? 0;
   const reviews = vendor.review_count ?? 0;
   const location = vendor.city ?? vendor.location_text;
@@ -39,8 +39,8 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight }: Props) {
   const coverZoom = Math.max(1, Math.min(3, zoomRaw));
 
   const rootClassName = fixedHeight
-    ? "h-[240px] rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow"
-    : "block rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden hover:shadow-md transition-shadow";
+    ? "h-[240px] rounded-xl border border-black/5 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] overflow-hidden flex flex-col hover:shadow-[0_10px_25px_rgba(0,0,0,0.08),0_4px_10px_rgba(0,0,0,0.04)] hover:scale-[1.01] transition-all duration-300"
+    : "block rounded-xl border border-black/5 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] overflow-hidden hover:shadow-[0_10px_25px_rgba(0,0,0,0.08),0_4px_10px_rgba(0,0,0,0.04)] hover:scale-[1.01] transition-all duration-300 cursor-pointer";
 
   return (
     <a
@@ -48,7 +48,7 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight }: Props) {
       className={rootClassName}
       aria-label={`View ${vendor.business_name}`}
     >
-      <div className="relative h-27.5 overflow-hidden">
+      <div className="relative h-28 overflow-hidden">
         {coverUrl ? (
           <img
             src={coverUrl}
@@ -75,7 +75,7 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight }: Props) {
 
       <div className="relative px-4 pt-0 pb-4">
         <div className="relative -mt-10 mb-2 flex items-end justify-between">
-          <div className="h-20 w-20 rounded-[3px] border-2 border-white bg-white shadow-md overflow-hidden flex items-center justify-center shrink-0">
+          <div className="h-20 w-20 rounded-2xl border-4 border-white bg-[#fcfbf9] shadow-lg overflow-hidden flex items-center justify-center shrink-0 -ml-1">
             {logoUrl ? (
               <img
                 src={logoUrl}
@@ -90,10 +90,10 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight }: Props) {
               <div className="h-full w-full bg-[#fcfbf9]" />
             )}
           </div>
-          <span className="text-[12px] font-semibold text-[#6e4f33] hover:underline">Explore</span>
+          <span className="text-[12px] font-semibold text-[#a68b6a] hover:text-[#957a5c] transition-colors">Explore</span>
         </div>
 
-        <div className="flex items-center gap-1 text-[15px] font-semibold text-[#2c2c2c] leading-5 line-clamp-1 mb-1">
+        <div className="flex items-center gap-1 text-[15px] font-semibold text-neutral-800 leading-5 line-clamp-1 mb-1">
           <span className="truncate">{vendor.business_name}</span>
           {isPremium ? (
             <span
@@ -113,13 +113,13 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight }: Props) {
           ) : null}
         </div>
 
-        <div className="flex items-center gap-1 text-[11px] text-black/55">
-          <span className="font-semibold text-[#a67c52]">{rating.toFixed(1)}</span>
-          <span className="text-black/30">•</span>
+        <div className="flex items-center gap-1 text-[12px] text-neutral-500">
+          <span className="font-semibold text-[#a68b6a]">{rating.toFixed(1)}</span>
+          <span className="text-neutral-300">•</span>
           <span className="truncate">{reviews} reviews</span>
           {location ? (
             <>
-              <span className="text-black/30">•</span>
+              <span className="text-neutral-300">•</span>
               <span className="truncate">{location}</span>
             </>
           ) : null}

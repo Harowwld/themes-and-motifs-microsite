@@ -15,6 +15,7 @@ type Props = {
   cities: City[];
   plans: Plan[];
   affiliations: Affiliation[];
+  preselectedPlan?: string;
 };
 
 type FormState = {
@@ -98,10 +99,13 @@ function formatCardNumber(value: string): string {
   return groups.join(" ");
 }
 
-export default function RegisterForm({ categories, regions, cities, plans, affiliations }: Props) {
+export default function RegisterForm({ categories, regions, cities, plans, affiliations, preselectedPlan }: Props) {
   const router = useRouter();
   const formRef = useRef<HTMLDivElement>(null);
-  const [form, setForm] = useState<FormState>(initialState);
+  const [form, setForm] = useState<FormState>({
+    ...initialState,
+    planId: preselectedPlan ?? "",
+  });
   const [coverModalOpen, setCoverModalOpen] = useState(false);
   const [logoModalOpen, setLogoModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -109,6 +113,12 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
   const [success, setSuccess] = useState(false);
   const [cardTouched, setCardTouched] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    if (preselectedPlan) {
+      setForm((prev) => ({ ...prev, planId: preselectedPlan }));
+    }
+  }, [preselectedPlan]);
 
   const cityOptions = useMemo(() => {
     const regionIdNum = Number(form.regionId);

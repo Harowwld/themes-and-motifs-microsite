@@ -1,8 +1,16 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
+  --background: #fafafa;
   --foreground: #171717;
+  --muted-brown: #a68b6a;
+  --muted-brown-hover: #957a5c;
+  --font-noto-serif: var(--font-noto-serif);
+  --font-plus-jakarta: var(--font-plus-jakarta);
+}
+
+.font-headline {
+  font-family: var(--font-noto-serif), Georgia, serif;
 }
 
 @layer base {
@@ -44,7 +52,10 @@
 }
 
 html {
+  height: 100%;
+  overflow: hidden;
   scroll-behavior: smooth;
+  background: var(--background);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -54,7 +65,41 @@ html {
 }
 
 body {
+  min-height: 100%;
+  min-height: 100dvh;
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-noto-serif), Georgia, serif;
+  overscroll-behavior: none;
+  overscroll-behavior-y: none;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.sleek-scrollbar::-webkit-scrollbar {
+  height: 4px;
+}
+
+.sleek-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sleek-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #d1d5db;
+  border-radius: 2px;
+}
+
+.sleek-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #9ca3af;
 }

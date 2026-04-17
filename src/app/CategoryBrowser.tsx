@@ -82,34 +82,27 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
     return expanded ? safe : safe;
   }, [categories, expanded]);
 
-  const scrollBy = (dir: -1 | 1) => {
-    const el = scrollerRef.current;
-    if (!el) return;
-    const amount = Math.max(240, Math.floor(el.clientWidth * 0.85));
-    el.scrollBy({ left: dir * amount, behavior: "smooth" });
-  };
-
   return (
-    <section className="mt-7 sm:mt-10">
+    <section className="mt-10 sm:mt-14">
       <div className="flex items-end justify-between gap-6">
         <div>
-          <div className="text-[12px] font-semibold text-black/45">Browse</div>
-          <h2 className="mt-1 text-[16px] sm:text-[18px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">
+          <div className="text-[12px] font-medium text-gray-400 uppercase tracking-wider">Browse</div>
+          <h2 className="mt-1 text-[16px] sm:text-[18px] font-medium tracking-[-0.01em] text-gray-900">
             Categories
           </h2>
         </div>
         <button
           type="button"
           onClick={() => setExpanded((v) => !v)}
-          className="text-[13px] font-semibold text-[#6e4f33] hover:underline"
+          className="text-[13px] font-medium text-gray-500 hover:text-gray-900 transition-colors"
         >
           {expanded ? "Collapse" : "See all"}
         </button>
       </div>
 
-      <div className="mt-4">
+      <div className="mt-6">
         {items.length === 0 ? (
-          <div className="text-[13px] text-black/55">No categories loaded.</div>
+          <div className="text-[13px] text-gray-500">No categories loaded.</div>
         ) : expanded ? (
           <div className="grid gap-3 sm:gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
             {items.map((c) => (
@@ -125,8 +118,8 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
                 }}
                 className={
                   isActive
-                    ? "group rounded-[3px] border border-black/20 bg-[#fffaf2] shadow-sm hover:shadow-md transition-all px-3 py-3 text-center min-h-24"
-                    : "group rounded-[3px] border border-black/10 bg-white shadow-sm hover:shadow-md hover:border-black/15 transition-all px-3 py-3 text-center min-h-24"
+                    ? "group rounded-lg bg-gray-50 shadow-sm hover:shadow-md transition-all px-3 py-3 text-center min-h-24"
+                    : "group rounded-lg bg-white shadow-sm hover:shadow-md transition-all px-3 py-3 text-center min-h-24"
                 }
                 aria-label={`Browse ${c.name}`}
               >
@@ -142,8 +135,8 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
                 <div
                   className={
                     isActive
-                      ? "mt-1 text-[12px] font-semibold text-[#2c2c2c] whitespace-nowrap overflow-hidden text-ellipsis"
-                      : "mt-1 text-[12px] font-semibold text-[#6e4f33] group-hover:text-[#2c2c2c] whitespace-nowrap overflow-hidden text-ellipsis"
+                      ? "mt-1 text-[12px] font-medium text-gray-900 whitespace-nowrap overflow-hidden text-ellipsis"
+                      : "mt-1 text-[12px] font-medium text-gray-600 group-hover:text-gray-900 whitespace-nowrap overflow-hidden text-ellipsis"
                   }
                 >
                   {c.name}
@@ -155,32 +148,12 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
           </div>
         ) : (
           <div className="relative">
-            <div className="pointer-events-none absolute inset-y-0 left-0 w-12 bg-linear-to-r from-[#fcfbf9] to-transparent" />
-            <div className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-linear-to-l from-[#fcfbf9] to-transparent" />
-
-            <button
-              type="button"
-              onClick={() => scrollBy(-1)}
-              className="absolute left-1 top-1/2 -translate-y-1/2 z-10 h-9 w-9 rounded-[3px] border border-black/10 bg-white shadow-sm hover:shadow-md transition-shadow"
-              aria-label="Scroll categories left"
-            >
-              <svg
-                aria-hidden
-                viewBox="0 0 24 24"
-                className="h-4 w-4 mx-auto text-black/60"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.6"
-                strokeLinecap="square"
-                strokeLinejoin="miter"
-              >
-                <path d="M15 18l-6-6 6-6" />
-              </svg>
-            </button>
+            <div className="pointer-events-none absolute top-0 bottom-3 left-0 w-8 bg-linear-to-r from-[#fcfbf9] to-transparent z-10" />
+            <div className="pointer-events-none absolute top-0 bottom-3 right-0 w-8 bg-linear-to-l from-[#fcfbf9] to-transparent z-10" />
 
             <div
               ref={scrollerRef}
-              className="flex gap-3 overflow-x-auto scroll-smooth pb-2 px-12 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              className="flex gap-3 overflow-x-auto scroll-smooth pb-3 sleek-scrollbar"
             >
               {items.map((c) => (
                 (() => {
@@ -195,8 +168,8 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
                   }}
                   className={
                     isActive
-                      ? "group shrink-0 rounded-[3px] border border-black/20 bg-[#fffaf2] shadow-sm hover:shadow-md transition-all px-3 py-3 text-center w-45 min-h-24"
-                      : "group shrink-0 rounded-[3px] border border-black/10 bg-white shadow-sm hover:shadow-md hover:border-black/15 transition-all px-3 py-3 text-center w-45 min-h-24"
+                      ? "group shrink-0 rounded-lg bg-gray-50 shadow-sm hover:shadow-md transition-all px-3 py-3 text-center w-45 min-h-24"
+                      : "group shrink-0 rounded-lg bg-white shadow-sm hover:shadow-md transition-all px-3 py-3 text-center w-45 min-h-24"
                   }
                   aria-label={`Browse ${c.name}`}
                   title={c.name}
@@ -213,8 +186,8 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
                   <div
                     className={
                       isActive
-                        ? "mt-1 text-[12px] font-semibold text-[#2c2c2c] whitespace-nowrap overflow-hidden text-ellipsis"
-                        : "mt-1 text-[12px] font-semibold text-[#6e4f33] group-hover:text-[#2c2c2c] whitespace-nowrap overflow-hidden text-ellipsis"
+                        ? "mt-1 text-[12px] font-medium text-gray-900 whitespace-nowrap overflow-hidden text-ellipsis"
+                        : "mt-1 text-[12px] font-medium text-gray-600 group-hover:text-gray-900 whitespace-nowrap overflow-hidden text-ellipsis"
                     }
                   >
                     {c.name}
@@ -224,30 +197,10 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
                 })()
               ))}
             </div>
-
-            <button
-              type="button"
-              onClick={() => scrollBy(1)}
-              className="absolute right-1 top-1/2 -translate-y-1/2 z-10 h-9 w-9 rounded-[3px] border border-black/10 bg-white shadow-sm hover:shadow-md transition-shadow"
-              aria-label="Scroll categories right"
-            >
-              <svg
-                aria-hidden
-                viewBox="0 0 24 24"
-                className="h-4 w-4 mx-auto text-black/60"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.6"
-                strokeLinecap="square"
-                strokeLinejoin="miter"
-              >
-                <path d="M9 6l6 6-6 6" />
-              </svg>
-            </button>
           </div>
         )}
 
-        <div className="mt-3 text-[12px] text-black/45">
+        <div className="mt-3 text-[12px] text-gray-400">
           Tip: set a category first, then refine by location.
         </div>
       </div>

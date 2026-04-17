@@ -47,8 +47,7 @@ export async function GET(req: Request) {
     sort,
   });
 
-  const MAX_FETCH = 5000;
-  const { data: vendors, count, error } = await query.limit(MAX_FETCH);
+  const { data: vendors, count, error } = await query.range(from, to);
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -56,10 +55,9 @@ export async function GET(req: Request) {
 
   const withCovers = await attachCoverImages(supabase, (vendors ?? []) as Array<{ id: number }>);
   const sorted = sortWithImagesFirst(withCovers as any);
-  const pageSlice = sorted.slice(from, to + 1);
 
   return NextResponse.json({
-    vendors: pageSlice,
+    vendors: sorted,
     total: count ?? 0,
     page,
     pageSize,

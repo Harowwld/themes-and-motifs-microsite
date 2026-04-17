@@ -72,10 +72,7 @@ function LayoutContent({
 
   return (
     <div
-      className="min-h-screen"
-      style={{
-        background: "radial-gradient(circle at 20% 10%, #fff7ed, #fcfbf9 42%, #f6f1ea 92%)",
-      }}
+      className="min-h-screen bg-[#fafafa]"
     >
       <div className="mx-auto w-full max-w-7xl px-5 sm:px-8 py-10">
         <div className="grid gap-6 lg:grid-cols-[240px_1fr]">

@@ -133,7 +133,7 @@ function PromoModal({
         <div className="p-4 grid gap-4">
           {imageUrl.trim() ? (
             <div className="rounded-[3px] border border-black/10 bg-white overflow-hidden">
-              <div className="h-40 w-full relative bg-[#fcfbf9]">
+              <div className="w-full aspect-[3/4] relative bg-[#fcfbf9]">
                 <img
                   src={imageUrl.trim()}
                   alt=""
@@ -781,10 +781,7 @@ export default function VendorDashboardPage() {
 
   return (
     <div
-      className="min-h-screen"
-      style={{
-        background: "radial-gradient(circle at 20% 10%, #fff7ed, #fcfbf9 42%, #f6f1ea 92%)",
-      }}
+      className="min-h-screen bg-[#fafafa]"
     >
       <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
         <SiteHeader />

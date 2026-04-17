@@ -1,5 +1,3 @@
-import Image from "next/image";
-
 type PlanFeature = {
   label: string;
   free: boolean;
@@ -7,70 +5,60 @@ type PlanFeature = {
 };
 
 export default function VendorPlansSection({ planFeatures }: { planFeatures: PlanFeature[] }) {
+  const freeFeatures = planFeatures.filter((f) => f.free);
+  const premiumFeatures = planFeatures.filter((f) => f.premium);
+
   return (
-    <section className="mt-12 sm:mt-16">
-      <div id="for-vendors" className="rounded-[3px] border border-black/10 bg-white shadow-sm p-6">
-        <div className="flex items-center gap-3">
-          <div className="h-9 w-9 rounded-[3px] border border-black/10 bg-[#f3ede6] grid place-items-center">
-            <Image aria-hidden src="/window.svg" alt="" width={18} height={18} />
-          </div>
-          <div>
-            <div className="text-[13px] font-semibold text-[#2c2c2c]">Built for vendor growth</div>
-            <div className="text-[12px] text-black/50">Leads, promos, and plan-based visibility.</div>
-          </div>
-        </div>
-
-        <div className="mt-5 grid gap-4 lg:grid-cols-2">
-          <div className="rounded-[3px] border border-black/10 bg-white shadow-sm p-5">
-            <div className="text-[12px] font-semibold text-black/45">Free</div>
-            <div className="mt-1 text-[20px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">Standard listing</div>
-            <div className="mt-1 text-[13px] text-black/55">Visibility in the directory with core business info.</div>
-
-            <div className="mt-4 grid gap-2 text-[13px]">
-              {planFeatures.map((f) => (
-                <div key={f.label} className={`flex gap-2 ${f.free ? "text-black/60" : "text-black/30"}`}>
-                  <span className={`${f.free ? "text-black/35" : "text-black/25"}`}>{f.free ? "✓" : "×"}</span>
-                  {f.label}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="rounded-[3px] border border-[#a67c52]/35 bg-[#fffaf5] shadow-sm p-5">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <div className="text-[12px] font-semibold text-[#6e4f33]">3 months trial / Premium</div>
-                <div className="mt-1 text-[20px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">Boosted profile</div>
-              </div>
-              <div className="rounded-[999px] border border-[#a67c52]/35 bg-white px-2.5 py-1 text-[11px] font-semibold text-[#6e4f33]">
-                Elite Choice
-              </div>
-            </div>
-            <div className="mt-1 text-[13px] text-black/55">More visibility, a richer profile, and expanded discovery.</div>
-
-            <div className="mt-4 grid gap-2 text-[13px]">
-              {planFeatures.map((f) => (
-                <div
-                  key={f.label}
-                  className={`flex gap-2 ${f.premium ? "text-black/60" : "text-black/30"}`}
-                >
-                  <span className={`${f.premium ? "text-[#a67c52]" : "text-black/25"}`}>{f.premium ? "✓" : "×"}</span>
-                  {f.label}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-4 flex flex-col sm:flex-row gap-3">
-          <a
-            className="h-10 inline-flex items-center justify-center px-4 rounded-[3px] bg-[#a67c52] text-white text-[13px] font-semibold hover:bg-[#8e6a46] transition-colors"
-            href="/register"
-          >
-            Register
-          </a>
-        </div>
+    <section className="mt-16 sm:mt-20">
+      <div className="text-center mb-10">
+        <h2 className="text-[20px] font-semibold text-[#2c2c2c]">Pricing Plans</h2>
+        {/* Choose the plan that fits your business needs */}
       </div>
+
+      <div className="flex flex-col sm:flex-row gap-3 justify-center max-w-lg mx-auto">
+          <div className="flex-1 rounded-lg border border-black/10 p-4 min-w-0 flex flex-col">
+            <div className="text-[11px] font-medium text-black/40 uppercase tracking-wider">Free</div>
+            <div className="mt-1 text-[18px] font-medium text-[#2c2c2c]">Standard</div>
+            <div className="mt-2 space-y-1.5">
+              {freeFeatures.map((f) => (
+                <div key={f.label} className="flex items-center gap-2 text-[12px] text-black/60">
+                  <svg className="h-3.5 w-3.5 text-black/40 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span>{f.label}</span>
+                </div>
+              ))}
+            </div>
+            <div className="mt-auto pt-3">
+              <a href="/register?plan=1" className="block w-full h-8 text-[12px] font-medium text-white bg-black/70 rounded-md hover:bg-black/80 transition-colors text-center leading-8">
+                Select Standard
+              </a>
+            </div>
+          </div>
+
+          <div className="flex-1 rounded-lg border-2 border-[#a68b6a]/50 bg-[#a68b6a]/5 p-4 min-w-0 relative flex flex-col">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
+              <span className="text-[10px] font-semibold text-white bg-[#a68b6a] px-2.5 py-1 rounded-full shadow-sm">Elite Choice</span>
+            </div>
+            <div className="text-[11px] font-medium text-[#a68b6a] uppercase tracking-wider mt-1">Premium</div>
+            <div className="mt-1 text-[18px] font-medium text-[#2c2c2c]">Boosted</div>
+            <div className="mt-2 space-y-1.5">
+              {premiumFeatures.map((f) => (
+                <div key={f.label} className="flex items-center gap-2 text-[12px] text-black/70">
+                  <svg className="h-3.5 w-3.5 text-[#a68b6a] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span>{f.label}</span>
+                </div>
+              ))}
+            </div>
+            <div className="mt-auto pt-3">
+              <a href="/register?plan=2" className="block w-full h-8 text-[12px] font-medium text-white bg-[#a68b6a] rounded-md hover:bg-[#957a5c] transition-colors text-center leading-8">
+                Select Boosted
+              </a>
+            </div>
+          </div>
+        </div>
     </section>
   );
 }

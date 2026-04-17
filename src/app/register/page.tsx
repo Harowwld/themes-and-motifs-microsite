@@ -4,7 +4,14 @@ import RegisterForm from "./RegisterForm";
 
 export const dynamic = "force-dynamic";
 
-export default async function RegisterPage() {
+export default async function RegisterPage({
+  searchParams,
+}: {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const resolvedSearchParams = (await searchParams) ?? {};
+  const preselectedPlan = resolvedSearchParams.plan as string | undefined;
+
   const supabase = createSupabaseServerClient();
 
   const [{ data: categories }, { data: regionRows }, { data: plans }, { data: affiliations }] = await Promise.all([
@@ -21,7 +28,7 @@ export default async function RegisterPage() {
     .map((r) => ({ id: r.id, name: r.name, region_id: r.parent_id as number }));
 
   return (
-    <div className="min-h-screen" style={{ background: "radial-gradient(circle at 20% 10%, #fff7ed, #fcfbf9 42%, #f6f1ea 92%)" }}>
+    <div className="min-h-screen bg-[#fafafa]">
       <div className="mx-auto w-full max-w-3xl px-5 sm:px-8 py-10 sm:py-14">
         <div className="rounded-[3px] border border-black/10 bg-white shadow-sm p-6">
           <div className="text-[12px] font-semibold text-black/45">For vendors</div>
@@ -39,6 +46,7 @@ export default async function RegisterPage() {
               cities={cities}
               plans={(plans ?? []) as { id: number; name: string }[]}
               affiliations={(affiliations ?? []) as { id: number; name: string; slug: string }[]}
+              preselectedPlan={preselectedPlan}
             />
           </div>
         </div>

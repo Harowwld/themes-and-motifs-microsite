@@ -278,32 +278,27 @@ export default async function LandingPage({
   const sort: SortKey = rawSort === "alpha" ? "alpha" : "rating";
 
   const planFeatures = [
-    { label: "Company name + address + contact person", free: true, premium: true },
-    { label: "Up to 3 categories (searchable)", free: true, premium: true },
-    { label: "Ratings + reviews (from couples)", free: true, premium: true },
-    { label: "Affiliations/associations", free: true, premium: true },
+    { label: "Company name, address & contact person", free: true, premium: true },
+    { label: "Up to 3 searchable categories", free: true, premium: true },
+    { label: "Ratings & reviews from couples", free: true, premium: true },
+    { label: "Affiliations & associations", free: true, premium: true },
     { label: "Public email via contact form", free: true, premium: true },
     { label: "Admin email", free: false, premium: true },
-    { label: "Phone numbers (public)", free: false, premium: true },
-    { label: "Phone numbers (admin)", free: false, premium: true },
+    { label: "Public phone numbers", free: false, premium: true },
+    { label: "Admin-only phone numbers", free: false, premium: true },
     { label: "Logo", free: false, premium: true },
-    { label: "Website", free: false, premium: true },
-    {
-      label: "Social links (Facebook, Instagram, TikTok, X, Pinterest, YouTube)",
-      free: false,
-      premium: true,
-    },
-    { label: "Album: 1 album (max 10 photos)", free: true, premium: false },
-    { label: "Album: unlimited (album + posts)", free: false, premium: true },
-    { label: "Exclusive deal: 1 promo/day (text + image)", free: true, premium: false },
-    { label: "Exclusive deals/marketplace: unlimited promos", free: false, premium: true },
+    { label: "Website link", free: false, premium: true },
+    { label: "Social media links", free: false, premium: true },
+    { label: "1 photo album with up to 10 photos", free: true, premium: false },
+    { label: "Unlimited albums & posts", free: false, premium: true },
+    { label: "1 promotional deal per day", free: true, premium: false },
+    { label: "Unlimited promotional deals", free: false, premium: true },
   ];
 
   return (
     <div
-      className="min-h-screen"
       style={{
-        background: "radial-gradient(circle at 20% 10%, #fff7ed, #fcfbf9 42%, #f6f1ea 92%)",
+        background: "#fafafa",
       }}
     >
       <ScrollToTopOnMount />

@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 import SiteHeader from "../sections/SiteHeader";
-import SiteFooter from "../sections/SiteFooter";
 import { createSupabaseServerClient } from "../../lib/supabaseServer";
 import CategoryBrowser from "../CategoryBrowser";
 import VendorsSearchBar from "./VendorsSearchBar";
@@ -209,10 +208,7 @@ export default async function VendorsPage({
 
   return (
     <div
-      className="min-h-screen"
-      style={{
-        background: "radial-gradient(circle at 20% 10%, #fff7ed, #fcfbf9 42%, #f6f1ea 92%)",
-      }}
+      className="min-h-screen bg-[#fafafa]"
     >
       <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
         <SiteHeader />
@@ -231,8 +227,6 @@ export default async function VendorsPage({
             />
           </Suspense>
         </main>
-
-        <SiteFooter />
       </div>
     </div>
   );

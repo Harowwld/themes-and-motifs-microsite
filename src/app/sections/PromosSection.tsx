@@ -36,22 +36,17 @@ function proxiedImageUrl(url: string) {
 
 export default function PromosSection({ promos }: { promos: FeaturedPromo[] }) {
   return (
-    <section id="promos" className="mt-12 sm:mt-16">
-      <div className="flex items-end justify-between gap-6">
-        <div>
-          <h2 className="text-[18px] sm:text-[20px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">
-            Promos
-          </h2>
-          <p className="mt-1 text-[13px] text-black/55 max-w-xl">
-            Time-bound deals from suppliers—great for shortlisting with confidence.
-          </p>
-        </div>
-        <a className="text-[13px] font-semibold text-[#6e4f33] hover:underline" href="/promos">
-          View all
-        </a>
+    <section id="promos" className="mt-16 sm:mt-20">
+      <div className="text-center">
+        <h2 className="text-[18px] sm:text-[20px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">
+          Discover exciting promos
+        </h2>
+        <p className="mt-2 text-[13px] text-black/55 max-w-xl mx-auto">
+          Time-bound deals from suppliers-great for shortlisting with confidence.
+        </p>
       </div>
 
-      <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
         {promos.length === 0 ? (
           <div className="sm:col-span-2 lg:col-span-3 rounded-[3px] border border-black/10 bg-white shadow-sm p-6">
             <div className="text-[13px] font-semibold text-[#2c2c2c]">No featured promos yet</div>
@@ -59,7 +54,7 @@ export default function PromosSection({ promos }: { promos: FeaturedPromo[] }) {
           </div>
         ) : (
           promos.map((promo, i) => {
-            const tone = i % 3 === 0 ? "#a67c52" : i % 3 === 1 ? "#c17a4e" : "#8e6a46";
+            const tone = i % 2 === 0 ? "#a68b6a" : "#957a5c";
             const vendorName = promo.vendors?.[0]?.business_name;
             const coverUrl = promo.image_url ? proxiedImageUrl(promo.image_url) : "";
             const fx = clampPct(Number(promo.image_focus_x ?? 50));
@@ -67,88 +62,85 @@ export default function PromosSection({ promos }: { promos: FeaturedPromo[] }) {
             const z = clampZoom(Number(promo.image_zoom ?? 1));
 
             return (
-              <div
+              <a
                 key={promo.id}
-                className="rounded-md border-2 border-dashed border-[#c17a4e]/40 bg-linear-to-br from-[#fff7ed] to-white overflow-hidden relative"
+                href={`/promos/${promo.id}`}
+                className="group block rounded-[12px] overflow-hidden relative aspect-[3/4] shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] hover:shadow-[0_10px_25px_rgba(0,0,0,0.08),0_4px_10px_rgba(0,0,0,0.04)] hover:-translate-y-3 pt-3 transition-all duration-500"
               >
-                {/* Promo Badge */}
-                <div className="absolute top-0 left-0 z-10">
-                  <div className="bg-[#c17a4e] text-white text-[11px] font-bold px-3 py-1 rounded-br-md">
+                {/* Full-bleed cover image */}
+                <div className="absolute inset-0">
+                  {coverUrl ? (
+                    <img
+                      src={coverUrl}
+                      alt=""
+                      className="h-full w-full object-cover"
+                      style={{ transformOrigin: `${fx}% ${fy}%`, transform: `scale(${z})` }}
+                      loading="lazy"
+                      decoding="async"
+                      referrerPolicy="no-referrer"
+                      draggable={false}
+                    />
+                  ) : (
+                    <div
+                      className="h-full w-full"
+                      style={{
+                        background: `linear-gradient(135deg, ${tone}33, ${tone}11)`,
+                      }}
+                    />
+                  )}
+                </div>
+
+                {/* Promo badge */}
+                <div className="absolute top-3 left-3 z-10">
+                  <div className="bg-[#a68b6a] text-white text-[10px] font-bold px-2.5 py-1 rounded-md">
                     PROMO
                   </div>
                 </div>
 
-                <div className="flex">
-                  {/* Left: Image */}
-                  <div className="w-28 sm:w-32 shrink-0 relative overflow-hidden">
-                    <div className="h-full min-h-30">
-                      {coverUrl ? (
-                        <img
-                          src={coverUrl}
-                          alt=""
-                          className="h-full w-full object-cover"
-                          style={{ transformOrigin: `${fx}% ${fy}%`, transform: `scale(${z})` }}
-                          loading="lazy"
-                          decoding="async"
-                          referrerPolicy="no-referrer"
-                          draggable={false}
-                        />
-                      ) : (
-                        <div
-                          className="h-full w-full"
-                          style={{
-                            background: `linear-gradient(135deg, ${tone}33, ${tone}11)`,
-                          }}
-                        />
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Right: Content */}
-                  <div className="flex-1 p-4">
-                    {/* Vendor name above title */}
-                    <div className="text-[11px] font-semibold text-[#a67c52] uppercase tracking-wide">
+                {/* Glass morphism details panel - lower left, ~3/5 of card width */}
+                <div className="absolute bottom-3 left-3 z-20 w-[60%]">
+                  <div className="backdrop-blur-md bg-white/75 border border-white/40 rounded-[6px] p-3 shadow-lg">
+                    {/* Vendor name */}
+                    <div className="text-[10px] font-semibold text-[#a68b6a] uppercase tracking-wide truncate">
                       {vendorName ? vendorName : "Featured Deal"}
                     </div>
 
-                    <div className="mt-1 text-[15px] font-bold text-[#2c2c2c] leading-tight">
+                    {/* Title */}
+                    <div className="mt-1 text-[14px] font-bold text-[#2c2c2c] leading-tight line-clamp-2">
                       {promo.title}
                     </div>
 
-                    {promo.summary ? (
-                      <div className="mt-1.5 text-[12px] text-black/60 line-clamp-2">
-                        {promo.summary}
-                      </div>
-                    ) : null}
-
-                    <div className="mt-3 flex items-center justify-between">
-                      {/* Discount badge or time indicator */}
-                      <div className="flex items-center gap-2">
-                        {typeof promo.discount_percentage === "number" ? (
-                          <span className="inline-flex items-center rounded-sm bg-[#c17a4e] px-2 py-0.5 text-[12px] font-bold text-white">
-                            {promo.discount_percentage}% OFF
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-[#c17a4e]">
-                            <span className="h-1.5 w-1.5 rounded-full bg-[#c17a4e] animate-pulse" aria-hidden />
-                            Limited Time
-                          </span>
-                        )}
-                      </div>
-
-                      <a
-                        href={`/promos/${promo.id}`}
-                        className="text-[12px] font-bold text-[#6e4f33] hover:text-[#8e6a46] hover:underline"
-                      >
-                        View Deal →
-                      </a>
+                    {/* Discount badge */}
+                    <div className="mt-2">
+                      {typeof promo.discount_percentage === "number" ? (
+                        <span className="inline-flex items-center rounded-sm bg-[#a68b6a] px-2 py-0.5 text-[11px] font-bold text-white">
+                          {promo.discount_percentage}% OFF
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-[#a68b6a]">
+                          <span className="h-1.5 w-1.5 rounded-full bg-[#a68b6a] animate-pulse" aria-hidden />
+                          Limited Time
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
-              </div>
+              </a>
             );
           })
         )}
+      </div>
+
+      <div className="mt-6 text-center">
+        <a
+          href="/promos"
+          className="inline-flex items-center gap-1 text-[13px] font-semibold text-[#a68b6a] hover:text-[#957a5c] transition-colors"
+        >
+          View All Promos
+          <svg width="20" height="16" viewBox="0 0 20 16" fill="none" aria-hidden className="w-5 h-4">
+            <path d="M2 8h16M12 2l6 6-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </a>
       </div>
     </section>
   );
