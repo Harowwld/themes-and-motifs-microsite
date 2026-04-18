@@ -196,8 +196,6 @@ export default function VirtualizedVendorsList({
             <VendorCardSkeleton key={`loading-${i}`} />
           ))}
         </div>
-      ) : hasMore ? (
-        <div className="py-6 text-center text-[13px] font-semibold text-black/45">Scroll for more</div>
       ) : null}
 
       {loadError ? <div className="mt-4 text-[13px] font-semibold text-[#b42318]">{loadError}</div> : null}

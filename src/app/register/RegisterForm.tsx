@@ -22,6 +22,7 @@ type FormState = {
   businessName: string;
   categoryId: string;
   secondaryCategorySlugs: string;
+  secondaryCategories: string[];
   contactEmail: string;
   contactPhone: string;
   websiteUrl: string;
@@ -51,6 +52,7 @@ const initialState: FormState = {
   businessName: "",
   categoryId: "",
   secondaryCategorySlugs: "",
+  secondaryCategories: [],
   contactEmail: "",
   contactPhone: "",
   websiteUrl: "",
@@ -113,6 +115,7 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
   const [success, setSuccess] = useState(false);
   const [cardTouched, setCardTouched] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Set<string>>(new Set());
+  const [showSecondaryCategoryMenu, setShowSecondaryCategoryMenu] = useState(false);
 
   useEffect(() => {
     if (preselectedPlan) {
@@ -245,22 +248,22 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
   };
 
   return (
-    <form onSubmit={onSubmit} className="grid gap-5">
-      <div className="rounded-[3px] border border-black/10 bg-white px-4 py-3 text-[12px] text-black/60">
-        Fields marked <span className="inline-flex items-center rounded-[999px] border border-[#a67c52]/35 bg-[#fffaf5] px-2 py-0.5 font-semibold text-[#6e4f33]">Premium</span> are only used for Premium listings.
+    <form onSubmit={onSubmit} className="grid gap-6">
+      <div className="rounded-lg border border-black/6 bg-[#fcfbf9] px-4 py-3 text-[13px] text-black/60">
+        Fields marked <span className="inline-flex items-center rounded-full border border-[#a68b6a]/30 bg-[#fffaf5] px-2 py-0.5 font-medium text-[#8e6a46]">Premium</span> are only used for Premium listings.
       </div>
 
-      {error ? <div className="rounded-[3px] border border-red-500/20 bg-red-50 px-4 py-3 text-[13px] text-red-900">{error}</div> : null}
+      {error ? <div className="rounded-lg border border-red-500/20 bg-red-50 px-4 py-3 text-[13px] text-red-900">{error}</div> : null}
       {success ? (
-        <div className="rounded-[3px] border border-[#a67c52]/25 bg-[#fffaf5] px-4 py-3 text-[13px] text-[#2c2c2c]">
+        <div className="rounded-lg border border-[#a68b6a]/25 bg-[#fffaf5] px-4 py-3 text-[13px] text-[#2c2c2c]">
           Registration submitted. We’ll review it and get back to you.
         </div>
       ) : null}
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-5 sm:grid-cols-2">
         <Field id="field-businessName" label="Business name" required>
           <input
-            className={`h-10 w-full rounded-[3px] border px-3 text-[13px] ${fieldErrors.has("businessName") ? "border-red-500 bg-red-50" : "border-black/10"}`}
+            className={`h-11 w-full rounded-lg border px-3 text-[14px] ${fieldErrors.has("businessName") ? "border-red-500 bg-red-50" : "border-black/10"}`}
             value={form.businessName}
             onChange={(e) => set("businessName", e.target.value)}
           />
@@ -268,7 +271,7 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
 
         <Field id="field-categoryId" label="Primary category">
           <select
-            className={`h-10 w-full rounded-[3px] border px-3 text-[13px] bg-white ${
+            className={`h-11 w-full rounded-lg border px-3 text-[14px] bg-white ${
               fieldErrors.has("categoryId")
                 ? "border-red-500 bg-red-50"
                 : form.categoryId
@@ -287,18 +290,80 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
           </select>
         </Field>
 
-        <Field label="Other categories (optional)" hint="Comma-separated slugs or names (max 2).">
-          <input
-            className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]"
-            value={form.secondaryCategorySlugs}
-            onChange={(e) => set("secondaryCategorySlugs", e.target.value)}
-            placeholder="e.g. florist--event-stylist, lights--sounds--staging"
-          />
+        <Field label="Other categories (optional)" hint="Select up to 2 additional categories.">
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setShowSecondaryCategoryMenu((v) => !v)}
+              className="h-11 w-full rounded-lg border border-black/10 px-3 text-left text-[14px] bg-white flex items-center justify-between"
+            >
+              <span className={form.secondaryCategories.length > 0 ? "text-[#2c2c2c]" : "text-black/45"}>
+                {form.secondaryCategories.length > 0
+                  ? form.secondaryCategories.map((slug) => categoryOptions.find((c) => c.slug === slug)?.name || slug).join(", ")
+                  : "Select additional categories"}
+              </span>
+              <svg className="h-4 w-4 text-black/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            {showSecondaryCategoryMenu && (
+              <div className="absolute z-30 w-full mt-1 rounded-lg border border-black/10 bg-white shadow-lg max-h-60 overflow-auto">
+                {categoryOptions
+                  .filter((c) => c.id.toString() !== form.categoryId && !form.secondaryCategories.includes(c.slug))
+                  .slice(0, 20)
+                  .map((cat) => (
+                    <button
+                      key={cat.id}
+                      type="button"
+                      className="w-full px-3 py-2 text-left text-[14px] text-[#2c2c2c] hover:bg-black/5"
+                      onClick={() => {
+                        if (form.secondaryCategories.length < 2) {
+                          const updated = [...form.secondaryCategories, cat.slug];
+                          set("secondaryCategories", updated);
+                          set("secondaryCategorySlugs", updated.join(","));
+                        }
+                        setShowSecondaryCategoryMenu(false);
+                      }}
+                    >
+                      {cat.name}
+                    </button>
+                  ))}
+              </div>
+            )}
+          </div>
+          {form.secondaryCategories.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-2">
+              {form.secondaryCategories.map((slug) => {
+                const cat = categoryOptions.find((c) => c.slug === slug);
+                return (
+                  <span
+                    key={slug}
+                    className="inline-flex items-center gap-1 rounded-full border border-[#a68b6a]/30 bg-[#fffaf5] px-2.5 py-1 text-[12px] font-medium text-[#8e6a46]"
+                  >
+                    {cat?.name || slug}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const updated = form.secondaryCategories.filter((s) => s !== slug);
+                        set("secondaryCategories", updated);
+                        set("secondaryCategorySlugs", updated.join(","));
+                      }}
+                      className="ml-0.5 hover:text-[#6e4f33]"
+                    >
+                      <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </span>
+                );
+              })}
+            </div>
+          )}
         </Field>
 
         <Field id="field-planId" label="Plan">
           <select
-            className={`h-10 w-full rounded-[3px] border px-3 text-[13px] bg-white ${
+            className={`h-11 w-full rounded-lg border px-3 text-[14px] bg-white ${
               fieldErrors.has("planId")
                 ? "border-red-500 bg-red-50"
                 : form.planId
@@ -320,7 +385,7 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
         <Field id="field-contactEmail" label="Email" required>
           <input
             type="email"
-            className={`h-10 w-full rounded-[3px] border px-3 text-[13px] ${fieldErrors.has("contactEmail") ? "border-red-500 bg-red-50" : "border-black/10"}`}
+            className={`h-11 w-full rounded-lg border px-3 text-[14px] ${fieldErrors.has("contactEmail") ? "border-red-500 bg-red-50" : "border-black/10"}`}
             value={form.contactEmail}
             onChange={(e) => set("contactEmail", e.target.value)}
           />
@@ -328,7 +393,7 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
 
         <Field id="field-contactPhone" label="Phone">
           <input
-            className={`h-10 w-full rounded-[3px] border px-3 text-[13px] ${fieldErrors.has("contactPhone") ? "border-red-500 bg-red-50" : "border-black/10"}`}
+            className={`h-11 w-full rounded-lg border px-3 text-[14px] ${fieldErrors.has("contactPhone") ? "border-red-500 bg-red-50" : "border-black/10"}`}
             value={form.contactPhone}
             onChange={(e) => set("contactPhone", e.target.value)}
           />
@@ -336,7 +401,7 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
 
         <Field id="field-secDtiNumber" label="SEC/DTI #">
           <input
-            className={`h-10 w-full rounded-[3px] border px-3 text-[13px] ${fieldErrors.has("secDtiNumber") ? "border-red-500 bg-red-50" : "border-black/10"}`}
+            className={`h-11 w-full rounded-lg border px-3 text-[14px] ${fieldErrors.has("secDtiNumber") ? "border-red-500 bg-red-50" : "border-black/10"}`}
             value={form.secDtiNumber}
             onChange={(e) => set("secDtiNumber", e.target.value)}
           />
@@ -344,7 +409,7 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
 
         <Field label="Website" badge="Premium">
           <input
-            className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]"
+            className="h-11 w-full rounded-lg border border-black/10 px-3 text-[14px]"
             value={form.websiteUrl}
             onChange={(e) => set("websiteUrl", e.target.value)}
             placeholder="https://..."
@@ -353,17 +418,17 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
 
         <Field id="field-contactPerson" label="Contact person">
           <input
-            className={`h-10 w-full rounded-[3px] border px-3 text-[13px] ${fieldErrors.has("contactPerson") ? "border-red-500 bg-red-50" : "border-black/10"}`}
+            className={`h-11 w-full rounded-lg border px-3 text-[14px] ${fieldErrors.has("contactPerson") ? "border-red-500 bg-red-50" : "border-black/10"}`}
             value={form.contactPerson}
             onChange={(e) => set("contactPerson", e.target.value)}
           />
         </Field>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-5 sm:grid-cols-3">
         <Field id="field-regionId" label="Region">
           <select
-            className={`h-10 w-full rounded-[3px] border px-3 text-[13px] bg-white ${
+            className={`h-11 w-full rounded-lg border px-3 text-[14px] bg-white ${
               fieldErrors.has("regionId")
                 ? "border-red-500 bg-red-50"
                 : form.regionId
@@ -387,7 +452,7 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
         </Field>
         <Field id="field-city" label="City">
           <select
-            className={`h-10 w-full rounded-[3px] border px-3 text-[13px] bg-white ${
+            className={`h-11 w-full rounded-lg border px-3 text-[14px] bg-white ${
               fieldErrors.has("city")
                 ? "border-red-500 bg-red-50"
                 : form.city
@@ -408,7 +473,7 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
         </Field>
         <Field id="field-address" label="Address">
           <input
-            className={`h-10 w-full rounded-[3px] border px-3 text-[13px] ${fieldErrors.has("address") ? "border-red-500 bg-red-50" : "border-black/10"}`}
+            className={`h-11 w-full rounded-lg border px-3 text-[14px] ${fieldErrors.has("address") ? "border-red-500 bg-red-50" : "border-black/10"}`}
             value={form.address}
             onChange={(e) => set("address", e.target.value)}
           />
@@ -418,7 +483,7 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
       <Field id="field-description" label="Business description" hint={`${form.description.length}/500`}>
         <textarea
           maxLength={500}
-          className={`min-h-24 w-full rounded-[3px] border px-3 py-2 text-[13px] ${fieldErrors.has("description") ? "border-red-500 bg-red-50" : "border-black/10"}`}
+          className={`min-h-24 w-full rounded-lg border px-3 py-2 text-[14px] ${fieldErrors.has("description") ? "border-red-500 bg-red-50" : "border-black/10"}`}
           value={form.description}
           onChange={(e) => set("description", e.target.value)}
         />
@@ -427,7 +492,7 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
       <div className="grid gap-2">
         <div id="field-coverPhotoUrl" className="flex items-end justify-between gap-4">
           <div>
-            <div className="text-[12px] font-semibold text-black/55">
+            <div className="text-[13px] font-medium text-black/55">
               Cover photo <span className="text-[#b42318]">*</span>
             </div>
             <div className="mt-1 text-[12px] text-black/45">Required. Used as your cover photo during review.</div>
@@ -435,13 +500,13 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
           <button
             type="button"
             onClick={() => setCoverModalOpen(true)}
-            className="h-9 px-3 rounded-[3px] border border-black/10 bg-white text-[12px] font-semibold text-[#6e4f33] hover:bg-black/2 transition-colors"
+            className="h-10 px-4 rounded-lg border border-black/10 bg-white text-[13px] font-medium text-[#8e6a46] hover:bg-black/5 transition-colors"
           >
             {form.coverPhotoUrl.trim() ? "Change cover photo" : "Add cover photo"}
           </button>
         </div>
 
-        <div className={`rounded-[3px] border-2 bg-white overflow-hidden ${fieldErrors.has("coverPhotoUrl") ? "border-red-500" : "border-black/10"}`}>
+        <div className={`rounded-xl border-2 bg-white overflow-hidden ${fieldErrors.has("coverPhotoUrl") ? "border-red-500" : "border-black/10"}`}>
           <div className="h-44 sm:h-52 bg-[#fcfbf9] flex items-center justify-center">
             {form.coverPhotoUrl.trim() ? (
               <img
@@ -454,7 +519,7 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
                 draggable={false}
               />
             ) : (
-              <div className="text-[12px] font-semibold text-black/35">No cover photo yet</div>
+              <div className="text-[13px] font-medium text-black/35">No cover photo yet</div>
             )}
           </div>
         </div>
@@ -473,7 +538,7 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
       <div className="grid gap-2">
         <div id="field-logoUrl" className="flex items-end justify-between gap-4">
           <div>
-            <div className="text-[12px] font-semibold text-black/55">
+            <div className="text-[13px] font-medium text-black/55">
               Logo <span className="text-[#b42318]">*</span>
             </div>
             <div className="mt-1 text-[12px] text-black/45">Required. Your business logo.</div>
@@ -481,13 +546,13 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
           <button
             type="button"
             onClick={() => setLogoModalOpen(true)}
-            className="h-9 px-3 rounded-[3px] border border-black/10 bg-white text-[12px] font-semibold text-[#6e4f33] hover:bg-black/2 transition-colors"
+            className="h-10 px-4 rounded-lg border border-black/10 bg-white text-[13px] font-medium text-[#8e6a46] hover:bg-black/5 transition-colors"
           >
             {form.logoUrl.trim() ? "Change logo" : "Add logo"}
           </button>
         </div>
 
-        <div className={`rounded-[3px] border-2 bg-white overflow-hidden ${fieldErrors.has("logoUrl") ? "border-red-500" : "border-black/10"}`}>
+        <div className={`rounded-xl border-2 bg-white overflow-hidden ${fieldErrors.has("logoUrl") ? "border-red-500" : "border-black/10"}`}>
           <div className="h-32 w-32 mx-auto bg-[#fcfbf9] flex items-center justify-center">
             {form.logoUrl.trim() ? (
               <img
@@ -500,7 +565,7 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
                 draggable={false}
               />
             ) : (
-              <div className="text-[12px] font-semibold text-black/35">No logo yet</div>
+              <div className="text-[13px] font-medium text-black/35">No logo yet</div>
             )}
           </div>
         </div>
@@ -521,7 +586,7 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
           <div className="relative">
             <input
               type="text"
-              className={`h-10 w-full rounded-[3px] border px-3 text-[13px] pr-10 ${
+              className={`h-11 w-full rounded-lg border px-3 text-[14px] pr-10 ${
                 fieldErrors.has("creditCardNumber")
                   ? "border-red-500 bg-red-50"
                   : cardTouched
@@ -556,18 +621,18 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
         </div>
       </Field>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-5 sm:grid-cols-2">
         <Field id="field-adminEmail" label="Admin email">
           <input
             type="email"
-            className={`h-10 w-full rounded-[3px] border px-3 text-[13px] ${fieldErrors.has("adminEmail") ? "border-red-500 bg-red-50" : "border-black/10"}`}
+            className={`h-11 w-full rounded-lg border px-3 text-[14px] ${fieldErrors.has("adminEmail") ? "border-red-500 bg-red-50" : "border-black/10"}`}
             value={form.adminEmail}
             onChange={(e) => set("adminEmail", e.target.value)}
           />
         </Field>
         <Field id="field-adminPhone" label="Admin phone">
           <input
-            className={`h-10 w-full rounded-[3px] border px-3 text-[13px] ${fieldErrors.has("adminPhone") ? "border-red-500 bg-red-50" : "border-black/10"}`}
+            className={`h-11 w-full rounded-lg border px-3 text-[14px] ${fieldErrors.has("adminPhone") ? "border-red-500 bg-red-50" : "border-black/10"}`}
             value={form.adminPhone}
             onChange={(e) => set("adminPhone", e.target.value)}
           />
@@ -576,7 +641,7 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
 
       <Field label="Affiliations / associations" hint="Optional.">
         <select
-          className={`h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px] bg-white ${
+          className={`h-11 w-full rounded-lg border border-black/10 px-3 text-[14px] bg-white ${
             form.affiliationSlug ? "text-[#2c2c2c]" : "text-black/55"
           }`}
           value={form.affiliationSlug}
@@ -591,60 +656,63 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
         </select>
       </Field>
 
-      <div className="rounded-[3px] border border-black/10 bg-white p-4">
-        <div className="text-[13px] font-semibold text-[#2c2c2c]">Social links (optional)</div>
-        <div className="mt-3 grid gap-4 sm:grid-cols-2">
+      <div className="rounded-xl border border-black/6 bg-white p-5">
+        <div className="text-[14px] font-medium text-[#2c2c2c]">Social links (optional)</div>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <Field label="Facebook" badge="Premium">
-            <input className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]" value={form.facebook} onChange={(e) => set("facebook", e.target.value)} />
+            <input className="h-11 w-full rounded-lg border border-black/10 px-3 text-[14px]" value={form.facebook} onChange={(e) => set("facebook", e.target.value)} />
           </Field>
           <Field label="Instagram" badge="Premium">
-            <input className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]" value={form.instagram} onChange={(e) => set("instagram", e.target.value)} />
+            <input className="h-11 w-full rounded-lg border border-black/10 px-3 text-[14px]" value={form.instagram} onChange={(e) => set("instagram", e.target.value)} />
           </Field>
           <Field label="TikTok" badge="Premium">
-            <input className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]" value={form.tiktok} onChange={(e) => set("tiktok", e.target.value)} />
+            <input className="h-11 w-full rounded-lg border border-black/10 px-3 text-[14px]" value={form.tiktok} onChange={(e) => set("tiktok", e.target.value)} />
           </Field>
           <Field label="X" badge="Premium">
-            <input className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]" value={form.x} onChange={(e) => set("x", e.target.value)} />
+            <input className="h-11 w-full rounded-lg border border-black/10 px-3 text-[14px]" value={form.x} onChange={(e) => set("x", e.target.value)} />
           </Field>
           <Field label="Pinterest" badge="Premium">
-            <input className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]" value={form.pinterest} onChange={(e) => set("pinterest", e.target.value)} />
+            <input className="h-11 w-full rounded-lg border border-black/10 px-3 text-[14px]" value={form.pinterest} onChange={(e) => set("pinterest", e.target.value)} />
           </Field>
           <Field label="YouTube" badge="Premium">
-            <input className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]" value={form.youtube} onChange={(e) => set("youtube", e.target.value)} />
+            <input className="h-11 w-full rounded-lg border border-black/10 px-3 text-[14px]" value={form.youtube} onChange={(e) => set("youtube", e.target.value)} />
           </Field>
         </div>
       </div>
 
       <div className="grid gap-1">
-        <label id="field-agreeToTerms" className="flex items-start gap-3 text-[13px] text-black/70">
+        <label id="field-agreeToTerms" className="flex items-start gap-3 text-[14px] text-black/70">
           <input
             type="checkbox"
-            className={`mt-1 h-4 w-4 ${fieldErrors.has("agreeToTerms") ? "accent-red-500" : ""}`}
+            className={`mt-1 h-4 w-4 rounded border-black/20 ${fieldErrors.has("agreeToTerms") ? "accent-red-500" : ""}`}
             checked={form.agreeToTerms}
             onChange={(e) => set("agreeToTerms", e.target.checked)}
           />
-          <span className="text-[13px]">
+          <span className="text-[14px]">
             I agree to the{" "}
-            <a href="/terms" target="_blank" rel="noreferrer" className="text-[#6e4f33] hover:underline">
+            <a href="/terms" target="_blank" rel="noreferrer" className="text-[#a68b6a] hover:underline">
               Terms & Conditions
             </a>
             .
           </span>
         </label>
         {fieldErrors.has("agreeToTerms") && (
-          <span className="ml-7 text-[11px] text-red-600">You must agree to the Terms & Conditions.</span>
+          <span className="ml-7 text-[12px] text-red-600">You must agree to the Terms & Conditions.</span>
         )}
       </div>
 
       <button
         type="submit"
         disabled={submitting}
-        className="h-10 inline-flex items-center justify-center px-4 rounded-[3px] bg-[#a67c52] text-white text-[13px] font-semibold hover:bg-[#8e6a46] transition-colors disabled:opacity-60"
+        className="h-11 inline-flex items-center justify-center px-5 rounded-lg text-white text-[14px] font-medium transition-colors disabled:opacity-60"
+        style={{ backgroundColor: 'var(--muted-brown)' }}
+        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--muted-brown-hover)'}
+        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--muted-brown)'}
       >
         {submitting ? "Submitting..." : "Submit registration"}
       </button>
 
-      <div className="text-[12px] text-black/45">
+      <div className="text-[13px] text-black/45">
         Note: Document upload (DTI/SEC/TIN) will be added next once the storage bucket name is confirmed.
       </div>
     </form>
@@ -671,42 +739,42 @@ function CoverPhotoModal({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-      <div className="w-full max-w-md rounded-[3px] border border-black/10 bg-white shadow-lg">
-        <div className="px-4 py-3 border-b border-black/5">
-          <div className="text-[14px] font-semibold text-[#2c2c2c]">Cover photo</div>
-          <div className="mt-1 text-[12px] text-black/45">Paste an image URL for your cover photo.</div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      <div className="w-full max-w-md rounded-xl border border-black/6 bg-white shadow-xl">
+        <div className="px-5 py-4 border-b border-black/5">
+          <div className="text-[15px] font-medium text-[#2c2c2c]">Cover photo</div>
+          <div className="mt-1 text-[13px] text-black/45">Paste an image URL for your cover photo.</div>
         </div>
-        <div className="p-4 grid gap-4">
+        <div className="p-5 grid gap-4">
           <div className="flex justify-center">
-            <div className="h-32 w-full max-w-[320px] rounded-[3px] border border-black/10 bg-white overflow-hidden flex items-center justify-center">
+            <div className="h-40 w-full max-w-[320px] rounded-lg border border-black/10 bg-white overflow-hidden flex items-center justify-center">
               {value.trim() ? (
                 <img src={value.trim()} alt="Cover preview" className="h-full w-full object-cover" />
               ) : (
-                <div className="h-full w-full bg-[#fcfbf9] flex items-center justify-center text-[11px] text-black/40">
+                <div className="h-full w-full bg-[#fcfbf9] flex items-center justify-center text-[12px] text-black/40">
                   No image
                 </div>
               )}
             </div>
           </div>
           <label className="grid gap-1.5">
-            <span className="text-[12px] font-semibold text-black/55">Image URL</span>
+            <span className="text-[13px] font-medium text-black/55">Image URL</span>
             <input
-              className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]"
+              className="h-11 w-full rounded-lg border border-black/10 px-3 text-[14px]"
               value={value}
               onChange={(e) => setValue(e.target.value)}
               placeholder="https://..."
               autoFocus
             />
           </label>
-          <div className="flex justify-end gap-2 pt-2">
+          <div className="flex justify-end gap-3 pt-2">
             <button
               type="button"
               onClick={() => {
                 setValue(url);
                 onCancel();
               }}
-              className="h-9 px-4 rounded-[3px] border border-black/10 bg-white text-[13px] font-semibold text-black/70 hover:bg-black/5 transition-colors"
+              className="h-10 px-4 rounded-lg border border-black/10 bg-white text-[13px] font-medium text-black/70 hover:bg-black/5 transition-colors"
             >
               Cancel
             </button>
@@ -714,7 +782,10 @@ function CoverPhotoModal({
               type="button"
               onClick={() => onSave(value.trim())}
               disabled={!value.trim()}
-              className="h-9 px-4 rounded-[3px] bg-[#a67c52] text-white text-[13px] font-semibold hover:bg-[#8e6a46] transition-colors disabled:opacity-60"
+              className="h-10 px-4 rounded-lg text-white text-[13px] font-medium transition-colors disabled:opacity-60"
+              style={{ backgroundColor: 'var(--muted-brown)' }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--muted-brown-hover)'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--muted-brown)'}
             >
               Save
             </button>
@@ -745,42 +816,42 @@ function LogoModal({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-      <div className="w-full max-w-md rounded-[3px] border border-black/10 bg-white shadow-lg">
-        <div className="px-4 py-3 border-b border-black/5">
-          <div className="text-[14px] font-semibold text-[#2c2c2c]">Logo</div>
-          <div className="mt-1 text-[12px] text-black/45">Paste an image URL for your logo.</div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      <div className="w-full max-w-md rounded-xl border border-black/6 bg-white shadow-xl">
+        <div className="px-5 py-4 border-b border-black/5">
+          <div className="text-[15px] font-medium text-[#2c2c2c]">Logo</div>
+          <div className="mt-1 text-[13px] text-black/45">Paste an image URL for your logo.</div>
         </div>
-        <div className="p-4 grid gap-4">
+        <div className="p-5 grid gap-4">
           <div className="flex justify-center">
-            <div className="h-32 w-32 rounded-[3px] border border-black/10 bg-white overflow-hidden flex items-center justify-center">
+            <div className="h-32 w-32 rounded-lg border border-black/10 bg-white overflow-hidden flex items-center justify-center">
               {value.trim() ? (
                 <img src={value.trim()} alt="Logo preview" className="h-full w-full object-contain" />
               ) : (
-                <div className="h-full w-full bg-[#fcfbf9] flex items-center justify-center text-[11px] text-black/40">
+                <div className="h-full w-full bg-[#fcfbf9] flex items-center justify-center text-[12px] text-black/40">
                   No image
                 </div>
               )}
             </div>
           </div>
           <label className="grid gap-1.5">
-            <span className="text-[12px] font-semibold text-black/55">Image URL</span>
+            <span className="text-[13px] font-medium text-black/55">Image URL</span>
             <input
-              className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]"
+              className="h-11 w-full rounded-lg border border-black/10 px-3 text-[14px]"
               value={value}
               onChange={(e) => setValue(e.target.value)}
               placeholder="https://..."
               autoFocus
             />
           </label>
-          <div className="flex justify-end gap-2 pt-2">
+          <div className="flex justify-end gap-3 pt-2">
             <button
               type="button"
               onClick={() => {
                 setValue(url);
                 onCancel();
               }}
-              className="h-9 px-4 rounded-[3px] border border-black/10 bg-white text-[13px] font-semibold text-black/70 hover:bg-black/5 transition-colors"
+              className="h-10 px-4 rounded-lg border border-black/10 bg-white text-[13px] font-medium text-black/70 hover:bg-black/5 transition-colors"
             >
               Cancel
             </button>
@@ -788,7 +859,10 @@ function LogoModal({
               type="button"
               onClick={() => onSave(value.trim())}
               disabled={!value.trim()}
-              className="h-9 px-4 rounded-[3px] bg-[#a67c52] text-white text-[13px] font-semibold hover:bg-[#8e6a46] transition-colors disabled:opacity-60"
+              className="h-10 px-4 rounded-lg text-white text-[13px] font-medium transition-colors disabled:opacity-60"
+              style={{ backgroundColor: 'var(--muted-brown)' }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--muted-brown-hover)'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--muted-brown)'}
             >
               Save
             </button>
@@ -817,10 +891,10 @@ function Field({
   return (
     <div id={id} className="grid gap-1.5">
       <div className="flex items-center gap-2">
-        <div className="text-[12px] font-semibold text-black/60">{label}</div>
-        {required ? <div className="text-[11px] font-semibold text-[#6e4f33]">Required</div> : null}
+        <div className="text-[13px] font-medium text-black/60">{label}</div>
+        {required ? <div className="text-[11px] font-medium text-[#a68b6a]">Required</div> : null}
         {badge ? (
-          <div className="inline-flex items-center rounded-[999px] border border-[#a67c52]/35 bg-[#fffaf5] px-2 py-0.5 text-[11px] font-semibold text-[#6e4f33]">
+          <div className="inline-flex items-center rounded-full border border-[#a68b6a]/30 bg-[#fffaf5] px-2 py-0.5 text-[11px] font-medium text-[#8e6a46]">
             {badge}
           </div>
         ) : null}

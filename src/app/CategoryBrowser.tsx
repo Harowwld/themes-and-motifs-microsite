@@ -118,12 +118,16 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
                 href={`/vendors?category=${encodeURIComponent(c.slug)}`}
                 onClick={(e) => {
                   e.preventDefault();
-                  router.push(`/vendors?category=${encodeURIComponent(c.slug)}`, { scroll: false });
+                  if (isActive) {
+                    router.push("/vendors", { scroll: false });
+                  } else {
+                    router.push(`/vendors?category=${encodeURIComponent(c.slug)}`, { scroll: false });
+                  }
                 }}
-                onMouseEnter={() => prefetchCategory(c.slug)}
+                onMouseEnter={() => !isActive && prefetchCategory(c.slug)}
                 className={
                   isActive
-                    ? "group rounded-lg bg-gray-50 shadow-sm hover:shadow-md transition-all px-3 py-3 text-center min-h-24"
+                    ? "group rounded-lg bg-[#a68b6a]/10 shadow-sm transition-all px-3 py-3 text-center min-h-24"
                     : "group rounded-lg bg-white shadow-sm hover:shadow-md transition-all px-3 py-3 text-center min-h-24"
                 }
                 aria-label={`Browse ${c.name}`}
@@ -169,12 +173,16 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
                   href={`/vendors?category=${encodeURIComponent(c.slug)}`}
                   onClick={(e) => {
                     e.preventDefault();
-                    router.push(`/vendors?category=${encodeURIComponent(c.slug)}`, { scroll: false });
+                    if (isActive) {
+                      router.push("/vendors", { scroll: false });
+                    } else {
+                      router.push(`/vendors?category=${encodeURIComponent(c.slug)}`, { scroll: false });
+                    }
                   }}
-                  onMouseEnter={() => prefetchCategory(c.slug)}
+                  onMouseEnter={() => !isActive && prefetchCategory(c.slug)}
                   className={
                     isActive
-                      ? "group shrink-0 rounded-lg bg-gray-50 shadow-sm hover:shadow-md transition-all px-3 py-3 text-center w-45 min-h-24"
+                      ? "group shrink-0 rounded-lg bg-[#a68b6a]/10 shadow-sm transition-all px-3 py-3 text-center w-45 min-h-24"
                       : "group shrink-0 rounded-lg bg-white shadow-sm hover:shadow-md transition-all px-3 py-3 text-center w-45 min-h-24"
                   }
                   aria-label={`Browse ${c.name}`}
@@ -206,9 +214,6 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
           </div>
         )}
 
-        <div className="mt-3 text-[12px] text-gray-400">
-          Tip: set a category first, then refine by location.
-        </div>
       </div>
     </section>
   );

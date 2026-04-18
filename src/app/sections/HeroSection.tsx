@@ -227,13 +227,13 @@ export default function HeroSection({
             style={{ backgroundColor: 'var(--muted-brown)' }}
             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--muted-brown-hover)'}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--muted-brown)'}
-            href="#discover"
+            href="/vendors"
           >
             Discover vendors
           </a>
           <a
             className="h-11 inline-flex items-center justify-center px-5 rounded-md border border-white/30 bg-white/10 backdrop-blur-sm text-white text-[14px] font-medium hover:bg-white/20 transition-colors"
-            href="#for-vendors"
+            href="/vendors/plans"
           >
             Become a vendor
           </a>

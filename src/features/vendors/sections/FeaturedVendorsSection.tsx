@@ -24,7 +24,7 @@ function proxiedImageUrl(url: string | null | undefined) {
 
 export default function FeaturedVendorsSection({ vendors }: { vendors: FeaturedVendor[] }) {
   return (
-    <section id="featured" className="mt-12 sm:mt-16">
+    <section id="featured" className="mt-12 sm:mt-16 scroll-mt-20">
       <div className="text-center">
         <h2 className="text-[18px] sm:text-[20px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">
           Featured vendors

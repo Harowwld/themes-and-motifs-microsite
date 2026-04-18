@@ -57,7 +57,7 @@ type Category = {
   display_order: number | null;
 };
 
-type SortKey = "alpha" | "rating";
+type SortKey = "alpha" | "rating" | "photos" | "newest";
 
 function isPromoCurrentlyValid(promo: FeaturedPromo) {
   const now = new Date();
@@ -251,8 +251,7 @@ async function LandingFeaturedData() {
       )
       .eq("is_active", true)
       .eq("is_featured", true)
-      .order("average_rating", { ascending: false })
-      .limit(6),
+      .limit(20),
     supabase
       .from("promos")
       .select(
@@ -260,12 +259,20 @@ async function LandingFeaturedData() {
       )
       .eq("is_active", true)
       .eq("is_featured", true)
-      .order("updated_at", { ascending: false })
-      .limit(24),
+      .limit(20),
   ]);
 
-  const vendors = (featuredVendors ?? []) as FeaturedVendor[];
-  const promos = ((featuredPromos ?? []) as FeaturedPromo[]).filter(isPromoCurrentlyValid).slice(0, 4);
+  function shuffle<T>(arr: T[]): T[] {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  const vendors = shuffle((featuredVendors ?? []) as FeaturedVendor[]).slice(0, 6);
+  const promos = shuffle((featuredPromos ?? []) as FeaturedPromo[]).filter(isPromoCurrentlyValid).slice(0, 4);
 
   const featuredWithCovers = await attachCoverImages(supabase, vendors);
   const featuredSorted = sortWithImagesFirst(featuredWithCovers as any);
@@ -299,6 +306,12 @@ async function LandingVendorsData({ page, pageSize, sort }: { page: number; page
 
   if (sort === "alpha") {
     q = q.order("business_name", { ascending: true }).order("id", { ascending: true });
+  } else if (sort === "photos") {
+    const { data: vendorIdsWithCover } = await supabase.from("vendor_images").select("vendor_id").eq("is_cover", true);
+    const idsWithCover = (vendorIdsWithCover ?? []).map((r) => r.vendor_id);
+    q = q.in("id", idsWithCover).order("business_name", { ascending: true }).order("id", { ascending: true });
+  } else if (sort === "newest") {
+    q = q.order("created_at", { ascending: false }).order("id", { ascending: true });
   } else {
     q = q
       .order("average_rating", { ascending: false, nullsFirst: false })
@@ -332,9 +345,9 @@ export default async function LandingPage({
 
   const pageSize = 9;
   const rawPage = (resolvedSearchParams.vendorsPage as string | undefined) ?? "1";
-  const rawSort = (resolvedSearchParams.vendorsSort as string | undefined) ?? "rating";
+  const rawSort = (resolvedSearchParams.vendorsSort as string | undefined) ?? "photos";
   const page = Math.max(1, Number(rawPage) || 1);
-  const sort: SortKey = rawSort === "alpha" ? "alpha" : "rating";
+  const sort: SortKey = rawSort === "alpha" ? "alpha" : rawSort === "photos" ? "photos" : rawSort === "newest" ? "newest" : "rating";
 
 
   return (

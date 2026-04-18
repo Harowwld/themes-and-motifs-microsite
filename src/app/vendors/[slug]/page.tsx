@@ -6,6 +6,7 @@ import SiteFooter from "../../sections/SiteFooter";
 import { createSupabaseServerClient } from "../../../lib/supabaseServer";
 import VendorPhotosCarousel from "../../../features/vendors/components/VendorPhotosCarousel";
 import ContactVendorForm from "../../../features/vendors/components/ContactVendorForm";
+import SaveVendorButton from "../../../features/vendors/components/SaveVendorButton";
 import ClaimVendorButton from "../../../features/vendors/components/ClaimVendorButton";
 import VendorReviewForm from "./VendorReviewForm";
 import FadeInOnView from "../../components/FadeInOnView";
@@ -27,6 +28,7 @@ type VendorRow = {
   sec_dti_number: string | null;
   average_rating: number | null;
   review_count: number | null;
+  save_count: number | null;
   verified_status: string | null;
   user_id: string | null;
   updated_at: string;
@@ -113,8 +115,8 @@ function isPromoCurrentlyValid(promo: Pick<PromoRow, "valid_from" | "valid_to">)
 function VendorDetailSkeleton() {
   return (
     <main className="py-10 sm:py-14">
-      <section className="rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden">
-        <div className="h-32 sm:h-40 bg-black/10 animate-pulse" />
+      <section className="rounded-xl border border-black/6 bg-[#fcfbf9] shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] overflow-hidden">
+        <div className="h-56 sm:h-72 bg-gradient-to-br from-[#a68b6a]/20 to-[#a68b6a]/5 animate-pulse" />
         <div className="p-6">
           <div className="h-4 w-40 rounded bg-black/10 animate-pulse" />
           <div className="mt-3 h-8 w-2/3 rounded bg-black/10 animate-pulse" />
@@ -125,12 +127,12 @@ function VendorDetailSkeleton() {
           </div>
           <div className="mt-5 flex flex-wrap gap-2">
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="h-7 w-24 rounded-[999px] bg-black/10 animate-pulse" />
+              <div key={i} className="h-7 w-24 rounded-full bg-black/10 animate-pulse" />
             ))}
           </div>
           <div className="mt-4 flex flex-wrap gap-3">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="h-9 w-9 rounded bg-black/10 animate-pulse" />
+              <div key={i} className="h-9 w-9 rounded-lg bg-black/10 animate-pulse" />
             ))}
           </div>
         </div>
@@ -141,7 +143,7 @@ function VendorDetailSkeleton() {
         <div className="mt-2 h-4 w-72 rounded bg-black/10 animate-pulse" />
         <div className="mt-4 grid gap-4">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="rounded-[3px] border border-black/10 bg-white shadow-sm p-5">
+            <div key={i} className="rounded-xl border border-black/6 bg-[#fcfbf9] shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] p-5">
               <div className="h-4 w-40 rounded bg-black/10 animate-pulse" />
               <div className="mt-3 h-4 w-full rounded bg-black/10 animate-pulse" />
               <div className="mt-2 h-4 w-10/12 rounded bg-black/10 animate-pulse" />
@@ -159,7 +161,7 @@ async function VendorDetailData({ slug }: { slug: string }) {
   const { data: vendor } = await supabase
     .from("vendors")
     .select(
-      "id,business_name,slug,logo_url,description,location_text,city,address,website_url,contact_email,contact_phone,sec_dti_number,average_rating,review_count,verified_status,user_id,updated_at,plan:plans(id,name)"
+      "id,business_name,slug,logo_url,description,location_text,city,address,website_url,contact_email,contact_phone,sec_dti_number,average_rating,review_count,save_count,verified_status,user_id,updated_at,plan:plans(id,name)"
     )
     .eq("slug", slug)
     .eq("is_active", true)
@@ -275,11 +277,11 @@ async function VendorDetailData({ slug }: { slug: string }) {
       <FadeInOnView>
         <section className="relative">
           <div
-            className="h-48 sm:h-64 w-full"
+            className="h-56 sm:h-72 w-full shadow-[0_4px_12px_rgba(0,0,0,0.08)]"
             style={{
               background: cover
-                ? `linear-gradient(135deg, rgba(166,124,82,0.15), rgba(255,255,255,0.85)), url(${coverUrl}) center/cover no-repeat`
-                : "linear-gradient(135deg, rgba(166,124,82,0.18), rgba(255,255,255,0.9))",
+                ? `linear-gradient(135deg, rgba(166,139,106,0.2), rgba(255,255,255,0.9)), url(${coverUrl}) center/cover no-repeat`
+                : "linear-gradient(135deg, rgba(166,139,106,0.2), rgba(255,255,255,0.9))",
             }}
           />
         </section>
@@ -287,11 +289,11 @@ async function VendorDetailData({ slug }: { slug: string }) {
 
       {/* Profile Header */}
       <FadeInOnView>
-        <section className="relative -mt-16 sm:-mt-20 px-4 sm:px-6">
+        <section className="relative -mt-20 sm:-mt-24 px-4 sm:px-6">
           <div className="mx-auto max-w-4xl">
             <div className="flex items-end gap-4">
               {/* Logo */}
-              <div className="h-24 w-24 sm:h-32 sm:w-32 rounded-[3px] border-4 border-white bg-white shadow-lg overflow-hidden flex items-center justify-center shrink-0">
+              <div className="h-28 w-28 sm:h-36 sm:w-36 rounded-2xl border-4 border-white bg-white shadow-[0_4px_12px_rgba(0,0,0,0.1)] overflow-hidden flex items-center justify-center shrink-0 -mb-2">
                 {logoUrl || vendor.logo_url ? (
                   <img
                     src={logoUrl ?? vendor.logo_url ?? ""}
@@ -301,36 +303,24 @@ async function VendorDetailData({ slug }: { slug: string }) {
                     referrerPolicy="no-referrer"
                   />
                 ) : (
-                  <div className="h-full w-full bg-[#fcfbf9] flex items-center justify-center text-[24px] font-bold text-[#a67c52]">
+                  <div className="h-full w-full bg-[#fcfbf9] flex items-center justify-center text-[28px] font-bold text-[#a68b6a]">
                     {vendor.business_name.charAt(0).toUpperCase()}
                   </div>
                 )}
               </div>
 
               {/* Action Buttons */}
-              <div className="flex-1 flex items-center justify-end gap-2 pb-2">
-                {vendor.website_url && isPremium ? (
-                    <a
-                      className="hidden sm:inline-flex h-9 items-center gap-2 rounded-[3px] bg-[#a67c52] px-4 text-[13px] font-semibold text-white hover:bg-[#8e6a46] transition-colors"
-                      href={withProtocol(vendor.website_url)}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      <GlobeIcon className="h-4 w-4" />
-                      Website
-                    </a>
-                ) : null}
-              </div>
+              <div className="flex-1 flex items-center justify-end gap-2 pb-2" />
             </div>
 
             {/* Business Info */}
-            <div className="mt-4">
-              <h1 className="text-[24px] sm:text-[32px] font-bold tracking-[-0.02em] text-[#2c2c2c]">
+            <div className="mt-5">
+              <h1 className="font-serif text-[26px] sm:text-[34px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">
                 <span className="inline-flex items-center gap-2">
                   <span>{vendor.business_name}</span>
                   {isPremium ? (
                     <span
-                      className="inline-flex items-center justify-center h-4.5 w-4.5"
+                      className="inline-flex items-center justify-center h-5 w-5"
                       title="Verified Premium Vendor"
                       aria-label="Verified Premium Vendor"
                     >
@@ -347,27 +337,30 @@ async function VendorDetailData({ slug }: { slug: string }) {
                 </span>
               </h1>
 
-              <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[14px] text-black/55">
+              <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1 text-[14px] text-black/55">
                 {location ? (
-                  <span className="flex items-center gap-1">
+                  <span className="flex items-center gap-1.5">
                     <MapPinIcon className="h-4 w-4" />
                     {location}
                   </span>
                 ) : null}
                 <span className="flex items-center gap-1">
-                  <StarIcon className="h-4 w-4 text-[#a67c52]" />
-                  <span className="font-semibold text-[#a67c52]">{(vendor.average_rating ?? 0).toFixed(1)}</span>
+                  <StarIcon className="h-4 w-4 text-[#a68b6a]" />
+                  <span className="font-semibold text-[#a68b6a]">{(vendor.average_rating ?? 0).toFixed(1)}</span>
                   <span>· {vendor.review_count ?? 0} reviews</span>
+                  {vendor.save_count && vendor.save_count > 0 ? (
+                    <span className="text-black/40">· {vendor.save_count} saved</span>
+                  ) : null}
                 </span>
               </div>
 
               {/* Category Pills */}
               {categories.length > 0 ? (
-                <div className="mt-4 flex flex-wrap gap-2">
+                <div className="mt-5 flex flex-wrap gap-2">
                   {categories.map((c) => (
                     <a
                       key={c.id}
-                      className="inline-flex items-center rounded-[999px] border border-[#a67c52]/30 bg-white px-3 py-1.5 text-[12px] font-semibold text-[#6e4f33] hover:bg-[#fffaf5] transition-colors shadow-sm"
+                      className="inline-flex items-center rounded-full border border-[#a68b6a]/25 bg-white px-3.5 py-1.5 text-[12px] font-medium text-[#6e4f33] hover:bg-[#fffaf5] transition-all duration-300 shadow-sm hover:shadow-md"
                       href={`/vendors?category=${encodeURIComponent(c.slug)}`}
                     >
                       {c.name}
@@ -388,8 +381,8 @@ async function VendorDetailData({ slug }: { slug: string }) {
             <div className="grid gap-6">
               {/* About */}
               {vendor.description ? (
-                <div className="rounded-[3px] border border-black/10 bg-white p-5 shadow-sm">
-                  <h2 className="text-[16px] font-semibold text-[#2c2c2c]">About</h2>
+                <div className="rounded-xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)]">
+                  <h2 className="font-serif text-[18px] font-semibold text-[#2c2c2c]">About</h2>
                   <p className="mt-3 text-[14px] leading-7 text-black/65 whitespace-pre-line">
                     {vendor.description}
                   </p>
@@ -398,15 +391,15 @@ async function VendorDetailData({ slug }: { slug: string }) {
 
               {/* Photos - no label, carousel has its own */}
               {images.length > 0 ? (
-                <div className="rounded-[3px] border border-black/10 bg-white p-5 shadow-sm">
+                <div className="rounded-xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)]">
                   <VendorPhotosCarousel images={images} />
                 </div>
               ) : null}
 
               {/* Exclusive Deals / Marketplace */}
               {promos.length > 0 ? (
-                <div className="rounded-[3px] border border-black/10 bg-white p-5 shadow-sm">
-                  <h2 className="text-[16px] font-semibold text-[#2c2c2c]">Exclusive Deals</h2>
+                <div className="rounded-xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)]">
+                  <h2 className="font-serif text-[18px] font-semibold text-[#2c2c2c]">Exclusive Deals</h2>
                   <p className="mt-1 text-[13px] text-black/55">Promos and marketplace deals from this vendor.</p>
                   <div className="mt-4 grid gap-3">
                     {promos.map((p) => (
@@ -487,13 +480,13 @@ async function VendorDetailData({ slug }: { slug: string }) {
               ) : null}
 
               {/* Reviews */}
-              <div className="rounded-[3px] border border-black/10 bg-white p-5 shadow-sm">
+              <div className="rounded-xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)]">
                 <div className="flex items-center justify-between gap-4">
                   <div>
-                    <h2 className="text-[16px] font-semibold text-[#2c2c2c]">Reviews</h2>
+                    <h2 className="font-serif text-[18px] font-semibold text-[#2c2c2c]">Reviews</h2>
                     <p className="mt-1 text-[13px] text-black/55">Recent feedback from couples</p>
                   </div>
-                  <div className="flex items-center gap-1 text-[20px] font-bold text-[#a67c52]">
+                  <div className="flex items-center gap-1 text-[20px] font-bold text-[#a68b6a]">
                     <StarIcon className="h-5 w-5" />
                     {(vendor.average_rating ?? 0).toFixed(1)}
                   </div>
@@ -502,23 +495,23 @@ async function VendorDetailData({ slug }: { slug: string }) {
                 <div className="mt-5 grid gap-4">
                   <VendorReviewForm vendorId={vendor.id} vendorSlug={vendor.slug} />
                   {reviews.length === 0 ? (
-                    <div className="rounded-[3px] border border-black/5 bg-[#fcfbf9] p-6 text-center">
+                    <div className="rounded-lg border border-black/5 bg-white p-6 text-center">
                       <div className="text-[14px] font-semibold text-[#2c2c2c]">No reviews yet</div>
                       <div className="mt-1 text-[13px] text-black/55">Be the first to review this vendor.</div>
                     </div>
                   ) : (
                     reviews.map((r) => (
-                      <div key={r.id} className="rounded-[3px] border border-black/5 bg-[#fcfbf9] p-4">
+                      <div key={r.id} className="rounded-lg border border-black/5 bg-white p-4 hover:shadow-md transition-shadow duration-300">
                         <div className="flex items-center justify-between gap-4">
                           <div className="flex items-center gap-2">
-                            <div className="h-8 w-8 rounded-full bg-[#a67c52]/10 flex items-center justify-center">
-                              <UserIcon className="h-4 w-4 text-[#a67c52]" />
+                            <div className="h-8 w-8 rounded-full bg-[#a68b6a]/10 flex items-center justify-center">
+                              <UserIcon className="h-4 w-4 text-[#a68b6a]" />
                             </div>
                             <span className="text-[13px] font-semibold text-black/70">
                               {r.users?.[0]?.email ? maskEmail(r.users[0].email) : "Verified couple"}
                             </span>
                           </div>
-                          <div className="flex items-center gap-1 text-[13px] font-semibold text-[#a67c52]">
+                          <div className="flex items-center gap-1 text-[13px] font-semibold text-[#a68b6a]">
                             <StarIcon className="h-3.5 w-3.5" />
                             {r.rating}
                           </div>
@@ -534,16 +527,21 @@ async function VendorDetailData({ slug }: { slug: string }) {
             {/* Sidebar */}
             <div className="grid gap-4 content-start">
               {/* Contact Card */}
-              <div className="rounded-[3px] border border-black/10 bg-white p-5 shadow-sm">
+              <div className="rounded-xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)]">
                 <h3 className="text-[14px] font-semibold text-[#2c2c2c]">Contact Information</h3>
                 
                 {/* Quick Action Buttons */}
                 <div className="mt-4 flex gap-2">
+                  <SaveVendorButton 
+                    vendorId={vendor.id} 
+                    vendorSlug={vendor.slug}
+                    className="h-10 w-10"
+                  />
                   {vendor.contact_email ? (
                     <ContactVendorForm 
                       vendorId={vendor.id} 
                       vendorName={vendor.business_name}
-                      className="inline-flex h-10 w-10 items-center justify-center rounded-[3px] bg-[#a67c52] text-white hover:bg-[#8e6a46] transition-colors"
+                      className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-[#a68b6a] text-white hover:bg-[#957a5c] transition-all duration-300"
                     >
                       <MailIcon className="h-4 w-4" />
                     </ContactVendorForm>
@@ -583,13 +581,13 @@ async function VendorDetailData({ slug }: { slug: string }) {
 
               {/* Social Links */}
               {socials.length > 0 ? (
-                <div className="rounded-[3px] border border-black/10 bg-white p-5 shadow-sm">
+                <div className="rounded-xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)]">
                   <h3 className="text-[14px] font-semibold text-[#2c2c2c]">Social Media</h3>
                   <div className="mt-4 flex flex-wrap gap-2">
                     {socials.map((s) => (
                       <a
                         key={s.id}
-                        className="inline-flex h-10 w-10 items-center justify-center rounded-[3px] border border-black/10 bg-[#fcfbf9] text-[#6e4f33] hover:bg-[#a67c52] hover:text-white hover:border-[#a67c52] transition-colors"
+                        className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-black/10 bg-[#fcfbf9] text-[#6e4f33] hover:bg-[#a68b6a] hover:text-white hover:border-[#a68b6a] transition-all duration-300"
                         href={withProtocol(s.url)}
                         target="_blank"
                         rel="noreferrer"
@@ -605,7 +603,7 @@ async function VendorDetailData({ slug }: { slug: string }) {
               ) : null}
 
               {/* Business Verification */}
-              <div className="rounded-[3px] border border-black/10 bg-white p-5 shadow-sm">
+              <div className="rounded-xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)]">
                 <h3 className="text-[14px] font-semibold text-[#2c2c2c]">Business Verification</h3>
                 <div className="mt-4 grid gap-2 text-[13px] text-black/65">
                   <div className="flex items-center justify-between gap-3">
@@ -631,7 +629,7 @@ async function VendorDetailData({ slug }: { slug: string }) {
 
               {/* Claim Button for unclaimed vendors */}
               {!vendor.user_id && (
-                <div className="rounded-[3px] border border-[#a67c52]/30 bg-[#a67c52]/5 p-5 shadow-sm">
+                <div className="rounded-xl border border-[#a68b6a]/30 bg-[#a68b6a]/5 p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)]">
                   <h3 className="text-[14px] font-semibold text-[#2c2c2c]">Are you the owner?</h3>
                   <p className="mt-2 text-xs text-black/60">
                     Claim this vendor listing to manage your business profile.
@@ -644,11 +642,11 @@ async function VendorDetailData({ slug }: { slug: string }) {
 
               {/* Affiliations */}
               {affiliations.length > 0 ? (
-                <div className="rounded-[3px] border border-black/10 bg-white p-5 shadow-sm">
+                <div className="rounded-xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)]">
                   <h3 className="text-[14px] font-semibold text-[#2c2c2c]">Affiliations</h3>
                   <div className="mt-3 flex flex-wrap gap-2">
                     {affiliations.map((a) => (
-                      <span key={a.id} className="inline-flex items-center rounded-[3px] bg-[#fcfbf9] px-2.5 py-1 text-[12px] text-black/60">
+                      <span key={a.id} className="inline-flex items-center rounded-lg bg-white px-2.5 py-1 text-[12px] text-black/60">
                         {a.name}
                       </span>
                     ))}

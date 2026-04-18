@@ -137,10 +137,10 @@ export default function SiteHeader() {
         <nav className="hidden sm:flex items-center gap-8 text-[13px] font-medium text-gray-500">
           <a
             className="hover:text-[#a68b6a] transition-colors"
-            href="/#discover"
+            href="/vendors"
             onClick={(e) => {
               e.preventDefault();
-              goToHomeSection("discover");
+              router.push("/vendors");
             }}
           >
             Discover

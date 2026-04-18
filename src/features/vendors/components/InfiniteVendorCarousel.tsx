@@ -73,11 +73,15 @@ function VendorCard({
         )}
       </div>
 
-      <div className="absolute bottom-3 left-3 z-20 w-[60%]">
-        <div className="backdrop-blur-md bg-white/75 border border-white/40 rounded-[6px] p-3 shadow-lg">
-          <div className="flex items-center gap-2">
+      <div className="absolute inset-x-0 bottom-0 z-20 h-[38%]">
+        <div 
+          className="absolute inset-0 bg-white/70 backdrop-blur-md border-t border-white/40"
+          style={{ clipPath: "polygon(0 15%, 100% 0, 100% 100%, 0 100%)" }}
+        />
+        <div className="absolute inset-x-0 bottom-0 px-4 pb-4">
+          <div className="flex items-center gap-3">
             {logoUrl && (
-              <div className="h-8 w-8 rounded-md overflow-hidden bg-white shrink-0">
+              <div className="h-14 w-14 rounded-md overflow-hidden bg-white shrink-0 shadow-sm">
                 <img
                   src={logoUrl}
                   alt={`${vendor.business_name} logo`}
@@ -90,10 +94,10 @@ function VendorCard({
               </div>
             )}
             <div className="min-w-0">
-              <div className="text-[10px] font-semibold text-[#a68b6a] uppercase tracking-wide truncate">
+              <div className="text-[16px] font-semibold text-[#a68b6a] uppercase tracking-wide truncate">
                 {vendor.business_name}
               </div>
-              <div className="flex items-center gap-1 text-[10px] text-neutral-600">
+              <div className="flex items-center gap-1 text-[15px] text-neutral-600 mt-0.5">
                 <span className="font-semibold text-[#a68b6a]">{rating.toFixed(1)}</span>
                 <span className="text-neutral-300">·</span>
                 <span>{reviews} reviews</span>

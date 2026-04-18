@@ -21,7 +21,7 @@ function VendorCardSkeleton() {
   );
 }
 
-type SortKey = "alpha" | "rating" | "newest" | "saves" | "views";
+type SortKey = "alpha" | "rating" | "newest" | "saves" | "views" | "photos";
 
 type VendorsSectionProps = {
   vendors: VendorListItem[];
@@ -51,7 +51,7 @@ function makeHref({
     }
   }
   if (page > 1) params.set("vendorsPage", String(page));
-  if (sort !== "rating") params.set("vendorsSort", sort);
+  params.set("vendorsSort", sort);
   const qs = params.toString();
   return `${basePath ?? ""}${qs ? `?${qs}` : "?"}`;
 }
@@ -89,22 +89,26 @@ export default function VendorsSection({
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <div className="text-[12px] font-semibold text-black/45">Sort</div>
-          <select
-            value={sort}
-            onChange={(e) => {
-              navigate(makeHref({ page: 1, sort: e.target.value as SortKey, basePath, extraParams }));
-            }}
-            className="h-9 rounded-[3px] border border-black/10 bg-white px-2 text-[13px] font-semibold text-black/70 outline-none focus:border-[#a68b6a]/50 focus:ring-2 focus:ring-[#a68b6a]/15"
-            aria-label="Sort vendors"
-          >
-            <option value="rating">Top rated</option>
-            <option value="alpha">A–Z</option>
-            <option value="newest">Newest</option>
-            <option value="saves">Most saved</option>
-            <option value="views">Most viewed</option>
-          </select>
+        <div className="flex items-center gap-1 p-1 bg-white rounded-lg border border-black/10 shadow-sm">
+          {([
+            { value: "rating", label: "Top rated" },
+            { value: "alpha", label: "A-Z" },
+            { value: "photos", label: "With photos" },
+            { value: "newest", label: "Newest" },
+          ] as const).map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => navigate(makeHref({ page: 1, sort: option.value as SortKey, basePath, extraParams }))}
+              className={`px-3 py-1.5 rounded-md text-[12px] font-semibold transition-all ${
+                sort === option.value
+                  ? "bg-[#a68b6a] text-white shadow-sm"
+                  : "text-black/60 hover:text-black/80 hover:bg-black/[0.02]"
+              }`}
+            >
+              {option.label}
+            </button>
+          ))}
         </div>
       </div>
 
