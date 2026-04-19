@@ -2,7 +2,7 @@
 trigger: always_on
 ---
 # UI/UX Guidelines
-
+Please Update this Rule everytime you've been asked to change anything frontend
 ## Color Scheme
 
 ### Primary Color Palette
