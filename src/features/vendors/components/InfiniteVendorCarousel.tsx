@@ -3,6 +3,17 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import type { FeaturedVendor } from "../types";
 
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 640);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+  return isMobile;
+}
+
 function clampPct(v: number) {
   if (!Number.isFinite(v)) return 50;
   return Math.max(0, Math.min(100, v));
@@ -73,15 +84,15 @@ function VendorCard({
         )}
       </div>
 
-      <div className="absolute inset-x-0 bottom-0 z-20 h-[38%]">
-        <div 
+      <div className="absolute inset-x-0 bottom-0 z-20 h-[42%] sm:h-[38%]">
+        <div
           className="absolute inset-0 bg-white/70 backdrop-blur-md border-t border-white/40"
-          style={{ clipPath: "polygon(0 15%, 100% 0, 100% 100%, 0 100%)" }}
+          style={{ clipPath: "polygon(0 12%, 100% 0, 100% 100%, 0 100%)" }}
         />
-        <div className="absolute inset-x-0 bottom-0 px-4 pb-4">
-          <div className="flex items-center gap-3">
+        <div className="absolute inset-x-0 bottom-0 px-3 sm:px-4 pb-3 sm:pb-4">
+          <div className="flex items-center gap-2 sm:gap-3">
             {logoUrl && (
-              <div className="h-14 w-14 rounded-md overflow-hidden bg-white shrink-0 shadow-sm">
+              <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-md overflow-hidden bg-white shrink-0 shadow-sm">
                 <img
                   src={logoUrl}
                   alt={`${vendor.business_name} logo`}
@@ -94,17 +105,17 @@ function VendorCard({
               </div>
             )}
             <div className="min-w-0">
-              <div className="text-[16px] font-semibold text-[#a68b6a] uppercase tracking-wide truncate">
+              <div className="text-[14px] sm:text-[16px] font-semibold text-[#a68b6a] uppercase tracking-wide truncate font-[family-name:var(--font-plus-jakarta)]">
                 {vendor.business_name}
               </div>
-              <div className="flex items-center gap-1 text-[15px] text-neutral-600 mt-0.5">
+              <div className="flex items-center gap-1 text-[13px] sm:text-[15px] text-neutral-600 mt-0.5 font-[family-name:var(--font-plus-jakarta)]">
                 <span className="font-semibold text-[#a68b6a]">{rating.toFixed(1)}</span>
                 <span className="text-neutral-300">·</span>
-                <span>{reviews} reviews</span>
+                <span className="truncate">{reviews} reviews</span>
                 {location && (
                   <>
-                    <span className="text-neutral-300">·</span>
-                    <span className="truncate">{location}</span>
+                    <span className="text-neutral-300 hidden sm:inline">·</span>
+                    <span className="truncate hidden sm:inline">{location}</span>
                   </>
                 )}
               </div>
@@ -123,10 +134,11 @@ export default function InfiniteVendorCarousel({ vendors }: { vendors: FeaturedV
   const containerRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
+  const isMobile = useIsMobile();
 
   const duplicatedVendors = [...vendors, ...vendors, ...vendors];
-  const cardWidth = 320;
-  const gap = 24;
+  const cardWidth = isMobile ? 280 : 320;
+  const gap = isMobile ? 16 : 24;
 
   const goToSlide = useCallback(
     (index: number, instant = false) => {
@@ -203,7 +215,7 @@ export default function InfiniteVendorCarousel({ vendors }: { vendors: FeaturedV
     >
       <div
         ref={containerRef}
-        className="flex gap-6 cursor-grab active:cursor-grabbing overflow-visible"
+        className="flex gap-4 sm:gap-6 cursor-grab active:cursor-grabbing overflow-visible pl-4 sm:pl-0"
         style={{
           transform: `translateX(-${currentIndex * (cardWidth + gap)}px)`,
           transition: isTransitioning ? "transform 500ms cubic-bezier(0.4, 0, 0.2, 1)" : "none",
@@ -223,7 +235,7 @@ export default function InfiniteVendorCarousel({ vendors }: { vendors: FeaturedV
         ))}
       </div>
 
-      <div className="flex justify-center gap-2 mt-8">
+      <div className="flex justify-center gap-2 mt-6 sm:mt-8">
         {vendors.map((_, i) => {
           const actualIndex = currentIndex % vendors.length;
           const isActive = actualIndex === i;
@@ -231,7 +243,7 @@ export default function InfiniteVendorCarousel({ vendors }: { vendors: FeaturedV
             <button
               key={i}
               onClick={() => handleDotClick(i)}
-              className={`transition-all duration-300 ${
+              className={`transition-all duration-300 min-h-[8px] min-w-[8px] ${
                 isActive
                   ? "w-6 h-2 bg-[#a68b6a] rounded-full"
                   : "w-2 h-2 bg-[#a68b6a]/30 rounded-full hover:bg-[#a68b6a]/50"

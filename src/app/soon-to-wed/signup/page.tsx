@@ -78,8 +78,29 @@ export default function SoonToWedSignupPage() {
       return;
     }
 
+    setSubmitting(true);
+
+    try {
+      const checkRes = await fetch("/api/check-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: e1 }),
+      });
+
+      const checkData = await checkRes.json();
+
+      if (!checkRes.ok) {
+        setError(checkData.error || "Email check failed");
+        setSubmitting(false);
+        return;
+      }
+    } catch (err) {
+      console.error("Email check error:", err);
+    }
+
     if (!bride) {
       setError("Nickname of bride is required.");
+      setSubmitting(false);
       return;
     }
 
@@ -106,12 +127,23 @@ export default function SoonToWedSignupPage() {
     setSubmitting(true);
 
     try {
+      const redirectTo = `${window.location.origin}/soon-to-wed/callback?returnTo=${encodeURIComponent(returnTo)}`;
       const { data: signUpData, error: signUpErr } = await supabase.auth.signUp({
         email: e1,
         password,
+        options: {
+          emailRedirectTo: redirectTo,
+        },
       });
 
-      if (signUpErr) throw signUpErr;
+      if (signUpErr) {
+        if (signUpErr.message.includes("User already registered") || signUpErr.message.includes("already exists")) {
+          setError("An account with this email already exists. Please sign in or use forgot password to reset your account.");
+          setSubmitting(false);
+          return;
+        }
+        throw signUpErr;
+      }
 
       const user = signUpData.session?.user ?? null;
       if (!user) {

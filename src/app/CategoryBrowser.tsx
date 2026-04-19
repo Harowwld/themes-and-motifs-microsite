@@ -87,18 +87,18 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
   }, [categories, expanded]);
 
   return (
-    <section className="mt-10 sm:mt-14">
-      <div className="flex items-end justify-between gap-6">
+    <section className="mt-8 sm:mt-10 lg:mt-14">
+      <div className="flex items-end justify-between gap-4 sm:gap-6">
         <div>
-          <div className="text-[12px] font-medium text-gray-400 uppercase tracking-wider">Browse</div>
-          <h2 className="mt-1 text-[16px] sm:text-[18px] font-medium tracking-[-0.01em] text-gray-900">
+          <div className="text-[11px] sm:text-[12px] font-medium text-gray-400 uppercase tracking-wider font-[family-name:var(--font-plus-jakarta)]">Browse</div>
+          <h2 className="mt-1 text-[15px] sm:text-[16px] lg:text-[18px] font-medium tracking-[-0.01em] text-gray-900">
             Categories
           </h2>
         </div>
         <button
           type="button"
           onClick={() => setExpanded((v) => !v)}
-          className="text-[13px] font-medium text-gray-500 hover:text-gray-900 transition-colors"
+          className="text-[13px] font-medium text-gray-500 hover:text-gray-900 transition-colors touch-manipulation font-[family-name:var(--font-plus-jakarta)]"
         >
           {expanded ? "Collapse" : "See all"}
         </button>
@@ -127,8 +127,8 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
                 onMouseEnter={() => !isActive && prefetchCategory(c.slug)}
                 className={
                   isActive
-                    ? "group rounded-lg bg-[#a68b6a]/10 shadow-sm transition-all px-3 py-3 text-center min-h-24"
-                    : "group rounded-lg bg-white shadow-sm hover:shadow-md transition-all px-3 py-3 text-center min-h-24"
+                    ? "group rounded-lg bg-[#a68b6a]/10 shadow-sm transition-all px-3 py-3 text-center min-h-24 touch-manipulation"
+                    : "group rounded-lg bg-white shadow-sm hover:shadow-md transition-all px-3 py-3 text-center min-h-24 touch-manipulation"
                 }
                 aria-label={`Browse ${c.name}`}
               >
@@ -144,8 +144,8 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
                 <div
                   className={
                     isActive
-                      ? "mt-1 text-[12px] font-medium text-gray-900 whitespace-nowrap overflow-hidden text-ellipsis"
-                      : "mt-1 text-[12px] font-medium text-gray-600 group-hover:text-gray-900 whitespace-nowrap overflow-hidden text-ellipsis"
+                      ? "mt-1 text-[12px] font-medium text-gray-900 whitespace-nowrap overflow-hidden text-ellipsis font-[family-name:var(--font-plus-jakarta)]"
+                      : "mt-1 text-[12px] font-medium text-gray-600 group-hover:text-gray-900 whitespace-nowrap overflow-hidden text-ellipsis font-[family-name:var(--font-plus-jakarta)]"
                   }
                 >
                   {c.name}
@@ -156,13 +156,13 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
             ))}
           </div>
         ) : (
-          <div className="relative">
+          <div className="relative -mx-4 px-4 sm:-mx-0 sm:px-0">
             <div className="pointer-events-none absolute top-0 bottom-3 left-0 w-8 bg-linear-to-r from-[#fcfbf9] to-transparent z-10" />
             <div className="pointer-events-none absolute top-0 bottom-3 right-0 w-8 bg-linear-to-l from-[#fcfbf9] to-transparent z-10" />
 
             <div
               ref={scrollerRef}
-              className="flex gap-3 overflow-x-auto scroll-smooth pb-3 sleek-scrollbar"
+              className="flex gap-3 overflow-x-auto scroll-smooth pb-3 sleek-scrollbar snap-x snap-mandatory"
             >
               {items.map((c) => (
                 (() => {
@@ -182,8 +182,8 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
                   onMouseEnter={() => !isActive && prefetchCategory(c.slug)}
                   className={
                     isActive
-                      ? "group shrink-0 rounded-lg bg-[#a68b6a]/10 shadow-sm transition-all px-3 py-3 text-center w-45 min-h-24"
-                      : "group shrink-0 rounded-lg bg-white shadow-sm hover:shadow-md transition-all px-3 py-3 text-center w-45 min-h-24"
+                      ? "group shrink-0 rounded-lg bg-[#a68b6a]/10 shadow-sm transition-all px-3 py-3 text-center w-[calc(45vw-1rem)] max-w-[180px] min-h-24 snap-start touch-manipulation"
+                      : "group shrink-0 rounded-lg bg-white shadow-sm hover:shadow-md transition-all px-3 py-3 text-center w-[calc(45vw-1rem)] max-w-[180px] min-h-24 snap-start touch-manipulation"
                   }
                   aria-label={`Browse ${c.name}`}
                   title={c.name}
@@ -200,8 +200,8 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
                   <div
                     className={
                       isActive
-                        ? "mt-1 text-[12px] font-medium text-gray-900 whitespace-nowrap overflow-hidden text-ellipsis"
-                        : "mt-1 text-[12px] font-medium text-gray-600 group-hover:text-gray-900 whitespace-nowrap overflow-hidden text-ellipsis"
+                        ? "mt-1 text-[12px] font-medium text-gray-900 whitespace-nowrap overflow-hidden text-ellipsis font-[family-name:var(--font-plus-jakarta)]"
+                        : "mt-1 text-[12px] font-medium text-gray-600 group-hover:text-gray-900 whitespace-nowrap overflow-hidden text-ellipsis font-[family-name:var(--font-plus-jakarta)]"
                     }
                   >
                     {c.name}

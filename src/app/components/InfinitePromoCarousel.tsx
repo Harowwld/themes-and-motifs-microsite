@@ -2,6 +2,17 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 640);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+  return isMobile;
+}
+
 type FeaturedPromo = {
   id: number;
   title: string;
@@ -81,21 +92,21 @@ function PromoCard({
         )}
       </div>
 
-      <div className="absolute bottom-3 left-3 z-20 w-[60%]">
-        <div className="backdrop-blur-md bg-white/75 border border-white/40 rounded-[6px] p-3 shadow-lg">
-          <div className="text-[10px] font-semibold text-[#a68b6a] uppercase tracking-wide truncate">
+      <div className="absolute bottom-2 sm:bottom-3 left-2 sm:left-3 z-20 w-[68%] sm:w-[60%]">
+        <div className="backdrop-blur-md bg-white/75 border border-white/40 rounded-[6px] p-2.5 sm:p-3 shadow-lg">
+          <div className="text-[10px] font-semibold text-[#a68b6a] uppercase tracking-wide truncate font-[family-name:var(--font-plus-jakarta)]">
             {vendorName ? vendorName : "Featured Deal"}
           </div>
-          <div className="mt-1 text-[14px] font-bold text-[#2c2c2c] leading-tight line-clamp-2">
+          <div className="mt-1 text-[13px] sm:text-[14px] font-bold text-[#2c2c2c] leading-tight line-clamp-2 font-[family-name:var(--font-plus-jakarta)]">
             {promo.title}
           </div>
           <div className="mt-2">
             {typeof promo.discount_percentage === "number" ? (
-              <span className="inline-flex items-center rounded-sm bg-[#a68b6a] px-2 py-0.5 text-[11px] font-bold text-white">
+              <span className="inline-flex items-center rounded-sm bg-[#a68b6a] px-2 py-0.5 text-[10px] sm:text-[11px] font-bold text-white font-[family-name:var(--font-plus-jakarta)]">
                 {promo.discount_percentage}% OFF
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-[#a68b6a]">
+              <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-[#a68b6a] font-[family-name:var(--font-plus-jakarta)]">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#a68b6a] animate-pulse" aria-hidden />
                 Limited Time
               </span>
@@ -114,10 +125,11 @@ export default function InfinitePromoCarousel({ promos }: { promos: FeaturedProm
   const containerRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
+  const isMobile = useIsMobile();
 
   const duplicatedPromos = [...promos, ...promos, ...promos];
-  const cardWidth = 320;
-  const gap = 24;
+  const cardWidth = isMobile ? 280 : 320;
+  const gap = isMobile ? 16 : 24;
 
   const goToSlide = useCallback(
     (index: number, instant = false) => {
@@ -194,7 +206,7 @@ export default function InfinitePromoCarousel({ promos }: { promos: FeaturedProm
     >
       <div
         ref={containerRef}
-        className="flex gap-6 cursor-grab active:cursor-grabbing"
+        className="flex gap-4 sm:gap-6 cursor-grab active:cursor-grabbing pl-4 sm:pl-0"
         style={{
           transform: `translateX(-${currentIndex * (cardWidth + gap)}px)`,
           transition: isTransitioning ? "transform 500ms cubic-bezier(0.4, 0, 0.2, 1)" : "none",
@@ -214,7 +226,7 @@ export default function InfinitePromoCarousel({ promos }: { promos: FeaturedProm
         ))}
       </div>
 
-      <div className="flex justify-center gap-2 mt-8">
+      <div className="flex justify-center gap-2 mt-6 sm:mt-8">
         {promos.map((_, i) => {
           const actualIndex = currentIndex % promos.length;
           const isActive = actualIndex === i;
@@ -222,7 +234,7 @@ export default function InfinitePromoCarousel({ promos }: { promos: FeaturedProm
             <button
               key={i}
               onClick={() => handleDotClick(i)}
-              className={`transition-all duration-300 ${
+              className={`transition-all duration-300 min-h-[8px] min-w-[8px] ${
                 isActive
                   ? "w-6 h-2 bg-[#a68b6a] rounded-full"
                   : "w-2 h-2 bg-[#a68b6a]/30 rounded-full hover:bg-[#a68b6a]/50"

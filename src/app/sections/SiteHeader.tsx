@@ -5,6 +5,35 @@ import { usePathname, useRouter } from "next/navigation";
 
 import { createSupabaseBrowserClient } from "../../lib/supabaseBrowser";
 
+function MenuIcon({ open }: { open: boolean }) {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="transition-transform duration-200"
+    >
+      {open ? (
+        <>
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </>
+      ) : (
+        <>
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="18" x2="21" y2="18" />
+        </>
+      )}
+    </svg>
+  );
+}
+
 export default function SiteHeader() {
   const router = useRouter();
   const pathname = usePathname();
@@ -17,6 +46,8 @@ export default function SiteHeader() {
   const [isVendor, setIsVendor] = useState(false);
   const [isSoonToWed, setIsSoonToWed] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -109,13 +140,31 @@ export default function SiteHeader() {
       await supabase.auth.signOut();
     } finally {
       setSigningOut(false);
+      setMobileMenuOpen(false);
       router.push("/", { scroll: false });
     }
   };
 
+  // Close mobile menu on outside click
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const onPointerDown = (e: PointerEvent) => {
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(e.target as Node)) {
+        setMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener("pointerdown", onPointerDown);
+    return () => window.removeEventListener("pointerdown", onPointerDown);
+  }, [mobileMenuOpen]);
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname]);
+
   return (
     <header className="sticky top-0 z-50 inset-x-0 backdrop-blur-md bg-white/90 supports-backdrop-filter:bg-white/90">
-      <div className="mx-auto max-w-6xl h-16 flex items-center justify-between">
+      <div className="mx-auto max-w-6xl h-16 flex items-center justify-between px-4 sm:px-6 lg:px-8">
         <a
           className="flex items-center"
           href="/"
@@ -128,13 +177,13 @@ export default function SiteHeader() {
           <img
             src="https://themesnmotifs.com/wp-content/uploads/elementor/thumbs/T_M-Logo-1-qzxx62xvcaywvxz23bwwe4nm1tu4exw9i42ghzw8g6.png"
             alt="Themes & Motifs"
-            className="h-8 w-auto"
+            className="h-7 sm:h-8 w-auto"
             loading="eager"
             referrerPolicy="no-referrer"
           />
         </a>
 
-        <nav className="hidden sm:flex items-center gap-8 text-[13px] font-medium text-gray-500">
+        <nav className="hidden sm:flex items-center gap-8 text-[13px] font-medium text-gray-500 font-[family-name:var(--font-plus-jakarta)]">
           <a
             className="hover:text-[#a68b6a] transition-colors"
             href="/vendors"
@@ -164,10 +213,11 @@ export default function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
+          {/* Desktop nav items */}
           {isVendor ? (
             <>
               <a
-                className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-md text-[13px] font-medium text-gray-600 hover:text-gray-900 transition-colors"
+                className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-md text-[13px] font-medium text-gray-600 hover:text-gray-900 transition-colors font-[family-name:var(--font-plus-jakarta)]"
                 href="/vendor/dashboard"
                 onClick={(e) => {
                   e.preventDefault();
@@ -180,7 +230,7 @@ export default function SiteHeader() {
                 type="button"
                 disabled={signingOut}
                 onClick={() => void signOut()}
-                className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-md text-[13px] font-medium text-gray-600 hover:text-gray-900 transition-colors disabled:opacity-60"
+                className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-md text-[13px] font-medium text-gray-600 hover:text-gray-900 transition-colors disabled:opacity-60 font-[family-name:var(--font-plus-jakarta)]"
               >
                 {signingOut ? "Signing out…" : "Sign out"}
               </button>
@@ -188,26 +238,51 @@ export default function SiteHeader() {
           ) : null}
 
           {signedIn && isSoonToWed && !isVendor ? (
-            <button
-              type="button"
-              disabled={signingOut}
-              onClick={() => void signOut()}
-              className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-md text-[13px] font-medium text-gray-600 hover:text-gray-900 transition-colors disabled:opacity-60"
-            >
-              {signingOut ? "Signing out…" : "Sign out"}
-            </button>
+            <>
+              <a
+                className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-md text-[13px] font-medium text-gray-600 hover:text-gray-900 transition-colors font-[family-name:var(--font-plus-jakarta)]"
+                href="/dashboard"
+                onClick={(e) => {
+                  e.preventDefault();
+                  router.push("/dashboard", { scroll: false });
+                }}
+              >
+                My Wedding
+              </a>
+              <button
+                type="button"
+                disabled={signingOut}
+                onClick={() => void signOut()}
+                className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-md text-[13px] font-medium text-gray-600 hover:text-gray-900 transition-colors disabled:opacity-60 font-[family-name:var(--font-plus-jakarta)]"
+              >
+                {signingOut ? "Signing out.." : "Sign out"}
+              </button>
+            </>
           ) : null}
 
           {!signedIn ? (
             <a
-              className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-md text-[13px] font-medium text-gray-600 hover:text-gray-900 transition-colors"
+              className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
               href="/soon-to-wed/signin"
             >
               Sign in
             </a>
           ) : null}
+
+          {/* Mobile menu button */}
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen((v) => !v)}
+            className="sm:hidden h-10 w-10 inline-flex items-center justify-center rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={mobileMenuOpen}
+          >
+            <MenuIcon open={mobileMenuOpen} />
+          </button>
+
+          {/* Desktop CTA */}
           <a
-            className="h-9 inline-flex items-center justify-center px-3.5 rounded-md bg-[#a68b6a] text-white text-[13px] font-medium hover:bg-[#957a5c] transition-colors"
+            className="hidden sm:inline-flex h-9 items-center justify-center px-3.5 rounded-md bg-[#a68b6a] text-white text-[13px] font-medium hover:bg-[#957a5c] transition-colors font-[family-name:var(--font-plus-jakarta)]"
             href="/vendors"
             onClick={(e) => {
               e.preventDefault();
@@ -218,6 +293,111 @@ export default function SiteHeader() {
           </a>
         </div>
       </div>
+
+      {/* Mobile Menu */}
+      {mobileMenuOpen && (
+        <div
+          ref={mobileMenuRef}
+          className="sm:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-100 shadow-lg animate-fade-in"
+        >
+          <nav className="px-4 py-4 space-y-1">
+            <a
+              className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
+              href="/vendors"
+              onClick={(e) => {
+                e.preventDefault();
+                router.push("/vendors");
+              }}
+            >
+              Discover
+            </a>
+            <a
+              className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
+              href="/#featured"
+              onClick={(e) => {
+                e.preventDefault();
+                goToHomeSection("featured");
+              }}
+            >
+              Featured
+            </a>
+            <a
+              className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
+              href="/vendors/plans"
+            >
+              For vendors
+            </a>
+
+            <div className="border-t border-gray-100 my-2" />
+
+            {isVendor ? (
+              <>
+                <a
+                  className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
+                  href="/vendor/dashboard"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    router.push("/vendor/dashboard", { scroll: false });
+                  }}
+                >
+                  Dashboard
+                </a>
+                <button
+                  type="button"
+                  disabled={signingOut}
+                  onClick={() => void signOut()}
+                  className="w-full flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors disabled:opacity-60 text-left"
+                >
+                  {signingOut ? "Signing out…" : "Sign out"}
+                </button>
+              </>
+            ) : null}
+
+            {signedIn && isSoonToWed && !isVendor ? (
+              <>
+                <a
+                  className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
+                  href="/dashboard"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    router.push("/dashboard", { scroll: false });
+                  }}
+                >
+                  My Wedding
+                </a>
+                <button
+                  type="button"
+                  disabled={signingOut}
+                  onClick={() => void signOut()}
+                  className="w-full flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors disabled:opacity-60 text-left"
+                >
+                  {signingOut ? "Signing out…" : "Sign out"}
+                </button>
+              </>
+            ) : null}
+
+            {!signedIn ? (
+              <a
+                className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
+                href="/soon-to-wed/signin"
+              >
+                Sign in
+              </a>
+            ) : null}
+
+            <a
+              className="flex items-center justify-center mt-3 px-3 py-3 rounded-md bg-[#a68b6a] text-white text-[14px] font-medium hover:bg-[#957a5c] transition-colors"
+              href="/vendors"
+              onClick={(e) => {
+                e.preventDefault();
+                router.push("/vendors");
+              }}
+            >
+              Start searching
+            </a>
+          </nav>
+        </div>
+      )}
     </header>
   );
 }

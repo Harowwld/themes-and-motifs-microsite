@@ -84,7 +84,7 @@ export default function VendorsSection({
           <h2 className="text-[18px] sm:text-[20px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">
             Vendors
           </h2>
-          <p className="mt-1 text-[13px] text-black/55 max-w-xl">
+          <p className="mt-1 text-[13px] text-black/55 max-w-xl font-[family-name:var(--font-plus-jakarta)]">
             Browse suppliers—sort by name or ratings, then page through the list.
           </p>
         </div>
@@ -100,7 +100,7 @@ export default function VendorsSection({
               key={option.value}
               type="button"
               onClick={() => navigate(makeHref({ page: 1, sort: option.value as SortKey, basePath, extraParams }))}
-              className={`px-3 py-1.5 rounded-md text-[12px] font-semibold transition-all ${
+              className={`px-3 py-1.5 rounded-md text-[12px] font-semibold transition-all font-[family-name:var(--font-plus-jakarta)] ${
                 sort === option.value
                   ? "bg-[#a68b6a] text-white shadow-sm"
                   : "text-black/60 hover:text-black/80 hover:bg-black/[0.02]"
@@ -119,8 +119,8 @@ export default function VendorsSection({
           ))
         ) : vendors.length === 0 ? (
           <div className="sm:col-span-2 lg:col-span-3 rounded-[3px] border border-black/10 bg-white shadow-sm p-6">
-            <div className="text-[13px] font-semibold text-[#2c2c2c]">No vendors found</div>
-            <div className="mt-1 text-[13px] text-black/55">Try another sort or check back later.</div>
+            <div className="text-[13px] font-semibold text-[#2c2c2c] font-[family-name:var(--font-plus-jakarta)]">No vendors found</div>
+            <div className="mt-1 text-[13px] text-black/55 font-[family-name:var(--font-plus-jakarta)]">Try another sort or check back later.</div>
           </div>
         ) : (
           vendors.map((vendor, i) => {
@@ -130,12 +130,12 @@ export default function VendorsSection({
       </div>
 
       <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="text-[12px] font-semibold text-black/45">
+        <div className="text-[12px] font-semibold text-black/45 text-center sm:text-left font-[family-name:var(--font-plus-jakarta)]">
           Page {page} of {totalPages}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-center sm:justify-start gap-2">
           <a
-            className={`h-9 inline-flex items-center justify-center px-3 rounded-[3px] border text-[13px] font-semibold transition-colors ${
+            className={`h-10 sm:h-9 inline-flex items-center justify-center px-4 sm:px-3 rounded-[3px] border text-[14px] sm:text-[13px] font-semibold transition-colors min-w-[80px] touch-manipulation font-[family-name:var(--font-plus-jakarta)] ${
               hasPrev
                 ? "border-black/10 bg-white text-black/70 hover:bg-black/[0.02]"
                 : "border-black/10 bg-white/50 text-black/30 pointer-events-none"
@@ -151,7 +151,7 @@ export default function VendorsSection({
             Prev
           </a>
           <a
-            className={`h-9 inline-flex items-center justify-center px-3 rounded-[3px] border text-[13px] font-semibold transition-colors ${
+            className={`h-10 sm:h-9 inline-flex items-center justify-center px-4 sm:px-3 rounded-[3px] border text-[14px] sm:text-[13px] font-semibold transition-colors min-w-[80px] touch-manipulation ${
               hasNext
                 ? "border-black/10 bg-white text-black/70 hover:bg-black/[0.02]"
                 : "border-black/10 bg-white/50 text-black/30 pointer-events-none"

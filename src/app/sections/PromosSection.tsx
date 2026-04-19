@@ -43,7 +43,7 @@ export default function PromosSection({ promos }: { promos: FeaturedPromo[] }) {
         <h2 className="text-[18px] sm:text-[20px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">
           Discover exciting promos
         </h2>
-        <p className="mt-2 text-[13px] text-black/55 max-w-xl mx-auto">
+        <p className="mt-2 text-[13px] text-black/55 max-w-xl mx-auto font-[family-name:var(--font-plus-jakarta)]">
           Time-bound deals from suppliers-great for shortlisting with confidence.
         </p>
       </div>
@@ -55,7 +55,7 @@ export default function PromosSection({ promos }: { promos: FeaturedPromo[] }) {
       <div className="mt-6 text-center">
         <a
           href="/promos"
-          className="inline-flex items-center gap-1 text-[13px] font-semibold text-[#a68b6a] hover:text-[#957a5c] transition-colors"
+          className="inline-flex items-center gap-1 text-[13px] font-semibold text-[#a68b6a] hover:text-[#957a5c] transition-colors font-[family-name:var(--font-plus-jakarta)]"
         >
           View All Promos
           <svg width="20" height="16" viewBox="0 0 20 16" fill="none" aria-hidden className="w-5 h-4">

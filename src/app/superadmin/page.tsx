@@ -12,7 +12,7 @@ export default async function SuperadminPage() {
           <QuickLink title="Promos" href="/superadmin/promos" description="Manage active promos and featured deals." />
           <QuickLink title="Inquiries" href="/superadmin/inquiries" description="View inquiries sent to vendors." />
           <QuickLink title="Reviews" href="/superadmin/reviews" description="Moderate reviews and status." />
-          <QuickLink title="Users" href="/superadmin/users" description="View users and roles." />
+          <QuickLink title="Soon to Weds" href="/superadmin/users" description="View soon to wed accounts." />
         </div>
       </div>
     </div>

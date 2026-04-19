@@ -161,18 +161,18 @@ export default function VirtualizedVendorsList({
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h2 className="text-[18px] sm:text-[20px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">Vendors</h2>
-          <p className="mt-2 text-[13px] text-black/55 max-w-xl">Browse suppliers keep scrolling to load more.</p>
+          <p className="mt-2 text-[13px] text-black/55 max-w-xl font-[family-name:var(--font-plus-jakarta)]">Browse suppliers keep scrolling to load more.</p>
         </div>
 
-        <div className="text-[12px] font-semibold text-black/45">
+        <div className="text-[12px] font-semibold text-black/45 font-[family-name:var(--font-plus-jakarta)]">
           Showing {Math.min(vendors.length, total)} of {total}
         </div>
       </div>
 
       {vendors.length === 0 ? (
         <div className="mt-8 rounded-[3px] border border-black/10 bg-white shadow-sm p-6">
-          <div className="text-[13px] font-semibold text-[#2c2c2c]">No vendors found</div>
-          <div className="mt-1 text-[13px] text-black/55">Try changing filters or check back later.</div>
+          <div className="text-[13px] font-semibold text-[#2c2c2c] font-[family-name:var(--font-plus-jakarta)]">No vendors found</div>
+          <div className="mt-1 text-[13px] text-black/55 font-[family-name:var(--font-plus-jakarta)]">Try changing filters or check back later.</div>
         </div>
       ) : (
         <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -186,7 +186,7 @@ export default function VirtualizedVendorsList({
 
       {loadError ? (
         <div className="py-6 text-center">
-          <button type="button" className="text-[#6e4f33] hover:underline" onClick={() => void loadNext()}>
+          <button type="button" className="text-[#6e4f33] hover:underline font-[family-name:var(--font-plus-jakarta)]" onClick={() => void loadNext()}>
             Retry loading
           </button>
         </div>
@@ -198,7 +198,7 @@ export default function VirtualizedVendorsList({
         </div>
       ) : null}
 
-      {loadError ? <div className="mt-4 text-[13px] font-semibold text-[#b42318]">{loadError}</div> : null}
+      {loadError ? <div className="mt-4 text-[13px] font-semibold text-[#b42318] font-[family-name:var(--font-plus-jakarta)]">{loadError}</div> : null}
     </section>
   );
 }

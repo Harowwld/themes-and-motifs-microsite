@@ -667,15 +667,15 @@ export default async function VendorDetailPage({ params }: Props) {
     <div
       className="min-h-screen bg-[#fafafa]"
     >
-      <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
-        <SiteHeader />
+      <SiteHeader />
 
+      <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
         <Suspense fallback={<VendorDetailSkeleton />}>
           <VendorDetailData slug={slug} />
         </Suspense>
-
-        <SiteFooter />
       </div>
+
+      <SiteFooter />
     </div>
   );
 }

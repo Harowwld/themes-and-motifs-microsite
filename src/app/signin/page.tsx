@@ -128,7 +128,7 @@ export default function SignInPage() {
                 Forgot password?
               </a>
 
-              <a className="text-[12px] font-semibold text-[#6e4f33] hover:underline" href={`/signup-link?returnTo=${encodeURIComponent(returnTo)}`}>
+              <a className="text-[12px] font-semibold text-[#6e4f33] hover:underline" href={`/soon-to-wed/signup?returnTo=${encodeURIComponent(returnTo)}`}>
                 New here? Create an account
               </a>
 

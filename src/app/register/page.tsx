@@ -31,12 +31,12 @@ export default async function RegisterPage({
     <div className="min-h-screen bg-[#fafafa]">
       <div className="mx-auto w-full max-w-4xl px-5 sm:px-8 py-10 sm:py-14">
         <div className="rounded-xl border border-black/6 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] p-6 sm:p-8">
-          <div className="text-[13px] font-medium text-black/45">For vendors</div>
-          <h1 className="mt-1 text-[28px] sm:text-[32px] font-medium tracking-[-0.02em] text-[#2c2c2c] font-headline">
+          <div className="text-[13px] font-medium text-black/45 font-[family-name:var(--font-plus-jakarta)]">For vendors</div>
+          <h1 className="mt-1 text-[28px] sm:text-[32px] font-medium tracking-[-0.02em] text-[#2c2c2c] font-headline font-[family-name:var(--font-plus-jakarta)]">
             Vendor registration
           </h1>
-          <div className="mt-2 text-[14px] text-black/55">
-            Submit your details for review. Once approved, we’ll activate your listing.
+          <div className="mt-2 text-[14px] text-black/55 font-[family-name:var(--font-plus-jakarta)]">
+            Submit your details for review. Once approved, we'll activate your listing.
           </div>
 
           <div className="mt-6">

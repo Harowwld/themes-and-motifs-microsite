@@ -61,3 +61,35 @@ export async function PATCH(req: Request) {
     return Response.json({ error: e?.message ?? "Unknown error" }, { status });
   }
 }
+
+export async function DELETE(req: Request) {
+  try {
+    await assertSuperadminRequest(req);
+
+    const body = (await req.json().catch(() => null)) as any;
+    const id = String(body?.id ?? "").trim();
+
+    if (!id) {
+      return Response.json({ error: "Invalid id" }, { status: 400 });
+    }
+
+    const supabase = createSupabaseAdminClient();
+
+    const { error: dbError } = await supabase.from("users").delete().eq("id", id);
+
+    if (dbError) {
+      return Response.json({ error: dbError.message }, { status: 500 });
+    }
+
+    const { error: authError } = await supabase.auth.admin.deleteUser(id);
+
+    if (authError) {
+      return Response.json({ error: authError.message }, { status: 500 });
+    }
+
+    return Response.json({ success: true }, { status: 200 });
+  } catch (e: any) {
+    const status = typeof e?.statusCode === "number" ? e.statusCode : 500;
+    return Response.json({ error: e?.message ?? "Unknown error" }, { status });
+  }
+}

@@ -29,7 +29,7 @@ export default function FeaturedVendorsSection({ vendors }: { vendors: FeaturedV
         <h2 className="text-[18px] sm:text-[20px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">
           Featured vendors
         </h2>
-        <p className="mt-1 text-[13px] text-black/55 max-w-xl mx-auto">
+        <p className="mt-1 text-[13px] text-black/55 max-w-xl mx-auto font-[family-name:var(--font-plus-jakarta)]">
           Handpicked suppliers for your special day.
         </p>
       </div>
@@ -41,7 +41,7 @@ export default function FeaturedVendorsSection({ vendors }: { vendors: FeaturedV
       <div className="mt-6 text-center">
         <a
           href="/vendors"
-          className="inline-flex items-center gap-1 text-[13px] font-semibold text-[#a68b6a] hover:text-[#957a5c] transition-colors"
+          className="inline-flex items-center gap-1 text-[13px] font-semibold text-[#a68b6a] hover:text-[#957a5c] transition-colors font-[family-name:var(--font-plus-jakarta)]"
         >
           View All Vendors
           <svg width="20" height="16" viewBox="0 0 20 16" fill="none" aria-hidden className="w-5 h-4">

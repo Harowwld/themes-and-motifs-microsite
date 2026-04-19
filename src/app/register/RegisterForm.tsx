@@ -249,13 +249,13 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
 
   return (
     <form onSubmit={onSubmit} className="grid gap-6">
-      <div className="rounded-lg border border-black/6 bg-[#fcfbf9] px-4 py-3 text-[13px] text-black/60">
+      <div className="rounded-lg border border-black/6 bg-[#fcfbf9] px-4 py-3 text-[13px] text-black/60 font-[family-name:var(--font-plus-jakarta)]">
         Fields marked <span className="inline-flex items-center rounded-full border border-[#a68b6a]/30 bg-[#fffaf5] px-2 py-0.5 font-medium text-[#8e6a46]">Premium</span> are only used for Premium listings.
       </div>
 
-      {error ? <div className="rounded-lg border border-red-500/20 bg-red-50 px-4 py-3 text-[13px] text-red-900">{error}</div> : null}
+      {error ? <div className="rounded-lg border border-red-500/20 bg-red-50 px-4 py-3 text-[13px] text-red-900 font-[family-name:var(--font-plus-jakarta)]">{error}</div> : null}
       {success ? (
-        <div className="rounded-lg border border-[#a68b6a]/25 bg-[#fffaf5] px-4 py-3 text-[13px] text-[#2c2c2c]">
+        <div className="rounded-lg border border-[#a68b6a]/25 bg-[#fffaf5] px-4 py-3 text-[13px] text-[#2c2c2c] font-[family-name:var(--font-plus-jakarta)]">
           Registration submitted. We’ll review it and get back to you.
         </div>
       ) : null}
@@ -263,7 +263,7 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
       <div className="grid gap-5 sm:grid-cols-2">
         <Field id="field-businessName" label="Business name" required>
           <input
-            className={`h-11 w-full rounded-lg border px-3 text-[14px] ${fieldErrors.has("businessName") ? "border-red-500 bg-red-50" : "border-black/10"}`}
+            className={`h-11 w-full rounded-lg border px-3 text-[14px] font-[family-name:var(--font-plus-jakarta)] ${fieldErrors.has("businessName") ? "border-red-500 bg-red-50" : "border-black/10"}`}
             value={form.businessName}
             onChange={(e) => set("businessName", e.target.value)}
           />
@@ -271,7 +271,7 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
 
         <Field id="field-categoryId" label="Primary category">
           <select
-            className={`h-11 w-full rounded-lg border px-3 text-[14px] bg-white ${
+            className={`h-11 w-full rounded-lg border px-3 text-[14px] bg-white font-[family-name:var(--font-plus-jakarta)] ${
               fieldErrors.has("categoryId")
                 ? "border-red-500 bg-red-50"
                 : form.categoryId
@@ -295,7 +295,7 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
             <button
               type="button"
               onClick={() => setShowSecondaryCategoryMenu((v) => !v)}
-              className="h-11 w-full rounded-lg border border-black/10 px-3 text-left text-[14px] bg-white flex items-center justify-between"
+              className="h-11 w-full rounded-lg border border-black/10 px-3 text-left text-[14px] bg-white flex items-center justify-between font-[family-name:var(--font-plus-jakarta)]"
             >
               <span className={form.secondaryCategories.length > 0 ? "text-[#2c2c2c]" : "text-black/45"}>
                 {form.secondaryCategories.length > 0
@@ -315,7 +315,7 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
                     <button
                       key={cat.id}
                       type="button"
-                      className="w-full px-3 py-2 text-left text-[14px] text-[#2c2c2c] hover:bg-black/5"
+                      className="w-full px-3 py-2 text-left text-[14px] text-[#2c2c2c] hover:bg-black/5 font-[family-name:var(--font-plus-jakarta)]"
                       onClick={() => {
                         if (form.secondaryCategories.length < 2) {
                           const updated = [...form.secondaryCategories, cat.slug];
@@ -363,7 +363,7 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
 
         <Field id="field-planId" label="Plan">
           <select
-            className={`h-11 w-full rounded-lg border px-3 text-[14px] bg-white ${
+            className={`h-11 w-full rounded-lg border px-3 text-[14px] bg-white font-[family-name:var(--font-plus-jakarta)] ${
               fieldErrors.has("planId")
                 ? "border-red-500 bg-red-50"
                 : form.planId
@@ -385,7 +385,7 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
         <Field id="field-contactEmail" label="Email" required>
           <input
             type="email"
-            className={`h-11 w-full rounded-lg border px-3 text-[14px] ${fieldErrors.has("contactEmail") ? "border-red-500 bg-red-50" : "border-black/10"}`}
+            className={`h-11 w-full rounded-lg border px-3 text-[14px] font-[family-name:var(--font-plus-jakarta)] ${fieldErrors.has("contactEmail") ? "border-red-500 bg-red-50" : "border-black/10"}`}
             value={form.contactEmail}
             onChange={(e) => set("contactEmail", e.target.value)}
           />
@@ -393,7 +393,7 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
 
         <Field id="field-contactPhone" label="Phone">
           <input
-            className={`h-11 w-full rounded-lg border px-3 text-[14px] ${fieldErrors.has("contactPhone") ? "border-red-500 bg-red-50" : "border-black/10"}`}
+            className={`h-11 w-full rounded-lg border px-3 text-[14px] font-[family-name:var(--font-plus-jakarta)] ${fieldErrors.has("contactPhone") ? "border-red-500 bg-red-50" : "border-black/10"}`}
             value={form.contactPhone}
             onChange={(e) => set("contactPhone", e.target.value)}
           />
@@ -401,7 +401,7 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
 
         <Field id="field-secDtiNumber" label="SEC/DTI #">
           <input
-            className={`h-11 w-full rounded-lg border px-3 text-[14px] ${fieldErrors.has("secDtiNumber") ? "border-red-500 bg-red-50" : "border-black/10"}`}
+            className={`h-11 w-full rounded-lg border px-3 text-[14px] font-[family-name:var(--font-plus-jakarta)] ${fieldErrors.has("secDtiNumber") ? "border-red-500 bg-red-50" : "border-black/10"}`}
             value={form.secDtiNumber}
             onChange={(e) => set("secDtiNumber", e.target.value)}
           />
@@ -409,7 +409,7 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
 
         <Field label="Website" badge="Premium">
           <input
-            className="h-11 w-full rounded-lg border border-black/10 px-3 text-[14px]"
+            className="h-11 w-full rounded-lg border border-black/10 px-3 text-[14px] font-[family-name:var(--font-plus-jakarta)]"
             value={form.websiteUrl}
             onChange={(e) => set("websiteUrl", e.target.value)}
             placeholder="https://..."
@@ -418,7 +418,7 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
 
         <Field id="field-contactPerson" label="Contact person">
           <input
-            className={`h-11 w-full rounded-lg border px-3 text-[14px] ${fieldErrors.has("contactPerson") ? "border-red-500 bg-red-50" : "border-black/10"}`}
+            className={`h-11 w-full rounded-lg border px-3 text-[14px] font-[family-name:var(--font-plus-jakarta)] ${fieldErrors.has("contactPerson") ? "border-red-500 bg-red-50" : "border-black/10"}`}
             value={form.contactPerson}
             onChange={(e) => set("contactPerson", e.target.value)}
           />
@@ -428,7 +428,7 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
       <div className="grid gap-5 sm:grid-cols-3">
         <Field id="field-regionId" label="Region">
           <select
-            className={`h-11 w-full rounded-lg border px-3 text-[14px] bg-white ${
+            className={`h-11 w-full rounded-lg border px-3 text-[14px] bg-white font-[family-name:var(--font-plus-jakarta)] ${
               fieldErrors.has("regionId")
                 ? "border-red-500 bg-red-50"
                 : form.regionId
@@ -452,7 +452,7 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
         </Field>
         <Field id="field-city" label="City">
           <select
-            className={`h-11 w-full rounded-lg border px-3 text-[14px] bg-white ${
+            className={`h-11 w-full rounded-lg border px-3 text-[14px] bg-white font-[family-name:var(--font-plus-jakarta)] ${
               fieldErrors.has("city")
                 ? "border-red-500 bg-red-50"
                 : form.city
@@ -473,7 +473,7 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
         </Field>
         <Field id="field-address" label="Address">
           <input
-            className={`h-11 w-full rounded-lg border px-3 text-[14px] ${fieldErrors.has("address") ? "border-red-500 bg-red-50" : "border-black/10"}`}
+            className={`h-11 w-full rounded-lg border px-3 text-[14px] font-[family-name:var(--font-plus-jakarta)] ${fieldErrors.has("address") ? "border-red-500 bg-red-50" : "border-black/10"}`}
             value={form.address}
             onChange={(e) => set("address", e.target.value)}
           />
@@ -483,7 +483,7 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
       <Field id="field-description" label="Business description" hint={`${form.description.length}/500`}>
         <textarea
           maxLength={500}
-          className={`min-h-24 w-full rounded-lg border px-3 py-2 text-[14px] ${fieldErrors.has("description") ? "border-red-500 bg-red-50" : "border-black/10"}`}
+          className={`min-h-24 w-full rounded-lg border px-3 py-2 text-[14px] font-[family-name:var(--font-plus-jakarta)] ${fieldErrors.has("description") ? "border-red-500 bg-red-50" : "border-black/10"}`}
           value={form.description}
           onChange={(e) => set("description", e.target.value)}
         />
@@ -492,15 +492,15 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
       <div className="grid gap-2">
         <div id="field-coverPhotoUrl" className="flex items-end justify-between gap-4">
           <div>
-            <div className="text-[13px] font-medium text-black/55">
+            <div className="text-[13px] font-medium text-black/55 font-[family-name:var(--font-plus-jakarta)]">
               Cover photo <span className="text-[#b42318]">*</span>
             </div>
-            <div className="mt-1 text-[12px] text-black/45">Required. Used as your cover photo during review.</div>
+            <div className="mt-1 text-[12px] text-black/45 font-[family-name:var(--font-plus-jakarta)]">Required. Used as your cover photo during review.</div>
           </div>
           <button
             type="button"
             onClick={() => setCoverModalOpen(true)}
-            className="h-10 px-4 rounded-lg border border-black/10 bg-white text-[13px] font-medium text-[#8e6a46] hover:bg-black/5 transition-colors"
+            className="h-10 px-4 rounded-lg border border-black/10 bg-white text-[13px] font-medium text-[#8e6a46] hover:bg-black/5 transition-colors font-[family-name:var(--font-plus-jakarta)]"
           >
             {form.coverPhotoUrl.trim() ? "Change cover photo" : "Add cover photo"}
           </button>
@@ -519,7 +519,7 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
                 draggable={false}
               />
             ) : (
-              <div className="text-[13px] font-medium text-black/35">No cover photo yet</div>
+              <div className="text-[13px] font-medium text-black/35 font-[family-name:var(--font-plus-jakarta)]">No cover photo yet</div>
             )}
           </div>
         </div>
@@ -538,15 +538,15 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
       <div className="grid gap-2">
         <div id="field-logoUrl" className="flex items-end justify-between gap-4">
           <div>
-            <div className="text-[13px] font-medium text-black/55">
+            <div className="text-[13px] font-medium text-black/55 font-[family-name:var(--font-plus-jakarta)]">
               Logo <span className="text-[#b42318]">*</span>
             </div>
-            <div className="mt-1 text-[12px] text-black/45">Required. Your business logo.</div>
+            <div className="mt-1 text-[12px] text-black/45 font-[family-name:var(--font-plus-jakarta)]">Required. Your business logo.</div>
           </div>
           <button
             type="button"
             onClick={() => setLogoModalOpen(true)}
-            className="h-10 px-4 rounded-lg border border-black/10 bg-white text-[13px] font-medium text-[#8e6a46] hover:bg-black/5 transition-colors"
+            className="h-10 px-4 rounded-lg border border-black/10 bg-white text-[13px] font-medium text-[#8e6a46] hover:bg-black/5 transition-colors font-[family-name:var(--font-plus-jakarta)]"
           >
             {form.logoUrl.trim() ? "Change logo" : "Add logo"}
           </button>
@@ -565,7 +565,7 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
                 draggable={false}
               />
             ) : (
-              <div className="text-[13px] font-medium text-black/35">No logo yet</div>
+              <div className="text-[13px] font-medium text-black/35 font-[family-name:var(--font-plus-jakarta)]">No logo yet</div>
             )}
           </div>
         </div>
@@ -586,7 +586,7 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
           <div className="relative">
             <input
               type="text"
-              className={`h-11 w-full rounded-lg border px-3 text-[14px] pr-10 ${
+              className={`h-11 w-full rounded-lg border px-3 text-[14px] pr-10 font-[family-name:var(--font-plus-jakarta)] ${
                 fieldErrors.has("creditCardNumber")
                   ? "border-red-500 bg-red-50"
                   : cardTouched
@@ -616,7 +616,7 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
             )}
           </div>
           {cardTouched && form.creditCardNumber.trim() && !isValidCreditCard(form.creditCardNumber) && (
-            <span className="text-[11px] text-red-600">Invalid card number. Please check and try again.</span>
+            <span className="text-[11px] text-red-600 font-[family-name:var(--font-plus-jakarta)]">Invalid card number. Please check and try again.</span>
           )}
         </div>
       </Field>
@@ -625,14 +625,14 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
         <Field id="field-adminEmail" label="Admin email">
           <input
             type="email"
-            className={`h-11 w-full rounded-lg border px-3 text-[14px] ${fieldErrors.has("adminEmail") ? "border-red-500 bg-red-50" : "border-black/10"}`}
+            className={`h-11 w-full rounded-lg border px-3 text-[14px] font-[family-name:var(--font-plus-jakarta)] ${fieldErrors.has("adminEmail") ? "border-red-500 bg-red-50" : "border-black/10"}`}
             value={form.adminEmail}
             onChange={(e) => set("adminEmail", e.target.value)}
           />
         </Field>
         <Field id="field-adminPhone" label="Admin phone">
           <input
-            className={`h-11 w-full rounded-lg border px-3 text-[14px] ${fieldErrors.has("adminPhone") ? "border-red-500 bg-red-50" : "border-black/10"}`}
+            className={`h-11 w-full rounded-lg border px-3 text-[14px] font-[family-name:var(--font-plus-jakarta)] ${fieldErrors.has("adminPhone") ? "border-red-500 bg-red-50" : "border-black/10"}`}
             value={form.adminPhone}
             onChange={(e) => set("adminPhone", e.target.value)}
           />
@@ -641,7 +641,7 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
 
       <Field label="Affiliations / associations" hint="Optional.">
         <select
-          className={`h-11 w-full rounded-lg border border-black/10 px-3 text-[14px] bg-white ${
+          className={`h-11 w-full rounded-lg border border-black/10 px-3 text-[14px] bg-white font-[family-name:var(--font-plus-jakarta)] ${
             form.affiliationSlug ? "text-[#2c2c2c]" : "text-black/55"
           }`}
           value={form.affiliationSlug}
@@ -657,31 +657,31 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
       </Field>
 
       <div className="rounded-xl border border-black/6 bg-white p-5">
-        <div className="text-[14px] font-medium text-[#2c2c2c]">Social links (optional)</div>
+        <div className="text-[14px] font-medium text-[#2c2c2c] font-[family-name:var(--font-plus-jakarta)]">Social links (optional)</div>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <Field label="Facebook" badge="Premium">
-            <input className="h-11 w-full rounded-lg border border-black/10 px-3 text-[14px]" value={form.facebook} onChange={(e) => set("facebook", e.target.value)} />
+            <input className="h-11 w-full rounded-lg border border-black/10 px-3 text-[14px] font-[family-name:var(--font-plus-jakarta)]" value={form.facebook} onChange={(e) => set("facebook", e.target.value)} />
           </Field>
           <Field label="Instagram" badge="Premium">
-            <input className="h-11 w-full rounded-lg border border-black/10 px-3 text-[14px]" value={form.instagram} onChange={(e) => set("instagram", e.target.value)} />
+            <input className="h-11 w-full rounded-lg border border-black/10 px-3 text-[14px] font-[family-name:var(--font-plus-jakarta)]" value={form.instagram} onChange={(e) => set("instagram", e.target.value)} />
           </Field>
           <Field label="TikTok" badge="Premium">
-            <input className="h-11 w-full rounded-lg border border-black/10 px-3 text-[14px]" value={form.tiktok} onChange={(e) => set("tiktok", e.target.value)} />
+            <input className="h-11 w-full rounded-lg border border-black/10 px-3 text-[14px] font-[family-name:var(--font-plus-jakarta)]" value={form.tiktok} onChange={(e) => set("tiktok", e.target.value)} />
           </Field>
           <Field label="X" badge="Premium">
-            <input className="h-11 w-full rounded-lg border border-black/10 px-3 text-[14px]" value={form.x} onChange={(e) => set("x", e.target.value)} />
+            <input className="h-11 w-full rounded-lg border border-black/10 px-3 text-[14px] font-[family-name:var(--font-plus-jakarta)]" value={form.x} onChange={(e) => set("x", e.target.value)} />
           </Field>
           <Field label="Pinterest" badge="Premium">
-            <input className="h-11 w-full rounded-lg border border-black/10 px-3 text-[14px]" value={form.pinterest} onChange={(e) => set("pinterest", e.target.value)} />
+            <input className="h-11 w-full rounded-lg border border-black/10 px-3 text-[14px] font-[family-name:var(--font-plus-jakarta)]" value={form.pinterest} onChange={(e) => set("pinterest", e.target.value)} />
           </Field>
           <Field label="YouTube" badge="Premium">
-            <input className="h-11 w-full rounded-lg border border-black/10 px-3 text-[14px]" value={form.youtube} onChange={(e) => set("youtube", e.target.value)} />
+            <input className="h-11 w-full rounded-lg border border-black/10 px-3 text-[14px] font-[family-name:var(--font-plus-jakarta)]" value={form.youtube} onChange={(e) => set("youtube", e.target.value)} />
           </Field>
         </div>
       </div>
 
       <div className="grid gap-1">
-        <label id="field-agreeToTerms" className="flex items-start gap-3 text-[14px] text-black/70">
+        <label id="field-agreeToTerms" className="flex items-start gap-3 text-[14px] text-black/70 font-[family-name:var(--font-plus-jakarta)]">
           <input
             type="checkbox"
             className={`mt-1 h-4 w-4 rounded border-black/20 ${fieldErrors.has("agreeToTerms") ? "accent-red-500" : ""}`}
@@ -697,14 +697,14 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
           </span>
         </label>
         {fieldErrors.has("agreeToTerms") && (
-          <span className="ml-7 text-[12px] text-red-600">You must agree to the Terms & Conditions.</span>
+          <span className="ml-7 text-[12px] text-red-600 font-[family-name:var(--font-plus-jakarta)]">You must agree to the Terms & Conditions.</span>
         )}
       </div>
 
       <button
         type="submit"
         disabled={submitting}
-        className="h-11 inline-flex items-center justify-center px-5 rounded-lg text-white text-[14px] font-medium transition-colors disabled:opacity-60"
+        className="h-11 inline-flex items-center justify-center px-5 rounded-lg text-white text-[14px] font-medium transition-colors disabled:opacity-60 font-[family-name:var(--font-plus-jakarta)]"
         style={{ backgroundColor: 'var(--muted-brown)' }}
         onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--muted-brown-hover)'}
         onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--muted-brown)'}
@@ -712,7 +712,7 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
         {submitting ? "Submitting..." : "Submit registration"}
       </button>
 
-      <div className="text-[13px] text-black/45">
+      <div className="text-[13px] text-black/45 font-[family-name:var(--font-plus-jakarta)]">
         Note: Document upload (DTI/SEC/TIN) will be added next once the storage bucket name is confirmed.
       </div>
     </form>
@@ -742,8 +742,8 @@ function CoverPhotoModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       <div className="w-full max-w-md rounded-xl border border-black/6 bg-white shadow-xl">
         <div className="px-5 py-4 border-b border-black/5">
-          <div className="text-[15px] font-medium text-[#2c2c2c]">Cover photo</div>
-          <div className="mt-1 text-[13px] text-black/45">Paste an image URL for your cover photo.</div>
+          <div className="text-[15px] font-medium text-[#2c2c2c] font-[family-name:var(--font-plus-jakarta)]">Cover photo</div>
+          <div className="mt-1 text-[13px] text-black/45 font-[family-name:var(--font-plus-jakarta)]">Paste an image URL for your cover photo.</div>
         </div>
         <div className="p-5 grid gap-4">
           <div className="flex justify-center">
@@ -758,9 +758,9 @@ function CoverPhotoModal({
             </div>
           </div>
           <label className="grid gap-1.5">
-            <span className="text-[13px] font-medium text-black/55">Image URL</span>
+            <span className="text-[13px] font-medium text-black/55 font-[family-name:var(--font-plus-jakarta)]">Image URL</span>
             <input
-              className="h-11 w-full rounded-lg border border-black/10 px-3 text-[14px]"
+              className="h-11 w-full rounded-lg border border-black/10 px-3 text-[14px] font-[family-name:var(--font-plus-jakarta)]"
               value={value}
               onChange={(e) => setValue(e.target.value)}
               placeholder="https://..."
@@ -774,7 +774,7 @@ function CoverPhotoModal({
                 setValue(url);
                 onCancel();
               }}
-              className="h-10 px-4 rounded-lg border border-black/10 bg-white text-[13px] font-medium text-black/70 hover:bg-black/5 transition-colors"
+              className="h-10 px-4 rounded-lg border border-black/10 bg-white text-[13px] font-medium text-black/70 hover:bg-black/5 transition-colors font-[family-name:var(--font-plus-jakarta)]"
             >
               Cancel
             </button>
@@ -782,7 +782,7 @@ function CoverPhotoModal({
               type="button"
               onClick={() => onSave(value.trim())}
               disabled={!value.trim()}
-              className="h-10 px-4 rounded-lg text-white text-[13px] font-medium transition-colors disabled:opacity-60"
+              className="h-10 px-4 rounded-lg text-white text-[13px] font-medium transition-colors disabled:opacity-60 font-[family-name:var(--font-plus-jakarta)]"
               style={{ backgroundColor: 'var(--muted-brown)' }}
               onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--muted-brown-hover)'}
               onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--muted-brown)'}
@@ -819,8 +819,8 @@ function LogoModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       <div className="w-full max-w-md rounded-xl border border-black/6 bg-white shadow-xl">
         <div className="px-5 py-4 border-b border-black/5">
-          <div className="text-[15px] font-medium text-[#2c2c2c]">Logo</div>
-          <div className="mt-1 text-[13px] text-black/45">Paste an image URL for your logo.</div>
+          <div className="text-[15px] font-medium text-[#2c2c2c] font-[family-name:var(--font-plus-jakarta)]">Logo</div>
+          <div className="mt-1 text-[13px] text-black/45 font-[family-name:var(--font-plus-jakarta)]">Paste an image URL for your logo.</div>
         </div>
         <div className="p-5 grid gap-4">
           <div className="flex justify-center">
@@ -835,9 +835,9 @@ function LogoModal({
             </div>
           </div>
           <label className="grid gap-1.5">
-            <span className="text-[13px] font-medium text-black/55">Image URL</span>
+            <span className="text-[13px] font-medium text-black/55 font-[family-name:var(--font-plus-jakarta)]">Image URL</span>
             <input
-              className="h-11 w-full rounded-lg border border-black/10 px-3 text-[14px]"
+              className="h-11 w-full rounded-lg border border-black/10 px-3 text-[14px] font-[family-name:var(--font-plus-jakarta)]"
               value={value}
               onChange={(e) => setValue(e.target.value)}
               placeholder="https://..."
@@ -851,7 +851,7 @@ function LogoModal({
                 setValue(url);
                 onCancel();
               }}
-              className="h-10 px-4 rounded-lg border border-black/10 bg-white text-[13px] font-medium text-black/70 hover:bg-black/5 transition-colors"
+              className="h-10 px-4 rounded-lg border border-black/10 bg-white text-[13px] font-medium text-black/70 hover:bg-black/5 transition-colors font-[family-name:var(--font-plus-jakarta)]"
             >
               Cancel
             </button>
@@ -859,7 +859,7 @@ function LogoModal({
               type="button"
               onClick={() => onSave(value.trim())}
               disabled={!value.trim()}
-              className="h-10 px-4 rounded-lg text-white text-[13px] font-medium transition-colors disabled:opacity-60"
+              className="h-10 px-4 rounded-lg text-white text-[13px] font-medium transition-colors disabled:opacity-60 font-[family-name:var(--font-plus-jakarta)]"
               style={{ backgroundColor: 'var(--muted-brown)' }}
               onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--muted-brown-hover)'}
               onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--muted-brown)'}

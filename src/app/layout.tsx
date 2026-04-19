@@ -3,6 +3,7 @@ import { Noto_Serif, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import HashAuthRedirect from "./HashAuthRedirect";
 import ScrollContainer from "./components/ScrollContainer";
+import BugReportButton from "./components/BugReportButton";
 
 const notoSerif = Noto_Serif({
   variable: "--font-noto-serif",
@@ -31,6 +32,7 @@ export default function RootLayout({
       >
         <ScrollContainer>
           <HashAuthRedirect />
+          <BugReportButton />
           {children}
         </ScrollContainer>
       </body>
