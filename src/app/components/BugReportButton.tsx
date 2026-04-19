@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { usePathname } from "next/navigation";
 import { Bug } from "lucide-react";
+import { createSupabaseBrowserClient } from "../../lib/supabaseBrowser";
 
 export default function BugReportButton() {
   const pathname = usePathname();
+  const supabase = useMemo(() => createSupabaseBrowserClient(), []);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const [isCollapsing, setIsCollapsing] = useState(false);
@@ -42,9 +44,18 @@ export default function BugReportButton() {
 
     setIsSending(true);
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
       const res = await fetch("/api/bug-report", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
+        credentials: "include",
         body: JSON.stringify({
           message: message.trim(),
           url: window.location.href,

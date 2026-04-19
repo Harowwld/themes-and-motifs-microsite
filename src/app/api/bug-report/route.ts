@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
+import { createSupabaseAdminClient } from "../../../lib/supabaseAdmin";
 
 export const dynamic = "force-dynamic";
 
 type Body = {
   message?: unknown;
   url?: unknown;
-  from?: unknown;
 };
 
 const RATE_LIMIT_WINDOW_MS = 60_000;
@@ -49,7 +49,21 @@ export async function POST(req: Request) {
 
   const message = String(body.message ?? "").trim();
   const url = String(body.url ?? "").trim();
-  const fromName = String(body.from ?? "").trim() || "Anonymous";
+
+  let fromName = "Anonymous";
+  try {
+    const authHeader = req.headers.get("authorization") ?? "";
+    const token = authHeader.toLowerCase().startsWith("bearer ") ? authHeader.slice(7).trim() : "";
+    if (token) {
+      const supabase = createSupabaseAdminClient();
+      const { data: { user } } = await supabase.auth.getUser(token);
+      if (user?.email) {
+        fromName = user.email;
+      }
+    }
+  } catch (authError) {
+    console.error("Failed to get user from session:", authError);
+  }
 
   if (!message) {
     return NextResponse.json({ error: "Message is required." }, { status: 400 });
@@ -159,6 +173,13 @@ export async function POST(req: Request) {
     });
   } catch (e: any) {
     return NextResponse.json({ error: e?.message ?? "Failed to send email" }, { status: 500 });
+  }
+
+  try {
+    const supabase = createSupabaseAdminClient();
+    await supabase.from("bug_comments").insert({ comment: message, name: fromName });
+  } catch (dbError) {
+    console.error("Failed to save bug comment to database:", dbError);
   }
 
   return NextResponse.json({ ok: true }, { status: 200 });
