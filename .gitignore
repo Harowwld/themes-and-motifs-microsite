@@ -47,3 +47,6 @@ contexts_txt_files
 # windsurf
 .windsurf
 commit-message-suggestions.md
+
+# todo
+TODO.md

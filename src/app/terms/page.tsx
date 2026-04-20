@@ -5,13 +5,14 @@ export const dynamic = "force-dynamic";
 
 export default function TermsPage() {
   return (
-    <div
-      className="min-h-screen bg-[#fafafa]"
-    >
-      <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
-        <SiteHeader />
+    <>
+      <SiteHeader />
 
-        <main className="py-10 sm:py-14">
+      <div
+        className="min-h-screen bg-[#fafafa]"
+      >
+        <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
+          <main className="py-10 sm:py-14">
           <div className="rounded-[3px] border border-black/10 bg-white shadow-sm p-6 sm:p-8">
             <h1 className="text-[24px] sm:text-[28px] font-semibold tracking-[-0.02em] text-[#2c2c2c]">
               Terms and Conditions
@@ -103,9 +104,10 @@ export default function TermsPage() {
             </div>
           </div>
         </main>
-
-        <SiteFooter />
       </div>
     </div>
+
+    <SiteFooter />
+    </>
   );
 }

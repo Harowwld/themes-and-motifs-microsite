@@ -241,13 +241,14 @@ export default async function PromosPage({
   const query = resolvedParams.q ?? "";
 
   return (
-    <div
-      className="min-h-screen bg-[#fafafa]"
-    >
-      <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
-        <SiteHeader />
+    <>
+      <SiteHeader />
 
-        <main className="py-10 sm:py-14">
+      <div
+        className="min-h-screen bg-[#fafafa]"
+      >
+        <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
+          <main className="py-10 sm:py-14">
           <FadeInOnView>
             <div className="mb-8">
               <h1 className="text-[24px] sm:text-[28px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">
@@ -293,9 +294,10 @@ export default async function PromosPage({
             </Suspense>
           </FadeInOnView>
         </main>
-
-        <SiteFooter />
       </div>
     </div>
+
+    <SiteFooter />
+    </>
   );
 }

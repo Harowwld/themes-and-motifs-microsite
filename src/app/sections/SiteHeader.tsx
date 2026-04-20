@@ -164,7 +164,7 @@ export default function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-50 inset-x-0 backdrop-blur-md bg-white/90 supports-backdrop-filter:bg-white/90">
-      <div className="mx-auto max-w-6xl h-16 flex items-center justify-between px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto h-16 flex items-center justify-between px-4 sm:px-6 lg:px-8">
         <a
           className="flex items-center"
           href="/"

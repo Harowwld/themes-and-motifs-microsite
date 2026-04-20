@@ -783,7 +783,7 @@ export default function VendorDashboardPage() {
     <div
       className="min-h-screen bg-[#fafafa]"
     >
-      <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
+      <div className="w-full">
         <SiteHeader />
 
         <main className="py-12">

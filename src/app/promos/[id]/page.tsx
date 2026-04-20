@@ -118,13 +118,14 @@ export default async function PromoDetailPage({ params }: Props) {
   const location = vendor?.city ?? vendor?.location_text;
 
   return (
-    <div
-      className="min-h-screen bg-[#fafafa]"
-    >
-      <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
-        <SiteHeader />
+    <>
+      <SiteHeader />
 
-        <main className="py-10 sm:py-14">
+      <div
+        className="min-h-screen bg-[#fafafa]"
+      >
+        <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
+          <main className="py-10 sm:py-14">
           <FadeInOnView>
             {/* Breadcrumb */}
             <div className="mb-6 text-[13px] text-black/50">
@@ -340,10 +341,11 @@ export default async function PromoDetailPage({ params }: Props) {
             </div>
           </FadeInOnView>
         </main>
-
-        <SiteFooter />
       </div>
     </div>
+
+    <SiteFooter />
+    </>
   );
 }
 

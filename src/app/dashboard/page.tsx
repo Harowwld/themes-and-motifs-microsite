@@ -189,26 +189,29 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#fafafa]">
+      <>
         <SiteHeader />
-        <div className="mx-auto w-full max-w-6xl px-5 sm:px-8 py-10 sm:py-14">
-          <div className="h-8 w-48 bg-black/10 animate-pulse rounded mb-8" />
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <LoadingSkeleton key={i} />
-            ))}
+        <div className="min-h-screen bg-[#fafafa]">
+          <div className="mx-auto w-full max-w-6xl px-5 sm:px-8 py-10 sm:py-14">
+            <div className="h-8 w-48 bg-black/10 animate-pulse rounded mb-8" />
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <LoadingSkeleton key={i} />
+              ))}
+            </div>
           </div>
         </div>
         <SiteFooter />
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#fafafa]">
+    <>
       <SiteHeader />
       
-      <div className="mx-auto w-full max-w-6xl px-5 sm:px-8 py-10 sm:py-14">
+      <div className="min-h-screen bg-[#fafafa]">
+        <div className="mx-auto w-full max-w-6xl px-5 sm:px-8 py-10 sm:py-14">
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-[24px] sm:text-[28px] font-semibold tracking-[-0.01em] text-[#2c2c2c] font-[family-name:var(--font-noto-serif)]">
@@ -316,8 +319,9 @@ export default function DashboardPage() {
           </div>
         </section>
       </div>
-
-      <SiteFooter />
     </div>
+
+    <SiteFooter />
+    </>
   );
 }
