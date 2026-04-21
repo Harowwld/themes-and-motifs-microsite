@@ -585,7 +585,7 @@ export default function VendorDashboardPage() {
         setEmail(user?.email ?? null);
         setToken(session?.access_token ?? null);
         if (!user) {
-          router.push("/");
+          router.push("/vendor/signin");
           return;
         }
 

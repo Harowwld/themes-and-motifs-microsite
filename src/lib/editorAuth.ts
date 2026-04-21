@@ -98,7 +98,7 @@ export async function assertSuperadminOnly(req: Request): Promise<{ superadminId
   return { superadminId: auth.superadminId };
 }
 
-function parseCookies(cookieHeader: string): Record<string, string> {
+export function parseCookies(cookieHeader: string): Record<string, string> {
   const out: Record<string, string> = {};
   if (!cookieHeader) return out;
   const parts = cookieHeader.split(";");
@@ -110,7 +110,7 @@ function parseCookies(cookieHeader: string): Record<string, string> {
   return out;
 }
 
-function findSupabaseToken(cookieHeader: string): string | null {
+export function findSupabaseToken(cookieHeader: string): string | null {
   const cookies = parseCookies(cookieHeader);
   for (const [name, value] of Object.entries(cookies)) {
     if (name.startsWith("sb-") && (name.endsWith("-auth-token") || name === "sb-access-token")) {

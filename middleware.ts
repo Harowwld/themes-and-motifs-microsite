@@ -2,9 +2,30 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 import { SUPERADMIN_COOKIE_NAME } from "./src/lib/superadminAuth";
+import { findSupabaseToken } from "./src/lib/editorAuth";
+
+const VENDOR_PUBLIC_PATHS = ["/vendor/signin", "/vendor/signup", "/vendor/signup-link"];
+
+function isVendorPublicPath(pathname: string): boolean {
+  return VENDOR_PUBLIC_PATHS.some((path) => pathname.startsWith(path));
+}
 
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
+
+  if (pathname.startsWith("/vendor/dashboard")) {
+    if (isVendorPublicPath(pathname)) {
+      return NextResponse.next();
+    }
+    const cookieHeader = req.headers.get("cookie") ?? "";
+    const token = findSupabaseToken(cookieHeader);
+    if (!token) {
+      const url = req.nextUrl.clone();
+      url.pathname = "/vendor/signin";
+      return NextResponse.redirect(url);
+    }
+    return NextResponse.next();
+  }
 
   if (!pathname.startsWith("/admin") && !pathname.startsWith("/superadmin")) {
     return NextResponse.next();
@@ -30,5 +51,5 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/superadmin/:path*"],
+  matcher: ["/admin/:path*", "/superadmin/:path*", "/vendor/dashboard/:path*", "/vendor/dashboard"],
 };
