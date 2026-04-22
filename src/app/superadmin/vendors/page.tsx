@@ -3,6 +3,15 @@
 import { useEffect, useMemo, useState } from "react";
 import ImageCropperModal from "../ImageCropper";
 
+function proxiedImageUrl(url: string) {
+  const u = (url ?? "").trim();
+  if (!u) return u;
+  if (u.includes("drive.google.com")) {
+    return `/api/image-proxy?url=${encodeURIComponent(u)}`;
+  }
+  return u;
+}
+
 type Plan = { id: number; name: string };
 
 type Vendor = {
@@ -104,6 +113,10 @@ export default function SuperadminVendorsPage() {
   // Crop modal state
   const [cropModalOpen, setCropModalOpen] = useState(false);
   const [croppingImageIdx, setCroppingImageIdx] = useState<number | null>(null);
+
+  // Logo modal state
+  const [logoModalOpen, setLogoModalOpen] = useState(false);
+  const [logoUrlInput, setLogoUrlInput] = useState("");
 
   async function refresh(searchQuery?: string) {
     setError(null);
@@ -487,7 +500,7 @@ export default function SuperadminVendorsPage() {
               <button
                 type="button"
                 onClick={closeEditModal}
-                className="h-8 w-8 rounded-[3px] hover:bg-black/5 text-black/60"
+                className="h-8 w-8 rounded-[3px] bg-white/90 text-black/60 hover:text-[#b42318] flex items-center justify-center text-[18px] shadow-sm"
               >
                 ×
               </button>
@@ -593,14 +606,30 @@ export default function SuperadminVendorsPage() {
                     />
                   </label>
                   <label className="grid gap-1.5">
-                    <span className="text-[12px] font-semibold text-black/55">Logo URL</span>
-                    <input
-                      type="url"
-                      value={editForm.logo_url}
-                      onChange={(e) => setEditForm((f) => ({ ...f, logo_url: e.target.value }))}
-                      className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]"
-                      placeholder="https://..."
-                    />
+                    <span className="text-[12px] font-semibold text-black/55">Logo</span>
+                    <div className="flex items-center gap-3">
+                      <div className="w-[80px] h-[80px] rounded-[3px] border border-black/10 overflow-hidden bg-black/5 flex items-center justify-center">
+                        {editForm.logo_url ? (
+                          <img
+                            src={proxiedImageUrl(editForm.logo_url)}
+                            alt="Logo"
+                            className="w-full h-full object-contain"
+                          />
+                        ) : (
+                          <span className="text-[10px] text-black/40">No logo</span>
+                        )}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setLogoUrlInput(editForm.logo_url);
+                          setLogoModalOpen(true);
+                        }}
+                        className="h-9 px-4 rounded-[3px] border border-black/10 bg-white text-[12px] font-semibold text-black/70 hover:bg-black/5 transition-colors"
+                      >
+                        Edit Logo
+                      </button>
+                    </div>
                   </label>
                 </div>
               </section>
@@ -639,7 +668,7 @@ export default function SuperadminVendorsPage() {
                       <div className="w-[140px] h-[93px] rounded-[3px] border border-black/10 overflow-hidden bg-black/5 relative">
                         {img.image_url ? (
                           <img
-                            src={img.image_url}
+                            src={proxiedImageUrl(img.image_url)}
                             alt=""
                             className="w-full h-full object-cover cursor-pointer"
                             style={{
@@ -665,7 +694,7 @@ export default function SuperadminVendorsPage() {
                       <button
                         type="button"
                         onClick={() => setEditImages((imgs) => imgs.filter((_, i) => i !== idx))}
-                        className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-[#b42318] text-white text-[14px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-[#9a1d14]"
+                        className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-white/90 text-black/60 hover:text-[#b42318] flex items-center justify-center text-[14px] shadow-sm opacity-0 group-hover:opacity-100 transition-opacity"
                       >
                         ×
                       </button>
@@ -682,8 +711,8 @@ export default function SuperadminVendorsPage() {
                         }}
                         className={`absolute -top-2 -left-2 w-6 h-6 rounded-full text-[12px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity ${
                           img.is_cover
-                            ? "bg-[#027a48] text-white"
-                            : "bg-black/40 text-white hover:bg-black/60"
+                            ? "bg-[#ecfdf3] text-[#027a48] border border-[#027a48]/20"
+                            : "bg-white/90 text-black/60 hover:text-[#027a48] border border-black/10"
                         }`}
                         title={img.is_cover ? "Remove from cover" : "Set as cover"}
                       >
@@ -848,6 +877,65 @@ export default function SuperadminVendorsPage() {
           }}
           onSave={handleCropSave}
         />
+      )}
+
+      {/* Logo Modal */}
+      {logoModalOpen && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40">
+          <div className="w-full max-w-sm rounded-[3px] border border-black/20 bg-white shadow-xl overflow-hidden">
+            <div className="px-5 py-4 border-b border-black/10 flex items-center justify-between">
+              <div className="text-[14px] font-semibold text-[#2c2c2c]">Edit Logo</div>
+              <button
+                type="button"
+                onClick={() => setLogoModalOpen(false)}
+                className="h-7 w-7 rounded-[3px] bg-white/90 text-black/60 hover:text-[#b42318] flex items-center justify-center text-[16px] shadow-sm"
+              >
+                ×
+              </button>
+            </div>
+            <div className="p-5">
+              <div className="mb-4">
+                <div className="w-24 h-24 mx-auto rounded-[3px] border border-black/10 overflow-hidden bg-black/5 flex items-center justify-center">
+                  {logoUrlInput ? (
+                    <img src={proxiedImageUrl(logoUrlInput)} alt="Logo preview" className="w-full h-full object-contain" />
+                  ) : (
+                    <span className="text-[10px] text-black/40">No logo</span>
+                  )}
+                </div>
+              </div>
+              <label className="grid gap-1.5">
+                <span className="text-[12px] font-semibold text-black/55">Logo URL</span>
+                <input
+                  type="url"
+                  value={logoUrlInput}
+                  onChange={(e) => setLogoUrlInput(e.target.value)}
+                  className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]"
+                  placeholder="https://..."
+                  autoFocus
+                />
+              </label>
+              <div className="mt-5 flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setLogoModalOpen(false)}
+                  className="flex-1 h-10 rounded-[3px] border border-black/10 text-[13px] font-semibold text-black/70 hover:bg-black/5"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditForm((f) => ({ ...f, logo_url: logoUrlInput }));
+                    setLogoModalOpen(false);
+                  }}
+                  className="flex-1 h-10 rounded-[3px] bg-[#a67c52] text-white text-[13px] font-semibold hover:bg-[#8e6a46]"
+                >
+                  Save
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

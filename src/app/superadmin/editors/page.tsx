@@ -12,6 +12,13 @@ type Editor = {
   created_at: string;
 };
 
+type PendingEditor = {
+  user_id: string;
+  email: string | null;
+  name: string | null;
+  created_at: string;
+};
+
 async function apiFetch<T>(url: string, init?: RequestInit): Promise<T> {
   const res = await fetch(url, {
     ...init,
@@ -40,6 +47,10 @@ export default function SuperadminEditorsPage() {
   const [newEmail, setNewEmail] = useState("");
   const [addLoading, setAddLoading] = useState(false);
 
+  // Pending editors state
+  const [pendingEditors, setPendingEditors] = useState<PendingEditor[]>([]);
+  const [pendingEditorsLoading, setPendingEditorsLoading] = useState(true);
+
   async function refresh() {
     setError(null);
     setLoading(true);
@@ -53,8 +64,21 @@ export default function SuperadminEditorsPage() {
     }
   }
 
+  async function refreshPendingEditors() {
+    setPendingEditorsLoading(true);
+    try {
+      const res = await apiFetch<{ pendingEditors: PendingEditor[] }>("/api/admin/editors?pending=true&limit=50");
+      setPendingEditors(res.pendingEditors ?? []);
+    } catch (e: any) {
+      // Silently fail
+    } finally {
+      setPendingEditorsLoading(false);
+    }
+  }
+
   useEffect(() => {
     refresh();
+    refreshPendingEditors();
   }, []);
 
   const filtered = useMemo(() => {
@@ -262,6 +286,56 @@ export default function SuperadminEditorsPage() {
           </div>
         </div>
       </div>
+
+      {/* Pending Editors Section */}
+      <div className="rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden">
+        <div className="px-6 py-5 border-b border-black/5 flex items-center justify-between">
+          <div>
+            <div className="text-[18px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">Pending Editor Approvals</div>
+            <div className="mt-1 text-[12px] text-black/45">
+              Users who have signed up but haven't been granted editor access yet.
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={refreshPendingEditors}
+            className="h-9 px-3 rounded-[3px] border border-black/10 bg-white text-[12px] font-semibold text-black/70 hover:bg-black/5"
+          >
+            Refresh
+          </button>
+        </div>
+
+        <div className="p-6">
+          {pendingEditorsLoading ? (
+            <div className="text-[13px] text-black/50">Loading...</div>
+          ) : pendingEditors.length === 0 ? (
+            <div className="text-[13px] text-black/50">No pending editor approvals.</div>
+          ) : (
+            <div className="rounded-[3px] border border-black/10 overflow-hidden">
+              <div className="grid grid-cols-[1fr_140px_140px] gap-0 bg-[#fcfbf9] text-[11px] font-semibold text-black/55 border-b border-black/5">
+                <div className="px-3 py-2">Email</div>
+                <div className="px-3 py-2">Name</div>
+                <div className="px-3 py-2">Signed Up</div>
+              </div>
+              <div className="divide-y divide-black/5">
+                {pendingEditors.map((e) => (
+                  <div key={e.user_id} className="grid grid-cols-[1fr_140px_140px] items-center">
+                    <div className="px-3 py-3">
+                      <div className="text-[13px] font-semibold text-[#2c2c2c]">{e.email ?? "Unknown"}</div>
+                      <div className="mt-1 text-[11px] text-black/35 font-mono">{e.user_id.slice(0, 8)}...</div>
+                    </div>
+                    <div className="px-3 py-3 text-[13px] text-black/60">{e.name ?? "---"}</div>
+                    <div className="px-3 py-3 text-[12px] text-black/60">
+                      {e.created_at ? new Date(e.created_at).toLocaleDateString() : "---"}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
     </div>
   );
 }

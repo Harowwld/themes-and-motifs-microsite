@@ -7,6 +7,7 @@ export async function GET(req: Request) {
 
     const { searchParams } = new URL(req.url);
     const limitRaw = searchParams.get("limit");
+    const pending = searchParams.get("pending") === "true";
     const limit = Math.max(1, Math.min(500, Number(limitRaw ?? 200) || 200));
 
     const supabase = createSupabaseAdminClient();
@@ -56,6 +57,32 @@ export async function GET(req: Request) {
         created_at: row.created_at,
       };
     });
+
+    // If pending=true, return users who signed up but aren't in editors table
+    if (pending) {
+      // Get all user IDs that already have editor records
+      const existingEditorUserIds = new Set((editorsData ?? []).map((e: any) => e.user_id).filter(Boolean));
+
+      // List users from auth (recently created first)
+      const { data: allUsers, error: listError } = await supabase.auth.admin.listUsers();
+
+      if (listError) {
+        return Response.json({ error: listError.message }, { status: 500 });
+      }
+
+      // Filter to users who signed up via editor signup (have email) but don't have editor record
+      const pendingEditors = (allUsers.users ?? [])
+        .filter((u) => u.email && !existingEditorUserIds.has(u.id))
+        .slice(0, limit)
+        .map((u) => ({
+          user_id: u.id,
+          email: u.email,
+          name: u.user_metadata?.name ?? u.user_metadata?.full_name ?? null,
+          created_at: u.created_at,
+        }));
+
+      return Response.json({ pendingEditors }, { status: 200 });
+    }
 
     return Response.json({ editors }, { status: 200 });
   } catch (e: any) {
