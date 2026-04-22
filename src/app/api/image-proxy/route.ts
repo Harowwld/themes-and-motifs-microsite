@@ -1,8 +1,23 @@
 export const dynamic = "force-dynamic";
 
+function convertGoogleDriveUrl(url: string): string {
+  // Convert sharing URL format: https://drive.google.com/file/d/FILE_ID/view?usp=sharing
+  // To direct image URL: https://drive.google.com/uc?export=view&id=FILE_ID
+  const fileIdMatch = url.match(/\/file\/d\/([^\/\?]+)/);
+  if (fileIdMatch && fileIdMatch[1]) {
+    const fileId = fileIdMatch[1];
+    // Use the thumbnail endpoint which is more reliable for images
+    return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`;
+  }
+  return url;
+}
+
 function getUrlParam(req: Request) {
   const { searchParams } = new URL(req.url);
   const raw = (searchParams.get("url") ?? "").trim();
+  if (raw.includes("drive.google.com/file/d/")) {
+    return convertGoogleDriveUrl(raw);
+  }
   return raw;
 }
 

@@ -260,6 +260,17 @@ export default function SiteHeader() {
             </>
           ) : null}
 
+          {signedIn && !isVendor && !isSoonToWed ? (
+            <button
+              type="button"
+              disabled={signingOut}
+              onClick={() => void signOut()}
+              className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-md text-[13px] font-medium text-gray-600 hover:text-gray-900 transition-colors disabled:opacity-60 font-[family-name:var(--font-plus-jakarta)]"
+            >
+              {signingOut ? "Signing out…" : "Sign out"}
+            </button>
+          ) : null}
+
           {!signedIn ? (
             <a
               className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
@@ -374,6 +385,17 @@ export default function SiteHeader() {
                   {signingOut ? "Signing out…" : "Sign out"}
                 </button>
               </>
+            ) : null}
+
+            {signedIn && !isVendor && !isSoonToWed ? (
+              <button
+                type="button"
+                disabled={signingOut}
+                onClick={() => void signOut()}
+                className="w-full flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors disabled:opacity-60 text-left"
+              >
+                {signingOut ? "Signing out…" : "Sign out"}
+              </button>
             ) : null}
 
             {!signedIn ? (
