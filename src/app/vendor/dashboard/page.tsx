@@ -124,13 +124,13 @@ function PromoModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-      <div className="w-full max-w-lg rounded-[3px] border border-black/10 bg-white shadow-lg">
-        <div className="px-4 py-3 border-b border-black/5">
+      <div className="w-full max-w-lg max-h-[85vh] rounded-[3px] border border-black/10 bg-white shadow-lg flex flex-col">
+        <div className="px-4 py-3 border-b border-black/5 shrink-0">
           <div className="text-[14px] font-semibold text-[#2c2c2c]">{isNew ? "Add promo" : "Edit promo"}</div>
           <div className="mt-1 text-[12px] text-black/45">Add a title, details, and optional validity dates.</div>
         </div>
 
-        <div className="p-4 grid gap-4">
+        <div className="overflow-y-auto p-4 space-y-4">
           {imageUrl.trim() ? (
             <div className="rounded-[3px] border border-black/10 bg-white overflow-hidden">
               <div className="w-full aspect-[3/4] relative bg-[#fcfbf9]">
@@ -258,8 +258,9 @@ function PromoModal({
             />
             <span className="text-[12px] font-semibold text-black/60">Active</span>
           </label>
+        </div>
 
-          <div className="flex justify-between pt-2">
+        <div className="px-4 py-3 border-t border-black/5 flex justify-between shrink-0">
             <div>
               {!isNew && onDelete ? (
                 <button
@@ -303,7 +304,6 @@ function PromoModal({
               </button>
             </div>
           </div>
-        </div>
       </div>
     </div>
   );

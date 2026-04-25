@@ -103,6 +103,11 @@ export async function PATCH(req: Request) {
 
     let userId = existingUser?.id;
 
+    // If user exists, update their role to supplier (in case they were soon_to_wed)
+    if (userId) {
+      await supabase.from("users").update({ role: "supplier" }).eq("id", userId);
+    }
+
     if (!userId) {
       const redirectTo = getRedirectTo();
       const inviteRes = await supabase.auth.admin.inviteUserByEmail(claim.contact_email, {

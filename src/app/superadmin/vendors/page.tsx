@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import ImageCropperModal from "../ImageCropper";
+import { ImageUploadDropzone } from "@/components/ImageUploadDropzone";
+import type { UploadResult } from "@/hooks/useImageUpload";
 
 function proxiedImageUrl(url: string) {
   const u = (url ?? "").trim();
@@ -750,9 +752,35 @@ export default function SuperadminVendorsPage() {
                   </div>
                 </div>
 
-                {/* URL input for latest added image (if empty) */}
-                {editImages.length > 0 && editImages[editImages.length - 1]?.image_url === "" && (
+                {/* Upload dropzone for latest added image (if empty) */}
+                {editImages.length > 0 && editImages[editImages.length - 1]?.image_url === "" && editingVendor && (
                   <div className="mt-2">
+                    <ImageUploadDropzone
+                      bucket="vendor-assets"
+                      folder="gallery"
+                      entityId={String(editingVendor.id)}
+                      label="Upload Photo"
+                      description="JPG, PNG, WebP up to 10MB. Will be compressed if needed."
+                      onUploadComplete={(result: UploadResult) => {
+                        const newImages = [...editImages];
+                        newImages[newImages.length - 1].image_url = result.url;
+                        setEditImages(newImages);
+                      }}
+                      onClear={() => {
+                        const newImages = [...editImages];
+                        newImages[newImages.length - 1].image_url = "";
+                        setEditImages(newImages);
+                      }}
+                      existingUrl=""
+                    />
+                    <div className="relative my-3">
+                      <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-black/10"></div>
+                      </div>
+                      <div className="relative flex justify-center">
+                        <span className="px-2 bg-white text-[11px] text-black/40">or enter URL</span>
+                      </div>
+                    </div>
                     <input
                       value={editImages[editImages.length - 1]?.image_url ?? ""}
                       onChange={(e) => {
@@ -762,7 +790,6 @@ export default function SuperadminVendorsPage() {
                       }}
                       className="h-9 rounded-[3px] border border-black/10 px-3 text-[12px] w-full"
                       placeholder="Paste image URL here..."
-                      autoFocus
                     />
                   </div>
                 )}
@@ -880,9 +907,9 @@ export default function SuperadminVendorsPage() {
       )}
 
       {/* Logo Modal */}
-      {logoModalOpen && (
+      {logoModalOpen && editingVendor && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40">
-          <div className="w-full max-w-sm rounded-[3px] border border-black/20 bg-white shadow-xl overflow-hidden">
+          <div className="w-full max-w-md rounded-[3px] border border-black/20 bg-white shadow-xl overflow-hidden">
             <div className="px-5 py-4 border-b border-black/10 flex items-center justify-between">
               <div className="text-[14px] font-semibold text-[#2c2c2c]">Edit Logo</div>
               <button
@@ -903,6 +930,29 @@ export default function SuperadminVendorsPage() {
                   )}
                 </div>
               </div>
+
+              <ImageUploadDropzone
+                bucket="vendor-assets"
+                folder="logos"
+                entityId={String(editingVendor.id)}
+                label="Upload Logo"
+                description="JPG, PNG, WebP up to 10MB. Will be compressed if needed."
+                onUploadComplete={(result: UploadResult) => {
+                  setLogoUrlInput(result.url);
+                }}
+                onClear={() => setLogoUrlInput("")}
+                existingUrl={logoUrlInput}
+              />
+
+              <div className="relative my-4">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-black/10"></div>
+                </div>
+                <div className="relative flex justify-center">
+                  <span className="px-2 bg-white text-[11px] text-black/40">or enter URL</span>
+                </div>
+              </div>
+
               <label className="grid gap-1.5">
                 <span className="text-[12px] font-semibold text-black/55">Logo URL</span>
                 <input
@@ -911,7 +961,6 @@ export default function SuperadminVendorsPage() {
                   onChange={(e) => setLogoUrlInput(e.target.value)}
                   className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]"
                   placeholder="https://..."
-                  autoFocus
                 />
               </label>
               <div className="mt-5 flex gap-2">
