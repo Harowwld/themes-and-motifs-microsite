@@ -191,10 +191,20 @@ export default function HeroSection({
     <section className="relative overflow-hidden rounded-xl p-4 sm:p-5 lg:p-8 grid gap-6 sm:gap-8 lg:grid-cols-[1.2fr_0.8fr] items-start">
       <div
         aria-hidden
-        className="absolute inset-0"
+        className="absolute inset-0 hidden md:block"
         style={{
           backgroundImage:
             "url(https://thepennyslo.com/wp-content/uploads/2024/03/5-The-Penny-San-Luis-Obispo.webp)",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      />
+      <div
+        aria-hidden
+        className="absolute inset-0 md:hidden"
+        style={{
+          backgroundImage:
+            "url(/sandy-millar-8vaQKYnawHw-unsplash.jpg)",
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
@@ -209,16 +219,16 @@ export default function HeroSection({
       <div className="relative z-10 pt-1 sm:pt-2">
         <div className="inline-flex items-center gap-2 rounded-[999px] border border-white/20 bg-white/10 backdrop-blur-sm px-3 py-1 text-[11px] sm:text-[12px] font-medium text-white shadow-sm font-[family-name:var(--font-plus-jakarta)]">
           <span className="h-1.5 w-1.5 rounded-full bg-white/60" aria-hidden />
-          Verified vendors
+          Enjoy browsing. Start booking.
         </div>
 
         <h1 className="mt-4 sm:mt-5 text-[32px] leading-[1.08] sm:text-[38px] sm:leading-[1.06] lg:text-[52px] font-medium tracking-[-0.02em] text-white">
-          Plan your perfect day.
-          <span className="block text-white/80 italic">Find the best suppliers.</span>
+          Build your Wedding Dream Team - Fast!
+          <span className="block text-white/80 italic">Choose trusted professionals nationwide.</span>
         </h1>
 
         <p className="mt-3 sm:mt-4 max-w-xl text-[14px] sm:text-[15px] lg:text-[16px] leading-6 sm:leading-7 text-white/75 font-[family-name:var(--font-plus-jakarta)]">
-          Search over 1,000 verified wedding vendors with real reviews.
+          Choose from 1,000+ verified wedding vendors with real couple reviews & exclusive promos.
         </p>
 
         <div className="mt-5 sm:mt-6 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
