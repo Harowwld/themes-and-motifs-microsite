@@ -120,7 +120,18 @@ export async function PATCH(req: Request) {
       return Response.json({ error: msg }, { status: 500 });
     }
 
-    return Response.json({ vendor: data }, { status: 200 });
+    // Fetch plan separately to include in response
+    let planData = null;
+    if (data?.plan_id) {
+      const { data: plan } = await supabase
+        .from("plans")
+        .select("id,name")
+        .eq("id", data.plan_id)
+        .single();
+      planData = plan;
+    }
+
+    return Response.json({ vendor: { ...data, plan: planData } }, { status: 200 });
   } catch (e: any) {
     const status = typeof e?.statusCode === "number" ? e.statusCode : 500;
     return Response.json({ error: e?.message ?? "Unknown error" }, { status });

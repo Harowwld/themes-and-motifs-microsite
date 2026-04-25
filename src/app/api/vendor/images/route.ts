@@ -21,6 +21,9 @@ export async function PUT(req: Request) {
     const body = ((await req.json()) ?? {}) as PutBody;
     const images = Array.isArray(body.images) ? body.images : [];
 
+    console.log("[API/vendor/images] Vendor:", vendor.id, "Images received:", images.length);
+    console.log("[API/vendor/images] Raw body:", JSON.stringify(body).slice(0, 500));
+
     const cleaned = images
       .map((img, idx) => {
         const url = String((img as any)?.image_url ?? "").trim();
@@ -30,6 +33,8 @@ export async function PUT(req: Request) {
         return { url, caption, is_cover, display_order };
       })
       .filter((x) => x.url);
+
+    console.log("[API/vendor/images] Cleaned:", cleaned);
 
     // If multiple covers provided, keep first as cover.
     let coverUsed = false;
@@ -51,17 +56,22 @@ export async function PUT(req: Request) {
     if (delErr) return Response.json({ error: delErr.message }, { status: 500 });
 
     if (normalized.length > 0) {
-      const { error: insErr } = await supabase.from("vendor_images").insert(
-        normalized.map((x) => ({
-          vendor_id: vendor.id,
-          image_url: x.url,
-          caption: x.caption,
-          is_cover: x.is_cover,
-          display_order: x.display_order,
-        }))
-      );
+      const insertData = normalized.map((x) => ({
+        vendor_id: vendor.id,
+        image_url: x.url,
+        caption: x.caption,
+        is_cover: x.is_cover,
+        display_order: x.display_order,
+      }));
+      console.log("[API/vendor/images] Inserting:", insertData);
 
-      if (insErr) return Response.json({ error: insErr.message }, { status: 500 });
+      const { error: insErr } = await supabase.from("vendor_images").insert(insertData);
+
+      if (insErr) {
+        console.error("[API/vendor/images] Insert error:", insErr);
+        return Response.json({ error: insErr.message }, { status: 500 });
+      }
+      console.log("[API/vendor/images] Insert successful");
     }
 
     const { data, error } = await supabase

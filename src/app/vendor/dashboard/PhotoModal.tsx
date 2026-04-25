@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { ImageUploadDropzone } from "@/components/ImageUploadDropzone";
+import type { UploadResult } from "@/hooks/useImageUpload";
 
 type PhotoModalProps = {
   open: boolean;
@@ -22,6 +24,10 @@ export default function PhotoModal({ open, photo, isNew, onCancel, onSave, onDel
     setIsCover(photo?.is_cover ?? false);
   }, [photo, open]);
 
+  const handleUploadComplete = (result: UploadResult) => {
+    setImageUrl(result.url);
+  };
+
   if (!open) return null;
 
   return (
@@ -29,7 +35,7 @@ export default function PhotoModal({ open, photo, isNew, onCancel, onSave, onDel
       <div className="w-full max-w-md rounded-[3px] border border-black/10 bg-white shadow-lg">
         <div className="px-4 py-3 border-b border-black/5">
           <div className="text-[14px] font-semibold text-[#2c2c2c]">{isNew ? "Add photo" : "Edit photo"}</div>
-          <div className="mt-1 text-[12px] text-black/45">Enter the image URL and optional caption.</div>
+          <div className="mt-1 text-[12px] text-black/45">Upload an image or enter a URL with optional caption.</div>
         </div>
         <div className="p-4 grid gap-4">
           <div className="flex justify-center">
@@ -43,6 +49,26 @@ export default function PhotoModal({ open, photo, isNew, onCancel, onSave, onDel
               )}
             </div>
           </div>
+
+          <ImageUploadDropzone
+            bucket="vendor-assets"
+            folder="gallery"
+            label="Upload Photo"
+            description="JPG, PNG, WebP up to 10MB. Will be compressed if needed."
+            onUploadComplete={handleUploadComplete}
+            onClear={() => setImageUrl("")}
+            existingUrl={imageUrl}
+          />
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-black/10"></div>
+            </div>
+            <div className="relative flex justify-center">
+              <span className="px-2 bg-white text-[11px] text-black/40">or enter URL</span>
+            </div>
+          </div>
+
           <label className="grid gap-1.5">
             <span className="text-[12px] font-semibold text-black/55">Image URL</span>
             <input

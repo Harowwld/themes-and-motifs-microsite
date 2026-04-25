@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { ImageUploadDropzone } from "@/components/ImageUploadDropzone";
+import type { UploadResult } from "@/hooks/useImageUpload";
 
 type Category = { id: number; name: string; slug: string };
 type Region = { id: number; name: string };
@@ -736,6 +738,10 @@ function CoverPhotoModal({
     if (open) setValue(url);
   }, [open, url]);
 
+  const handleUploadComplete = (result: UploadResult) => {
+    setValue(result.url);
+  };
+
   if (!open) return null;
 
   return (
@@ -743,7 +749,7 @@ function CoverPhotoModal({
       <div className="w-full max-w-md rounded-xl border border-black/6 bg-white shadow-xl">
         <div className="px-5 py-4 border-b border-black/5">
           <div className="text-[15px] font-medium text-[#2c2c2c] font-[family-name:var(--font-plus-jakarta)]">Cover photo</div>
-          <div className="mt-1 text-[13px] text-black/45 font-[family-name:var(--font-plus-jakarta)]">Paste an image URL for your cover photo.</div>
+          <div className="mt-1 text-[13px] text-black/45 font-[family-name:var(--font-plus-jakarta)]">Upload or paste an image URL for your cover photo.</div>
         </div>
         <div className="p-5 grid gap-4">
           <div className="flex justify-center">
@@ -757,6 +763,26 @@ function CoverPhotoModal({
               )}
             </div>
           </div>
+
+          <ImageUploadDropzone
+            bucket="vendor-assets"
+            folder="covers"
+            label="Upload Cover Photo"
+            description="JPG, PNG, WebP up to 10MB. Will be compressed if needed."
+            onUploadComplete={handleUploadComplete}
+            onClear={() => setValue("")}
+            existingUrl={value}
+          />
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-black/10"></div>
+            </div>
+            <div className="relative flex justify-center">
+              <span className="px-2 bg-white text-[12px] text-black/40 font-[family-name:var(--font-plus-jakarta)]">or enter URL</span>
+            </div>
+          </div>
+
           <label className="grid gap-1.5">
             <span className="text-[13px] font-medium text-black/55 font-[family-name:var(--font-plus-jakarta)]">Image URL</span>
             <input
@@ -813,6 +839,10 @@ function LogoModal({
     if (open) setValue(url);
   }, [open, url]);
 
+  const handleUploadComplete = (result: UploadResult) => {
+    setValue(result.url);
+  };
+
   if (!open) return null;
 
   return (
@@ -820,7 +850,7 @@ function LogoModal({
       <div className="w-full max-w-md rounded-xl border border-black/6 bg-white shadow-xl">
         <div className="px-5 py-4 border-b border-black/5">
           <div className="text-[15px] font-medium text-[#2c2c2c] font-[family-name:var(--font-plus-jakarta)]">Logo</div>
-          <div className="mt-1 text-[13px] text-black/45 font-[family-name:var(--font-plus-jakarta)]">Paste an image URL for your logo.</div>
+          <div className="mt-1 text-[13px] text-black/45 font-[family-name:var(--font-plus-jakarta)]">Upload or paste an image URL for your logo.</div>
         </div>
         <div className="p-5 grid gap-4">
           <div className="flex justify-center">
@@ -834,6 +864,26 @@ function LogoModal({
               )}
             </div>
           </div>
+
+          <ImageUploadDropzone
+            bucket="vendor-assets"
+            folder="logos"
+            label="Upload Logo"
+            description="JPG, PNG, WebP up to 10MB. Will be compressed if needed."
+            onUploadComplete={handleUploadComplete}
+            onClear={() => setValue("")}
+            existingUrl={value}
+          />
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-black/10"></div>
+            </div>
+            <div className="relative flex justify-center">
+              <span className="px-2 bg-white text-[12px] text-black/40 font-[family-name:var(--font-plus-jakarta)]">or enter URL</span>
+            </div>
+          </div>
+
           <label className="grid gap-1.5">
             <span className="text-[13px] font-medium text-black/55 font-[family-name:var(--font-plus-jakarta)]">Image URL</span>
             <input

@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { ImageUploadDropzone } from "@/components/ImageUploadDropzone";
+import type { UploadResult } from "@/hooks/useImageUpload";
 
 type LogoModalProps = {
   open: boolean;
@@ -16,6 +18,10 @@ export default function LogoModal({ open, logoUrl, onCancel, onSave }: LogoModal
     setUrl(logoUrl);
   }, [logoUrl, open]);
 
+  const handleUploadComplete = (result: UploadResult) => {
+    setUrl(result.url);
+  };
+
   if (!open) return null;
 
   return (
@@ -23,7 +29,7 @@ export default function LogoModal({ open, logoUrl, onCancel, onSave }: LogoModal
       <div className="w-full max-w-md rounded-[3px] border border-black/10 bg-white shadow-lg">
         <div className="px-4 py-3 border-b border-black/5">
           <div className="text-[14px] font-semibold text-[#2c2c2c]">Logo</div>
-          <div className="mt-1 text-[12px] text-black/45">Enter the URL of your logo image.</div>
+          <div className="mt-1 text-[12px] text-black/45">Upload a logo or enter a URL.</div>
         </div>
         <div className="p-4 grid gap-4">
           <div className="flex justify-center">
@@ -37,6 +43,26 @@ export default function LogoModal({ open, logoUrl, onCancel, onSave }: LogoModal
               )}
             </div>
           </div>
+
+          <ImageUploadDropzone
+            bucket="vendor-assets"
+            folder="logos"
+            label="Upload Logo"
+            description="JPG, PNG, WebP up to 10MB. Will be compressed if needed."
+            onUploadComplete={handleUploadComplete}
+            onClear={() => setUrl("")}
+            existingUrl={url}
+          />
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-black/10"></div>
+            </div>
+            <div className="relative flex justify-center">
+              <span className="px-2 bg-white text-[11px] text-black/40">or enter URL</span>
+            </div>
+          </div>
+
           <label className="grid gap-1.5">
             <span className="text-[12px] font-semibold text-black/55">Logo URL</span>
             <input

@@ -47,8 +47,10 @@ export async function GET(req: Request) {
     let role: string | null = null;
 
     if (!combinedError && combinedData) {
-      vendorId = combinedData.vendor_id;
-      role = combinedData.role;
+      // Function returns TABLE which comes as an array of rows
+      const row = Array.isArray(combinedData) ? combinedData[0] : combinedData;
+      vendorId = row?.vendor_id ?? null;
+      role = row?.role ?? null;
     }
 
     const response = getResponse(user.id, user.email ?? null, vendorId, role);
