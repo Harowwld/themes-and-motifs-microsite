@@ -123,6 +123,7 @@ export default function DashboardPage() {
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);
   const [user, setUser] = useState<any>(null);
   const [savedVendors, setSavedVendors] = useState<SavedVendor[]>([]);
+  const [recentMoments, setRecentMoments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -142,6 +143,22 @@ export default function DashboardPage() {
     }
   }, []);
 
+  const fetchRecentMoments = useCallback(async (token: string) => {
+    try {
+      const res = await fetch("/api/moments?visibility=private&limit=3", {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await res.json();
+      if (data.moments) {
+        setRecentMoments(data.moments.slice(0, 3));
+      }
+    } catch (err: any) {
+      console.error("Error fetching recent moments:", err);
+    }
+  }, []);
+
   useEffect(() => {
     let cancelled = false;
 
@@ -155,7 +172,10 @@ export default function DashboardPage() {
 
       if (!cancelled) {
         setUser(session?.user);
-        await fetchSavedVendors(session?.access_token ?? "");
+        await Promise.all([
+          fetchSavedVendors(session?.access_token ?? ""),
+          fetchRecentMoments(session?.access_token ?? "")
+        ]);
         setLoading(false);
       }
     }
@@ -165,7 +185,7 @@ export default function DashboardPage() {
     return () => {
       cancelled = true;
     };
-  }, [router, supabase, fetchSavedVendors]);
+  }, [router, supabase, fetchSavedVendors, fetchRecentMoments]);
 
   const handleRemove = async (vendorId: number) => {
     const token = (await supabase.auth.getSession()).data.session?.access_token ?? "";
@@ -270,6 +290,75 @@ export default function DashboardPage() {
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {savedVendors.map((sv) => (
                 <VendorCard key={sv.id} vendor={sv.vendor} onRemove={() => handleRemove(sv.vendor.id)} />
+              ))}
+            </div>
+          )}
+        </section>
+
+        <section className="mb-12">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <svg className="h-5 w-5 text-[#a68b6a]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+              </svg>
+              <h2 className="text-[18px] font-semibold text-[#2c2c2c] font-[family-name:var(--font-noto-serif)]">
+                Recent Moments
+              </h2>
+            </div>
+            <a
+              href="/moments"
+              className="text-sm text-[#a68b6a] hover:text-[#957a5c] transition-colors font-medium"
+            >
+              View All →
+            </a>
+          </div>
+
+          {recentMoments.length === 0 ? (
+            <div className="rounded-xl border border-black/10 bg-white p-8 text-center">
+              <svg className="h-12 w-12 mx-auto text-neutral-300 mb-3" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+              </svg>
+              <p className="text-[14px] text-neutral-500 font-[family-name:var(--font-plus-jakarta)]">
+                No moments yet
+              </p>
+              <p className="text-[13px] text-neutral-400 mt-1 font-[family-name:var(--font-plus-jakarta)]">
+                Start documenting your wedding journey
+              </p>
+              <a
+                href="/moments/create"
+                className="inline-block mt-4 px-5 py-2.5 bg-[#a68b6a] text-white text-[13px] font-semibold rounded-lg hover:bg-[#957a5c] transition-colors font-[family-name:var(--font-plus-jakarta)]"
+              >
+                Create Your First Moment
+              </a>
+            </div>
+          ) : (
+            <div className="grid gap-4">
+              {recentMoments.map((moment) => (
+                <div key={moment.id} className="rounded-xl border border-black/5 bg-white p-4 hover:shadow-[0_10px_25px_rgba(0,0,0,0.08),0_4px_10px_rgba(0,0,0,0.04)] transition-all duration-300">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-[#2c2c2c] font-[family-name:var(--font-noto-serif)] mb-1">
+                        {moment.title}
+                      </h3>
+                      <p className="text-sm text-gray-500 capitalize mb-2">{moment.moment_type}</p>
+                      {moment.content && (
+                        <p className="text-sm text-gray-600 line-clamp-2 mb-2">{moment.content}</p>
+                      )}
+                      <p className="text-xs text-gray-400">
+                        {new Date(moment.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <a
+                      href={`/moments/${moment.id}`}
+                      className="ml-4 text-[#a68b6a] hover:text-[#957a5c] transition-colors"
+                    >
+                      <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                    </a>
+                  </div>
+                </div>
               ))}
             </div>
           )}

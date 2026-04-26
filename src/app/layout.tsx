@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Noto_Serif, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
-import HashAuthRedirect from "./HashAuthRedirect";
+import HashAuthRedirect from "../lib/HashAuthRedirect";
 import ScrollContainer from "./components/ScrollContainer";
 import BugReportButton from "./components/BugReportButton";
 

@@ -210,37 +210,12 @@ export default function SiteHeader() {
           >
             For vendors
           </a>
-        </nav>
-
-        <div className="flex items-center gap-2">
-          {/* Desktop nav items */}
-          {isVendor ? (
+          
+          {/* Dashboard and Moments for couples */}
+          {signedIn && isSoonToWed && !isVendor && (
             <>
               <a
-                className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-md text-[13px] font-medium text-gray-600 hover:text-gray-900 transition-colors font-[family-name:var(--font-plus-jakarta)]"
-                href="/vendor/dashboard"
-                onClick={(e) => {
-                  e.preventDefault();
-                  router.push("/vendor/dashboard", { scroll: false });
-                }}
-              >
-                Dashboard
-              </a>
-              <button
-                type="button"
-                disabled={signingOut}
-                onClick={() => void signOut()}
-                className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-md text-[13px] font-medium text-gray-600 hover:text-gray-900 transition-colors disabled:opacity-60 font-[family-name:var(--font-plus-jakarta)]"
-              >
-                {signingOut ? "Signing out…" : "Sign out"}
-              </button>
-            </>
-          ) : null}
-
-          {signedIn && isSoonToWed && !isVendor ? (
-            <>
-              <a
-                className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-md text-[13px] font-medium text-gray-600 hover:text-gray-900 transition-colors font-[family-name:var(--font-plus-jakarta)]"
+                className="hover:text-[#a68b6a] transition-colors"
                 href="/dashboard"
                 onClick={(e) => {
                   e.preventDefault();
@@ -249,36 +224,81 @@ export default function SiteHeader() {
               >
                 My Wedding
               </a>
-              <button
-                type="button"
-                disabled={signingOut}
-                onClick={() => void signOut()}
-                className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-md text-[13px] font-medium text-gray-600 hover:text-gray-900 transition-colors disabled:opacity-60 font-[family-name:var(--font-plus-jakarta)]"
+              <a
+                className="hover:text-[#a68b6a] transition-colors"
+                href="/moments"
+                onClick={(e) => {
+                  e.preventDefault();
+                  router.push("/moments", { scroll: false });
+                }}
               >
-                {signingOut ? "Signing out.." : "Sign out"}
-              </button>
+                Moments
+              </a>
             </>
+          )}
+          
+          {/* Dashboard for vendors */}
+          {isVendor && (
+            <a
+              className="hover:text-[#a68b6a] transition-colors"
+              href="/vendor/dashboard"
+              onClick={(e) => {
+                e.preventDefault();
+                router.push("/vendor/dashboard", { scroll: false });
+              }}
+            >
+              Dashboard
+            </a>
+          )}
+          
+          {/* Public Moments for non-couples */}
+          {!signedIn || isVendor ? (
+            <a
+              className="hover:text-[#a68b6a] transition-colors"
+              href="/moments"
+              onClick={(e) => {
+                e.preventDefault();
+                router.push("/moments", { scroll: false });
+              }}
+            >
+              Wedding Moments
+            </a>
           ) : null}
+        </nav>
 
-          {signedIn && !isVendor && !isSoonToWed ? (
+        <div className="flex items-center gap-2">
+          {/* Desktop nav items - Left side for Sign in */}
+          {!signedIn && (
+            <a
+              className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-md text-[13px] font-medium text-gray-600 hover:text-gray-900 transition-colors font-[family-name:var(--font-plus-jakarta)]"
+              href="/soon-to-wed/signin"
+            >
+              Sign in
+            </a>
+          )}
+
+          {/* Desktop nav items - Right side */}
+          {signedIn && (
             <button
               type="button"
               disabled={signingOut}
               onClick={() => void signOut()}
               className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-md text-[13px] font-medium text-gray-600 hover:text-gray-900 transition-colors disabled:opacity-60 font-[family-name:var(--font-plus-jakarta)]"
             >
-              {signingOut ? "Signing out…" : "Sign out"}
+              {signingOut ? "Signing out.." : "Sign out"}
             </button>
-          ) : null}
+          )}
 
-          {!signedIn ? (
-            <a
-              className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
-              href="/soon-to-wed/signin"
-            >
-              Sign in
-            </a>
-          ) : null}
+          <a
+            href="/vendors"
+            className="hidden sm:inline-flex h-9 items-center justify-center px-4 rounded-md bg-[#a68b6a] text-white text-[13px] font-medium hover:bg-[#957a5c] transition-colors font-[family-name:var(--font-plus-jakarta)]"
+            onClick={(e) => {
+              e.preventDefault();
+              router.push("/vendors");
+            }}
+          >
+            Start Searching
+          </a>
 
           {/* Mobile menu button */}
           <button
@@ -291,18 +311,7 @@ export default function SiteHeader() {
             <MenuIcon open={mobileMenuOpen} />
           </button>
 
-          {/* Desktop CTA */}
-          <a
-            className="hidden sm:inline-flex h-9 items-center justify-center px-3.5 rounded-md bg-[#a68b6a] text-white text-[13px] font-medium hover:bg-[#957a5c] transition-colors font-[family-name:var(--font-plus-jakarta)]"
-            href="/vendors"
-            onClick={(e) => {
-              e.preventDefault();
-              router.push("/vendors");
-            }}
-          >
-            Start searching
-          </a>
-        </div>
+                  </div>
       </div>
 
       {/* Mobile Menu */}
@@ -338,33 +347,9 @@ export default function SiteHeader() {
             >
               For vendors
             </a>
-
-            <div className="border-t border-gray-100 my-2" />
-
-            {isVendor ? (
-              <>
-                <a
-                  className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
-                  href="/vendor/dashboard"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    router.push("/vendor/dashboard", { scroll: false });
-                  }}
-                >
-                  Dashboard
-                </a>
-                <button
-                  type="button"
-                  disabled={signingOut}
-                  onClick={() => void signOut()}
-                  className="w-full flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors disabled:opacity-60 text-left"
-                >
-                  {signingOut ? "Signing out…" : "Sign out"}
-                </button>
-              </>
-            ) : null}
-
-            {signedIn && isSoonToWed && !isVendor ? (
+            
+            {/* Dashboard and Moments for couples */}
+            {signedIn && isSoonToWed && !isVendor && (
               <>
                 <a
                   className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
@@ -376,18 +361,51 @@ export default function SiteHeader() {
                 >
                   My Wedding
                 </a>
-                <button
-                  type="button"
-                  disabled={signingOut}
-                  onClick={() => void signOut()}
-                  className="w-full flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors disabled:opacity-60 text-left"
+                <a
+                  className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
+                  href="/moments"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    router.push("/moments", { scroll: false });
+                  }}
                 >
-                  {signingOut ? "Signing out…" : "Sign out"}
-                </button>
+                  Moments
+                </a>
               </>
+            )}
+            
+            {/* Dashboard for vendors */}
+            {isVendor && (
+              <a
+                className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
+                href="/vendor/dashboard"
+                onClick={(e) => {
+                  e.preventDefault();
+                  router.push("/vendor/dashboard", { scroll: false });
+                }}
+              >
+                Dashboard
+              </a>
+            )}
+            
+            {/* Public Moments for non-couples */}
+            {!signedIn || isVendor ? (
+              <a
+                className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
+                href="/moments"
+                onClick={(e) => {
+                  e.preventDefault();
+                  router.push("/moments", { scroll: false });
+                }}
+              >
+                Wedding Moments
+              </a>
             ) : null}
 
-            {signedIn && !isVendor && !isSoonToWed ? (
+            <div className="border-t border-gray-100 my-2" />
+
+            {/* Sign out or Start Searching */}
+            {signedIn ? (
               <button
                 type="button"
                 disabled={signingOut}
@@ -396,7 +414,18 @@ export default function SiteHeader() {
               >
                 {signingOut ? "Signing out…" : "Sign out"}
               </button>
-            ) : null}
+            ) : (
+              <a
+                className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-[#a68b6a] hover:text-[#957a5c] hover:bg-gray-50 transition-colors"
+                href="/vendors"
+                onClick={(e) => {
+                  e.preventDefault();
+                  router.push("/vendors");
+                }}
+              >
+                Start Searching
+              </a>
+            )}
 
             {!signedIn ? (
               <a

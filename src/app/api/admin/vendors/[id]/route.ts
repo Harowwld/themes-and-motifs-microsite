@@ -13,7 +13,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 
     const supabase = createSupabaseAdminClient();
 
-    const [vendorRes, imagesRes, socialsRes] = await Promise.all([
+    const [vendorRes, imagesRes, socialsRes, affiliationsRes, allAffiliationsRes] = await Promise.all([
       supabase
         .from("vendors")
         .select("*")
@@ -29,6 +29,14 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
         .select("id, platform, url")
         .eq("vendor_id", vendorId)
         .order("id", { ascending: true }),
+      supabase
+        .from("vendor_affiliations")
+        .select("id, affiliation:affiliations(id, name, slug)")
+        .eq("vendor_id", vendorId),
+      supabase
+        .from("affiliations")
+        .select("id, name, slug")
+        .order("name", { ascending: true }),
     ]);
 
     if (vendorRes.error) {
@@ -43,6 +51,8 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
       vendor: vendorRes.data,
       images: imagesRes.data ?? [],
       socials: socialsRes.data ?? [],
+      affiliations: affiliationsRes.data ?? [],
+      allAffiliations: allAffiliationsRes.data ?? [],
     }, { status: 200 });
   } catch (e: any) {
     const status = typeof e?.statusCode === "number" ? e.statusCode : 500;

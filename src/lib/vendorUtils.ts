@@ -25,10 +25,6 @@ export function hasImages(vendor: { cover_image_url?: string | null; logo_url?: 
 
 export function sortVendors<T extends VendorWithSortFields>(vendors: T[], sort: SortKey): T[] {
   return [...vendors].sort((a, b) => {
-    const aHas = hasImages(a);
-    const bHas = hasImages(b);
-    if (aHas !== bHas) return aHas ? -1 : 1;
-
     let primaryCmp = 0;
 
     switch (sort) {

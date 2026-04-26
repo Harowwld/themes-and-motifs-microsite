@@ -2,7 +2,7 @@ import { Suspense, cache } from "react";
 import SiteHeader from "../sections/SiteHeader";
 import SiteFooter from "../sections/SiteFooter";
 import { createSupabaseServerClient } from "../../lib/supabaseServer";
-import CategoryBrowser from "../CategoryBrowser";
+import CategoryBrowser from "../components/CategoryBrowser";
 import VendorsSearchBar from "./VendorsSearchBar";
 import VirtualizedVendorsList from "./VirtualizedVendorsList";
 import VendorsScrollToResults from "./VendorsScrollToResults";

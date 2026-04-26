@@ -5,8 +5,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 function normalizeReturnTo(v: string | null) {
   const raw = (v ?? "").trim();
-  if (!raw) return "/vendors";
-  if (!raw.startsWith("/")) return "/vendors";
+  if (!raw) return "/";
+  if (!raw.startsWith("/")) return "/";
   return raw;
 }
 

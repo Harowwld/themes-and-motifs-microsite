@@ -1,6 +1,6 @@
 import { Suspense, cache } from "react";
 import { createSupabaseServerClient } from "../lib/supabaseServer";
-import CategoryBrowser from "./CategoryBrowser";
+import CategoryBrowser from "./components/CategoryBrowser";
 import SiteHeader from "./sections/SiteHeader";
 import HeroSection from "./sections/HeroSection";
 import FeaturedVendorsSection from "../features/vendors/sections/FeaturedVendorsSection";

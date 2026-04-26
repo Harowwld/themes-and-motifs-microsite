@@ -280,8 +280,8 @@ async function VendorDetailData({ slug }: { slug: string }) {
             className="h-56 sm:h-72 w-full shadow-[0_4px_12px_rgba(0,0,0,0.08)]"
             style={{
               background: cover
-                ? `linear-gradient(135deg, rgba(166,139,106,0.2), rgba(255,255,255,0.9)), url(${coverUrl}) center/cover no-repeat`
-                : "linear-gradient(135deg, rgba(166,139,106,0.2), rgba(255,255,255,0.9))",
+                ? `url(${coverUrl}) center/cover no-repeat`
+                : "linear-gradient(135deg, rgba(166,139,106,0.2), rgba(166,139,106,0.05))",
             }}
           />
         </section>
@@ -352,6 +352,12 @@ async function VendorDetailData({ slug }: { slug: string }) {
                     <span className="text-black/40">· {vendor.save_count} saved</span>
                   ) : null}
                 </span>
+                {affiliations.length > 0 ? (
+                  <span className="flex items-center gap-1.5">
+                    <span className="text-black/40">·</span>
+                    <span className="text-black/55">affiliated with {affiliations.map(a => a.name).join(" · ")}</span>
+                  </span>
+                ) : null}
               </div>
 
               {/* Category Pills */}
@@ -640,19 +646,6 @@ async function VendorDetailData({ slug }: { slug: string }) {
                 </div>
               )}
 
-              {/* Affiliations */}
-              {affiliations.length > 0 ? (
-                <div className="rounded-xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)]">
-                  <h3 className="text-[14px] font-semibold text-[#2c2c2c]">Affiliations</h3>
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {affiliations.map((a) => (
-                      <span key={a.id} className="inline-flex items-center rounded-lg bg-white px-2.5 py-1 text-[12px] text-black/60">
-                        {a.name}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              ) : null}
             </div>
           </div>
         </section>

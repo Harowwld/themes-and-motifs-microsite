@@ -56,6 +56,17 @@ type VendorSocial = {
   url: string;
 };
 
+type Affiliation = {
+  id: number;
+  name: string;
+  slug: string;
+};
+
+type VendorAffiliation = {
+  id: number;
+  affiliation: Affiliation | Affiliation[] | null;
+};
+
 async function apiFetch<T>(url: string, init?: RequestInit): Promise<T> {
   const res = await fetch(url, {
     ...init,
@@ -111,6 +122,10 @@ export default function SuperadminVendorsPage() {
   });
   const [editImages, setEditImages] = useState<VendorImage[]>([]);
   const [editSocials, setEditSocials] = useState<VendorSocial[]>([]);
+  const [editAffiliations, setEditAffiliations] = useState<Affiliation[]>([]);
+  const [allAffiliations, setAllAffiliations] = useState<Affiliation[]>([]);
+  const [affiliationInput, setAffiliationInput] = useState("");
+  const [showAffiliationDropdown, setShowAffiliationDropdown] = useState(false);
 
   // Crop modal state
   const [cropModalOpen, setCropModalOpen] = useState(false);
@@ -171,9 +186,13 @@ export default function SuperadminVendorsPage() {
     setEditModalOpen(true);
 
     try {
-      const res = await apiFetch<{ vendor: Vendor; images: VendorImage[]; socials: VendorSocial[] }>(
-        `/api/admin/vendors/${vendor.id}`
-      );
+      const res = await apiFetch<{
+        vendor: Vendor;
+        images: VendorImage[];
+        socials: VendorSocial[];
+        affiliations: VendorAffiliation[];
+        allAffiliations: Affiliation[];
+      }>(`/api/admin/vendors/${vendor.id}`);
 
       const v = res.vendor;
       setEditForm({
@@ -216,6 +235,17 @@ export default function SuperadminVendorsPage() {
           ? normalizedSocials
           : [{ platform: "facebook", url: "" }]
       );
+
+      // Normalize affiliations
+      const normalizedAffiliations = (res.affiliations ?? [])
+        .map((va) => {
+          const aff = Array.isArray(va.affiliation) ? va.affiliation[0] : va.affiliation;
+          return aff ? { id: aff.id, name: aff.name, slug: aff.slug } : null;
+        })
+        .filter((a): a is Affiliation => a !== null);
+      setEditAffiliations(normalizedAffiliations);
+      setAllAffiliations(res.allAffiliations ?? []);
+      setAffiliationInput("");
     } catch (e: any) {
       setEditError(e?.message ?? "Failed to load vendor details.");
     } finally {
@@ -317,10 +347,42 @@ export default function SuperadminVendorsPage() {
     }
   }
 
+  async function saveVendorAffiliations() {
+    if (!editingVendor) return;
+    setEditLoading(true);
+    setEditError(null);
+
+    try {
+      const res = await apiFetch<{
+        affiliations: VendorAffiliation[];
+        allAffiliations: Affiliation[];
+        created: Affiliation[];
+      }>(`/api/admin/vendors/${editingVendor.id}/affiliations`, {
+        method: "PUT",
+        body: JSON.stringify({ affiliations: editAffiliations }),
+      });
+
+      // Update local state with new affiliations and allAffiliations (in case new ones were created)
+      const normalizedAffiliations = (res.affiliations ?? [])
+        .map((va) => {
+          const aff = Array.isArray(va.affiliation) ? va.affiliation[0] : va.affiliation;
+          return aff ? { id: aff.id, name: aff.name, slug: aff.slug } : null;
+        })
+        .filter((a): a is Affiliation => a !== null);
+      setEditAffiliations(normalizedAffiliations);
+      setAllAffiliations(res.allAffiliations ?? []);
+    } catch (e: any) {
+      setEditError(e?.message ?? "Failed to save affiliations.");
+    } finally {
+      setEditLoading(false);
+    }
+  }
+
   async function saveAllAndClose() {
     await saveVendorProfile();
     await saveVendorImages();
     await saveVendorSocials();
+    await saveVendorAffiliations();
     closeEditModal();
   }
 
@@ -853,6 +915,128 @@ export default function SuperadminVendorsPage() {
                   )}
                 </div>
               </section>
+
+              {/* Affiliations Section */}
+              <section className="grid gap-4">
+                <div className="text-[13px] font-semibold text-[#2c2c2c] border-b border-black/5 pb-2">
+                  Affiliations
+                </div>
+
+                {/* Current affiliations */}
+                <div className="flex flex-wrap gap-2">
+                  {editAffiliations.map((aff) => (
+                    <span
+                      key={aff.id}
+                      className="inline-flex items-center gap-1 rounded-[3px] border border-black/10 bg-[#fcfbf9] px-2.5 py-1 text-[12px] text-black/70"
+                    >
+                      {aff.name}
+                      <button
+                        type="button"
+                        onClick={() => setEditAffiliations((prev) => prev.filter((a) => a.id !== aff.id))}
+                        className="ml-1 text-black/40 hover:text-[#b42318]"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                  {editAffiliations.length === 0 && (
+                    <span className="text-[12px] text-black/50 italic">No affiliations added.</span>
+                  )}
+                </div>
+
+                {/* Add affiliation dropdown + custom input */}
+                <div className="grid gap-2">
+                  <div className="relative">
+                    <select
+                      value=""
+                      onChange={(e) => {
+                        const selectedId = Number(e.target.value);
+                        if (!selectedId) return;
+                        const selected = allAffiliations.find((a) => a.id === selectedId);
+                        if (selected && !editAffiliations.some((a) => a.id === selected.id)) {
+                          setEditAffiliations((prev) => [...prev, selected]);
+                        }
+                        e.target.value = "";
+                      }}
+                      className="h-10 w-full rounded-[3px] border border-black/10 bg-white px-3 text-[13px] outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15"
+                    >
+                      <option value="">Select existing affiliation...</option>
+                      {allAffiliations
+                        .filter((a) => !editAffiliations.some((ea) => ea.id === a.id))
+                        .map((a) => (
+                          <option key={a.id} value={a.id}>
+                            {a.name}
+                          </option>
+                        ))}
+                    </select>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <input
+                      value={affiliationInput}
+                      onChange={(e) => setAffiliationInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          const name = affiliationInput.trim();
+                          if (!name) return;
+                          // Check if already exists in current affiliations
+                          if (editAffiliations.some((a) => a.name.toLowerCase() === name.toLowerCase())) {
+                            setAffiliationInput("");
+                            return;
+                          }
+                          // Check if exists in all affiliations
+                          const existing = allAffiliations.find(
+                            (a) => a.name.toLowerCase() === name.toLowerCase()
+                          );
+                          if (existing) {
+                            setEditAffiliations((prev) => [...prev, existing]);
+                          } else {
+                            // Add as new (will be created on save)
+                            const newAff: Affiliation = {
+                              id: -Date.now(), // Temporary negative ID
+                              name,
+                              slug: "", // Will be generated on server
+                            };
+                            setEditAffiliations((prev) => [...prev, newAff]);
+                          }
+                          setAffiliationInput("");
+                        }
+                      }}
+                      className="h-10 flex-1 rounded-[3px] border border-black/10 bg-white px-3 text-[13px] outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15"
+                      placeholder="Or type custom affiliation and press Enter..."
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const name = affiliationInput.trim();
+                        if (!name) return;
+                        if (editAffiliations.some((a) => a.name.toLowerCase() === name.toLowerCase())) {
+                          setAffiliationInput("");
+                          return;
+                        }
+                        const existing = allAffiliations.find(
+                          (a) => a.name.toLowerCase() === name.toLowerCase()
+                        );
+                        if (existing) {
+                          setEditAffiliations((prev) => [...prev, existing]);
+                        } else {
+                          const newAff: Affiliation = {
+                            id: -Date.now(),
+                            name,
+                            slug: "",
+                          };
+                          setEditAffiliations((prev) => [...prev, newAff]);
+                        }
+                        setAffiliationInput("");
+                      }}
+                      className="h-10 px-4 rounded-[3px] bg-[#a67c52] text-white text-[13px] font-semibold hover:bg-[#8e6a46] transition-colors"
+                    >
+                      Add
+                    </button>
+                  </div>
+                </div>
+              </section>
             </div>
 
             <div className="px-4 py-3 border-t border-black/5 flex items-center justify-between">
@@ -870,6 +1054,7 @@ export default function SuperadminVendorsPage() {
                     await saveVendorProfile();
                     await saveVendorImages();
                     await saveVendorSocials();
+                    await saveVendorAffiliations();
                   }}
                   disabled={editLoading}
                   className="h-10 px-4 rounded-[3px] border border-[#a67c52] text-[13px] font-semibold text-[#a67c52] hover:bg-[#a67c52]/5 transition-colors disabled:opacity-60"
