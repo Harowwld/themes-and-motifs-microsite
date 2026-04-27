@@ -10,7 +10,7 @@ import { attachCoverImages } from "../../features/vendors/coverImages.server";
 import type { VendorListItem } from "../../features/vendors/types";
 import { buildVendorsQuery } from "../../features/vendors/queries.server";
 import FadeInOnView from "../components/FadeInOnView";
-import { sortVendors, VendorWithSortFields, SortKey } from "../../lib/vendorUtils";
+import { sortVendors, VendorWithSortFields, SortKey, getCachedVendorLocations } from "../../lib/vendorUtils";
 
 const getCachedRegions = cache(async () => {
   const supabase = createSupabaseServerClient();
@@ -28,12 +28,6 @@ const getCachedCategories = cache(async () => {
   const supabase = createSupabaseServerClient();
   const { data } = await supabase.from("categories").select("id,name,slug").order("name", { ascending: true }).limit(200);
   return (data ?? []) as CategoryListItem[];
-});
-
-const getCachedVendorLocations = cache(async () => {
-  const supabase = createSupabaseServerClient();
-  const { data } = await supabase.from("vendors").select("region_id,city,location_text").eq("is_active", true).limit(5000);
-  return data ?? [];
 });
 
 type CategoryListItem = {
@@ -94,9 +88,13 @@ function VendorsSearchBarSkeleton() {
         <div className="mt-2 h-4 w-64 rounded bg-black/10 animate-pulse" />
       </div>
       <div className="p-6">
-        <div className="grid gap-4 lg:grid-cols-[1.2fr_0.9fr_0.9fr_0.9fr_0.7fr_auto] items-end">
+        <div className="grid gap-4 lg:grid-cols-[1fr_1fr_0.9fr_0.9fr_0.9fr_0.7fr_auto] items-end">
           <label className="grid gap-1.5">
             <span className="text-xs font-medium text-stone-500 uppercase tracking-wide">Keyword</span>
+            <div className="h-11 rounded-md border border-stone-200 bg-stone-50 animate-pulse" />
+          </label>
+          <label className="grid gap-1.5">
+            <span className="text-xs font-medium text-stone-500 uppercase tracking-wide">Category</span>
             <div className="h-11 rounded-md border border-stone-200 bg-stone-50 animate-pulse" />
           </label>
           <label className="grid gap-1.5">
@@ -190,13 +188,14 @@ async function VendorsPageData({
     getCachedCategories(),
   ]);
 
+  // Build cities list matching LandingPage logic - include both city and location_text
   const citiesList = Array.from(
     new Map(
       (vendorLocations as { region_id: number | null; city: string | null; location_text: string | null }[])
-        .map((r) => ({
-          region_id: typeof r.region_id === "number" ? r.region_id : 0,
-          name: (r.city ?? r.location_text ?? "").trim(),
-        }))
+        .flatMap((r) => [
+          { region_id: typeof r.region_id === "number" ? r.region_id : 0, name: (r.city ?? "").trim() },
+          { region_id: typeof r.region_id === "number" ? r.region_id : 0, name: (r.location_text ?? "").trim() },
+        ])
         .filter((r) => Boolean(r.name))
         .map((r) => [`${r.region_id}::${r.name.toLowerCase()}`, r] as const)
     ).values()
@@ -230,6 +229,7 @@ async function VendorsPageData({
           regions={regionsList}
           cities={Array.from(citiesList).map((c, i) => ({ id: i + 1, name: c.name, region_id: c.region_id }))}
           affiliations={affiliationsList}
+          categories={categoriesList}
         />
       </FadeInOnView>
 

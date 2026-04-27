@@ -170,7 +170,7 @@ export default function PromoModal({
             bucket="promo-assets"
             folder="promos"
             label="Promo Image (optional)"
-            description="JPG, PNG, WebP up to 10MB. Will be compressed if needed."
+            description="JPG, PNG, WebP up to 2MB. Will be compressed if needed."
             onUploadComplete={(result: UploadResult) => setImageUrl(result.url)}
             onClear={() => setImageUrl("")}
             existingUrl={imageUrl}

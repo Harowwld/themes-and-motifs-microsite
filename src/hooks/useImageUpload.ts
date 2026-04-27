@@ -103,7 +103,7 @@ export function useImageUpload(options: UseImageUploadOptions) {
         // Compression step
         setState((prev) => ({ ...prev, progress: 20 }));
         const compressionResult = await compressImage(file, {
-          maxSizeMB: options.maxSizeMB || 10,
+          maxSizeMB: options.maxSizeMB || 2,
         });
         setState((prev) => ({ ...prev, progress: 50 }));
 

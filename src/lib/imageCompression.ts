@@ -15,10 +15,10 @@ export interface CompressionOptions {
 }
 
 const DEFAULT_OPTIONS: Required<CompressionOptions> = {
-  maxWidthOrHeight: 2048,
-  initialQuality: 0.8,
-  minQuality: 0.5,
-  maxSizeMB: 10,
+  maxWidthOrHeight: 1600,
+  initialQuality: 0.6,
+  minQuality: 0.01,
+  maxSizeMB: 2,
 };
 
 /**
@@ -47,7 +47,7 @@ export async function compressImage(
   let currentQuality = opts.initialQuality;
   let compressedFile = file;
   let attempts = 0;
-  const maxAttempts = 3;
+  const maxAttempts = 5;
 
   while (attempts < maxAttempts) {
     const compressionOptions = {
@@ -56,6 +56,7 @@ export async function compressImage(
       maxSizeMB: opts.maxSizeMB,
       useWebWorker: true,
       fileType: file.type,
+      alwaysKeepResolution: false,
     };
 
     compressedFile = await imageCompression(file, compressionOptions);

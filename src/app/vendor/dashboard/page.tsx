@@ -56,6 +56,20 @@ type VendorPromo = {
   updated_at: string;
 };
 
+type Inquiry = {
+  id: number;
+  vendor_id: number;
+  user_id: string | null;
+  name: string | null;
+  email: string | null;
+  phone: string | null;
+  wedding_date: string | null;
+  message: string;
+  status: "new" | "read" | "replied" | "archived" | string;
+  created_at: string;
+  updated_at: string;
+};
+
 const SOCIAL_PLATFORM_OPTIONS = ["facebook", "instagram", "tiktok", "x", "pinterest", "youtube", "website"] as const;
 type SocialPlatformOption = (typeof SOCIAL_PLATFORM_OPTIONS)[number] | "other";
 
@@ -431,6 +445,7 @@ export default function VendorDashboardPage() {
   ]);
 
   const [promos, setPromos] = useState<VendorPromo[]>([]);
+  const [inquiries, setInquiries] = useState<Inquiry[]>([]);
 
   const [cropperOpen, setCropperOpen] = useState(false);
   const [logoModalOpen, setLogoModalOpen] = useState(false);
@@ -567,6 +582,33 @@ export default function VendorDashboardPage() {
     }
   }
 
+  async function refreshInquiries() {
+    if (!token) return;
+    try {
+      const res = await apiFetch<{ inquiries: Inquiry[] }>("/api/vendor/inquiries", token);
+      setInquiries(res.inquiries ?? []);
+    } catch {
+      setInquiries([]);
+    }
+  }
+
+  async function updateInquiryStatus(id: number, status: string) {
+    if (!token) return;
+    setError(null);
+    setSaving(true);
+    try {
+      const res = await apiFetch<{ inquiry: Inquiry }>("/api/vendor/inquiries", token, {
+        method: "PATCH",
+        body: JSON.stringify({ id, status }),
+      });
+      setInquiries((prev) => prev.map((x) => (x.id === id ? res.inquiry : x)));
+    } catch (e: any) {
+      setError(e?.message ?? "Failed to update inquiry.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
   const planName = String((Array.isArray(vendor?.plan) ? vendor?.plan?.[0]?.name : vendor?.plan?.name) ?? "")
     .trim()
     .toLowerCase();
@@ -650,6 +692,11 @@ export default function VendorDashboardPage() {
             () => ({ promos: [] as VendorPromo[] })
           );
           setPromos(promosRes.promos ?? []);
+
+          const inquiriesRes = await apiFetch<{ inquiries: Inquiry[] }>("/api/vendor/inquiries", session.access_token).catch(
+            () => ({ inquiries: [] as Inquiry[] })
+          );
+          setInquiries(inquiriesRes.inquiries ?? []);
         } catch (e: any) {
           setError(e?.message ?? "Failed to load vendor profile.");
         } finally {
@@ -1269,6 +1316,96 @@ export default function VendorDashboardPage() {
                 </section>
               </>
             ) : null}
+
+            {/* Inquiries Section - Available to all plans */}
+            <section className="rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden">
+              <div className="px-6 py-5 border-b border-black/5 flex items-center justify-between">
+                <div>
+                  <div className="text-[18px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">Inquiries</div>
+                  <div className="mt-1 text-[12px] text-black/45">Messages from couples interested in your services.</div>
+                </div>
+                <button
+                  type="button"
+                  onClick={refreshInquiries}
+                  className="h-9 px-4 rounded-[3px] border border-black/10 bg-white text-[13px] font-semibold text-black/70 hover:bg-black/5 transition-colors"
+                >
+                  Refresh
+                </button>
+              </div>
+
+              <div className="p-6">
+                {inquiries.length === 0 ? (
+                  <div className="rounded-[3px] border border-black/10 bg-[#fcfbf9] p-6 text-center">
+                    <div className="text-[14px] text-black/60">No inquiries yet.</div>
+                    <div className="mt-1 text-[12px] text-black/45">When couples contact you, their messages will appear here.</div>
+                  </div>
+                ) : (
+                  <div className="grid gap-3">
+                    {inquiries.map((inq) => (
+                      <div
+                        key={inq.id}
+                        className={`rounded-[3px] border p-4 ${inq.status === "new" ? "border-[#a67c52]/30 bg-[#fffaf5]" : "border-black/10 bg-[#fcfbf9]"}`}
+                      >
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <span className="text-[14px] font-semibold text-[#2c2c2c]">
+                                {inq.name ?? "Anonymous"}
+                              </span>
+                              {inq.status === "new" && (
+                                <span className="inline-flex items-center rounded-full bg-[#a67c52] px-2 py-0.5 text-[10px] font-semibold text-white">
+                                  New
+                                </span>
+                              )}
+                            </div>
+                            {inq.email && (
+                              <a
+                                href={`mailto:${inq.email}`}
+                                className="mt-0.5 block text-[12px] text-[#6e4f33] hover:underline"
+                              >
+                                {inq.email}
+                              </a>
+                            )}
+                            {inq.phone && (
+                              <a
+                                href={`tel:${inq.phone.replace(/\s/g, "")}`}
+                                className="mt-0.5 block text-[12px] text-[#6e4f33] hover:underline"
+                              >
+                                {inq.phone}
+                              </a>
+                            )}
+                            {inq.wedding_date && (
+                              <div className="mt-1 text-[11px] text-black/50">
+                                Wedding date: {new Date(inq.wedding_date).toLocaleDateString()}
+                              </div>
+                            )}
+                            <div className="mt-2 text-[13px] text-black/70 whitespace-pre-line">
+                              {inq.message}
+                            </div>
+                            <div className="mt-2 text-[11px] text-black/40">
+                              Received {new Date(inq.created_at).toLocaleString()}
+                            </div>
+                          </div>
+                          <div className="shrink-0">
+                            <select
+                              value={String(inq.status ?? "new")}
+                              disabled={saving}
+                              onChange={(e) => updateInquiryStatus(inq.id, e.target.value)}
+                              className="h-9 rounded-[3px] border border-black/10 bg-white px-2 text-[12px] text-black/70 outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15 disabled:opacity-60"
+                            >
+                              <option value="new">New</option>
+                              <option value="read">Read</option>
+                              <option value="replied">Replied</option>
+                              <option value="archived">Archived</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </section>
           </div>
         </div>
       </div>

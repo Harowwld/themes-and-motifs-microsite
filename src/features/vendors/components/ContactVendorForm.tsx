@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 
 type Props = {
   vendorId: number;
@@ -79,98 +80,131 @@ export default function ContactVendorForm({ vendorId, vendorName, className, chi
     }
   }
 
+  function handleOpen() {
+    setOpen(true);
+    if (startedAt === null) setStartedAt(Date.now());
+  }
+
+  function handleClose() {
+    setOpen(false);
+    setError(null);
+    setSuccess(null);
+  }
+
   return (
-    <div className={className ? "inline-flex" : "w-full"}>
+    <>
       <button
         type="button"
         className={className ?? "text-[#6e4f33] hover:underline"}
-        onClick={() => {
-          setOpen((v) => {
-            const next = !v;
-            if (next && startedAt === null) setStartedAt(Date.now());
-            return next;
-          });
-        }}
+        onClick={handleOpen}
         aria-expanded={open}
       >
         {children ?? "Contact"}
       </button>
 
-      {open ? (
-        <div className="mt-4 rounded-[3px] border border-black/10 bg-[#fcfbf9] p-4">
-          <div className="text-[13px] font-semibold text-[#2c2c2c]">Send a message</div>
-          <div className="mt-1 text-[12px] text-black/50">Your email will be shared with the vendor so they can reply.</div>
-
-          {error ? (
-            <div className="mt-3 rounded-[3px] border border-red-500/20 bg-red-50 px-3 py-2 text-[12px] text-red-900">{error}</div>
-          ) : null}
-          {success ? (
-            <div className="mt-3 rounded-[3px] border border-[#a67c52]/25 bg-[#fffaf5] px-3 py-2 text-[12px] text-[#2c2c2c]">{success}</div>
-          ) : null}
-
-          <form onSubmit={onSubmit} className="mt-4 grid gap-3">
-            <label className="grid gap-1.5">
-              <span className="text-[12px] font-semibold text-black/55">Your name</span>
-              <input
-                className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]"
-                value={form.name}
-                onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
-                autoComplete="name"
+      {open
+        ? createPortal(
+            <div className="fixed inset-0 z-[9999]">
+              {/* Backdrop */}
+              <div
+                className="absolute inset-0 bg-black/40"
+                onClick={handleClose}
               />
-            </label>
+              {/* Modal Container */}
+              <div className="absolute inset-0 flex items-center justify-center p-4">
+                <div className="w-full max-w-md rounded-[6px] border border-black/20 bg-white shadow-xl overflow-hidden">
+                  {/* Header */}
+                  <div className="px-5 py-4 border-b border-black/10">
+                    <div className="text-[14px] font-semibold text-[#2c2c2c]">Send a message</div>
+                    <div className="mt-1 text-[12px] text-black/55">
+                      Your email will be shared with the vendor so they can reply.
+                    </div>
+                  </div>
 
-            <label className="grid gap-1.5">
-              <span className="text-[12px] font-semibold text-black/55">Your email</span>
-              <input
-                type="email"
-                className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]"
-                value={form.email}
-                onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
-                autoComplete="email"
-              />
-            </label>
+                  {/* Content */}
+                  <div className="px-5 py-4">
+                    {error ? (
+                      <div className="mb-4 rounded-[3px] border border-red-500/20 bg-red-50 px-3 py-2 text-[12px] text-red-900">
+                        {error}
+                      </div>
+                    ) : null}
+                    {success ? (
+                      <div className="mb-4 rounded-[3px] border border-[#a67c52]/25 bg-[#fffaf5] px-3 py-2 text-[12px] text-[#2c2c2c]">
+                        {success}
+                      </div>
+                    ) : null}
 
-            <label className="grid gap-1.5">
-              <span className="text-[12px] font-semibold text-black/55">Message</span>
-              <textarea
-                className="min-h-24 w-full rounded-[3px] border border-black/10 px-3 py-2 text-[13px]"
-                value={form.message}
-                onChange={(e) => setForm((p) => ({ ...p, message: e.target.value }))}
-              />
-            </label>
+                    <form onSubmit={onSubmit} className="grid gap-3">
+                      <label className="grid gap-1.5">
+                        <span className="text-[12px] font-semibold text-black/55">Your name</span>
+                        <input
+                          className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]"
+                          value={form.name}
+                          onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
+                          autoComplete="name"
+                        />
+                      </label>
 
-            <label className="hidden" aria-hidden="true">
-              <span>Company</span>
-              <input
-                tabIndex={-1}
-                autoComplete="off"
-                value={form.company}
-                onChange={(e) => setForm((p) => ({ ...p, company: e.target.value }))}
-              />
-            </label>
+                      <label className="grid gap-1.5">
+                        <span className="text-[12px] font-semibold text-black/55">Your email</span>
+                        <input
+                          type="email"
+                          className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]"
+                          value={form.email}
+                          onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
+                          autoComplete="email"
+                        />
+                      </label>
 
-            <div className="flex items-center justify-between gap-3 pt-1">
-              <button
-                type="button"
-                className="h-9 px-3 rounded-[3px] border border-black/10 bg-white text-[12px] font-semibold text-[#6e4f33] hover:bg-black/2 transition-colors"
-                onClick={() => setOpen(false)}
-              >
-                Close
-              </button>
-              <button
-                type="submit"
-                disabled={submitting}
-                className="h-9 px-4 rounded-[3px] bg-[#a67c52] text-white text-[13px] font-semibold hover:bg-[#8e6a46] transition-colors disabled:opacity-60"
-              >
-                <span className="inline-flex items-center gap-2">
-                  {submitting ? <Spinner className="text-white/90" /> : null}
-                  <span>{submitting ? "Sending…" : "Send"}</span>
-                </span>
-              </button>
-            </div>
-          </form>
-        </div>
-      ) : null}
-    </div>
+                      <label className="grid gap-1.5">
+                        <span className="text-[12px] font-semibold text-black/55">Message</span>
+                        <textarea
+                          className="min-h-24 w-full rounded-[3px] border border-black/10 px-3 py-2 text-[13px]"
+                          value={form.message}
+                          onChange={(e) => setForm((p) => ({ ...p, message: e.target.value }))}
+                        />
+                      </label>
+
+                      <label className="hidden" aria-hidden="true">
+                        <span>Company</span>
+                        <input
+                          tabIndex={-1}
+                          autoComplete="off"
+                          value={form.company}
+                          onChange={(e) => setForm((p) => ({ ...p, company: e.target.value }))}
+                        />
+                      </label>
+                    </form>
+                  </div>
+
+                  {/* Footer */}
+                  <div className="px-5 py-4 border-t border-black/10 flex items-center justify-end gap-2">
+                    <button
+                      type="button"
+                      disabled={submitting}
+                      className="h-9 px-4 rounded-[6px] border border-black/15 bg-white text-[12px] font-semibold text-black/70 hover:bg-black/[0.02] disabled:opacity-60"
+                      onClick={handleClose}
+                    >
+                      Close
+                    </button>
+                    <button
+                      type="button"
+                      disabled={submitting}
+                      onClick={onSubmit}
+                      className="h-9 px-4 rounded-[6px] bg-[#a67c52] text-white text-[12px] font-semibold hover:bg-[#8e6a46] transition-colors disabled:opacity-60"
+                    >
+                      <span className="inline-flex items-center gap-2">
+                        {submitting ? <Spinner className="text-white/90" /> : null}
+                        <span>{submitting ? "Sending…" : "Send"}</span>
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>,
+            document.body
+          )
+        : null}
+    </>
   );
 }

@@ -42,6 +42,13 @@ export default function SuperadminEditorsPage() {
   const [query, setQuery] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
+  // Approve modal state
+  const [editorToApprove, setEditorToApprove] = useState<PendingEditor | null>(null);
+  const [approvingId, setApprovingId] = useState<string | null>(null);
+
+  // Remove modal state
+  const [editorToRemove, setEditorToRemove] = useState<Editor | null>(null);
+
   // Add editor form state
   const [isAdding, setIsAdding] = useState(false);
   const [newEmail, setNewEmail] = useState("");
@@ -113,8 +120,6 @@ export default function SuperadminEditorsPage() {
   }
 
   async function removeEditor(id: string) {
-    if (!confirm("Are you sure you want to remove this editor?")) return;
-
     setDeletingId(id);
     setError(null);
     try {
@@ -122,10 +127,31 @@ export default function SuperadminEditorsPage() {
         method: "DELETE",
       });
       setItems((prev) => prev.filter((x) => x.id !== id));
+      setEditorToRemove(null);
     } catch (e: any) {
       setError(e?.message ?? "Failed to remove editor.");
     } finally {
       setDeletingId(null);
+    }
+  }
+
+  async function approveEditor(email: string) {
+    setApprovingId(email);
+    setError(null);
+    try {
+      const res = await apiFetch<{ editor: Editor }>("/api/admin/editors", {
+        method: "POST",
+        body: JSON.stringify({ email: email.trim() }),
+      });
+      // Remove from pending list
+      setPendingEditors((prev) => prev.filter((p) => p.email !== email));
+      // Add to approved list
+      setItems((prev) => [res.editor, ...prev]);
+      setEditorToApprove(null);
+    } catch (e: any) {
+      setError(e?.message ?? "Failed to approve editor.");
+    } finally {
+      setApprovingId(null);
     }
   }
 
@@ -268,7 +294,7 @@ export default function SuperadminEditorsPage() {
                         <button
                           type="button"
                           disabled={isDeleting}
-                          onClick={() => removeEditor(x.id)}
+                          onClick={() => setEditorToRemove(x)}
                           className="h-8 px-3 rounded-[3px] border border-[#b42318]/20 bg-white text-[12px] font-semibold text-[#b42318] hover:bg-[#b42318]/5 transition-colors disabled:opacity-60"
                         >
                           {isDeleting ? "…" : "Remove"}
@@ -312,21 +338,37 @@ export default function SuperadminEditorsPage() {
             <div className="text-[13px] text-black/50">No pending editor approvals.</div>
           ) : (
             <div className="rounded-[3px] border border-black/10 overflow-hidden">
-              <div className="grid grid-cols-[1fr_140px_140px] gap-0 bg-[#fcfbf9] text-[11px] font-semibold text-black/55 border-b border-black/5">
+              <div className="grid grid-cols-[1fr_110px] sm:grid-cols-[1fr_140px_140px_100px] gap-0 bg-[#fcfbf9] text-[11px] font-semibold text-black/55 border-b border-black/5">
                 <div className="px-3 py-2">Email</div>
-                <div className="px-3 py-2">Name</div>
-                <div className="px-3 py-2">Signed Up</div>
+                <div className="hidden sm:block px-3 py-2">Name</div>
+                <div className="hidden sm:block px-3 py-2">Signed Up</div>
+                <div className="px-3 py-2 text-right">Action</div>
               </div>
               <div className="divide-y divide-black/5">
                 {pendingEditors.map((e) => (
-                  <div key={e.user_id} className="grid grid-cols-[1fr_140px_140px] items-center">
+                  <div key={e.user_id} className="grid grid-cols-[1fr_110px] sm:grid-cols-[1fr_140px_140px_100px] items-center">
                     <div className="px-3 py-3">
                       <div className="text-[13px] font-semibold text-[#2c2c2c]">{e.email ?? "Unknown"}</div>
                       <div className="mt-1 text-[11px] text-black/35 font-mono">{e.user_id.slice(0, 8)}...</div>
+                      <div className="mt-2 grid gap-0.5 sm:hidden">
+                        <div className="text-[12px] text-black/60">{e.name ?? "---"}</div>
+                        <div className="text-[12px] text-black/60">
+                          {e.created_at ? new Date(e.created_at).toLocaleDateString() : "---"}
+                        </div>
+                      </div>
                     </div>
-                    <div className="px-3 py-3 text-[13px] text-black/60">{e.name ?? "---"}</div>
-                    <div className="px-3 py-3 text-[12px] text-black/60">
+                    <div className="hidden sm:block px-3 py-3 text-[13px] text-black/60">{e.name ?? "---"}</div>
+                    <div className="hidden sm:block px-3 py-3 text-[12px] text-black/60">
                       {e.created_at ? new Date(e.created_at).toLocaleDateString() : "---"}
+                    </div>
+                    <div className="px-3 py-3 text-right">
+                      <button
+                        type="button"
+                        onClick={() => setEditorToApprove(e)}
+                        className="h-8 px-3 rounded-[3px] bg-[#a67c52] text-white text-[12px] font-semibold hover:bg-[#8e6a46] transition-colors"
+                      >
+                        Approve
+                      </button>
                     </div>
                   </div>
                 ))}
@@ -336,6 +378,83 @@ export default function SuperadminEditorsPage() {
         </div>
       </div>
 
+      {/* Approve Editor Modal */}
+      {editorToApprove ? (
+        <div className="fixed inset-0 z-[60]">
+          <div className="absolute inset-0 bg-black/40" onClick={() => !approvingId && setEditorToApprove(null)} />
+          <div className="absolute inset-0 flex items-center justify-center p-4">
+            <div className="w-full max-w-sm rounded-[6px] border border-black/20 bg-white shadow-xl overflow-hidden">
+              <div className="px-5 py-4 border-b border-black/10">
+                <div className="text-[14px] font-semibold text-[#2c2c2c]">Approve Editor</div>
+                <div className="mt-1 text-[12px] text-black/55">
+                  Grant editor access to this user? They will be able to edit vendor entries and photos.
+                </div>
+              </div>
+              <div className="px-5 py-4 bg-[#fafafa]">
+                <div className="text-[13px] font-semibold text-[#2c2c2c]">{editorToApprove.email}</div>
+                <div className="mt-1 text-[11px] text-black/45">{editorToApprove.name ?? "No name provided"}</div>
+              </div>
+              <div className="px-5 py-4 border-t border-black/10 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  disabled={!!approvingId}
+                  onClick={() => setEditorToApprove(null)}
+                  className="h-9 px-4 rounded-[6px] border border-black/15 bg-white text-[12px] font-semibold text-black/70 hover:bg-black/[0.02] disabled:opacity-60"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  disabled={!!approvingId}
+                  onClick={() => editorToApprove.email && approveEditor(editorToApprove.email)}
+                  className="h-9 px-4 rounded-[6px] bg-[#a67c52] text-white text-[12px] font-semibold hover:bg-[#8e6a46] disabled:opacity-60"
+                >
+                  {approvingId ? "Approving..." : "Approve"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {/* Remove Editor Modal */}
+      {editorToRemove ? (
+        <div className="fixed inset-0 z-[60]">
+          <div className="absolute inset-0 bg-black/40" onClick={() => !deletingId && setEditorToRemove(null)} />
+          <div className="absolute inset-0 flex items-center justify-center p-4">
+            <div className="w-full max-w-sm rounded-[6px] border border-black/20 bg-white shadow-xl overflow-hidden">
+              <div className="px-5 py-4 border-b border-black/10">
+                <div className="text-[14px] font-semibold text-[#2c2c2c]">Remove Editor</div>
+                <div className="mt-1 text-[12px] text-black/55">
+                  Are you sure you want to remove this editor? This action cannot be undone.
+                </div>
+              </div>
+              <div className="px-5 py-4 bg-[#fafafa]">
+                <div className="text-[13px] font-semibold text-[#2c2c2c]">{editorToRemove.email ?? editorToRemove.name ?? "Unknown"}</div>
+                <div className="mt-1 text-[11px] text-black/45 font-mono">{editorToRemove.user_id.slice(0, 8)}...</div>
+              </div>
+              <div className="px-5 py-4 border-t border-black/10 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  disabled={!!deletingId}
+                  onClick={() => setEditorToRemove(null)}
+                  className="h-9 px-4 rounded-[6px] border border-black/15 bg-white text-[12px] font-semibold text-black/70 hover:bg-black/[0.02] disabled:opacity-60"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  disabled={!!deletingId}
+                  onClick={() => removeEditor(editorToRemove.id)}
+                  className="h-9 px-4 rounded-[6px] bg-red-600 text-white text-[12px] font-semibold hover:bg-red-700 disabled:opacity-60"
+                >
+                  {deletingId ? "Removing..." : "Remove"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

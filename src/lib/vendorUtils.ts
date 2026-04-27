@@ -1,4 +1,14 @@
+import { cache } from "react";
+import { createSupabaseServerClient } from "./supabaseServer";
+
 export type SortKey = "alpha" | "rating" | "newest" | "saves" | "views";
+
+// Shared cached function for vendor locations - used by both LandingPage and VendorsPage
+export const getCachedVendorLocations = cache(async () => {
+  const supabase = createSupabaseServerClient();
+  const { data } = await supabase.from("vendors").select("region_id,city,location_text").eq("is_active", true).limit(5000);
+  return data ?? [];
+});
 
 export type VendorWithSortFields = {
   id: number;

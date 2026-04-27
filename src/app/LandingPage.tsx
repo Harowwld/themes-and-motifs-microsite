@@ -9,6 +9,7 @@ import VendorsSection from "../features/vendors/sections/VendorsSection";
 import SiteFooter from "./sections/SiteFooter";
 import { attachCoverImages } from "../features/vendors/coverImages.server";
 import type { FeaturedVendor, VendorListItem } from "../features/vendors/types";
+import { getCachedVendorLocations } from "../lib/vendorUtils";
 import FadeInOnView from "./components/FadeInOnView";
 import ScrollToTopOnMount from "./components/ScrollToTopOnMount";
 
@@ -18,11 +19,6 @@ const getCachedCategories = cache(async () => {
   return (data ?? []) as Category[];
 });
 
-const getCachedVendorLocations = cache(async () => {
-  const supabase = createSupabaseServerClient();
-  const { data } = await supabase.from("vendors").select("city,location_text").eq("is_active", true).limit(2000);
-  return data ?? [];
-});
 
 function sortWithImagesFirst<T extends { cover_image_url?: string | null; logo_url?: string | null }>(vendors: T[]) {
   return [...vendors].sort((a, b) => {
@@ -221,7 +217,7 @@ async function LandingTopData() {
   const categories = categoriesData;
   const locations = Array.from(
     new Set(
-      (locationRows as { city: string | null; location_text: string | null }[])
+      (locationRows as { region_id: number | null; city: string | null; location_text: string | null }[])
         .flatMap((r) => [r.city, r.location_text])
         .map((v) => (v ?? "").trim())
         .filter(Boolean)

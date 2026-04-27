@@ -44,7 +44,7 @@ export function MomentPhotoUpload({
 
     const files = Array.from(e.dataTransfer.files);
     const validFiles = files.filter(file => 
-      acceptedTypes.includes(file.type) && file.size <= 10 * 1024 * 1024 // 10MB limit
+      acceptedTypes.includes(file.type) && file.size <= 2 * 1024 * 1024 // 2MB limit
     );
 
     if (validFiles.length > 0) {
@@ -57,7 +57,7 @@ export function MomentPhotoUpload({
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     const validFiles = files.filter(file => 
-      acceptedTypes.includes(file.type) && file.size <= 10 * 1024 * 1024
+      acceptedTypes.includes(file.type) && file.size <= 2 * 1024 * 1024
     );
 
     if (validFiles.length > 0) {
@@ -123,7 +123,7 @@ export function MomentPhotoUpload({
             Drag and drop your photos here, or click to browse
           </p>
           <p className="text-xs text-gray-500">
-            Up to {maxFiles} photos • JPG, PNG, WebP • Max 10MB each
+            Up to {maxFiles} photos • JPG, PNG, WebP • Max 2MB each
           </p>
         </div>
       </div>

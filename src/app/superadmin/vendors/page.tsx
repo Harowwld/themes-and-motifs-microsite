@@ -822,7 +822,7 @@ export default function SuperadminVendorsPage() {
                       folder="gallery"
                       entityId={String(editingVendor.id)}
                       label="Upload Photo"
-                      description="JPG, PNG, WebP up to 10MB. Will be compressed if needed."
+                      description="JPG, PNG, WebP up to 2MB. Will be compressed if needed."
                       onUploadComplete={(result: UploadResult) => {
                         const newImages = [...editImages];
                         newImages[newImages.length - 1].image_url = result.url;
@@ -1121,7 +1121,7 @@ export default function SuperadminVendorsPage() {
                 folder="logos"
                 entityId={String(editingVendor.id)}
                 label="Upload Logo"
-                description="JPG, PNG, WebP up to 10MB. Will be compressed if needed."
+                description="JPG, PNG, WebP up to 2MB. Will be compressed if needed."
                 onUploadComplete={(result: UploadResult) => {
                   setLogoUrlInput(result.url);
                 }}

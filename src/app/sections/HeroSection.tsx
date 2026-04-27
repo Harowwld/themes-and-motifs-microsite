@@ -30,12 +30,18 @@ function SelectMenu({
     null
   );
 
+  const menuRef = useRef<HTMLDivElement | null>(null);
+
   useEffect(() => {
     if (!open) return;
     const onPointerDown = (e: PointerEvent) => {
       const el = rootRef.current;
+      const menuEl = menuRef.current;
       if (!el) return;
-      if (e.target instanceof Node && el.contains(e.target)) return;
+      const target = e.target as Node;
+      // Don't close if clicking inside the button or the menu (portal)
+      if (el.contains(target)) return;
+      if (menuEl && menuEl.contains(target)) return;
       setOpen(false);
     };
     window.addEventListener("pointerdown", onPointerDown);
@@ -110,6 +116,7 @@ function SelectMenu({
       {open && menuRect && typeof document !== "undefined"
         ? createPortal(
             <div
+              ref={menuRef}
               role="listbox"
               className="fixed z-1000 rounded-lg border border-white/20 bg-white/90 backdrop-blur-lg shadow-xl overflow-hidden"
               style={{ top: menuRect.top, left: menuRect.left, width: menuRect.width }}
@@ -280,6 +287,12 @@ export default function HeroSection({
               placeholder="Search vendor name (e.g. Nice Print)"
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  onSearch();
+                }
+              }}
               className="h-10 rounded-md border border-white/20 bg-white/15 px-3 text-[14px] text-white placeholder:text-white/40 outline-none focus:border-white/50 focus:ring-1 focus:ring-white/30 touch-manipulation font-[family-name:var(--font-plus-jakarta)]"
             />
           </label>
@@ -301,20 +314,16 @@ export default function HeroSection({
             />
           </div>
 
-          <a
-            id="discover"
+          <button
+            type="button"
             className="mt-1 h-10 inline-flex items-center justify-center rounded-md text-white text-[14px] font-medium transition-colors touch-manipulation"
             style={{ backgroundColor: 'var(--muted-brown)' }}
             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--muted-brown-hover)'}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--muted-brown)'}
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              onSearch();
-            }}
+            onClick={() => onSearch()}
           >
             Search
-          </a>
+          </button>
 
           <div className="flex items-center justify-between text-[11px] sm:text-[12px] text-white/50 font-[family-name:var(--font-plus-jakarta)]">
             <span className="inline-flex items-center gap-2">

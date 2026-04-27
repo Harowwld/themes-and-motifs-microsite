@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { createSupabaseAdminClient } from "../../lib/supabaseAdmin";
 import { SUPERADMIN_COOKIE_NAME } from "../../lib/superadminAuth";
 import { EditorAuthCheck } from "./AuthCheck";
+import { EditorSignOutButton } from "./EditorSignOutButton";
 
 async function getPathname(): Promise<string> {
   try {
@@ -139,12 +140,9 @@ function LayoutContent({
                   </button>
                 </form>
               ) : (
-                <Link
-                  href="/signin"
-                  className="h-9 w-full inline-flex items-center justify-center px-4 rounded-[3px] bg-[#a67c52] text-white text-[13px] font-semibold hover:bg-[#8e6a46] transition-colors"
-                >
-                  Sign out
-                </Link>
+                <div className="p-1">
+                  <EditorSignOutButton />
+                </div>
               )}
             </nav>
           </aside>

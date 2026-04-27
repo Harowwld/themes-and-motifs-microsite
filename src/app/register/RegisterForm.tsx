@@ -768,7 +768,7 @@ function CoverPhotoModal({
             bucket="vendor-assets"
             folder="covers"
             label="Upload Cover Photo"
-            description="JPG, PNG, WebP up to 10MB. Will be compressed if needed."
+            description="JPG, PNG, WebP up to 2MB. Will be compressed if needed."
             onUploadComplete={handleUploadComplete}
             onClear={() => setValue("")}
             existingUrl={value}
@@ -869,7 +869,7 @@ function LogoModal({
             bucket="vendor-assets"
             folder="logos"
             label="Upload Logo"
-            description="JPG, PNG, WebP up to 10MB. Will be compressed if needed."
+            description="JPG, PNG, WebP up to 2MB. Will be compressed if needed."
             onUploadComplete={handleUploadComplete}
             onClear={() => setValue("")}
             existingUrl={value}

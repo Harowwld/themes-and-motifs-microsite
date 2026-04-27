@@ -22,6 +22,12 @@ type AffiliationOption = {
 
 type SortKey = "rating" | "alpha" | "newest" | "saves" | "views";
 
+type CategoryOption = {
+  id: number;
+  name: string;
+  slug: string;
+};
+
 type Props = {
   initialQ: string;
   initialCategory: string;
@@ -32,6 +38,7 @@ type Props = {
   regions: RegionOption[];
   cities: CityOption[];
   affiliations: AffiliationOption[];
+  categories?: CategoryOption[];
 };
 
 function buildHref({
@@ -71,6 +78,7 @@ export default function VendorsSearchBar({
   regions,
   cities,
   affiliations,
+  categories,
 }: Props) {
   const router = useRouter();
 
@@ -79,6 +87,7 @@ export default function VendorsSearchBar({
   const [region, setRegion] = useState(initialRegion);
   const [affiliation, setAffiliation] = useState(initialAffiliation);
   const [sort, setSort] = useState<SortKey>(initialSort);
+  const [category, setCategory] = useState(initialCategory);
 
   const regionOptions = useMemo(() => regions ?? [], [regions]);
   const cityOptions = useMemo(() => {
@@ -88,12 +97,13 @@ export default function VendorsSearchBar({
     return filtered.slice().sort((a, b) => a.name.localeCompare(b.name));
   }, [cities, region]);
   const affiliationOptions = useMemo(() => affiliations ?? [], [affiliations]);
+  const categoryOptions = useMemo(() => categories ?? [], [categories]);
 
   const submit = () => {
     router.push(
       buildHref({
         q,
-        category: initialCategory,
+        category,
         location,
         region,
         affiliation,
@@ -111,7 +121,7 @@ export default function VendorsSearchBar({
       </div>
 
       <div className="p-6">
-        <div className="grid gap-4 lg:grid-cols-[1.2fr_0.9fr_0.9fr_0.9fr_0.7fr_auto] items-end">
+        <div className="grid gap-4 lg:grid-cols-[1fr_1fr_0.9fr_0.9fr_0.9fr_0.7fr_auto] items-end">
           <label className="grid gap-1.5">
             <span className="text-xs font-medium text-stone-500 uppercase tracking-wide font-[family-name:var(--font-plus-jakarta)]">Keyword</span>
             <input
@@ -120,6 +130,22 @@ export default function VendorsSearchBar({
               placeholder="Search vendor name"
               className="h-11 rounded-md border border-stone-200 bg-stone-50 px-4 text-sm text-stone-700 placeholder:text-stone-400 outline-none transition-all focus:border-[#a68b6a] focus:bg-white focus:ring-2 focus:ring-[#a68b6a]/10 font-[family-name:var(--font-plus-jakarta)]"
             />
+          </label>
+
+          <label className="grid gap-1.5">
+            <span className="text-xs font-medium text-stone-500 uppercase tracking-wide font-[family-name:var(--font-plus-jakarta)]">Category</span>
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="h-11 rounded-md border border-stone-200 bg-stone-50 px-4 text-sm text-stone-700 outline-none transition-all focus:border-[#a68b6a] focus:bg-white focus:ring-2 focus:ring-[#a68b6a]/10 appearance-none cursor-pointer font-[family-name:var(--font-plus-jakarta)]"
+            >
+              <option value="" className="font-[family-name:var(--font-plus-jakarta)]">All categories</option>
+              {categoryOptions.map((c) => (
+                <option key={c.id} value={c.slug} className="font-[family-name:var(--font-plus-jakarta)]">
+                  {c.name}
+                </option>
+              ))}
+            </select>
           </label>
 
           <label className="grid gap-1.5">

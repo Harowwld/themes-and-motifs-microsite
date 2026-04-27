@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
-import { Resend } from "resend";
-
-import { createSupabaseServerClient } from "../../../lib/supabaseServer";
+import nodemailer from "nodemailer";
+import { createSupabaseAdminClient } from "../../../lib/supabaseAdmin";
 
 export const dynamic = "force-dynamic";
 
@@ -81,76 +80,162 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Message is required." }, { status: 400 });
   }
 
+  // Honeypot check - if company field is filled, it's likely a bot
   if (company) {
     return NextResponse.json({ ok: true }, { status: 200 });
   }
 
+  // Simple timing check - if submitted too fast, likely a bot
   if (durationMs !== null && durationMs < 3000) {
     return NextResponse.json({ ok: true }, { status: 200 });
   }
 
-  const supabase = createSupabaseServerClient();
+  const supabase = createSupabaseAdminClient();
 
-  const { data: vendor, error } = await supabase
+  // Verify vendor exists and is active
+  const { data: vendor, error: vendorError } = await supabase
     .from("vendors")
-    .select("id,business_name,contact_email")
+    .select("id,business_name")
     .eq("id", vendorId)
     .eq("is_active", true)
-    .maybeSingle<{ id: number; business_name: string; contact_email: string | null }>();
+    .maybeSingle();
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  if (vendorError) {
+    return NextResponse.json({ error: vendorError.message }, { status: 500 });
   }
 
-  if (!vendor?.contact_email) {
-    return NextResponse.json({ error: "Vendor email is not available." }, { status: 404 });
+  if (!vendor) {
+    return NextResponse.json({ error: "Vendor not found." }, { status: 404 });
   }
 
-  const resendKey = process.env.RESEND_API_KEY;
-  const from = process.env.RESEND_FROM;
+  // Save inquiry to database
+  const { data: inquiry, error: insertError } = await supabase
+    .from("inquiries")
+    .insert({
+      vendor_id: vendorId,
+      name: fromName,
+      email: fromEmail,
+      message: message,
+      status: "new",
+    })
+    .select("id")
+    .single();
 
-  if (!resendKey) {
-    return NextResponse.json({ error: "Missing env var: RESEND_API_KEY" }, { status: 500 });
+  if (insertError) {
+    return NextResponse.json({ error: insertError.message }, { status: 500 });
   }
 
-  if (!from) {
-    return NextResponse.json({ error: "Missing env var: RESEND_FROM" }, { status: 500 });
+  // Send email notification using SMTP (same as bug report)
+  const smtpHost = process.env.SMTP_HOST;
+  const smtpPort = process.env.SMTP_PORT;
+  const smtpUser = process.env.SMTP_USER;
+  const smtpPass = process.env.SMTP_PASS;
+  const smtpFrom = process.env.SMTP_FROM;
+
+  if (smtpHost && smtpPort && smtpUser && smtpPass && smtpFrom) {
+    try {
+      const transporter = nodemailer.createTransport({
+        host: smtpHost,
+        port: parseInt(smtpPort, 10),
+        secure: parseInt(smtpPort, 10) === 465,
+        auth: {
+          user: smtpUser,
+          pass: smtpPass,
+        },
+      });
+
+      // Get vendor's contact email for sending notification
+      const { data: vendorWithEmail } = await supabase
+        .from("vendors")
+        .select("contact_email")
+        .eq("id", vendorId)
+        .single();
+
+      if (vendorWithEmail?.contact_email) {
+        const subject = `New Inquiry for ${vendor.business_name}`;
+        const text = [
+          `Vendor: ${vendor.business_name}`,
+          `From: ${fromName} <${fromEmail}>`,
+          "",
+          message,
+        ].join("\n");
+
+        const html = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Inquiry</title>
+  <style>
+    body { margin: 0; padding: 0; background-color: #f4f4f4; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+    table { border-spacing: 0; border-collapse: collapse; }
+    td { padding: 0; }
+    img { border: 0; }
+    .wrapper { width: 100%; table-layout: fixed; background-color: #f4f4f4; padding-bottom: 40px; }
+    .main-table { background-color: #ffffff; margin: 0 auto; width: 100%; max-width: 600px; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    .header { background-color: #ffffff; padding: 40px 0 20px; text-align: center; border-bottom: 3px solid #C5A059; }
+    .logo-text { font-family: 'Georgia', serif; font-size: 28px; color: #333333; letter-spacing: 1px; text-transform: uppercase; text-decoration: none; }
+    .content { padding: 40px 40px; color: #555555; }
+    .h1 { font-family: 'Georgia', serif; font-size: 24px; color: #333333; margin-bottom: 20px; }
+    .detail-row { margin-bottom: 15px; }
+    .detail-label { font-weight: bold; color: #333333; }
+    .detail-value { color: #555555; }
+    .message-box { background-color: #f9f9f9; border-left: 3px solid #C5A059; padding: 20px; margin-top: 20px; }
+    .message-text { font-size: 16px; line-height: 24px; color: #555555; white-space: pre-wrap; }
+    .footer { background-color: #f4f4f4; padding: 20px; text-align: center; font-size: 12px; color: #999999; }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <table class="main-table" align="center">
+      <tr>
+        <td class="header">
+          <a href="#" class="logo-text">Themes & Motifs</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="content">
+          <h1 class="h1">New Inquiry Received</h1>
+          <div class="detail-row">
+            <span class="detail-label">Vendor:</span>
+            <span class="detail-value">${escapeHtml(vendor.business_name)}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">From:</span>
+            <span class="detail-value">${escapeHtml(fromName)} &lt;${escapeHtml(fromEmail)}&gt;</span>
+          </div>
+          <div class="message-box">
+            <div class="message-text">${escapeHtml(message)}</div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="footer">
+          <p>View this inquiry in your vendor dashboard.</p>
+          <p>&copy; 2026 Themes & Motifs. All rights reserved.</p>
+        </td>
+      </tr>
+    </table>
+  </div>
+</body>
+</html>`;
+
+        await transporter.sendMail({
+          from: smtpFrom,
+          to: vendorWithEmail.contact_email,
+          replyTo: fromEmail,
+          subject,
+          text,
+          html,
+        });
+      }
+    } catch (emailError) {
+      console.error("Failed to send email notification:", emailError);
+      // Don't fail the request if email fails - inquiry is already saved
+    }
   }
 
-  const resend = new Resend(resendKey);
-
-  const subject = `New inquiry for ${vendor.business_name}`;
-
-  const text = [
-    `Vendor: ${vendor.business_name}`,
-    `From: ${fromName} <${fromEmail}>`,
-    "",
-    message,
-  ].join("\n");
-
-  const htmlMessage = escapeHtml(message).replace(/\n/g, "<br/>");
-
-  const html = [
-    `<div><strong>Vendor:</strong> ${escapeHtml(vendor.business_name)}</div>`,
-    `<div><strong>From:</strong> ${escapeHtml(fromName)} &lt;${escapeHtml(fromEmail)}&gt;</div>`,
-    "<hr/>",
-    `<div style=\"white-space:normal\">${htmlMessage}</div>`,
-  ].join("");
-
-  try {
-    await resend.emails.send({
-      from,
-      to: vendor.contact_email,
-      replyTo: fromEmail,
-      subject,
-      text,
-      html,
-    });
-  } catch (e: any) {
-    return NextResponse.json({ error: e?.message ?? "Failed to send email" }, { status: 500 });
-  }
-
-  return NextResponse.json({ ok: true }, { status: 200 });
+  return NextResponse.json({ ok: true, inquiryId: inquiry?.id }, { status: 200 });
 }
 
 function escapeHtml(input: string) {
@@ -158,6 +243,6 @@ function escapeHtml(input: string) {
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
-    .replace(/\"/g, "&quot;")
+    .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
 }

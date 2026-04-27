@@ -10,6 +10,8 @@ type PlanFeature = {
 
 const planFeatures: PlanFeature[] = [
   { label: "Company name, address & contact person", free: true, premium: true },
+  { label: "Mobile number displayed on listing", free: true, premium: true },
+  { label: "Contact form for inquiries", free: true, premium: true },
   { label: "Up to 3 searchable categories", free: true, premium: true },
   { label: "Ratings & reviews from couples", free: true, premium: true },
   { label: "Up to 6 photos", free: true, premium: true },
@@ -19,6 +21,7 @@ const planFeatures: PlanFeature[] = [
   { label: "Priority placement in category listings", free: false, premium: true },
   { label: "Verified badge", free: false, premium: true },
   { label: "Unlimited photo gallery", free: false, premium: true },
+  { label: "Album showcase", free: false, premium: true },
   { label: "Video showcase", free: false, premium: true },
   { label: "Analytics dashboard", free: false, premium: true },
   { label: "Lead generation tools", free: false, premium: true },
@@ -67,7 +70,7 @@ export default function VendorPlansPage() {
                     <span className="text-[10px] font-semibold text-white bg-[#a68b6a] px-2.5 py-1 rounded-full shadow-sm font-[family-name:var(--font-plus-jakarta)]">Elite Choice</span>
                   </div>
                   <div className="text-[11px] font-medium text-[#a68b6a] uppercase tracking-wider mt-1 font-[family-name:var(--font-plus-jakarta)]">Premium</div>
-                  <div className="mt-1 text-[18px] font-medium text-[#2c2c2c] font-[family-name:var(--font-noto-serif)]">Boosted</div>
+                  <div className="mt-1 text-[18px] font-medium text-[#2c2c2c] font-[family-name:var(--font-noto-serif)]">Leads Generator</div>
                   <div className="mt-2 space-y-1.5">
                     {premiumFeatures.map((f) => (
                       <div key={f.label} className="flex items-center gap-2 text-[12px] text-black/70 font-[family-name:var(--font-plus-jakarta)]">
@@ -80,7 +83,7 @@ export default function VendorPlansPage() {
                   </div>
                   <div className="mt-auto pt-3">
                     <a href="/register?plan=2" className="block w-full h-8 text-[12px] font-medium text-white bg-[#a68b6a] rounded-md hover:bg-[#957a5c] transition-colors text-center leading-8 font-[family-name:var(--font-plus-jakarta)]">
-                      Select Boosted
+                      Select Leads Generator
                     </a>
                   </div>
                 </div>

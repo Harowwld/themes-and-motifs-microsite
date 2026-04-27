@@ -22,7 +22,7 @@ export function ImageUploadDropzone({
   folder,
   entityId,
   label = 'Upload Image',
-  description = 'Drag and drop or click to select. JPG, PNG, WebP up to 10MB.',
+  description = 'Drag and drop or click to select. JPG, PNG, WebP up to 2MB.',
   onUploadComplete,
   onClear,
   existingUrl,

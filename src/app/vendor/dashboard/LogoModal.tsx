@@ -48,7 +48,7 @@ export default function LogoModal({ open, logoUrl, onCancel, onSave }: LogoModal
             bucket="vendor-assets"
             folder="logos"
             label="Upload Logo"
-            description="JPG, PNG, WebP up to 10MB. Will be compressed if needed."
+            description="JPG, PNG, WebP up to 2MB. Will be compressed if needed."
             onUploadComplete={handleUploadComplete}
             onClear={() => setUrl("")}
             existingUrl={url}

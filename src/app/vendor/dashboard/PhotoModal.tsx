@@ -54,7 +54,7 @@ export default function PhotoModal({ open, photo, isNew, onCancel, onSave, onDel
             bucket="vendor-assets"
             folder="gallery"
             label="Upload Photo"
-            description="JPG, PNG, WebP up to 10MB. Will be compressed if needed."
+            description="JPG, PNG, WebP up to 2MB. Will be compressed if needed."
             onUploadComplete={handleUploadComplete}
             onClear={() => setImageUrl("")}
             existingUrl={imageUrl}
