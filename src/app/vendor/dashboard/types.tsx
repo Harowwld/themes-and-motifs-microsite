@@ -32,6 +32,24 @@ export type VendorImage = {
   display_order: number | null;
 };
 
+export type VendorAlbum = {
+  id: number;
+  vendor_id: number;
+  title: string;
+  slug: string;
+  photo_count: number;
+  created_at: string;
+};
+
+export type AlbumPhoto = {
+  id: number;
+  vendor_id: number;
+  album_id: number;
+  image_url: string;
+  display_order: number;
+  created_at: string;
+};
+
 export type VendorPromo = {
   id: number;
   vendor_id: number;

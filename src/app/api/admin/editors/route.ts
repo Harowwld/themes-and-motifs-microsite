@@ -190,12 +190,23 @@ export async function DELETE(req: Request) {
 
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
+    const userId = searchParams.get("user_id");
 
+    const supabase = createSupabaseAdminClient();
+
+    // If user_id is provided, delete the auth user (for pending editors)
+    if (userId) {
+      const { error } = await supabase.auth.admin.deleteUser(userId);
+      if (error) {
+        return Response.json({ error: error.message }, { status: 500 });
+      }
+      return Response.json({ ok: true }, { status: 200 });
+    }
+
+    // Otherwise, delete the editor record (for approved editors)
     if (!id) {
       return Response.json({ error: "Editor ID is required" }, { status: 400 });
     }
-
-    const supabase = createSupabaseAdminClient();
 
     const { error } = await supabase
       .from("editors")

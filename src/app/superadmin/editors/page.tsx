@@ -49,6 +49,10 @@ export default function SuperadminEditorsPage() {
   // Remove modal state
   const [editorToRemove, setEditorToRemove] = useState<Editor | null>(null);
 
+  // Delete pending editor modal state
+  const [pendingEditorToDelete, setPendingEditorToDelete] = useState<PendingEditor | null>(null);
+  const [deletingPendingUserId, setDeletingPendingUserId] = useState<string | null>(null);
+
   // Add editor form state
   const [isAdding, setIsAdding] = useState(false);
   const [newEmail, setNewEmail] = useState("");
@@ -152,6 +156,23 @@ export default function SuperadminEditorsPage() {
       setError(e?.message ?? "Failed to approve editor.");
     } finally {
       setApprovingId(null);
+    }
+  }
+
+  async function deletePendingEditor(userId: string) {
+    setDeletingPendingUserId(userId);
+    setError(null);
+    try {
+      await apiFetch<{ ok: boolean }>(`/api/admin/editors?user_id=${encodeURIComponent(userId)}`, {
+        method: "DELETE",
+      });
+      // Remove from pending list
+      setPendingEditors((prev) => prev.filter((p) => p.user_id !== userId));
+      setPendingEditorToDelete(null);
+    } catch (e: any) {
+      setError(e?.message ?? "Failed to delete user.");
+    } finally {
+      setDeletingPendingUserId(null);
     }
   }
 
@@ -338,40 +359,52 @@ export default function SuperadminEditorsPage() {
             <div className="text-[13px] text-black/50">No pending editor approvals.</div>
           ) : (
             <div className="rounded-[3px] border border-black/10 overflow-hidden">
-              <div className="grid grid-cols-[1fr_110px] sm:grid-cols-[1fr_140px_140px_100px] gap-0 bg-[#fcfbf9] text-[11px] font-semibold text-black/55 border-b border-black/5">
+              <div className="grid grid-cols-[1fr_110px] sm:grid-cols-[1fr_140px_140px_140px] gap-0 bg-[#fcfbf9] text-[11px] font-semibold text-black/55 border-b border-black/5">
                 <div className="px-3 py-2">Email</div>
                 <div className="hidden sm:block px-3 py-2">Name</div>
                 <div className="hidden sm:block px-3 py-2">Signed Up</div>
-                <div className="px-3 py-2 text-right">Action</div>
+                <div className="px-3 py-2 text-right">Actions</div>
               </div>
               <div className="divide-y divide-black/5">
-                {pendingEditors.map((e) => (
-                  <div key={e.user_id} className="grid grid-cols-[1fr_110px] sm:grid-cols-[1fr_140px_140px_100px] items-center">
-                    <div className="px-3 py-3">
-                      <div className="text-[13px] font-semibold text-[#2c2c2c]">{e.email ?? "Unknown"}</div>
-                      <div className="mt-1 text-[11px] text-black/35 font-mono">{e.user_id.slice(0, 8)}...</div>
-                      <div className="mt-2 grid gap-0.5 sm:hidden">
-                        <div className="text-[12px] text-black/60">{e.name ?? "---"}</div>
-                        <div className="text-[12px] text-black/60">
-                          {e.created_at ? new Date(e.created_at).toLocaleDateString() : "---"}
+                {pendingEditors.map((e) => {
+                  const isDeleting = deletingPendingUserId === e.user_id;
+                  return (
+                    <div key={e.user_id} className="grid grid-cols-[1fr_110px] sm:grid-cols-[1fr_140px_140px_140px] items-center">
+                      <div className="px-3 py-3">
+                        <div className="text-[13px] font-semibold text-[#2c2c2c]">{e.email ?? "Unknown"}</div>
+                        <div className="mt-1 text-[11px] text-black/35 font-mono">{e.user_id.slice(0, 8)}...</div>
+                        <div className="mt-2 grid gap-0.5 sm:hidden">
+                          <div className="text-[12px] text-black/60">{e.name ?? "---"}</div>
+                          <div className="text-[12px] text-black/60">
+                            {e.created_at ? new Date(e.created_at).toLocaleDateString() : "---"}
+                          </div>
                         </div>
                       </div>
+                      <div className="hidden sm:block px-3 py-3 text-[13px] text-black/60">{e.name ?? "---"}</div>
+                      <div className="hidden sm:block px-3 py-3 text-[12px] text-black/60">
+                        {e.created_at ? new Date(e.created_at).toLocaleDateString() : "---"}
+                      </div>
+                      <div className="px-3 py-3 text-right flex items-center justify-end gap-2">
+                        <button
+                          type="button"
+                          disabled={isDeleting}
+                          onClick={() => setEditorToApprove(e)}
+                          className="h-8 px-3 rounded-[3px] bg-[#a67c52] text-white text-[12px] font-semibold hover:bg-[#8e6a46] transition-colors disabled:opacity-60"
+                        >
+                          Approve
+                        </button>
+                        <button
+                          type="button"
+                          disabled={isDeleting}
+                          onClick={() => setPendingEditorToDelete(e)}
+                          className="h-8 px-3 rounded-[3px] border border-[#b42318]/20 bg-white text-[12px] font-semibold text-[#b42318] hover:bg-[#b42318]/5 transition-colors disabled:opacity-60"
+                        >
+                          {isDeleting ? "…" : "Delete"}
+                        </button>
+                      </div>
                     </div>
-                    <div className="hidden sm:block px-3 py-3 text-[13px] text-black/60">{e.name ?? "---"}</div>
-                    <div className="hidden sm:block px-3 py-3 text-[12px] text-black/60">
-                      {e.created_at ? new Date(e.created_at).toLocaleDateString() : "---"}
-                    </div>
-                    <div className="px-3 py-3 text-right">
-                      <button
-                        type="button"
-                        onClick={() => setEditorToApprove(e)}
-                        className="h-8 px-3 rounded-[3px] bg-[#a67c52] text-white text-[12px] font-semibold hover:bg-[#8e6a46] transition-colors"
-                      >
-                        Approve
-                      </button>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}
@@ -449,6 +482,45 @@ export default function SuperadminEditorsPage() {
                   className="h-9 px-4 rounded-[6px] bg-red-600 text-white text-[12px] font-semibold hover:bg-red-700 disabled:opacity-60"
                 >
                   {deletingId ? "Removing..." : "Remove"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {/* Delete Pending Editor Modal */}
+      {pendingEditorToDelete ? (
+        <div className="fixed inset-0 z-[60]">
+          <div className="absolute inset-0 bg-black/40" onClick={() => !deletingPendingUserId && setPendingEditorToDelete(null)} />
+          <div className="absolute inset-0 flex items-center justify-center p-4">
+            <div className="w-full max-w-sm rounded-[6px] border border-black/20 bg-white shadow-xl overflow-hidden">
+              <div className="px-5 py-4 border-b border-black/10">
+                <div className="text-[14px] font-semibold text-[#2c2c2c]">Delete User</div>
+                <div className="mt-1 text-[12px] text-black/55">
+                  Are you sure you want to delete this user? This will permanently delete their account and cannot be undone.
+                </div>
+              </div>
+              <div className="px-5 py-4 bg-[#fafafa]">
+                <div className="text-[13px] font-semibold text-[#2c2c2c]">{pendingEditorToDelete.email ?? "Unknown"}</div>
+                <div className="mt-1 text-[11px] text-black/45">{pendingEditorToDelete.name ?? "No name provided"}</div>
+              </div>
+              <div className="px-5 py-4 border-t border-black/10 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  disabled={!!deletingPendingUserId}
+                  onClick={() => setPendingEditorToDelete(null)}
+                  className="h-9 px-4 rounded-[6px] border border-black/15 bg-white text-[12px] font-semibold text-black/70 hover:bg-black/[0.02] disabled:opacity-60"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  disabled={!!deletingPendingUserId}
+                  onClick={() => pendingEditorToDelete.user_id && deletePendingEditor(pendingEditorToDelete.user_id)}
+                  className="h-9 px-4 rounded-[6px] bg-red-600 text-white text-[12px] font-semibold hover:bg-red-700 disabled:opacity-60"
+                >
+                  {deletingPendingUserId ? "Deleting..." : "Delete"}
                 </button>
               </div>
             </div>

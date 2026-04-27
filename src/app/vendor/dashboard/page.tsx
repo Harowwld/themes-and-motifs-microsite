@@ -447,6 +447,16 @@ export default function VendorDashboardPage() {
   const [promos, setPromos] = useState<VendorPromo[]>([]);
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
 
+  // Album management state
+  const [albums, setAlbums] = useState<Array<{ id: number; title: string; slug: string; photo_count: number; created_at: string }>>([]);
+  const [selectedAlbum, setSelectedAlbum] = useState<{ id: number; title: string; slug: string; photo_count: number; created_at: string } | null>(null);
+  const [albumPhotos, setAlbumPhotos] = useState<Array<{ id: number; image_url: string; display_order: number }>>([]);
+  const [albumModalOpen, setAlbumModalOpen] = useState(false);
+  const [albumTitle, setAlbumTitle] = useState("");
+  const [albumEditorOpen, setAlbumEditorOpen] = useState(false);
+  const [deleteAlbumModalOpen, setDeleteAlbumModalOpen] = useState(false);
+  const [albumToDelete, setAlbumToDelete] = useState<{ id: number; title: string } | null>(null);
+
   const [cropperOpen, setCropperOpen] = useState(false);
   const [logoModalOpen, setLogoModalOpen] = useState(false);
   const [photoModalOpen, setPhotoModalOpen] = useState(false);
@@ -609,6 +619,120 @@ export default function VendorDashboardPage() {
     }
   }
 
+  // Album management functions
+  async function loadAlbums() {
+    if (!token) return;
+    try {
+      const res = await apiFetch<{ albums: Array<{ id: number; title: string; slug: string; photo_count: number; created_at: string }> }>("/api/vendor/albums", token);
+      setAlbums(res.albums ?? []);
+    } catch (e: any) {
+      setError(e?.message ?? "Failed to load albums.");
+    }
+  }
+
+  async function createAlbum() {
+    if (!token) return;
+    if (!albumTitle.trim()) {
+      setError("Album title is required");
+      return;
+    }
+    setError(null);
+    setSaving(true);
+    try {
+      const res = await apiFetch<{ album: { id: number; title: string; slug: string; photo_count: number; created_at: string } }>("/api/vendor/albums", token, {
+        method: "POST",
+        body: JSON.stringify({ title: albumTitle.trim() }),
+      });
+      setAlbums((prev) => [res.album, ...prev]);
+      setAlbumTitle("");
+      setAlbumModalOpen(false);
+    } catch (e: any) {
+      setError(e?.message ?? "Failed to create album.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function updateAlbum(id: number, title: string) {
+    if (!token) return;
+    if (!title.trim()) {
+      setError("Album title is required");
+      return;
+    }
+    setError(null);
+    setSaving(true);
+    try {
+      const res = await apiFetch<{ album: { id: number; title: string; slug: string; photo_count: number; created_at: string } }>("/api/vendor/albums", token, {
+        method: "PATCH",
+        body: JSON.stringify({ id, title: title.trim() }),
+      });
+      setAlbums((prev) => prev.map((a) => (a.id === id ? res.album : a)));
+      if (selectedAlbum?.id === id) {
+        setSelectedAlbum(res.album);
+      }
+    } catch (e: any) {
+      setError(e?.message ?? "Failed to update album.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function deleteAlbum(id: number) {
+    if (!token) return;
+    setError(null);
+    setSaving(true);
+    try {
+      await apiFetch("/api/vendor/albums", token, {
+        method: "DELETE",
+        body: JSON.stringify({ id }),
+      });
+      setAlbums((prev) => prev.filter((a) => a.id !== id));
+      if (selectedAlbum?.id === id) {
+        setSelectedAlbum(null);
+        setAlbumPhotos([]);
+      }
+      setDeleteAlbumModalOpen(false);
+      setAlbumToDelete(null);
+    } catch (e: any) {
+      setError(e?.message ?? "Failed to delete album.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function loadAlbumPhotos(albumId: number) {
+    if (!token) return;
+    try {
+      const res = await apiFetch<{ album: any; photos: Array<{ id: number; image_url: string; display_order: number }> }>(`/api/vendor/albums/${albumId}/photos`, token);
+      setAlbumPhotos(res.photos ?? []);
+    } catch (e: any) {
+      setError(e?.message ?? "Failed to load album photos.");
+    }
+  }
+
+  async function saveAlbumPhotos(albumId: number, photoUrls: string[]) {
+    if (!token) return;
+    setError(null);
+    setSaving(true);
+    try {
+      const photosWithOrder = photoUrls.map((url, idx) => ({
+        image_url: url,
+        display_order: idx,
+      }));
+      const res = await apiFetch<{ photos: Array<{ id: number; image_url: string; display_order: number }> }>(`/api/vendor/albums/${albumId}/photos`, token, {
+        method: "PUT",
+        body: JSON.stringify({ photos: photosWithOrder }),
+      });
+      setAlbumPhotos(res.photos ?? []);
+      // Update album photo count
+      setAlbums((prev) => prev.map((a) => (a.id === albumId ? { ...a, photo_count: photoUrls.length } : a)));
+    } catch (e: any) {
+      setError(e?.message ?? "Failed to save album photos.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
   const planName = String((Array.isArray(vendor?.plan) ? vendor?.plan?.[0]?.name : vendor?.plan?.name) ?? "")
     .trim()
     .toLowerCase();
@@ -697,6 +821,11 @@ export default function VendorDashboardPage() {
             () => ({ inquiries: [] as Inquiry[] })
           );
           setInquiries(inquiriesRes.inquiries ?? []);
+
+          const albumsRes = await apiFetch<{ albums: Array<{ id: number; title: string; slug: string; photo_count: number; created_at: string }> }>("/api/vendor/albums", session.access_token).catch(
+            () => ({ albums: [] })
+          );
+          setAlbums(albumsRes.albums ?? []);
         } catch (e: any) {
           setError(e?.message ?? "Failed to load vendor profile.");
         } finally {
@@ -1181,6 +1310,68 @@ export default function VendorDashboardPage() {
 
                 <section className="rounded-[3px] border border-black/10 bg-white overflow-hidden">
                   <div className="px-4 py-3 border-b border-black/5">
+                    <div className="text-[13px] font-semibold text-[#2c2c2c]">Albums</div>
+                    <div className="mt-1 text-[12px] text-black/45">Organize your photos into public albums.</div>
+                  </div>
+
+                  <div className="p-4 grid gap-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="text-[12px] font-semibold text-black/55">Your albums</div>
+                      <button
+                        type="button"
+                        onClick={() => setAlbumModalOpen(true)}
+                        className="h-9 px-3 rounded-[3px] border border-black/10 bg-white text-[12px] font-semibold text-[#6e4f33] hover:bg-black/[0.02] transition-colors"
+                      >
+                        Create album
+                      </button>
+                    </div>
+
+                    {albums.length === 0 ? (
+                      <div className="rounded-[3px] border border-black/10 bg-[#fcfbf9] p-4 text-[13px] text-black/55">
+                        No albums yet. Create your first album to organize your photos.
+                      </div>
+                    ) : (
+                      <div className="grid gap-3">
+                        {albums.map((album) => (
+                          <div key={album.id} className="rounded-[3px] border border-black/10 bg-white p-3 flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div>
+                                <div className="text-[13px] font-semibold text-[#2c2c2c]">{album.title}</div>
+                                <div className="text-[11px] text-black/45">{album.photo_count} photo{album.photo_count !== 1 ? "s" : ""}</div>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setSelectedAlbum(album);
+                                  setAlbumEditorOpen(true);
+                                  loadAlbumPhotos(album.id);
+                                }}
+                                className="h-8 px-2 rounded-[3px] border border-black/10 bg-white text-[11px] font-semibold text-[#6e4f33] hover:bg-black/[0.02] transition-colors"
+                              >
+                                Manage
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setAlbumToDelete({ id: album.id, title: album.title });
+                                  setDeleteAlbumModalOpen(true);
+                                }}
+                                className="h-8 px-2 rounded-[3px] border border-[#b42318]/20 bg-white text-[11px] font-semibold text-[#b42318] hover:bg-[#b42318]/5 transition-colors"
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </section>
+
+                <section className="rounded-[3px] border border-black/10 bg-white overflow-hidden">
+                  <div className="px-4 py-3 border-b border-black/5">
                     <div className="text-[13px] font-semibold text-[#2c2c2c]">Promos</div>
                     <div className="mt-1 text-[12px] text-black/45">Create deals that appear on your vendor page.</div>
                   </div>
@@ -1410,6 +1601,192 @@ export default function VendorDashboardPage() {
         </div>
       </div>
         </main>
+
+        {/* Create Album Modal */}
+        {albumModalOpen ? (
+          <div className="fixed inset-0 z-[60]">
+            <div className="absolute inset-0 bg-black/40" onClick={() => setAlbumModalOpen(false)} />
+            <div className="absolute inset-0 flex items-center justify-center p-4">
+              <div className="w-full max-w-sm rounded-[6px] border border-black/20 bg-white shadow-xl overflow-hidden">
+                <div className="px-5 py-4 border-b border-black/10">
+                  <div className="text-[14px] font-semibold text-[#2c2c2c]">Create Album</div>
+                  <div className="mt-1 text-[12px] text-black/55">
+                    Give your album a title to get started.
+                  </div>
+                </div>
+                <div className="px-5 py-4">
+                  <label className="grid gap-1.5">
+                    <span className="text-[12px] font-semibold text-black/55">Album title</span>
+                    <input
+                      type="text"
+                      className="h-9 w-full rounded-[3px] border border-black/10 px-3 text-[13px]"
+                      value={albumTitle}
+                      onChange={(e) => setAlbumTitle(e.target.value)}
+                      placeholder="e.g. Wedding Ceremonies"
+                      autoFocus
+                    />
+                  </label>
+                </div>
+                <div className="px-5 py-4 border-t border-black/10 flex items-center justify-end gap-2">
+                  <button
+                    type="button"
+                    disabled={saving}
+                    onClick={() => setAlbumModalOpen(false)}
+                    className="h-9 px-4 rounded-[6px] border border-black/15 bg-white text-[12px] font-semibold text-black/70 hover:bg-black/[0.02] disabled:opacity-60"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    disabled={saving || !albumTitle.trim()}
+                    onClick={createAlbum}
+                    className="h-9 px-4 rounded-[6px] bg-[#a68b6a] text-white text-[12px] font-semibold hover:bg-[#957a5c] disabled:opacity-60"
+                  >
+                    {saving ? "Creating..." : "Create"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : null}
+
+        {/* Album Editor Modal */}
+        {albumEditorOpen && selectedAlbum ? (
+          <div className="fixed inset-0 z-[60]">
+            <div className="absolute inset-0 bg-black/40" onClick={() => setAlbumEditorOpen(false)} />
+            <div className="absolute inset-0 flex items-center justify-center p-4">
+              <div className="w-full max-w-2xl max-h-[90vh] rounded-[6px] border border-black/20 bg-white shadow-xl overflow-hidden flex flex-col">
+                <div className="px-5 py-4 border-b border-black/10 flex items-center justify-between">
+                  <div>
+                    <div className="text-[14px] font-semibold text-[#2c2c2c]">Manage Album: {selectedAlbum.title}</div>
+                    <div className="mt-1 text-[12px] text-black/55">
+                      Add or remove photos from this album.
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setAlbumEditorOpen(false)}
+                    className="h-8 w-8 rounded-[3px] border border-black/10 bg-white text-black/60 hover:bg-black/5 transition-colors"
+                  >
+                    ×
+                  </button>
+                </div>
+                <div className="flex-1 overflow-y-auto p-5">
+                  <div className="grid gap-4">
+                    <div>
+                      <div className="text-[12px] font-semibold text-black/55 mb-3">Available Photos</div>
+                      <div className="grid gap-2 max-h-48 overflow-y-auto">
+                        {images.filter(img => img.image_url.trim()).map((img, idx) => (
+                          <label key={idx} className="flex items-center gap-3 p-2 rounded-[3px] border border-black/10 hover:bg-black/[0.02] cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={albumPhotos.some(ap => ap.image_url === img.image_url)}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  // Add photo to album
+                                  const newPhoto = { image_url: img.image_url, display_order: albumPhotos.length };
+                                  saveAlbumPhotos(selectedAlbum.id, [...albumPhotos.map(ap => ap.image_url), img.image_url]);
+                                } else {
+                                  // Remove photo from album
+                                  const newPhotos = albumPhotos.filter(ap => ap.image_url !== img.image_url);
+                                  saveAlbumPhotos(selectedAlbum.id, newPhotos.map(ap => ap.image_url));
+                                }
+                              }}
+                              className="h-4 w-4 rounded border-black/20"
+                            />
+                            <div className="h-12 w-12 rounded-[3px] border border-black/10 bg-white overflow-hidden flex-shrink-0">
+                              <img src={img.image_url} alt="" className="h-full w-full object-cover" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="text-[12px] font-medium text-[#2c2c2c] truncate">{img.caption || "Untitled"}</div>
+                              <div className="text-[11px] text-black/45">{img.image_url.substring(0, 50)}...</div>
+                            </div>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-[12px] font-semibold text-black/55 mb-3">Album Photos ({albumPhotos.length})</div>
+                      {albumPhotos.length === 0 ? (
+                        <div className="rounded-[3px] border border-black/10 bg-[#fcfbf9] p-4 text-[13px] text-black/55 text-center">
+                          No photos in this album yet. Select photos from above to add them.
+                        </div>
+                      ) : (
+                        <div className="grid grid-cols-3 gap-2">
+                          {albumPhotos.map((photo) => (
+                            <div key={photo.id} className="relative group">
+                              <div className="aspect-square rounded-[3px] border border-black/10 bg-white overflow-hidden">
+                                <img src={photo.image_url} alt="" className="h-full w-full object-cover" />
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const newPhotos = albumPhotos.filter(ap => ap.image_url !== photo.image_url);
+                                  saveAlbumPhotos(selectedAlbum.id, newPhotos.map(ap => ap.image_url));
+                                }}
+                                className="absolute top-1 right-1 h-6 w-6 rounded-[3px] bg-[#b42318] text-white text-[10px] font-semibold opacity-0 group-hover:opacity-100 transition-opacity"
+                              >
+                                ×
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <div className="px-5 py-4 border-t border-black/10 flex items-center justify-end">
+                  <button
+                    type="button"
+                    onClick={() => setAlbumEditorOpen(false)}
+                    className="h-9 px-4 rounded-[6px] border border-black/15 bg-white text-[12px] font-semibold text-black/70 hover:bg-black/[0.02]"
+                  >
+                    Done
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : null}
+
+        {/* Delete Album Modal */}
+        {deleteAlbumModalOpen && albumToDelete ? (
+          <div className="fixed inset-0 z-[60]">
+            <div className="absolute inset-0 bg-black/40" onClick={() => setDeleteAlbumModalOpen(false)} />
+            <div className="absolute inset-0 flex items-center justify-center p-4">
+              <div className="w-full max-w-sm rounded-[6px] border border-black/20 bg-white shadow-xl overflow-hidden">
+                <div className="px-5 py-4 border-b border-black/10">
+                  <div className="text-[14px] font-semibold text-[#2c2c2c]">Delete Album</div>
+                  <div className="mt-1 text-[12px] text-black/55">
+                    Are you sure you want to delete this album? This action cannot be undone.
+                  </div>
+                </div>
+                <div className="px-5 py-4 bg-[#fafafa]">
+                  <div className="text-[13px] font-semibold text-[#2c2c2c]">{albumToDelete.title}</div>
+                  <div className="mt-1 text-[11px] text-black/45">Album will be permanently deleted</div>
+                </div>
+                <div className="px-5 py-4 border-t border-black/10 flex items-center justify-end gap-2">
+                  <button
+                    type="button"
+                    disabled={saving}
+                    onClick={() => setDeleteAlbumModalOpen(false)}
+                    className="h-9 px-4 rounded-[6px] border border-black/15 bg-white text-[12px] font-semibold text-black/70 hover:bg-black/[0.02] disabled:opacity-60"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    disabled={saving}
+                    onClick={() => deleteAlbum(albumToDelete.id)}
+                    className="h-9 px-4 rounded-[6px] bg-red-600 text-white text-[12px] font-semibold hover:bg-red-700 disabled:opacity-60"
+                  >
+                    {saving ? "Deleting..." : "Delete"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : null}
 
         <SiteFooter />
       </div>
