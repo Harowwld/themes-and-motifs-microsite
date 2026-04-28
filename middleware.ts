@@ -10,6 +10,12 @@ function isVendorPublicPath(pathname: string): boolean {
   return VENDOR_PUBLIC_PATHS.some((path) => pathname.startsWith(path));
 }
 
+const EDITOR_PUBLIC_PATHS = ["/editor/signin", "/editor/signup", "/editor/verify"];
+
+function isEditorPublicPath(pathname: string): boolean {
+  return EDITOR_PUBLIC_PATHS.some((path) => pathname.startsWith(path));
+}
+
 const EDITOR_ALLOWED_PATHS = ["/superadmin/promos"];
 
 function isEditorAllowedPath(pathname: string): boolean {
@@ -24,6 +30,11 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
+  // Handle editor public paths (signin, signup, verify)
+  if (isEditorPublicPath(pathname)) {
+    return NextResponse.next();
+  }
+
   // Handle vendor dashboard (protected)
   if (pathname.startsWith("/vendor/dashboard")) {
     const cookieHeader = req.headers.get("cookie") ?? "";
@@ -31,6 +42,18 @@ export async function middleware(req: NextRequest) {
     if (!token) {
       const url = req.nextUrl.clone();
       url.pathname = "/vendor/signin";
+      return NextResponse.redirect(url);
+    }
+    return NextResponse.next();
+  }
+
+  // Handle editor dashboard (protected)
+  if (pathname.startsWith("/editor/dashboard")) {
+    const cookieHeader = req.headers.get("cookie") ?? "";
+    const token = findSupabaseToken(cookieHeader);
+    if (!token) {
+      const url = req.nextUrl.clone();
+      url.pathname = "/editor/signin";
       return NextResponse.redirect(url);
     }
     return NextResponse.next();
@@ -75,5 +98,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/superadmin/:path*", "/vendor/:path*"],
+  matcher: ["/admin/:path*", "/superadmin/:path*", "/vendor/:path*", "/editor/:path*"],
 };
