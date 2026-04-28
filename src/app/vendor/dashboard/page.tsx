@@ -4,8 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { createSupabaseBrowserClient } from "../../../lib/supabaseBrowser";
-import SiteFooter from "../../sections/SiteFooter";
-import SiteHeader from "../../sections/SiteHeader";
 import CoverCropperModal from "./CoverCropperModal";
 
 type VendorProfile = {
@@ -960,8 +958,6 @@ export default function VendorDashboardPage() {
       className="min-h-screen bg-[#fafafa]"
     >
       <div className="w-full">
-        <SiteHeader />
-
         <main className="py-12">
           <div className="mx-auto w-full max-w-4xl">
             <div className="rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden">
@@ -1116,7 +1112,7 @@ export default function VendorDashboardPage() {
                       })()}
                     </div>
 
-                    <Field label="Description">
+                    <Field label="About">
                       <textarea className="min-h-24 w-full rounded-[3px] border border-black/10 px-3 py-2 text-[13px]" value={form.description} onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))} />
                     </Field>
 
@@ -1787,8 +1783,6 @@ export default function VendorDashboardPage() {
             </div>
           </div>
         ) : null}
-
-        <SiteFooter />
       </div>
     </div>
   );

@@ -3,8 +3,6 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabaseBrowser";
-import SiteHeader from "../sections/SiteHeader";
-import SiteFooter from "../sections/SiteFooter";
 import Link from "next/link";
 
 type Moment = {
@@ -337,69 +335,63 @@ export default function MomentsPage() {
 
   if (loading) {
     return (
-      <>
-        <SiteHeader />
-        <div className="min-h-screen bg-[#fafafa]">
-          <div className="mx-auto w-full max-w-6xl px-5 sm:px-8 py-10 sm:py-14">
-            <div className="h-8 w-48 bg-black/10 animate-pulse rounded mb-8" />
-            <div className="grid gap-6">
-              {Array.from({ length: 3 }).map((_, i) => (
-                <LoadingSkeleton key={i} />
-              ))}
-            </div>
+      <div className="min-h-screen bg-[#fafafa]">
+        <div className="mx-auto w-full max-w-6xl px-5 sm:px-8 py-10 sm:py-14">
+          <div className="h-8 w-48 bg-black/10 animate-pulse rounded mb-8" />
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="h-64 bg-black/10 animate-pulse rounded-lg" />
+            ))}
           </div>
         </div>
-        <SiteFooter />
-      </>
+      </div>
     );
   }
 
   return (
-    <>
-      <SiteHeader />
-      
-      <div className="min-h-screen bg-[#fafafa]">
-        <div className="mx-auto w-full max-w-6xl px-5 sm:px-8 py-10 sm:py-14">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h1 className="text-[24px] sm:text-[28px] font-semibold tracking-[-0.01em] text-[#2c2c2c] font-[family-name:var(--font-noto-serif)]">
-                Wedding Moments
-              </h1>
-              <p className="mt-1 text-[14px] text-neutral-500 font-[family-name:var(--font-plus-jakarta)]">
-                {user 
-                  ? "Document your wedding journey and share your experiences" 
-                  : "Discover beautiful wedding moments and get inspired for your big day"
-                }
-              </p>
-            </div>
-            {user && isSoonToWed && (
-              <a
-                href="/moments/create"
-                className="inline-flex items-center px-4 py-2 bg-[#a68b6a] text-white text-[13px] font-semibold rounded-lg hover:bg-[#957a5c] transition-colors font-[family-name:var(--font-plus-jakarta)]"
-              >
-                <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                </svg>
-                Create Moment
-              </a>
-            )}
+    <div className="min-h-screen bg-[#fafafa]">
+      <div className="mx-auto w-full max-w-6xl px-5 sm:px-8 py-10 sm:py-14">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-[24px] sm:text-[28px] font-semibold tracking-[-0.01em] text-[#2c2c2c] font-[family-name:var(--font-noto-serif)]">
+              Wedding Moments
+            </h1>
+            <p className="mt-1 text-[14px] text-neutral-500 font-[family-name:var(--font-plus-jakarta)]">
+              {user 
+                ? "Document your wedding journey and share your experiences" 
+                : "Discover beautiful wedding moments and get inspired for your big day"
+              }
+            </p>
           </div>
+          {user && isSoonToWed && (
+            <a
+              href="/moments/create"
+              className="inline-flex items-center px-4 py-2 bg-[#a68b6a] text-white text-[13px] font-semibold rounded-lg hover:bg-[#957a5c] transition-colors font-[family-name:var(--font-plus-jakarta)]"
+            >
+              <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+              </svg>
+              Create Moment
+            </a>
+          )}
+        </div>
 
-          {/* Filters */}
-          {user && (
-            <div className="flex flex-wrap gap-4 mb-8">
-              <div className="flex items-center gap-2">
-                <label className="text-sm font-medium text-gray-700">Visibility:</label>
-                <select
-                  value={filter}
-                  onChange={(e) => setFilter(e.target.value as any)}
-                  className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#a68b6a]"
-                >
-                  <option value="all">All Moments</option>
-                  <option value="private">My Private</option>
-                  <option value="public">Public</option>
-                </select>
-              </div>
+        {/* Filters */}
+        {user && (
+          <div className="flex flex-wrap gap-4 mb-8">
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-medium text-gray-700">Visibility:</label>
+              <select
+                value={filter}
+                onChange={(e) => setFilter(e.target.value as any)}
+                className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#a68b6a]"
+              >
+                <option value="all">All Moments</option>
+                <option value="private">My Private</option>
+                <option value="public">Public</option>
+              </select>
+            </div>
             <div className="flex items-center gap-2">
               <label className="text-sm font-medium text-gray-700">Type:</label>
               <select
@@ -415,71 +407,68 @@ export default function MomentsPage() {
               </select>
             </div>
           </div>
-          )}
+        )}
 
-          {/* Type filter for public users */}
-          {!user && (
-            <div className="flex flex-wrap gap-4 mb-8">
-              <div className="flex items-center gap-2">
-                <label className="text-sm font-medium text-gray-700">Type:</label>
-                <select
-                  value={typeFilter}
-                  onChange={(e) => setTypeFilter(e.target.value)}
-                  className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#a68b6a]"
-                >
-                  <option value="all">All Types</option>
-                  <option value="photo">Photos</option>
-                  <option value="review">Reviews</option>
-                  <option value="story">Stories</option>
-                  <option value="milestone">Milestones</option>
-                </select>
-              </div>
+        {/* Type filter for public users */}
+        {!user && (
+          <div className="flex flex-wrap gap-4 mb-8">
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-medium text-gray-700">Type:</label>
+              <select
+                value={typeFilter}
+                onChange={(e) => setTypeFilter(e.target.value)}
+                className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#a68b6a]"
+              >
+                <option value="all">All Types</option>
+                <option value="photo">Photos</option>
+                <option value="review">Reviews</option>
+                <option value="story">Stories</option>
+                <option value="milestone">Milestones</option>
+              </select>
             </div>
-          )}
+          </div>
+        )}
 
-          {moments.length === 0 ? (
-            <div className="rounded-xl border border-black/10 bg-white p-12 text-center">
-              <svg className="h-16 w-16 mx-auto text-neutral-300 mb-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-              </svg>
-              <h3 className="text-[18px] font-semibold text-[#2c2c2c] mb-2 font-[family-name:var(--font-noto-serif)]">
-                {user ? "No moments yet" : "No public moments yet"}
-              </h3>
-              <p className="text-[14px] text-neutral-500 mb-6 font-[family-name:var(--font-plus-jakarta)]">
-                {user 
-                  ? "Start documenting your wedding journey by creating your first moment"
-                  : "Be the first to share your wedding moments with the community!"
-                }
-              </p>
-              {user && isSoonToWed ? (
-                <a
-                  href="/moments/create"
-                  className="inline-flex items-center px-5 py-2.5 bg-[#a68b6a] text-white text-[13px] font-semibold rounded-lg hover:bg-[#957a5c] transition-colors font-[family-name:var(--font-plus-jakarta)]"
-                >
-                  Create Your First Moment
-                </a>
-              ) : (
-                <a
-                  href="/soon-to-wed/signup"
-                  className="inline-flex items-center px-5 py-2.5 bg-[#a68b6a] text-white text-[13px] font-semibold rounded-lg hover:bg-[#957a5c] transition-colors font-[family-name:var(--font-plus-jakarta)]"
-                >
-                  Sign Up to Share Moments
-                </a>
-              )}
+        {moments.length === 0 ? (
+          <div className="rounded-xl border border-black/10 bg-white p-12 text-center">
+            <svg className="h-16 w-16 mx-auto text-neutral-300 mb-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+            </svg>
+            <h3 className="text-[18px] font-semibold text-[#2c2c2c] mb-2 font-[family-name:var(--font-noto-serif)]">
+              {user ? "No moments yet" : "No public moments yet"}
+            </h3>
+            <p className="text-[14px] text-neutral-500 mb-6 font-[family-name:var(--font-plus-jakarta)]">
+              {user 
+                ? "Start documenting your wedding journey by creating your first moment"
+                : "Be the first to share your wedding moments with the community!"
+              }
+            </p>
+            {user && isSoonToWed ? (
+              <a
+                href="/moments/create"
+                className="inline-flex items-center px-5 py-2.5 bg-[#a68b6a] text-white text-[13px] font-semibold rounded-lg hover:bg-[#957a5c] transition-colors font-[family-name:var(--font-plus-jakarta)]"
+              >
+                Create Your First Moment
+              </a>
+            ) : (
+              <a
+                href="/soon-to-wed/signup"
+                className="inline-flex items-center px-5 py-2.5 bg-[#a68b6a] text-white text-[13px] font-semibold rounded-lg hover:bg-[#957a5c] transition-colors font-[family-name:var(--font-plus-jakarta)]"
+              >
+                Sign Up to Share Moments
+              </a>
+            )}
+          </div>
+        ) : (
+          <div className="max-w-2xl mx-auto">
+            <div className="space-y-6">
+              {moments.map((moment) => (
+                <MomentCard key={moment.id} moment={moment} onDelete={handleDeleteMoment} />
+              ))}
             </div>
-          ) : (
-            <div className="max-w-2xl mx-auto">
-              <div className="space-y-6">
-                {moments.map((moment) => (
-                  <MomentCard key={moment.id} moment={moment} onDelete={handleDeleteMoment} />
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
-
-      <SiteFooter />
-    </>
+    </div>
   );
 }

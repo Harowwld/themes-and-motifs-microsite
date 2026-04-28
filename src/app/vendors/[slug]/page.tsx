@@ -1,8 +1,6 @@
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
-import SiteHeader from "../../sections/SiteHeader";
-import SiteFooter from "../../sections/SiteFooter";
 import { createSupabaseServerClient } from "../../../lib/supabaseServer";
 import VendorPhotosCarousel from "../../../features/vendors/components/VendorPhotosCarousel";
 import ContactVendorForm from "../../../features/vendors/components/ContactVendorForm";
@@ -559,12 +557,6 @@ async function VendorDetailData({ slug }: { slug: string }) {
                       <span>{vendor.address}</span>
                     </div>
                   ) : null}
-                  {vendor.contact_email ? (
-                    <div className="flex items-center gap-3 text-[13px] text-black/65">
-                      <MailIcon className="h-4 w-4 shrink-0 text-black/40" />
-                      <span>{vendor.contact_email}</span>
-                    </div>
-                  ) : null}
                   {vendor.contact_phone ? (
                     <a
                       href={`tel:${vendor.contact_phone.replace(/\s/g, '')}`}
@@ -667,15 +659,11 @@ export default async function VendorDetailPage({ params }: Props) {
     <div
       className="min-h-screen bg-[#fafafa]"
     >
-      <SiteHeader />
-
       <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
         <Suspense fallback={<VendorDetailSkeleton />}>
           <VendorDetailData slug={slug} />
         </Suspense>
       </div>
-
-      <SiteFooter />
     </div>
   );
 }

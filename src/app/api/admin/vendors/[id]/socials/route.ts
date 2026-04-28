@@ -21,7 +21,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     const supabase = createSupabaseAdminClient();
 
     // Delete existing socials for this vendor
-    await supabase.from("vendor_socials").delete().eq("vendor_id", vendorId);
+    await supabase.from("vendor_social_links").delete().eq("vendor_id", vendorId);
 
     // Insert new socials
     const socialsToInsert = socials
@@ -33,7 +33,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
       }));
 
     if (socialsToInsert.length > 0) {
-      const { error } = await supabase.from("vendor_socials").insert(socialsToInsert);
+      const { error } = await supabase.from("vendor_social_links").insert(socialsToInsert);
       if (error) {
         return Response.json({ error: error.message }, { status: 500 });
       }
@@ -41,7 +41,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 
     // Fetch updated socials
     const { data: updatedSocials } = await supabase
-      .from("vendor_socials")
+      .from("vendor_social_links")
       .select("id, platform, url")
       .eq("vendor_id", vendorId)
       .order("id", { ascending: true });

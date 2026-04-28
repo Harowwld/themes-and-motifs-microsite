@@ -50,6 +50,7 @@ function VendorCard({
   const rating = vendor.average_rating ?? 0;
   const reviews = vendor.review_count ?? 0;
   const location = vendor.city ?? vendor.location_text;
+  const affiliations = vendor.affiliations ?? [];
 
   const planName = String((Array.isArray(vendor.plan) ? vendor.plan?.[0]?.name : vendor.plan?.name) ?? "")
     .trim()
@@ -60,9 +61,10 @@ function VendorCard({
     <a
       key={`${vendor.id}-${index}`}
       href={`/vendors/${encodeURIComponent(vendor.slug)}`}
-      className="group block rounded-[12px] overflow-hidden relative aspect-[3/4] shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] hover:shadow-[0_10px_25px_rgba(0,0,0,0.08),0_4px_10px_rgba(0,0,0,0.04)] hover:-translate-y-3 transition-all duration-500 flex-shrink-0 w-[280px] sm:w-[320px]"
+      className="group block rounded-[12px] relative aspect-[3/4] shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] hover:shadow-[0_10px_25px_rgba(0,0,0,0.08),0_4px_10px_rgba(0,0,0,0.04)] hover:-translate-y-3 transition-all duration-500 flex-shrink-0 w-[280px] sm:w-[320px]"
     >
-      <div className="absolute inset-0">
+      {/* Inner clip wrapper - handles border-radius clipping without breaking backdrop-filter */}
+      <div className="absolute inset-0 rounded-[12px] overflow-hidden">
         {coverUrl ? (
           <img
             src={coverUrl}
@@ -84,12 +86,19 @@ function VendorCard({
         )}
       </div>
 
-      <div className="absolute inset-x-0 bottom-0 z-20 h-[42%] sm:h-[38%]">
+        <div className="absolute inset-x-0 bottom-0 z-20 h-[35%] sm:h-[32%]">
+        {/* Glass blur - clip-path + webkit prefix for Safari */}
         <div
-          className="absolute inset-0 bg-white/70 backdrop-blur-md border-t border-white/40"
-          style={{ clipPath: "polygon(0 12%, 100% 0, 100% 100%, 0 100%)" }}
+          className="absolute inset-0 bg-white/70 border-t border-white/40"
+          style={{
+            clipPath: "polygon(0 12%, 100% 0, 100% 100%, 0 100%)",
+            backdropFilter: "blur(12px)",
+            WebkitBackdropFilter: "blur(12px)",
+          }}
         />
-        <div className="absolute inset-x-0 bottom-0 px-3 sm:px-4 pb-3 sm:pb-4">
+        {/* Content layer */}
+        <div className="absolute inset-x-0 bottom-0 px-3 sm:px-4 pb-3 sm:pb-4 pt-2">
+          {/* Top row: Logo aligned with Name + Rating */}
           <div className="flex items-center gap-2 sm:gap-3">
             {logoUrl && (
               <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-md overflow-hidden bg-white shrink-0 shadow-sm">
@@ -108,19 +117,36 @@ function VendorCard({
               <div className="text-[14px] sm:text-[16px] font-semibold text-[#a68b6a] uppercase tracking-wide truncate font-[family-name:var(--font-plus-jakarta)]">
                 {vendor.business_name}
               </div>
-              <div className="flex items-center gap-1 text-[13px] sm:text-[15px] text-neutral-600 mt-0.5 font-[family-name:var(--font-plus-jakarta)]">
+              <div className="flex items-center gap-1 text-[13px] sm:text-[15px] text-neutral-600 font-[family-name:var(--font-plus-jakarta)]">
                 <span className="font-semibold text-[#a68b6a]">{rating.toFixed(1)}</span>
                 <span className="text-neutral-300">·</span>
                 <span className="truncate">{reviews} reviews</span>
-                {location && (
-                  <>
-                    <span className="text-neutral-300 hidden sm:inline">·</span>
-                    <span className="truncate hidden sm:inline">{location}</span>
-                  </>
-                )}
               </div>
             </div>
           </div>
+
+          {/* Second row: Location and Affiliations (full width, below logo) */}
+          {(location || affiliations.length > 0) && (
+            <div className="mt-2 flex items-center gap-1.5 text-[12px] sm:text-[13px] text-neutral-500 font-[family-name:var(--font-plus-jakarta)]">
+              {location && (
+                <span className="inline-flex items-center gap-1">
+                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                  </svg>
+                  <span className="truncate">{location}</span>
+                </span>
+              )}
+              {location && affiliations.length > 0 && (
+                <span className="text-neutral-300">·</span>
+              )}
+              {affiliations.length > 0 && (
+                <span className="truncate">
+                  {affiliations.map(a => a.name).join(" · ")}
+                </span>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </a>

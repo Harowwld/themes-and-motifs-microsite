@@ -1,7 +1,5 @@
 import { notFound } from "next/navigation";
 import { createSupabaseServerClient } from "../../../lib/supabaseServer";
-import SiteHeader from "../../sections/SiteHeader";
-import SiteFooter from "../../sections/SiteFooter";
 import FadeInOnView from "../../components/FadeInOnView";
 import ShareDeal from "./ShareDeal";
 
@@ -118,14 +116,9 @@ export default async function PromoDetailPage({ params }: Props) {
   const location = vendor?.city ?? vendor?.location_text;
 
   return (
-    <>
-      <SiteHeader />
-
-      <div
-        className="min-h-screen bg-[#fafafa]"
-      >
-        <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
-          <main className="py-10 sm:py-14">
+    <div style={{ background: "#fafafa" }}>
+      <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
+        <main className="py-10 sm:py-14">
           <FadeInOnView>
             {/* Breadcrumb */}
             <div className="mb-6 text-[13px] text-black/50">
@@ -343,9 +336,6 @@ export default async function PromoDetailPage({ params }: Props) {
         </main>
       </div>
     </div>
-
-    <SiteFooter />
-    </>
   );
 }
 

@@ -1,6 +1,5 @@
-import { Suspense, cache } from "react";
-import SiteHeader from "../sections/SiteHeader";
-import SiteFooter from "../sections/SiteFooter";
+import { Suspense } from "react";
+import { unstable_cache } from "next/cache";
 import { createSupabaseServerClient } from "../../lib/supabaseServer";
 import CategoryBrowser from "../components/CategoryBrowser";
 import VendorsSearchBar from "./VendorsSearchBar";
@@ -12,23 +11,38 @@ import { buildVendorsQuery } from "../../features/vendors/queries.server";
 import FadeInOnView from "../components/FadeInOnView";
 import { sortVendors, VendorWithSortFields, SortKey, getCachedVendorLocations } from "../../lib/vendorUtils";
 
-const getCachedRegions = cache(async () => {
-  const supabase = createSupabaseServerClient();
-  const { data } = await supabase.from("regions").select("id,name").is("parent_id", null).order("name", { ascending: true }).limit(200);
-  return (data ?? []) as RegionRow[];
-});
+// Cache regions for 1 hour (3600 seconds)
+const getCachedRegions = unstable_cache(
+  async () => {
+    const supabase = createSupabaseServerClient();
+    const { data } = await supabase.from("regions").select("id,name").is("parent_id", null).order("name", { ascending: true }).limit(200);
+    return (data ?? []) as RegionRow[];
+  },
+  ["regions"],
+  { revalidate: 3600 }
+);
 
-const getCachedAffiliations = cache(async () => {
-  const supabase = createSupabaseServerClient();
-  const { data } = await supabase.from("affiliations").select("id,name,slug").order("name", { ascending: true }).limit(200);
-  return (data ?? []) as AffiliationRow[];
-});
+// Cache affiliations for 1 hour (3600 seconds)
+const getCachedAffiliations = unstable_cache(
+  async () => {
+    const supabase = createSupabaseServerClient();
+    const { data } = await supabase.from("affiliations").select("id,name,slug").order("name", { ascending: true }).limit(200);
+    return (data ?? []) as AffiliationRow[];
+  },
+  ["affiliations"],
+  { revalidate: 3600 }
+);
 
-const getCachedCategories = cache(async () => {
-  const supabase = createSupabaseServerClient();
-  const { data } = await supabase.from("categories").select("id,name,slug").order("name", { ascending: true }).limit(200);
-  return (data ?? []) as CategoryListItem[];
-});
+// Cache categories for 1 hour (3600 seconds)
+const getCachedCategories = unstable_cache(
+  async () => {
+    const supabase = createSupabaseServerClient();
+    const { data } = await supabase.from("categories").select("id,name,slug").order("name", { ascending: true }).limit(200);
+    return (data ?? []) as CategoryListItem[];
+  },
+  ["categories"],
+  { revalidate: 3600 }
+);
 
 type CategoryListItem = {
   id: number;
@@ -278,8 +292,6 @@ export default async function VendorsPage({
         background: "#fafafa",
       }}
     >
-      <SiteHeader />
-
       <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
         <main className="py-10 sm:py-14">
           <Suspense fallback={<VendorsPageSkeleton />}>
@@ -296,8 +308,6 @@ export default async function VendorsPage({
           </Suspense>
         </main>
       </div>
-
-      <SiteFooter />
     </div>
   );
 }

@@ -3,8 +3,6 @@
 import { useEffect, useState, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabaseBrowser";
-import SiteHeader from "../../sections/SiteHeader";
-import SiteFooter from "../../sections/SiteFooter";
 import { MomentPhotoUpload } from "@/components/MomentPhotoUpload";
 
 type SavedVendor = {
@@ -219,19 +217,15 @@ export default function CreateMomentPage() {
   if (loading) {
     return (
       <>
-        <SiteHeader />
         <div className="min-h-screen bg-[#fafafa] flex items-center justify-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#a68b6a]"></div>
         </div>
-        <SiteFooter />
       </>
     );
   }
 
   return (
     <>
-      <SiteHeader />
-      
       <div className="min-h-screen bg-[#fafafa]">
         <div className="mx-auto w-full max-w-4xl px-5 sm:px-8 py-10 sm:py-14">
           <div className="mb-8">
@@ -444,8 +438,6 @@ export default function CreateMomentPage() {
           </form>
         </div>
       </div>
-
-      <SiteFooter />
     </>
   );
 }

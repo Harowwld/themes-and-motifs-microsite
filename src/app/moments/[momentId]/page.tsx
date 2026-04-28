@@ -2,9 +2,8 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { useRouter, useParams } from "next/navigation";
+import Link from "next/link";
 import { createSupabaseBrowserClient } from "@/lib/supabaseBrowser";
-import SiteHeader from "../../sections/SiteHeader";
-import SiteFooter from "../../sections/SiteFooter";
 
 type Moment = {
   id: string;
@@ -320,13 +319,11 @@ export default function MomentDetailPage() {
   if (loading) {
     return (
       <>
-        <SiteHeader />
         <div className="min-h-screen bg-[#fafafa]">
           <div className="mx-auto w-full max-w-4xl px-5 sm:px-8 py-10 sm:py-14">
             <LoadingSkeleton />
           </div>
         </div>
-        <SiteFooter />
       </>
     );
   }
@@ -334,31 +331,26 @@ export default function MomentDetailPage() {
   if (error || !moment) {
     return (
       <>
-        <SiteHeader />
         <div className="min-h-screen bg-[#fafafa]">
           <div className="mx-auto w-full max-w-4xl px-5 sm:px-8 py-10 sm:py-14">
             <div className="text-center">
-              <h1 className="text-2xl font-semibold text-gray-900 mb-4">
-                {error || "Moment not found"}
-              </h1>
-              <button
-                onClick={() => router.push("/moments")}
-                className="px-4 py-2 bg-[#a68b6a] text-white rounded-lg hover:bg-[#957a5c] transition-colors"
+              <h1 className="text-2xl font-bold text-gray-900 mb-2">Moment not found</h1>
+              <p className="text-gray-600 mb-4">{error || "This moment doesn't exist or you don't have permission to view it."}</p>
+              <Link
+                href="/moments"
+                className="text-[#a68b6a] hover:text-[#957a5c] font-medium"
               >
-                Back to Moments
-              </button>
+                ← Back to Moments
+              </Link>
             </div>
           </div>
         </div>
-        <SiteFooter />
       </>
     );
   }
 
   return (
     <>
-      <SiteHeader />
-      
       <div className="min-h-screen bg-[#fafafa]">
         <div className="mx-auto w-full max-w-4xl px-5 sm:px-8 py-10 sm:py-14">
           {/* Header */}
@@ -478,8 +470,6 @@ export default function MomentDetailPage() {
           </div>
         </div>
       </div>
-
-      <SiteFooter />
     </>
   );
 }

@@ -10,6 +10,12 @@ export type VendorWithCover = {
   cover_image_url?: string | null;
 };
 
+export type Affiliation = {
+  id: number;
+  name: string;
+  slug: string;
+};
+
 export type VendorListItem = {
   id: number;
   business_name: string;
@@ -26,6 +32,8 @@ export type VendorListItem = {
   plan?: { id: number; name: string } | { id: number; name: string }[] | null;
 };
 
-export type FeaturedVendor = VendorListItem;
+export type FeaturedVendor = VendorListItem & {
+  affiliations?: Affiliation[];
+};
 
 export type VendorCardVendor = VendorListItem;

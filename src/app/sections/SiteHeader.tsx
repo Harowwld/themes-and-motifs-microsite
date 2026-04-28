@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
 import { createSupabaseBrowserClient } from "../../lib/supabaseBrowser";
+import { authCache } from "../../lib/cache";
 
 function MenuIcon({ open }: { open: boolean }) {
   return (
@@ -42,9 +43,11 @@ export default function SiteHeader() {
   const meCacheRef = useRef<{ token: string; at: number; isVendor: boolean; isSoonToWed: boolean } | null>(null);
   const meInFlightRef = useRef<Promise<{ isVendor: boolean; isSoonToWed: boolean } | null> | null>(null);
 
-  const [signedIn, setSignedIn] = useState(false);
-  const [isVendor, setIsVendor] = useState(false);
-  const [isSoonToWed, setIsSoonToWed] = useState(false);
+  // Try to get cached auth state immediately for instant UI
+  const cachedAuth = useMemo(() => authCache.get(), []);
+  const [signedIn, setSignedIn] = useState(cachedAuth?.signedIn ?? false);
+  const [isVendor, setIsVendor] = useState(cachedAuth?.isVendor ?? false);
+  const [isSoonToWed, setIsSoonToWed] = useState(cachedAuth?.isSoonToWed ?? false);
   const [signingOut, setSigningOut] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
@@ -55,14 +58,16 @@ export default function SiteHeader() {
     async function refresh() {
       const { data } = await supabase.auth.getSession();
       const session = data.session ?? null;
+      const newSignedIn = Boolean(session?.user);
 
       if (cancelled) return;
 
-      setSignedIn(Boolean(session?.user));
+      setSignedIn(newSignedIn);
 
       if (!session?.access_token) {
         setIsVendor(false);
         setIsSoonToWed(false);
+        authCache.clear();
         return;
       }
 
@@ -73,6 +78,7 @@ export default function SiteHeader() {
       if (cached && cached.token === token && now - cached.at < ttlMs) {
         setIsVendor(cached.isVendor);
         setIsSoonToWed(cached.isSoonToWed);
+        authCache.set(newSignedIn, cached.isVendor, cached.isSoonToWed);
         return;
       }
 
@@ -98,6 +104,7 @@ export default function SiteHeader() {
         const me = await meInFlightRef.current;
         if (!me) throw new Error("me fetch failed");
         meCacheRef.current = { token, at: Date.now(), isVendor: me.isVendor, isSoonToWed: me.isSoonToWed };
+        authCache.set(newSignedIn, me.isVendor, me.isSoonToWed);
         if (!cancelled) {
           setIsVendor(me.isVendor);
           setIsSoonToWed(me.isSoonToWed);
@@ -106,6 +113,7 @@ export default function SiteHeader() {
         if (!cancelled) {
           setIsVendor(false);
           setIsSoonToWed(false);
+          authCache.set(newSignedIn, false, false);
         }
       }
     }

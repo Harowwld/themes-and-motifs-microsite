@@ -1,14 +1,19 @@
-import { cache } from "react";
+import { unstable_cache } from "next/cache";
 import { createSupabaseServerClient } from "./supabaseServer";
 
 export type SortKey = "alpha" | "rating" | "newest" | "saves" | "views";
 
 // Shared cached function for vendor locations - used by both LandingPage and VendorsPage
-export const getCachedVendorLocations = cache(async () => {
-  const supabase = createSupabaseServerClient();
-  const { data } = await supabase.from("vendors").select("region_id,city,location_text").eq("is_active", true).limit(5000);
-  return data ?? [];
-});
+// Cache for 30 minutes (1800 seconds)
+export const getCachedVendorLocations = unstable_cache(
+  async () => {
+    const supabase = createSupabaseServerClient();
+    const { data } = await supabase.from("vendors").select("region_id,city,location_text").eq("is_active", true).limit(5000);
+    return data ?? [];
+  },
+  ["vendor-locations"],
+  { revalidate: 1800 }
+);
 
 export type VendorWithSortFields = {
   id: number;

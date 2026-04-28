@@ -1,13 +1,8 @@
-import SiteHeader from "../sections/SiteHeader";
-import SiteFooter from "../sections/SiteFooter";
-
 export const dynamic = "force-dynamic";
 
 export default function TermsPage() {
   return (
     <>
-      <SiteHeader />
-
       <div
         className="min-h-screen bg-[#fafafa]"
       >
@@ -106,8 +101,6 @@ export default function TermsPage() {
         </main>
       </div>
     </div>
-
-    <SiteFooter />
     </>
   );
 }

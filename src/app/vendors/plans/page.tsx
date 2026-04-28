@@ -1,5 +1,3 @@
-import SiteHeader from "../../sections/SiteHeader";
-import SiteFooter from "../../sections/SiteFooter";
 import FadeInOnView from "../../components/FadeInOnView";
 
 type PlanFeature = {
@@ -33,8 +31,6 @@ export default function VendorPlansPage() {
 
   return (
     <div style={{ background: "#fafafa", minHeight: "100vh", display: "flex", flexDirection: "column" }}>
-      <SiteHeader />
-
       <div className="flex-1 mx-auto w-full max-w-6xl px-5 sm:px-8">
         <main className="py-10 sm:py-14">
           <FadeInOnView>
@@ -92,8 +88,6 @@ export default function VendorPlansPage() {
           </FadeInOnView>
         </main>
       </div>
-
-      <SiteFooter />
     </div>
   );
 }

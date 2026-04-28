@@ -4,6 +4,7 @@ import "./globals.css";
 import HashAuthRedirect from "../lib/HashAuthRedirect";
 import ScrollContainer from "./components/ScrollContainer";
 import BugReportButton from "./components/BugReportButton";
+import NavWrapper from "./components/NavWrapper";
 
 const notoSerif = Noto_Serif({
   variable: "--font-noto-serif",
@@ -33,7 +34,7 @@ export default function RootLayout({
         <ScrollContainer>
           <HashAuthRedirect />
           <BugReportButton />
-          {children}
+          <NavWrapper>{children}</NavWrapper>
         </ScrollContainer>
       </body>
     </html>

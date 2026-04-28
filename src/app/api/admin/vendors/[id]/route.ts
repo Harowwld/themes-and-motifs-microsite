@@ -25,7 +25,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
         .eq("vendor_id", vendorId)
         .order("display_order", { ascending: true }),
       supabase
-        .from("vendor_socials")
+        .from("vendor_social_links")
         .select("id, platform, url")
         .eq("vendor_id", vendorId)
         .order("id", { ascending: true }),

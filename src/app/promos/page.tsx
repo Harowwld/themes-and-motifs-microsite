@@ -1,7 +1,5 @@
 import { Suspense } from "react";
 import { createSupabaseServerClient } from "../../lib/supabaseServer";
-import SiteHeader from "../sections/SiteHeader";
-import SiteFooter from "../sections/SiteFooter";
 import FadeInOnView from "../components/FadeInOnView";
 
 type Promo = {
@@ -241,14 +239,9 @@ export default async function PromosPage({
   const query = resolvedParams.q ?? "";
 
   return (
-    <>
-      <SiteHeader />
-
-      <div
-        className="min-h-screen bg-[#fafafa]"
-      >
-        <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
-          <main className="py-10 sm:py-14">
+    <div style={{ background: "#fafafa" }}>
+      <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
+        <main className="py-10 sm:py-14">
           <FadeInOnView>
             <div className="mb-8">
               <h1 className="text-[24px] sm:text-[28px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">
@@ -296,8 +289,5 @@ export default async function PromosPage({
         </main>
       </div>
     </div>
-
-    <SiteFooter />
-    </>
   );
 }

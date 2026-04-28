@@ -3,8 +3,6 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabaseBrowser";
-import SiteHeader from "../sections/SiteHeader";
-import SiteFooter from "../sections/SiteFooter";
 
 type SavedVendor = {
   id: string;
@@ -210,7 +208,6 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <>
-        <SiteHeader />
         <div className="min-h-screen bg-[#fafafa]">
           <div className="mx-auto w-full max-w-6xl px-5 sm:px-8 py-10 sm:py-14">
             <div className="h-8 w-48 bg-black/10 animate-pulse rounded mb-8" />
@@ -221,15 +218,12 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
-        <SiteFooter />
       </>
     );
   }
 
   return (
     <>
-      <SiteHeader />
-      
       <div className="min-h-screen bg-[#fafafa]">
         <div className="mx-auto w-full max-w-6xl px-5 sm:px-8 py-10 sm:py-14">
         <div className="flex items-center justify-between mb-8">
@@ -409,8 +403,6 @@ export default function DashboardPage() {
         </section>
       </div>
     </div>
-
-    <SiteFooter />
     </>
   );
 }
