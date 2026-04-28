@@ -19,10 +19,13 @@ function isEditorAllowedPath(pathname: string): boolean {
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
+  // Handle vendor public paths (signin, signup)
+  if (isVendorPublicPath(pathname)) {
+    return NextResponse.next();
+  }
+
+  // Handle vendor dashboard (protected)
   if (pathname.startsWith("/vendor/dashboard")) {
-    if (isVendorPublicPath(pathname)) {
-      return NextResponse.next();
-    }
     const cookieHeader = req.headers.get("cookie") ?? "";
     const token = findSupabaseToken(cookieHeader);
     if (!token) {
@@ -72,5 +75,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/superadmin/:path*", "/vendor/dashboard/:path*", "/vendor/dashboard"],
+  matcher: ["/admin/:path*", "/superadmin/:path*", "/vendor/:path*"],
 };
