@@ -16,7 +16,7 @@ function isEditorPublicPath(pathname: string): boolean {
   return EDITOR_PUBLIC_PATHS.some((path) => pathname.startsWith(path));
 }
 
-const EDITOR_ALLOWED_PATHS = ["/superadmin/promos"];
+const EDITOR_ALLOWED_PATHS = ["/superadmin/promos", "/superadmin/vendors"];
 
 function isEditorAllowedPath(pathname: string): boolean {
   return EDITOR_ALLOWED_PATHS.some((path) => pathname.startsWith(path));
