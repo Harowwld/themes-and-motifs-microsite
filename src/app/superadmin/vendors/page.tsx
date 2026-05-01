@@ -67,6 +67,24 @@ type VendorAffiliation = {
   affiliation: Affiliation | Affiliation[] | null;
 };
 
+type Promo = {
+  id: number;
+  vendor_id: number;
+  title: string;
+  summary: string | null;
+  terms: string | null;
+  valid_from: string | null;
+  valid_to: string | null;
+  is_active: boolean | null;
+  is_featured: boolean | null;
+  image_url: string | null;
+  discount_percentage: number | null;
+  image_focus_x: number | null;
+  image_focus_y: number | null;
+  image_zoom: number | null;
+  updated_at: string;
+};
+
 async function apiFetch<T>(url: string, init?: RequestInit): Promise<T> {
   const res = await fetch(url, {
     ...init,
@@ -127,6 +145,24 @@ export default function SuperadminVendorsPage() {
   const [affiliationInput, setAffiliationInput] = useState("");
   const [showAffiliationDropdown, setShowAffiliationDropdown] = useState(false);
 
+  // Promos state
+  const [editPromos, setEditPromos] = useState<Promo[]>([]);
+  const [promoForm, setPromoForm] = useState<Partial<Promo>>({
+    title: "",
+    summary: "",
+    terms: "",
+    valid_from: "",
+    valid_to: "",
+    discount_percentage: null,
+    image_url: "",
+    is_active: true,
+  });
+  const [editingPromoId, setEditingPromoId] = useState<number | null>(null);
+  const [showPromoForm, setShowPromoForm] = useState(false);
+
+  // Delete confirmation modal state
+  const [promoToDelete, setPromoToDelete] = useState<number | null>(null);
+
   // Crop modal state
   const [cropModalOpen, setCropModalOpen] = useState(false);
   const [croppingImageIdx, setCroppingImageIdx] = useState<number | null>(null);
@@ -186,13 +222,16 @@ export default function SuperadminVendorsPage() {
     setEditModalOpen(true);
 
     try {
-      const res = await apiFetch<{
-        vendor: Vendor;
-        images: VendorImage[];
-        socials: VendorSocial[];
-        affiliations: VendorAffiliation[];
-        allAffiliations: Affiliation[];
-      }>(`/api/admin/vendors/${vendor.id}`);
+      const [res, promosRes] = await Promise.all([
+        apiFetch<{
+          vendor: Vendor;
+          images: VendorImage[];
+          socials: VendorSocial[];
+          affiliations: VendorAffiliation[];
+          allAffiliations: Affiliation[];
+        }>(`/api/admin/vendors/${vendor.id}`),
+        apiFetch<{ promos: Promo[] }>(`/api/admin/vendors/${vendor.id}/promos`),
+      ]);
 
       const v = res.vendor;
       setEditForm({
@@ -246,6 +285,10 @@ export default function SuperadminVendorsPage() {
       setEditAffiliations(normalizedAffiliations);
       setAllAffiliations(res.allAffiliations ?? []);
       setAffiliationInput("");
+
+      // Set promos
+      setEditPromos(promosRes.promos ?? []);
+      resetPromoForm();
     } catch (e: any) {
       setEditError(e?.message ?? "Failed to load vendor details.");
     } finally {
@@ -404,6 +447,133 @@ export default function SuperadminVendorsPage() {
     }
     setCropModalOpen(false);
     setCroppingImageIdx(null);
+  }
+
+  // Promo helper functions
+  function resetPromoForm() {
+    setPromoForm({
+      title: "",
+      summary: "",
+      terms: "",
+      valid_from: "",
+      valid_to: "",
+      discount_percentage: null,
+      image_url: "",
+      is_active: true,
+    });
+    setEditingPromoId(null);
+    setShowPromoForm(false);
+  }
+
+  function startEditPromo(promo: Promo) {
+    setEditingPromoId(promo.id);
+    setPromoForm({
+      title: promo.title,
+      summary: promo.summary ?? "",
+      terms: promo.terms ?? "",
+      valid_from: promo.valid_from ?? "",
+      valid_to: promo.valid_to ?? "",
+      discount_percentage: promo.discount_percentage,
+      image_url: promo.image_url ?? "",
+      is_active: promo.is_active ?? true,
+    });
+    setShowPromoForm(true);
+  }
+
+  async function savePromo() {
+    if (!editingVendor) return;
+    if (!promoForm.title?.trim()) {
+      setEditError("Promo title is required.");
+      return;
+    }
+
+    setEditLoading(true);
+    setEditError(null);
+
+    try {
+      if (editingPromoId) {
+        // Update existing promo
+        const res = await apiFetch<{ promo: Promo }>(`/api/admin/vendors/${editingVendor.id}/promos`, {
+          method: "PATCH",
+          body: JSON.stringify({
+            promo_id: editingPromoId,
+            title: promoForm.title.trim(),
+            summary: promoForm.summary?.trim() || null,
+            terms: promoForm.terms?.trim() || null,
+            valid_from: promoForm.valid_from || null,
+            valid_to: promoForm.valid_to || null,
+            discount_percentage: promoForm.discount_percentage,
+            image_url: promoForm.image_url?.trim() || null,
+            is_active: promoForm.is_active,
+          }),
+        });
+        setEditPromos((prev) => prev.map((p) => (p.id === editingPromoId ? res.promo : p)));
+      } else {
+        // Create new promo
+        const res = await apiFetch<{ promo: Promo }>(`/api/admin/vendors/${editingVendor.id}/promos`, {
+          method: "POST",
+          body: JSON.stringify({
+            title: promoForm.title.trim(),
+            summary: promoForm.summary?.trim() || null,
+            terms: promoForm.terms?.trim() || null,
+            valid_from: promoForm.valid_from || null,
+            valid_to: promoForm.valid_to || null,
+            discount_percentage: promoForm.discount_percentage,
+            image_url: promoForm.image_url?.trim() || null,
+            is_active: promoForm.is_active,
+          }),
+        });
+        setEditPromos((prev) => [res.promo, ...prev]);
+      }
+      resetPromoForm();
+    } catch (e: any) {
+      setEditError(e?.message ?? "Failed to save promo.");
+    } finally {
+      setEditLoading(false);
+    }
+  }
+
+  async function confirmDeletePromo() {
+    if (!editingVendor || !promoToDelete) return;
+
+    setEditLoading(true);
+    setEditError(null);
+
+    try {
+      await apiFetch<{ ok: boolean }>(`/api/admin/vendors/${editingVendor.id}/promos?promo_id=${promoToDelete}`, {
+        method: "DELETE",
+      });
+      setEditPromos((prev) => prev.filter((p) => p.id !== promoToDelete));
+      if (editingPromoId === promoToDelete) {
+        resetPromoForm();
+      }
+      setPromoToDelete(null);
+    } catch (e: any) {
+      setEditError(e?.message ?? "Failed to delete promo.");
+    } finally {
+      setEditLoading(false);
+    }
+  }
+
+  async function togglePromoFeatured(promo: Promo) {
+    if (!editingVendor) return;
+    setEditLoading(true);
+    setEditError(null);
+
+    try {
+      const res = await apiFetch<{ promo: Promo }>(`/api/admin/vendors/${editingVendor.id}/promos`, {
+        method: "PATCH",
+        body: JSON.stringify({
+          promo_id: promo.id,
+          is_featured: !promo.is_featured,
+        }),
+      });
+      setEditPromos((prev) => prev.map((p) => (p.id === promo.id ? res.promo : p)));
+    } catch (e: any) {
+      setEditError(e?.message ?? "Failed to update promo.");
+    } finally {
+      setEditLoading(false);
+    }
   }
 
   return (
@@ -1037,6 +1207,238 @@ export default function SuperadminVendorsPage() {
                   </div>
                 </div>
               </section>
+
+              {/* Promos Section */}
+              <section className="grid gap-4">
+                <div className="text-[13px] font-semibold text-[#2c2c2c] border-b border-black/5 pb-2 flex items-center justify-between">
+                  <span>Promos</span>
+                  <button
+                    type="button"
+                    onClick={() => setShowPromoForm(true)}
+                    className="text-[12px] text-[#6e4f33] hover:underline"
+                  >
+                    + Add promo
+                  </button>
+                </div>
+
+                {/* Promo Form */}
+                {showPromoForm && (
+                  <div className="rounded-[3px] border border-black/10 bg-[#fafafa] p-4 grid gap-3">
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <label className="grid gap-1.5 sm:col-span-2">
+                        <span className="text-[12px] font-semibold text-black/55">Title *</span>
+                        <input
+                          value={promoForm.title}
+                          onChange={(e) => setPromoForm((f) => ({ ...f, title: e.target.value }))}
+                          className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]"
+                          placeholder="e.g., Summer Sale - 20% Off"
+                        />
+                      </label>
+                      <label className="grid gap-1.5 sm:col-span-2">
+                        <span className="text-[12px] font-semibold text-black/55">Summary</span>
+                        <textarea
+                          value={promoForm.summary ?? ""}
+                          onChange={(e) => setPromoForm((f) => ({ ...f, summary: e.target.value }))}
+                          rows={2}
+                          className="rounded-[3px] border border-black/10 px-3 py-2 text-[13px]"
+                          placeholder="Brief description of the promo..."
+                        />
+                      </label>
+                      <label className="grid gap-1.5 sm:col-span-2">
+                        <span className="text-[12px] font-semibold text-black/55">Terms & Conditions</span>
+                        <textarea
+                          value={promoForm.terms ?? ""}
+                          onChange={(e) => setPromoForm((f) => ({ ...f, terms: e.target.value }))}
+                          rows={2}
+                          className="rounded-[3px] border border-black/10 px-3 py-2 text-[13px]"
+                          placeholder="Terms and conditions..."
+                        />
+                      </label>
+                      <label className="grid gap-1.5">
+                        <span className="text-[12px] font-semibold text-black/55">Valid From</span>
+                        <input
+                          type="date"
+                          value={promoForm.valid_from ?? ""}
+                          onChange={(e) => setPromoForm((f) => ({ ...f, valid_from: e.target.value }))}
+                          className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]"
+                        />
+                      </label>
+                      <label className="grid gap-1.5">
+                        <span className="text-[12px] font-semibold text-black/55">Valid To</span>
+                        <input
+                          type="date"
+                          value={promoForm.valid_to ?? ""}
+                          onChange={(e) => setPromoForm((f) => ({ ...f, valid_to: e.target.value }))}
+                          className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]"
+                        />
+                      </label>
+                      <label className="grid gap-1.5">
+                        <span className="text-[12px] font-semibold text-black/55">Discount %</span>
+                        <input
+                          type="number"
+                          min={0}
+                          max={100}
+                          value={promoForm.discount_percentage ?? ""}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setPromoForm((f) => ({
+                              ...f,
+                              discount_percentage: val ? Math.min(100, Math.max(0, Number(val))) : null,
+                            }));
+                          }}
+                          className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]"
+                          placeholder="e.g., 20"
+                        />
+                      </label>
+                      <label className="grid gap-1.5">
+                        <span className="text-[12px] font-semibold text-black/55">Status</span>
+                        <select
+                          value={promoForm.is_active ? "true" : "false"}
+                          onChange={(e) => setPromoForm((f) => ({ ...f, is_active: e.target.value === "true" }))}
+                          className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]"
+                        >
+                          <option value="true">Active</option>
+                          <option value="false">Inactive</option>
+                        </select>
+                      </label>
+                      <div className="sm:col-span-2">
+                        <span className="text-[12px] font-semibold text-black/55">Promo Image</span>
+
+                        {/* Upload Dropzone */}
+                        {editingVendor && (
+                          <div className="mt-1.5">
+                            <ImageUploadDropzone
+                              bucket="vendor-assets"
+                              folder="promos"
+                              entityId={String(editingVendor.id)}
+                              label="Upload Photo"
+                              description="JPG, PNG, WebP up to 2MB. Will be compressed if needed."
+                              onUploadComplete={(result: UploadResult) => {
+                                setPromoForm((f) => ({ ...f, image_url: result.url }));
+                              }}
+                              onClear={() => {
+                                setPromoForm((f) => ({ ...f, image_url: "" }));
+                              }}
+                              existingUrl={promoForm.image_url ?? ""}
+                            />
+                          </div>
+                        )}
+
+                        {/* Divider */}
+                        <div className="relative my-3">
+                          <div className="absolute inset-0 flex items-center">
+                            <div className="w-full border-t border-black/10"></div>
+                          </div>
+                          <div className="relative flex justify-center">
+                            <span className="px-2 bg-[#fafafa] text-[11px] text-black/40">or enter URL</span>
+                          </div>
+                        </div>
+
+                        {/* URL Input */}
+                        <input
+                          value={promoForm.image_url ?? ""}
+                          onChange={(e) => setPromoForm((f) => ({ ...f, image_url: e.target.value }))}
+                          className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]"
+                          placeholder="https://..."
+                        />
+                      </div>
+                    </div>
+                    <div className="flex gap-2 justify-end pt-2">
+                      <button
+                        type="button"
+                        onClick={resetPromoForm}
+                        className="h-9 px-4 rounded-[3px] border border-black/10 text-[12px] font-semibold text-black/70 hover:bg-black/5 transition-colors"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        onClick={savePromo}
+                        disabled={editLoading}
+                        className="h-9 px-4 rounded-[3px] bg-[#a67c52] text-white text-[12px] font-semibold hover:bg-[#8e6a46] transition-colors disabled:opacity-60"
+                      >
+                        {editLoading ? "Saving..." : editingPromoId ? "Update Promo" : "Add Promo"}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Promos List */}
+                <div className="grid gap-2">
+                  {editPromos.length === 0 ? (
+                    <div className="text-[12px] text-black/50 italic">No promos added yet.</div>
+                  ) : (
+                    editPromos.map((promo) => (
+                      <div
+                        key={promo.id}
+                        className="flex items-center justify-between p-3 rounded-[3px] border border-black/10 bg-white"
+                      >
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className="text-[13px] font-semibold text-[#2c2c2c] truncate">{promo.title}</span>
+                            {promo.is_featured && (
+                              <span className="text-[10px] font-semibold bg-[#fff7ed] text-[#b54708] px-1.5 py-0.5 rounded">Featured</span>
+                            )}
+                            <span
+                              className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
+                                promo.is_active
+                                  ? "bg-[#ecfdf3] text-[#027a48]"
+                                  : "bg-black/5 text-black/50"
+                              }`}
+                            >
+                              {promo.is_active ? "Active" : "Inactive"}
+                            </span>
+                          </div>
+                          {(promo.summary || promo.discount_percentage !== null) && (
+                            <div className="mt-1 text-[11px] text-black/55 truncate">
+                              {promo.discount_percentage !== null && `${promo.discount_percentage}% off`}
+                              {promo.discount_percentage !== null && promo.summary && " • "}
+                              {promo.summary}
+                            </div>
+                          )}
+                          {(promo.valid_from || promo.valid_to) && (
+                            <div className="mt-0.5 text-[11px] text-black/40">
+                              Valid: {promo.valid_from ? new Date(promo.valid_from).toLocaleDateString() : "Anytime"}
+                              {promo.valid_from && promo.valid_to ? " - " : ""}
+                              {promo.valid_to ? new Date(promo.valid_to).toLocaleDateString() : ""}
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-1 ml-2">
+                          <button
+                            type="button"
+                            onClick={() => togglePromoFeatured(promo)}
+                            disabled={editLoading}
+                            className={`h-8 px-2 rounded-[3px] text-[11px] font-semibold transition-colors disabled:opacity-60 ${
+                              promo.is_featured
+                                ? "bg-[#fff7ed] text-[#b54708] border border-[#b54708]/20"
+                                : "border border-black/10 text-black/60 hover:bg-black/5"
+                            }`}
+                            title={promo.is_featured ? "Unfeature" : "Feature"}
+                          >
+                            {promo.is_featured ? "★" : "☆"}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => startEditPromo(promo)}
+                            className="h-8 px-3 rounded-[3px] border border-black/10 text-[12px] font-semibold text-black/70 hover:bg-black/5 transition-colors"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setPromoToDelete(promo.id)}
+                            disabled={editLoading}
+                            className="h-8 px-2 rounded-[3px] border border-[#b42318]/20 text-[12px] text-[#b42318] hover:bg-[#b42318]/5 transition-colors disabled:opacity-60"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </section>
             </div>
 
             <div className="px-4 py-3 border-t border-black/5 flex items-center justify-between">
@@ -1171,6 +1573,45 @@ export default function SuperadminVendorsPage() {
           </div>
         </div>
       )}
+
+      {/* Delete Promo Confirmation Modal */}
+      {promoToDelete ? (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40">
+          <div className="w-full max-w-sm rounded-[6px] border border-black/20 bg-white shadow-xl overflow-hidden">
+            <div className="px-5 py-4 border-b border-black/10">
+              <div className="text-[14px] font-semibold text-[#2c2c2c]">Delete Promo</div>
+              <div className="mt-1 text-[12px] text-black/55">
+                Are you sure you want to delete this promo? This action cannot be undone.
+              </div>
+            </div>
+            <div className="px-5 py-4 bg-[#fafafa]">
+              {editPromos.find((p) => p.id === promoToDelete)?.title && (
+                <div className="text-[13px] font-semibold text-[#2c2c2c]">
+                  {editPromos.find((p) => p.id === promoToDelete)?.title}
+                </div>
+              )}
+            </div>
+            <div className="px-5 py-4 border-t border-black/10 flex items-center justify-end gap-2">
+              <button
+                type="button"
+                disabled={editLoading}
+                onClick={() => setPromoToDelete(null)}
+                className="h-9 px-4 rounded-[6px] border border-black/15 bg-white text-[12px] font-semibold text-black/70 hover:bg-black/[0.02] disabled:opacity-60"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={editLoading}
+                onClick={confirmDeletePromo}
+                className="h-9 px-4 rounded-[6px] bg-red-600 text-white text-[12px] font-semibold hover:bg-red-700 disabled:opacity-60"
+              >
+                {editLoading ? "Deleting..." : "Delete"}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

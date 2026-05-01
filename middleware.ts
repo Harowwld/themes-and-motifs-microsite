@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-import { SUPERADMIN_COOKIE_NAME } from "./src/lib/superadminAuth";
+import { updateSession } from "./src/lib/supabase-server";
 import { findSupabaseToken, getAdminOrEditorAuth } from "./src/lib/editorAuth";
+import { createSupabaseAdminClient } from "./src/lib/supabaseAdmin";
 
 const VENDOR_PUBLIC_PATHS = ["/vendor/signin", "/vendor/signup", "/vendor/signup-link"];
 
@@ -63,37 +64,62 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  if (pathname === "/admin/login") {
+  if (pathname === "/admin/login" || pathname === "/admin/bootstrap") {
     return NextResponse.next();
   }
 
   if (pathname.startsWith("/superadmin")) {
-    const token = req.cookies.get(SUPERADMIN_COOKIE_NAME)?.value ?? "";
-    if (token) {
-      return NextResponse.next();
+    // First, update the session and get the user
+    const sessionResult = await updateSession(req);
+    
+    // If no user, redirect to admin login
+    if (!('user' in sessionResult)) {
+      const url = req.nextUrl.clone();
+      url.pathname = "/admin/login";
+      url.searchParams.set("redirect", pathname);
+      return NextResponse.redirect(url);
     }
-
+    
+    const { supabaseResponse, user } = sessionResult;
+    
+    // Check if this user is a superadmin via the database
+    const { data: superadminData } = await createSupabaseAdminClient()
+      .from("superadmins")
+      .select("id, auth_user_id, is_active")
+      .eq("auth_user_id", user.id)
+      .eq("is_active", true)
+      .limit(1)
+      .maybeSingle<{ id: string; auth_user_id: string; is_active: boolean }>();
+    
+    if (superadminData) {
+      // User is a superadmin, allow access
+      return supabaseResponse;
+    }
+    
+    // Check if user is an editor and trying to access allowed paths
     if (isEditorAllowedPath(pathname)) {
-      const cookieHeader = req.headers.get("cookie") ?? "";
-      const supabaseToken = findSupabaseToken(cookieHeader);
-      if (supabaseToken) {
-        const authReq = new Request(req.url, {
-          headers: { cookie: req.headers.get("cookie") ?? "" },
-        });
-        const auth = await getAdminOrEditorAuth(authReq);
-        if (auth && auth.type === "editor") {
-          return NextResponse.next();
-        }
+      const { data: editorData } = await createSupabaseAdminClient()
+        .from("editors")
+        .select("id")
+        .eq("user_id", user.id)
+        .limit(1)
+        .maybeSingle<{ id: string }>();
+      
+      if (editorData) {
+        return supabaseResponse;
       }
     }
-
+    
+    // User is not authorized for superadmin access
     const url = req.nextUrl.clone();
     url.pathname = "/admin/login";
+    url.searchParams.set("redirect", pathname);
     return NextResponse.redirect(url);
   }
 
   const url = req.nextUrl.clone();
   url.pathname = "/admin/login";
+  url.searchParams.set("redirect", pathname);
   return NextResponse.redirect(url);
 }
 

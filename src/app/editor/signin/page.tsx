@@ -13,6 +13,7 @@ export default function EditorSignInPage() {
   const [submitting, setSubmitting] = useState(false);
   const [sentTo, setSentTo] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [wasSignedOut, setWasSignedOut] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -20,7 +21,9 @@ export default function EditorSignInPage() {
     async function run() {
       const { data } = await supabase.auth.getSession();
       if (!cancelled && data.session?.user) {
-        router.push("/editor/dashboard");
+        // Auto sign out if already logged in
+        await supabase.auth.signOut();
+        setWasSignedOut(true);
       }
     }
 
@@ -29,7 +32,7 @@ export default function EditorSignInPage() {
     return () => {
       cancelled = true;
     };
-  }, [router, supabase]);
+  }, [supabase]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -72,6 +75,12 @@ export default function EditorSignInPage() {
           <div className="p-7">
             <div className="text-[18px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">Editor sign in</div>
             <div className="mt-2 text-[13px] text-black/60">We&apos;ll email you a sign-in link.</div>
+
+            {wasSignedOut ? (
+              <div className="mt-4 rounded-[3px] border border-[#a68b6a]/30 bg-[#faf6f1] px-4 py-3 text-[13px] text-[#6e4f33]">
+                You have been signed out. Please sign in again.
+              </div>
+            ) : null}
 
             {error ? (
               <div className="mt-4 rounded-[3px] border border-[#c17a4e]/30 bg-[#fff7ed] px-4 py-3 text-[13px] text-[#6e4f33]">

@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+import { SuperadminInvite } from "./components/SuperadminInvite";
+
 type Row = Record<string, any> & { id: number };
 
 type TableName = "plans" | "categories" | "regions" | "affiliations";
@@ -300,6 +302,8 @@ export default function SuperadminSettingsPage() {
               </div>
             </div>
           </section>
+
+          <SuperadminInvite />
 
           {error ? (
             <div className="rounded-[3px] border border-[#c17a4e]/30 bg-[#fff7ed] px-4 py-3 text-[13px] text-[#6e4f33]">

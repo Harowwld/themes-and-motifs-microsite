@@ -28,13 +28,33 @@ export async function POST(request: Request) {
 
     const { data: user } = await supabaseAdmin
       .from("users")
-      .select("id")
+      .select("id, role")
       .eq("email", normalizedEmail)
       .maybeSingle();
 
     if (user) {
-      return NextResponse.json({ 
-        error: "An account with this email already exists. Please sign in or use forgot password to reset your account." 
+      // Provide specific error based on existing role
+      if (user.role === "supplier") {
+        return NextResponse.json({
+          error: "This email is already registered as a vendor. Please sign in as a vendor instead.",
+          existingRole: "supplier"
+        }, { status: 409 });
+      }
+      if (user.role === "soon_to_wed") {
+        return NextResponse.json({
+          error: "This email is already registered as a couple. Please sign in instead.",
+          existingRole: "soon_to_wed"
+        }, { status: 409 });
+      }
+      if (user.role === "editor") {
+        return NextResponse.json({
+          error: "This email is already registered as an editor. Please sign in as an editor instead.",
+          existingRole: "editor"
+        }, { status: 409 });
+      }
+      return NextResponse.json({
+        error: "An account with this email already exists. Please sign in or use forgot password to reset your account.",
+        existingRole: user.role
       }, { status: 409 });
     }
 

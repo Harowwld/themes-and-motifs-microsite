@@ -7,11 +7,35 @@ export const dynamic = "force-dynamic";
 const cache = new Map<string, { data: ReturnType<typeof getResponse>; timestamp: number }>();
 const CACHE_TTL_MS = 30_000;
 
-function getResponse(userId: string, email: string | null, vendorId: number | null, role: string | null) {
+type AccountType = "vendor" | "couple" | "editor" | "superadmin" | null;
+
+function getAccountType(role: string | null, isVendor: boolean): AccountType {
+  if (isVendor) return "vendor";
+  const r = String(role ?? "").trim().toLowerCase();
+  if (r === "soon_to_wed") return "couple";
+  if (r === "editor") return "editor";
+  if (r === "admin" || r === "superadmin") return "superadmin";
+  return null;
+}
+
+function getResponse(
+  userId: string,
+  email: string | null,
+  vendorId: number | null,
+  role: string | null,
+  isSuperadmin: boolean
+) {
+  const isVendor = Boolean(vendorId);
+  const isSoonToWed = String(role ?? "").trim().toLowerCase() === "soon_to_wed";
+  const accountType: AccountType = isSuperadmin ? "superadmin" : getAccountType(role, isVendor);
+
   return {
     user: { id: userId, email },
-    isVendor: Boolean(vendorId),
-    isSoonToWed: String(role ?? "").trim().toLowerCase() === "soon_to_wed",
+    email,
+    accountType,
+    isVendor,
+    isSoonToWed,
+    isSuperadmin,
   };
 }
 
@@ -21,7 +45,10 @@ export async function GET(req: Request) {
     const token = auth.toLowerCase().startsWith("bearer ") ? auth.slice(7).trim() : "";
 
     if (!token) {
-      return NextResponse.json({ user: null, isVendor: false, isSoonToWed: false }, { status: 200 });
+      return NextResponse.json(
+        { user: null, email: null, accountType: null, isVendor: false, isSoonToWed: false, isSuperadmin: false },
+        { status: 200 }
+      );
     }
 
     const cached = cache.get(token);
@@ -34,10 +61,33 @@ export async function GET(req: Request) {
 
     if (error || !data?.user) {
       cache.delete(token);
-      return NextResponse.json({ user: null, isVendor: false, isSoonToWed: false }, { status: 200 });
+      return NextResponse.json(
+        { user: null, email: null, accountType: null, isVendor: false, isSoonToWed: false, isSuperadmin: false },
+        { status: 200 }
+      );
     }
 
     const user = data.user;
+
+    // Check for superadmin
+    const { data: superadminData } = await supabase
+      .from("superadmins")
+      .select("id")
+      .eq("auth_user_id", user.id)
+      .eq("is_active", true)
+      .maybeSingle();
+    const isSuperadmin = Boolean(superadminData);
+
+    // Check for editor (only if not superadmin)
+    let isEditor = false;
+    if (!isSuperadmin) {
+      const { data: editorData } = await supabase
+        .from("editors")
+        .select("id")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      isEditor = Boolean(editorData);
+    }
 
     const { data: combinedData, error: combinedError } = await supabase.rpc("get_user_vendor_role", {
       p_user_id: user.id,
@@ -53,11 +103,19 @@ export async function GET(req: Request) {
       role = row?.role ?? null;
     }
 
-    const response = getResponse(user.id, user.email ?? null, vendorId, role);
+    // Override role for editor if found
+    if (isEditor && !role) {
+      role = "editor";
+    }
+
+    const response = getResponse(user.id, user.email ?? null, vendorId, role, isSuperadmin);
     cache.set(token, { data: response, timestamp: Date.now() });
 
     return NextResponse.json(response, { status: 200 });
   } catch {
-    return NextResponse.json({ user: null, isVendor: false, isSoonToWed: false }, { status: 200 });
+    return NextResponse.json(
+      { user: null, email: null, accountType: null, isVendor: false, isSoonToWed: false, isSuperadmin: false },
+      { status: 200 }
+    );
   }
 }

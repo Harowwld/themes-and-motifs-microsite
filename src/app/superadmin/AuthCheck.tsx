@@ -1,20 +1,25 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { createSupabaseBrowserClient } from "../../lib/supabaseBrowser";
+import { createBrowserClient } from "../../lib/supabase-ssr";
+
+interface EditorAuthState {
+  isEditor: boolean;
+  email: string | null;
+}
 
 export function EditorAuthCheck({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const [isEditor, setIsEditor] = useState<boolean | null>(null);
+  const [authState, setAuthState] = useState<EditorAuthState | null>(null);
 
   useEffect(() => {
     async function checkAuth() {
-      const supabase = createSupabaseBrowserClient();
+      const supabase = createBrowserClient();
       const { data: { session } } = await supabase.auth.getSession();
 
       if (!session?.user) {
-        router.replace("/signin");
+        router.replace("/admin/login");
         return;
       }
 
@@ -27,17 +32,17 @@ export function EditorAuthCheck({ children }: { children: React.ReactNode }) {
         .maybeSingle();
 
       if (editorData) {
-        setIsEditor(true);
+        setAuthState({ isEditor: true, email: session.user.email ?? null });
       } else {
-        // Not an editor, redirect
-        router.replace("/");
+        // Not an editor, redirect to admin login
+        router.replace("/admin/login");
       }
     }
 
     checkAuth();
   }, [router]);
 
-  if (isEditor === null) {
+  if (authState === null) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-[14px] text-black/60">Checking access...</div>
@@ -45,5 +50,16 @@ export function EditorAuthCheck({ children }: { children: React.ReactNode }) {
     );
   }
 
-  return <>{children}</>;
+  // Clone children to pass email prop to LayoutContent
+  const childrenWithProps = React.Children.map(children, (child) => {
+    if (React.isValidElement(child)) {
+      return React.cloneElement(child, {
+        email: authState.email,
+        accountType: "editor" as const,
+      } as React.Attributes);
+    }
+    return child;
+  });
+
+  return <>{childrenWithProps}</>;
 }

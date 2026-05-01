@@ -13,6 +13,7 @@ export default function VendorSignInPage() {
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [wasSignedOut, setWasSignedOut] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -20,7 +21,9 @@ export default function VendorSignInPage() {
     async function run() {
       const { data } = await supabase.auth.getSession();
       if (!cancelled && data.session?.user) {
-        router.push("/vendor/dashboard");
+        // Auto sign out if already logged in
+        await supabase.auth.signOut();
+        setWasSignedOut(true);
       }
     }
 
@@ -29,7 +32,7 @@ export default function VendorSignInPage() {
     return () => {
       cancelled = true;
     };
-  }, [router, supabase]);
+  }, [supabase]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -73,6 +76,12 @@ export default function VendorSignInPage() {
           <div className="p-7">
             <div className="text-[18px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">Vendor sign in</div>
             <div className="mt-2 text-[13px] text-black/60">Use your email and password to sign in.</div>
+
+            {wasSignedOut ? (
+              <div className="mt-4 rounded-[3px] border border-[#a68b6a]/30 bg-[#faf6f1] px-4 py-3 text-[13px] text-[#6e4f33]">
+                You have been signed out. Please sign in again.
+              </div>
+            ) : null}
 
             {error ? (
               <div className="mt-4 rounded-[3px] border border-[#c17a4e]/30 bg-[#fff7ed] px-4 py-3 text-[13px] text-[#6e4f33]">

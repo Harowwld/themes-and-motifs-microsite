@@ -40,14 +40,16 @@ export default function SiteHeader() {
   const pathname = usePathname();
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);
 
-  const meCacheRef = useRef<{ token: string; at: number; isVendor: boolean; isSoonToWed: boolean } | null>(null);
-  const meInFlightRef = useRef<Promise<{ isVendor: boolean; isSoonToWed: boolean } | null> | null>(null);
+  const meCacheRef = useRef<{ token: string; at: number; isVendor: boolean; isSoonToWed: boolean; email: string | null; accountType: string | null } | null>(null);
+  const meInFlightRef = useRef<Promise<{ isVendor: boolean; isSoonToWed: boolean; email: string | null; accountType: string | null } | null> | null>(null);
 
   // Try to get cached auth state immediately for instant UI
   const cachedAuth = useMemo(() => authCache.get(), []);
   const [signedIn, setSignedIn] = useState(cachedAuth?.signedIn ?? false);
   const [isVendor, setIsVendor] = useState(cachedAuth?.isVendor ?? false);
   const [isSoonToWed, setIsSoonToWed] = useState(cachedAuth?.isSoonToWed ?? false);
+  const [email, setEmail] = useState<string | null>(null);
+  const [accountType, setAccountType] = useState<string | null>(null);
   const [signingOut, setSigningOut] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
@@ -67,6 +69,8 @@ export default function SiteHeader() {
       if (!session?.access_token) {
         setIsVendor(false);
         setIsSoonToWed(false);
+        setEmail(null);
+        setAccountType(null);
         authCache.clear();
         return;
       }
@@ -90,8 +94,13 @@ export default function SiteHeader() {
                 authorization: `Bearer ${token}`,
               },
             });
-            const json = (await res.json().catch(() => null)) as { isVendor?: boolean; isSoonToWed?: boolean } | null;
-            return { isVendor: Boolean(json?.isVendor), isSoonToWed: Boolean(json?.isSoonToWed) };
+            const json = (await res.json().catch(() => null)) as { isVendor?: boolean; isSoonToWed?: boolean; email?: string | null; accountType?: string | null } | null;
+            return {
+              isVendor: Boolean(json?.isVendor),
+              isSoonToWed: Boolean(json?.isSoonToWed),
+              email: json?.email ?? null,
+              accountType: json?.accountType ?? null,
+            };
           } catch {
             return null;
           }
@@ -103,16 +112,20 @@ export default function SiteHeader() {
       try {
         const me = await meInFlightRef.current;
         if (!me) throw new Error("me fetch failed");
-        meCacheRef.current = { token, at: Date.now(), isVendor: me.isVendor, isSoonToWed: me.isSoonToWed };
+        meCacheRef.current = { token, at: Date.now(), isVendor: me.isVendor, isSoonToWed: me.isSoonToWed, email: me.email, accountType: me.accountType };
         authCache.set(newSignedIn, me.isVendor, me.isSoonToWed);
         if (!cancelled) {
           setIsVendor(me.isVendor);
           setIsSoonToWed(me.isSoonToWed);
+          setEmail(me.email);
+          setAccountType(me.accountType);
         }
       } catch {
         if (!cancelled) {
           setIsVendor(false);
           setIsSoonToWed(false);
+          setEmail(null);
+          setAccountType(null);
           authCache.set(newSignedIn, false, false);
         }
       }
@@ -297,6 +310,33 @@ export default function SiteHeader() {
             </button>
           )}
 
+          {/* Account info for signed in users */}
+          {signedIn && email && (
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-md bg-gray-50 border border-gray-200">
+              <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+              <span className="text-[12px] text-gray-600 font-medium max-w-[120px] truncate" title={email}>
+                {email}
+              </span>
+              {accountType && (
+                <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+                  accountType === "vendor"
+                    ? "bg-blue-50 text-blue-600 border border-blue-200"
+                    : accountType === "couple"
+                    ? "bg-[#a68b6a]/10 text-[#a68b6a] border border-[#a68b6a]/20"
+                    : accountType === "editor"
+                    ? "bg-purple-50 text-purple-600 border border-purple-200"
+                    : accountType === "superadmin"
+                    ? "bg-red-50 text-red-600 border border-red-200"
+                    : "bg-gray-100 text-gray-600 border border-gray-200"
+                }`}>
+                  {accountType === "soon_to_wed" ? "Couple" : accountType.charAt(0).toUpperCase() + accountType.slice(1)}
+                </span>
+              )}
+            </div>
+          )}
+
           <a
             href="/vendors"
             className="hidden sm:inline-flex h-9 items-center justify-center px-4 rounded-md bg-[#a68b6a] text-white text-[13px] font-medium hover:bg-[#957a5c] transition-colors font-[family-name:var(--font-plus-jakarta)]"
@@ -411,6 +451,33 @@ export default function SiteHeader() {
             ) : null}
 
             <div className="border-t border-gray-100 my-2" />
+
+            {/* Account info in mobile menu */}
+            {signedIn && email && (
+              <div className="flex items-center gap-2 px-3 py-3 rounded-md bg-gray-50 border border-gray-200">
+                <svg className="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                <span className="text-[13px] text-gray-600 font-medium truncate flex-1" title={email}>
+                  {email}
+                </span>
+                {accountType && (
+                  <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full flex-shrink-0 ${
+                    accountType === "vendor"
+                      ? "bg-blue-50 text-blue-600 border border-blue-200"
+                      : accountType === "couple"
+                      ? "bg-[#a68b6a]/10 text-[#a68b6a] border border-[#a68b6a]/20"
+                      : accountType === "editor"
+                      ? "bg-purple-50 text-purple-600 border border-purple-200"
+                      : accountType === "superadmin"
+                      ? "bg-red-50 text-red-600 border border-red-200"
+                      : "bg-gray-100 text-gray-600 border border-gray-200"
+                  }`}>
+                    {accountType === "soon_to_wed" ? "Couple" : accountType.charAt(0).toUpperCase() + accountType.slice(1)}
+                  </span>
+                )}
+              </div>
+            )}
 
             {/* Sign out or Start Searching */}
             {signedIn ? (
