@@ -10,8 +10,6 @@ const HIDDEN_ROUTES = [
   "/editor",
   "/signin",
   "/signup",
-  "/forgot-password",
-  "/reset-password",
   "/soon-to-wed/signin",
   "/soon-to-wed/signup",
 ];

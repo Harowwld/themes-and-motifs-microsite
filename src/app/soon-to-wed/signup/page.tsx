@@ -138,7 +138,7 @@ export default function SoonToWedSignupPage() {
 
       if (signUpErr) {
         if (signUpErr.message.includes("User already registered") || signUpErr.message.includes("already exists")) {
-          setError("An account with this email already exists. Please sign in or use forgot password to reset your account.");
+          setError("An account with this email already exists. Please sign in.");
           setSubmitting(false);
           return;
         }

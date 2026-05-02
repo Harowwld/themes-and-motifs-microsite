@@ -24,6 +24,7 @@ export default function SoonToWedSignInPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [wasSignedOut, setWasSignedOut] = useState(false);
+  const resetSuccess = searchParams.get("reset") === "success";
 
   useEffect(() => {
     let cancelled = false;
@@ -87,6 +88,12 @@ export default function SoonToWedSignInPage() {
             <div className="text-[18px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">Soon-to-wed sign in</div>
             <div className="mt-2 text-[13px] text-black/60">Use your email and password to sign in.</div>
 
+            {resetSuccess ? (
+              <div className="mt-4 rounded-[3px] border border-[#a68b6a]/30 bg-[#faf6f1] px-4 py-3 text-[13px] text-[#6e4f33]">
+                Password reset successful. Please sign in with your new password.
+              </div>
+            ) : null}
+
             {wasSignedOut ? (
               <div className="mt-4 rounded-[3px] border border-[#a68b6a]/30 bg-[#faf6f1] px-4 py-3 text-[13px] text-[#6e4f33]">
                 You have been signed out. Please sign in again.
@@ -112,7 +119,12 @@ export default function SoonToWedSignInPage() {
               </label>
 
               <label className="grid gap-1.5">
-                <span className="text-[12px] font-semibold text-black/55">Password</span>
+                <div className="flex items-center justify-between">
+                  <span className="text-[12px] font-semibold text-black/55">Password</span>
+                  <a href="/forgot-password" className="text-[11px] font-semibold text-[#6e4f33] hover:underline">
+                    Forgot password?
+                  </a>
+                </div>
                 <input
                   type="password"
                   value={password}
@@ -129,13 +141,6 @@ export default function SoonToWedSignInPage() {
               >
                 {submitting ? "Signing in…" : "Sign in"}
               </button>
-
-              <a
-                className="text-[12px] font-semibold text-[#6e4f33] hover:underline"
-                href={`/forgot-password?email=${encodeURIComponent(email.trim())}&next=${encodeURIComponent(`/soon-to-wed/signin?returnTo=${encodeURIComponent(returnTo)}`)}`}
-              >
-                Forgot password?
-              </a>
 
               <a
                 className="text-[12px] font-semibold text-[#6e4f33] hover:underline"

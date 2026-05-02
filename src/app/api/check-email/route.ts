@@ -53,7 +53,7 @@ export async function POST(request: Request) {
         }, { status: 409 });
       }
       return NextResponse.json({
-        error: "An account with this email already exists. Please sign in or use forgot password to reset your account.",
+        error: "An account with this email already exists. Please sign in.",
         existingRole: user.role
       }, { status: 409 });
     }
