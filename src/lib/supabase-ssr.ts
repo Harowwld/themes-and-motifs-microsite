@@ -13,7 +13,8 @@ export function createBrowserClient() {
           const cookie = document.cookie
             .split('; ')
             .find((row) => row.startsWith(`${key}=`))
-          return cookie ? cookie.split('=')[1] : undefined
+          if (!cookie) return undefined
+          return cookie.slice(key.length + 1)
         },
         set(key, value, options) {
           if (typeof document === 'undefined') {
@@ -22,7 +23,7 @@ export function createBrowserClient() {
           let cookie = `${key}=${value}`
           if (options?.maxAge) cookie += `; Max-Age=${options.maxAge}`
           if (options?.expires) cookie += `; Expires=${options.expires.toUTCString()}`
-          if (options?.path) cookie += `; Path=${options.path}`
+          cookie += `; Path=${options?.path ?? '/'}`
           if (options?.domain) cookie += `; Domain=${options.domain}`
           if (options?.secure) cookie += '; Secure'
           if (options?.sameSite) cookie += `; SameSite=${options.sameSite}`
@@ -32,7 +33,8 @@ export function createBrowserClient() {
           if (typeof document === 'undefined') {
             return
           }
-          document.cookie = `${key}=; Max-Age=0${options?.path ? `; Path=${options.path}` : ''}`
+          const path = options?.path ?? '/'
+          document.cookie = `${key}=; Max-Age=0; Path=${path}`
         },
       },
     }
