@@ -10,7 +10,13 @@ export default function AdminLoginPage() {
   const searchParams = useSearchParams();
   const supabase = useMemo(() => createBrowserClient(), []);
 
-  const redirectPath = searchParams.get("redirect") || "/superadmin";
+  const rawRedirectPath = searchParams.get("redirect") || "/superadmin";
+  const redirectPath = (() => {
+    const v = String(rawRedirectPath || "").trim();
+    if (!v.startsWith("/")) return "/superadmin";
+    if (v === "/admin") return "/superadmin";
+    return v;
+  })();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");

@@ -64,6 +64,13 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
+  // /admin is an alias entrypoint; send users to the actual dashboard.
+  if (pathname === "/admin") {
+    const url = req.nextUrl.clone();
+    url.pathname = "/superadmin";
+    return NextResponse.redirect(url);
+  }
+
   if (pathname === "/admin/login" || pathname === "/admin/bootstrap") {
     return NextResponse.next();
   }
