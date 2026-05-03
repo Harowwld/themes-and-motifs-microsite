@@ -97,12 +97,18 @@ export default function AcceptInvitePage() {
         throw new Error(data.error || "Failed to accept invitation.");
       }
 
-      // If auto-signin was successful, set the session
-      if (data.autoSignIn && data.session) {
-        await supabase.auth.setSession({
-          access_token: data.session.access_token,
-          refresh_token: data.session.refresh_token,
+      // If auto-signin was successful, sign in client-side to set cookies properly
+      if (data.email && password) {
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email: data.email,
+          password,
         });
+        if (signInError) {
+          console.error("Auto sign-in failed:", signInError);
+          // Redirect to login if auto sign-in fails
+          router.replace("/admin/login");
+          return;
+        }
       }
 
       // Redirect to superadmin dashboard

@@ -111,22 +111,19 @@ export default function AdminLoginPage() {
 
       setPassword("");
 
-      // Set the Supabase session from the API response
-      if (json.session?.access_token && json.session?.refresh_token) {
-        const { error: sessionError } = await supabase.auth.setSession({
-          access_token: json.session.access_token,
-          refresh_token: json.session.refresh_token,
-        });
-        if (sessionError) {
-          console.error("Failed to set session:", sessionError);
-          throw new Error("Failed to establish session. Please try again.");
-        }
+      // Use client-side signIn to properly set cookies (setSession doesn't set cookies in browser)
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: u,
+        password,
+      });
+
+      if (signInError) {
+        console.error("Failed to sign in:", signInError);
+        throw new Error("Failed to establish session. Please try again.");
       }
 
-      // Wait a moment for the session to be established
-      setTimeout(() => {
-        router.replace(redirectPath);
-      }, 100);
+      // Navigate to redirect path
+      router.replace(redirectPath);
     } catch (e: any) {
       setError(e?.message ?? "Failed to sign in.");
     } finally {
