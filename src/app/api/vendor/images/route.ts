@@ -1,3 +1,4 @@
+import { NextResponse } from "next/server";
 import { assertVendor, getVendorForUser } from "../_auth";
 
 export const dynamic = "force-dynamic";
@@ -45,15 +46,15 @@ export async function PUT(req: Request) {
     });
 
     if (normalized.length === 0) {
-      return Response.json({ error: "Cover photo is required." }, { status: 400 });
+      return NextResponse.json({ error: "Cover photo is required." }, { status: 400 });
     }
 
     if (!normalized.some((x) => x.is_cover)) {
-      return Response.json({ error: "Cover photo is required." }, { status: 400 });
+      return NextResponse.json({ error: "Cover photo is required." }, { status: 400 });
     }
 
     const { error: delErr } = await supabase.from("vendor_images").delete().eq("vendor_id", vendor.id);
-    if (delErr) return Response.json({ error: delErr.message }, { status: 500 });
+    if (delErr) return NextResponse.json({ error: delErr.message }, { status: 500 });
 
     if (normalized.length > 0) {
       const insertData = normalized.map((x) => ({
@@ -69,7 +70,7 @@ export async function PUT(req: Request) {
 
       if (insErr) {
         console.error("[API/vendor/images] Insert error:", insErr);
-        return Response.json({ error: insErr.message }, { status: 500 });
+        return NextResponse.json({ error: insErr.message }, { status: 500 });
       }
       console.log("[API/vendor/images] Insert successful");
     }
@@ -81,11 +82,11 @@ export async function PUT(req: Request) {
       .order("is_cover", { ascending: false })
       .order("display_order", { ascending: true });
 
-    if (error) return Response.json({ error: error.message }, { status: 500 });
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-    return Response.json({ images: data ?? [] }, { status: 200 });
+    return NextResponse.json({ images: data ?? [] }, { status: 200 });
   } catch (e: any) {
     const status = typeof e?.statusCode === "number" ? e.statusCode : 500;
-    return Response.json({ error: e?.message ?? "Unknown error" }, { status });
+    return NextResponse.json({ error: e?.message ?? "Unknown error" }, { status });
   }
 }

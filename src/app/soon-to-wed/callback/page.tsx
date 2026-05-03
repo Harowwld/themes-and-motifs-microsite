@@ -65,8 +65,7 @@ export default function SoonToWedAuthCallbackPage() {
           return;
         }
 
-        await supabase.auth.signOut();
-        router.replace(`/soon-to-wed/signin?returnTo=${encodeURIComponent(returnTo)}`);
+        router.replace(returnTo);
       } catch (e: any) {
         if (!cancelled) setError(e?.message ?? "Failed to complete sign-in.");
       }

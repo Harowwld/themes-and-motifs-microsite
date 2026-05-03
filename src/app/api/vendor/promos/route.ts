@@ -1,3 +1,4 @@
+import { NextResponse } from "next/server";
 import { assertVendor, getVendorForUser } from "../_auth";
 
 export const dynamic = "force-dynamic";
@@ -83,13 +84,13 @@ export async function GET(req: Request) {
       .limit(50);
 
     if (error) {
-      return Response.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return Response.json({ promos: (data ?? []) as PromoRow[] }, { status: 200 });
+    return NextResponse.json({ promos: (data ?? []) as PromoRow[] }, { status: 200 });
   } catch (e: any) {
     const status = typeof e?.statusCode === "number" ? e.statusCode : 500;
-    return Response.json({ error: e?.message ?? "Unknown error" }, { status });
+    return NextResponse.json({ error: e?.message ?? "Unknown error" }, { status });
   }
 }
 
@@ -103,7 +104,7 @@ export async function POST(req: Request) {
 
     const title = String(body.title ?? "").trim();
     if (!title) {
-      return Response.json({ error: "Title is required" }, { status: 400 });
+      return NextResponse.json({ error: "Title is required" }, { status: 400 });
     }
 
     const discount = body.discount_percentage;
@@ -136,13 +137,13 @@ export async function POST(req: Request) {
       .single();
 
     if (error) {
-      return Response.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return Response.json({ promo: data as PromoRow }, { status: 200 });
+    return NextResponse.json({ promo: data as PromoRow }, { status: 200 });
   } catch (e: any) {
     const status = typeof e?.statusCode === "number" ? e.statusCode : 500;
-    return Response.json({ error: e?.message ?? "Unknown error" }, { status });
+    return NextResponse.json({ error: e?.message ?? "Unknown error" }, { status });
   }
 }
 
@@ -155,7 +156,7 @@ export async function PATCH(req: Request) {
     const body = ((await req.json()) ?? {}) as PatchBody;
 
     if (typeof body.id !== "number") {
-      return Response.json({ error: "Invalid id" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid id" }, { status: 400 });
     }
 
     const patch: Record<string, any> = {};
@@ -180,7 +181,7 @@ export async function PATCH(req: Request) {
     }
 
     if (Object.keys(patch).length === 0) {
-      return Response.json({ error: "No fields to update" }, { status: 400 });
+      return NextResponse.json({ error: "No fields to update" }, { status: 400 });
     }
 
     const { data, error } = await supabase
@@ -194,13 +195,13 @@ export async function PATCH(req: Request) {
       .single();
 
     if (error) {
-      return Response.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return Response.json({ promo: data as PromoRow }, { status: 200 });
+    return NextResponse.json({ promo: data as PromoRow }, { status: 200 });
   } catch (e: any) {
     const status = typeof e?.statusCode === "number" ? e.statusCode : 500;
-    return Response.json({ error: e?.message ?? "Unknown error" }, { status });
+    return NextResponse.json({ error: e?.message ?? "Unknown error" }, { status });
   }
 }
 
@@ -215,18 +216,18 @@ export async function DELETE(req: Request) {
     const id = Number(idRaw);
 
     if (!Number.isFinite(id)) {
-      return Response.json({ error: "Invalid id" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid id" }, { status: 400 });
     }
 
     const { error } = await supabase.from("promos").delete().eq("id", id).eq("vendor_id", vendor.id);
 
     if (error) {
-      return Response.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return Response.json({ ok: true }, { status: 200 });
+    return NextResponse.json({ ok: true }, { status: 200 });
   } catch (e: any) {
     const status = typeof e?.statusCode === "number" ? e.statusCode : 500;
-    return Response.json({ error: e?.message ?? "Unknown error" }, { status });
+    return NextResponse.json({ error: e?.message ?? "Unknown error" }, { status });
   }
 }

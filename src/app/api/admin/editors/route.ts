@@ -1,3 +1,4 @@
+import { NextResponse } from "next/server";
 import { createSupabaseAdminClient } from "../../../../lib/supabaseAdmin";
 import { assertSuperadminOnly } from "../../../../lib/editorAuth";
 
@@ -21,7 +22,7 @@ export async function GET(req: Request) {
       .limit(limit);
 
     if (error) {
-      return Response.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
     // Get user IDs to fetch user data
@@ -67,7 +68,7 @@ export async function GET(req: Request) {
       const { data: allUsers, error: listError } = await supabase.auth.admin.listUsers();
 
       if (listError) {
-        return Response.json({ error: listError.message }, { status: 500 });
+        return NextResponse.json({ error: listError.message }, { status: 500 });
       }
 
       // Filter to users who signed up via editor signup (have email) but don't have editor record
@@ -81,13 +82,13 @@ export async function GET(req: Request) {
           created_at: u.created_at,
         }));
 
-      return Response.json({ pendingEditors }, { status: 200 });
+      return NextResponse.json({ pendingEditors }, { status: 200 });
     }
 
-    return Response.json({ editors }, { status: 200 });
+    return NextResponse.json({ editors }, { status: 200 });
   } catch (e: any) {
     const status = typeof e?.statusCode === "number" ? e.statusCode : 500;
-    return Response.json({ error: e?.message ?? "Unknown error" }, { status });
+    return NextResponse.json({ error: e?.message ?? "Unknown error" }, { status });
   }
 }
 
@@ -101,7 +102,7 @@ export async function POST(req: Request) {
     const canEditEntries = Boolean(body?.can_edit_entries ?? true);
 
     if (!email) {
-      return Response.json({ error: "Email is required" }, { status: 400 });
+      return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
 
     const supabase = createSupabaseAdminClient();
@@ -114,11 +115,11 @@ export async function POST(req: Request) {
       .limit(1);
 
     if (userError) {
-      return Response.json({ error: userError.message }, { status: 500 });
+      return NextResponse.json({ error: userError.message }, { status: 500 });
     }
 
     if (!users || users.length === 0) {
-      return Response.json({ error: "User not found with that email" }, { status: 404 });
+      return NextResponse.json({ error: "User not found with that email" }, { status: 404 });
     }
 
     const userId = users[0].id;
@@ -133,7 +134,7 @@ export async function POST(req: Request) {
       .maybeSingle();
 
     if (existing) {
-      return Response.json({ error: "User is already an editor" }, { status: 409 });
+      return NextResponse.json({ error: "User is already an editor" }, { status: 409 });
     }
 
     // Create the editor record (global editor - vendor_id is null)
@@ -149,7 +150,7 @@ export async function POST(req: Request) {
       .single();
 
     if (insertError) {
-      return Response.json({ error: insertError.message }, { status: 500 });
+      return NextResponse.json({ error: insertError.message }, { status: 500 });
     }
 
     // Fetch user data for response
@@ -177,10 +178,10 @@ export async function POST(req: Request) {
       created_at: editor.created_at,
     };
 
-    return Response.json({ editor: result }, { status: 201 });
+    return NextResponse.json({ editor: result }, { status: 201 });
   } catch (e: any) {
     const status = typeof e?.statusCode === "number" ? e.statusCode : 500;
-    return Response.json({ error: e?.message ?? "Unknown error" }, { status });
+    return NextResponse.json({ error: e?.message ?? "Unknown error" }, { status });
   }
 }
 
@@ -198,14 +199,14 @@ export async function DELETE(req: Request) {
     if (userId) {
       const { error } = await supabase.auth.admin.deleteUser(userId);
       if (error) {
-        return Response.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: error.message }, { status: 500 });
       }
-      return Response.json({ ok: true }, { status: 200 });
+      return NextResponse.json({ ok: true }, { status: 200 });
     }
 
     // Otherwise, delete the editor record (for approved editors)
     if (!id) {
-      return Response.json({ error: "Editor ID is required" }, { status: 400 });
+      return NextResponse.json({ error: "Editor ID is required" }, { status: 400 });
     }
 
     const { error } = await supabase
@@ -215,12 +216,12 @@ export async function DELETE(req: Request) {
       .is("vendor_id", null); // Only delete global editors via this endpoint
 
     if (error) {
-      return Response.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return Response.json({ ok: true }, { status: 200 });
+    return NextResponse.json({ ok: true }, { status: 200 });
   } catch (e: any) {
     const status = typeof e?.statusCode === "number" ? e.statusCode : 500;
-    return Response.json({ error: e?.message ?? "Unknown error" }, { status });
+    return NextResponse.json({ error: e?.message ?? "Unknown error" }, { status });
   }
 }

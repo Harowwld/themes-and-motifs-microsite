@@ -124,8 +124,6 @@ export default function SoonToWedSignupPage() {
       return;
     }
 
-    setSubmitting(true);
-
     try {
       const redirectTo = `${window.location.origin}/soon-to-wed/callback?returnTo=${encodeURIComponent(returnTo)}`;
       const { data: signUpData, error: signUpErr } = await supabase.auth.signUp({

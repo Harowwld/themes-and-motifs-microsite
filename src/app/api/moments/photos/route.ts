@@ -44,10 +44,10 @@ export async function POST(request: Request) {
     // Upload to Supabase Storage
     const fileExt = file.name.split('.').pop();
     const fileName = `${momentId}/${Date.now()}.${fileExt}`;
-    const filePath = `moment-photos/${fileName}`;
+    const filePath = `moments/${fileName}`;
 
     const { data: uploadData, error: uploadError } = await supabase.storage
-      .from("wedding-content")
+      .from("user-assets")
       .upload(filePath, compressedFile, {
         contentType: file.type,
         upsert: false,
@@ -60,7 +60,7 @@ export async function POST(request: Request) {
 
     // Get the public URL
     const { data: { publicUrl } } = supabase.storage
-      .from("wedding-content")
+      .from("user-assets")
       .getPublicUrl(filePath);
 
     // Get the next upload order
@@ -90,7 +90,7 @@ export async function POST(request: Request) {
     if (photoError) {
       console.error("Error saving photo record:", photoError);
       // Clean up uploaded file if database insert fails
-      await supabase.storage.from("wedding-content").remove([filePath]);
+      await supabase.storage.from("user-assets").remove([filePath]);
       return NextResponse.json({ error: "Failed to save photo" }, { status: 500 });
     }
 
