@@ -28,6 +28,12 @@ type CategoryOption = {
   slug: string;
 };
 
+type ThemeOption = {
+  id: number;
+  name: string;
+  slug: string;
+};
+
 type Props = {
   initialQ: string;
   initialCategory: string;
@@ -35,10 +41,12 @@ type Props = {
   initialRegion: string;
   initialAffiliation: string;
   initialSort: SortKey;
+  initialTheme: string;
   regions: RegionOption[];
   cities: CityOption[];
   affiliations: AffiliationOption[];
   categories?: CategoryOption[];
+  themes?: ThemeOption[];
 };
 
 function buildHref({
@@ -48,6 +56,7 @@ function buildHref({
   region,
   affiliation,
   sort,
+  theme,
 }: {
   q: string;
   category: string;
@@ -55,6 +64,7 @@ function buildHref({
   region: string;
   affiliation: string;
   sort: SortKey;
+  theme: string;
 }) {
   const params = new URLSearchParams();
   if (q.trim()) params.set("q", q.trim());
@@ -62,6 +72,7 @@ function buildHref({
   if (location.trim()) params.set("location", location.trim());
   if (region) params.set("region", region);
   if (affiliation) params.set("affiliation", affiliation);
+  if (theme) params.set("theme", theme);
   if (sort !== "rating") params.set("vendorsSort", sort);
   params.set("scroll", "results");
   const qs = params.toString();
@@ -75,10 +86,12 @@ export default function VendorsSearchBar({
   initialRegion,
   initialAffiliation,
   initialSort,
+  initialTheme,
   regions,
   cities,
   affiliations,
   categories,
+  themes,
 }: Props) {
   const router = useRouter();
 
@@ -88,6 +101,7 @@ export default function VendorsSearchBar({
   const [affiliation, setAffiliation] = useState(initialAffiliation);
   const [sort, setSort] = useState<SortKey>(initialSort);
   const [category, setCategory] = useState(initialCategory);
+  const [theme, setTheme] = useState(initialTheme);
 
   const regionOptions = useMemo(() => regions ?? [], [regions]);
   const cityOptions = useMemo(() => {
@@ -104,6 +118,7 @@ export default function VendorsSearchBar({
   }, [cities, region]);
   const affiliationOptions = useMemo(() => affiliations ?? [], [affiliations]);
   const categoryOptions = useMemo(() => categories ?? [], [categories]);
+  const themeOptions = useMemo(() => themes ?? [], [themes]);
 
   const submit = () => {
     router.push(
@@ -114,6 +129,7 @@ export default function VendorsSearchBar({
         region,
         affiliation,
         sort,
+        theme,
       }),
       { scroll: false }
     );
@@ -197,6 +213,22 @@ export default function VendorsSearchBar({
               {affiliationOptions.map((a) => (
                 <option key={a.id} value={a.slug} className="font-[family-name:var(--font-plus-jakarta)]">
                   {a.name}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="grid gap-1.5">
+            <span className="text-xs font-medium text-stone-500 uppercase tracking-wide font-[family-name:var(--font-plus-jakarta)]">Theme</span>
+            <select
+              value={theme}
+              onChange={(e) => setTheme(e.target.value)}
+              className="h-11 w-full rounded-md border border-stone-200 bg-stone-50 px-4 text-sm text-stone-700 outline-none transition-all focus:border-[#a68b6a] focus:bg-white focus:ring-2 focus:ring-[#a68b6a]/10 appearance-none cursor-pointer font-[family-name:var(--font-plus-jakarta)]"
+            >
+              <option value="" className="font-[family-name:var(--font-plus-jakarta)]">Any theme</option>
+              {themeOptions.map((t) => (
+                <option key={t.id} value={t.slug} className="font-[family-name:var(--font-plus-jakarta)]">
+                  {t.name}
                 </option>
               ))}
             </select>

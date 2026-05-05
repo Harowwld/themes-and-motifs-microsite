@@ -72,6 +72,12 @@ type ReviewRow = {
   }[] | null;
 };
 
+type ThemeRow = {
+  id: number;
+  name: string;
+  slug: string;
+};
+
 type Props = {
   params: Promise<{ slug: string }>;
 };
@@ -161,7 +167,7 @@ async function VendorDetailData({ slug }: { slug: string }) {
 
   if (!vendor?.id) notFound();
 
-  const [categoriesRes, affiliationsRes, imagesRes, socialsRes, reviewsRes, promosRes] = await Promise.all([
+  const [categoriesRes, affiliationsRes, imagesRes, socialsRes, reviewsRes, promosRes, themesRes] = await Promise.all([
     supabase
       .from("vendor_categories")
       .select("category:categories(id,name,slug)")
@@ -199,6 +205,11 @@ async function VendorDetailData({ slug }: { slug: string }) {
       .eq("is_active", true)
       .order("updated_at", { ascending: false })
       .limit(24),
+    supabase
+      .from("vendor_themes")
+      .select("theme:themes(id,name,slug)")
+      .eq("vendor_id", vendor.id)
+      .limit(20),
   ]);
 
   const categoryLinks = (categoriesRes.data ?? []) as unknown as {
@@ -211,6 +222,9 @@ async function VendorDetailData({ slug }: { slug: string }) {
   const socials = (socialsRes.data ?? []) as VendorSocialLinkRow[];
   const reviews = (reviewsRes.data ?? []) as unknown as ReviewRow[];
   const promos = ((promosRes.data ?? []) as PromoRow[]).filter(isPromoCurrentlyValid).slice(0, 12);
+  const themeLinks = (themesRes.data ?? []) as unknown as {
+    theme: { id: number; name: string; slug: string } | { id: number; name: string; slug: string }[] | null;
+  }[];
 
   const categories = categoryLinks
     .flatMap((r) => (Array.isArray(r.category) ? r.category : r.category ? [r.category] : []))
@@ -218,6 +232,10 @@ async function VendorDetailData({ slug }: { slug: string }) {
 
   const affiliations = affiliationLinks
     .flatMap((r) => (Array.isArray(r.affiliation) ? r.affiliation : r.affiliation ? [r.affiliation] : []))
+    .filter(Boolean);
+
+  const themes = themeLinks
+    .flatMap((r) => (Array.isArray(r.theme) ? r.theme : r.theme ? [r.theme] : []))
     .filter(Boolean);
 
   const location = vendor.city ?? vendor.location_text;
@@ -336,6 +354,22 @@ async function VendorDetailData({ slug }: { slug: string }) {
                       href={`/vendors?category=${encodeURIComponent(c.slug)}`}
                     >
                       {c.name}
+                    </a>
+                  ))}
+                </div>
+              ) : null}
+
+              {/* Theme Pills */}
+              {themes.length > 0 ? (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {themes.map((t) => (
+                    <a
+                      key={t.id}
+                      className="inline-flex items-center rounded-full border border-purple-200 bg-purple-50/50 px-3.5 py-1.5 text-[12px] font-medium text-purple-700 hover:bg-purple-50 transition-all duration-300 shadow-sm hover:shadow-md"
+                      href={`/vendors?theme=${encodeURIComponent(t.slug)}`}
+                    >
+                      <SparklesIcon className="h-3 w-3 mr-1.5" />
+                      {t.name}
                     </a>
                   ))}
                 </div>
@@ -807,6 +841,18 @@ function ChatIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+    </svg>
+  );
+}
+
+function SparklesIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+      <path d="M5 3v4"/>
+      <path d="M9 5H5"/>
+      <path d="M19 15v4"/>
+      <path d="M21 19h-4"/>
     </svg>
   );
 }

@@ -20,6 +20,7 @@ type Props = {
     location: string;
     region: string;
     affiliation: string;
+    theme: string;
   };
 };
 
@@ -64,6 +65,7 @@ async function fetchVendors(
   if (query.location.trim()) params.set("location", query.location.trim());
   if (query.region) params.set("region", query.region);
   if (query.affiliation) params.set("affiliation", query.affiliation);
+  if (query.theme) params.set("theme", query.theme);
   if (sort !== "rating") params.set("vendorsSort", sort);
   params.set("page", String(page));
   params.set("limit", String(limit));

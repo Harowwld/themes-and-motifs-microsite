@@ -21,7 +21,7 @@ export async function GET(req: Request) {
     const { supabase, user } = await assertVendor(req);
     const vendor = await getVendorForUser(supabase, user.id);
 
-    const [socialsRes, imagesRes] = await Promise.all([
+    const [socialsRes, imagesRes, themesRes, allThemesRes] = await Promise.all([
       supabase
         .from("vendor_social_links")
         .select("id,platform,url")
@@ -35,16 +35,28 @@ export async function GET(req: Request) {
         .order("is_cover", { ascending: false })
         .order("display_order", { ascending: true })
         .limit(50),
+      supabase
+        .from("vendor_themes")
+        .select("id, theme:themes(id, name, slug)")
+        .eq("vendor_id", vendor.id),
+      supabase
+        .from("themes")
+        .select("id, name, slug")
+        .order("name", { ascending: true }),
     ]);
 
     if (socialsRes.error) return Response.json({ error: socialsRes.error.message }, { status: 500 });
     if (imagesRes.error) return Response.json({ error: imagesRes.error.message }, { status: 500 });
+    if (themesRes.error) return Response.json({ error: themesRes.error.message }, { status: 500 });
+    if (allThemesRes.error) return Response.json({ error: allThemesRes.error.message }, { status: 500 });
 
     return Response.json(
       {
         vendor,
         socials: socialsRes.data ?? [],
         images: imagesRes.data ?? [],
+        themes: themesRes.data ?? [],
+        allThemes: allThemesRes.data ?? [],
       },
       { status: 200 }
     );

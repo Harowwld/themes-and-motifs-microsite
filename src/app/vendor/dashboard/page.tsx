@@ -36,6 +36,7 @@ type VendorImage = {
   is_cover: boolean | null;
   display_order: number | null;
 };
+type Theme = { id: number; name: string; slug: string };
 
 type VendorPromo = {
   id: number;
@@ -444,6 +445,9 @@ export default function VendorDashboardPage() {
 
   const [promos, setPromos] = useState<VendorPromo[]>([]);
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
+  const [themes, setThemes] = useState<Theme[]>([]);
+  const [allThemes, setAllThemes] = useState<Theme[]>([]);
+  const [themeInput, setThemeInput] = useState("");
 
   // Album management state
   const [albums, setAlbums] = useState<Array<{ id: number; title: string; slug: string; photo_count: number; created_at: string }>>([]);
@@ -764,6 +768,8 @@ export default function VendorDashboardPage() {
             vendor: VendorProfile;
             socials: SocialLink[];
             images: VendorImage[];
+            themes: { id: number; theme: Theme | Theme[] | null }[];
+            allThemes: Theme[];
           }>("/api/vendor/profile", session.access_token);
 
           setVendor(json.vendor);
@@ -809,6 +815,16 @@ export default function VendorDashboardPage() {
               ? ensureSingleCover(normalizedImgs)
               : [{ image_url: "", caption: "", is_cover: true, display_order: 1 }]
           );
+
+          // Normalize themes
+          const normalizedThemes = (json.themes ?? [])
+            .map((vt) => {
+              const t = Array.isArray(vt.theme) ? vt.theme[0] : vt.theme;
+              return t ? { id: t.id, name: t.name, slug: t.slug } : null;
+            })
+            .filter((t): t is Theme => t !== null);
+          setThemes(normalizedThemes);
+          setAllThemes(json.allThemes ?? []);
 
           const promosRes = await apiFetch<{ promos: VendorPromo[] }>("/api/vendor/promos", session.access_token).catch(
             () => ({ promos: [] as VendorPromo[] })
@@ -900,6 +916,31 @@ export default function VendorDashboardPage() {
       );
     } catch (e: any) {
       setError(e?.message ?? "Failed to save social links.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function saveThemes() {
+    if (!token) return;
+    setError(null);
+    setSaving(true);
+    try {
+      const res = await apiFetch<{ themes: { id: number; theme: Theme | Theme[] | null }[]; allThemes: Theme[]; created: Theme[] }>("/api/vendor/themes", token, {
+        method: "PUT",
+        body: JSON.stringify({ themes: themes.map((t) => ({ id: t.id, name: t.name, slug: t.slug })) }),
+      });
+
+      const normalizedThemes = (res.themes ?? [])
+        .map((vt) => {
+          const t = Array.isArray(vt.theme) ? vt.theme[0] : vt.theme;
+          return t ? { id: t.id, name: t.name, slug: t.slug } : null;
+        })
+        .filter((t): t is Theme => t !== null);
+      setThemes(normalizedThemes);
+      setAllThemes(res.allThemes ?? []);
+    } catch (e: any) {
+      setError(e?.message ?? "Failed to save themes.");
     } finally {
       setSaving(false);
     }
@@ -1142,6 +1183,137 @@ export default function VendorDashboardPage() {
                         <span className="inline-flex items-center gap-2">
                           {saving ? <Spinner className="text-white/90" /> : null}
                           <span>{saving ? "Saving…" : "Save profile"}</span>
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </section>
+
+                {/* Themes Section */}
+                <section className="rounded-[3px] border border-black/10 bg-white overflow-hidden">
+                  <div className="px-4 py-3 border-b border-black/5">
+                    <div className="text-[13px] font-semibold text-[#2c2c2c]">Themes</div>
+                    <div className="mt-1 text-[12px] text-black/45">Click to select/deselect themes. Click +Add to create custom themes.</div>
+                  </div>
+                  <div className="p-4 grid gap-4">
+                    <div className="flex flex-wrap gap-2">
+                      {/* Available themes as pills */}
+                      {allThemes.map((theme) => {
+                        const isSelected = themes.some((t) => t.id === theme.id);
+                        return (
+                          <button
+                            key={theme.id}
+                            type="button"
+                            onClick={() => {
+                              if (isSelected) {
+                                setThemes((prev) => prev.filter((t) => t.id !== theme.id));
+                              } else {
+                                setThemes((prev) => [...prev, theme]);
+                              }
+                            }}
+                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-medium transition-colors ${
+                              isSelected
+                                ? "bg-purple-100 text-purple-700 border border-purple-200"
+                                : "bg-[#fcfbf9] text-black/60 border border-black/10 hover:bg-black/5"
+                            }`}
+                          >
+                            {isSelected && (
+                              <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M20 6L9 17l-5-5" />
+                              </svg>
+                            )}
+                            {theme.name}
+                          </button>
+                        );
+                      })}
+
+                      {/* Custom themes as selected pills */}
+                      {themes
+                        .filter((t) => !allThemes.some((at) => at.id === t.id))
+                        .map((theme) => (
+                          <span
+                            key={theme.id}
+                            className="inline-flex items-center gap-1 rounded-full border border-purple-200 bg-purple-50 px-3 py-1.5 text-[12px] font-medium text-purple-700"
+                          >
+                            <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M20 6L9 17l-5-5" />
+                            </svg>
+                            {theme.name}
+                            <button
+                              type="button"
+                              onClick={() => setThemes((prev) => prev.filter((t) => t.id !== theme.id))}
+                              className="ml-1 text-purple-400 hover:text-purple-900"
+                            >
+                              ×
+                            </button>
+                          </span>
+                        ))}
+
+                      {/* Add custom theme button */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const name = themeInput.trim();
+                          if (!name) {
+                            // Focus the input if empty
+                            const input = document.getElementById("custom-theme-input") as HTMLInputElement;
+                            input?.focus();
+                            return;
+                          }
+                          if (themes.some((t) => t.name.toLowerCase() === name.toLowerCase())) {
+                            setThemeInput("");
+                            return;
+                          }
+                          const existing = allThemes.find((t) => t.name.toLowerCase() === name.toLowerCase());
+                          if (existing) {
+                            setThemes((prev) => [...prev, existing]);
+                          } else {
+                            const newTheme: Theme = { id: -Date.now(), name, slug: "" };
+                            setThemes((prev) => [...prev, newTheme]);
+                          }
+                          setThemeInput("");
+                        }}
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-[12px] font-medium bg-[#fcfbf9] text-[#a67c52] border border-dashed border-[#a67c52]/40 hover:bg-[#a67c52]/5 transition-colors"
+                      >
+                        + Add
+                      </button>
+                    </div>
+
+                    {/* Hidden input for custom theme entry */}
+                    <div className="flex gap-2">
+                      <input
+                        id="custom-theme-input"
+                        value={themeInput}
+                        onChange={(e) => setThemeInput(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            const name = themeInput.trim();
+                            if (!name) return;
+                            if (themes.some((t) => t.name.toLowerCase() === name.toLowerCase())) {
+                              setThemeInput("");
+                              return;
+                            }
+                            const existing = allThemes.find((t) => t.name.toLowerCase() === name.toLowerCase());
+                            if (existing) {
+                              setThemes((prev) => [...prev, existing]);
+                            } else {
+                              const newTheme: Theme = { id: -Date.now(), name, slug: "" };
+                              setThemes((prev) => [...prev, newTheme]);
+                            }
+                            setThemeInput("");
+                          }
+                        }}
+                        className="h-10 flex-1 rounded-[3px] border border-black/10 bg-white px-3 text-[13px] outline-none focus:border-[#a68b6a] focus:ring-2 focus:ring-[#a68b6a]/10"
+                        placeholder="Type custom theme name and press Enter or click +Add..."
+                      />
+                    </div>
+
+                    <div className="flex justify-end pt-2">
+                      <button type="button" onClick={saveThemes} disabled={saving} className="h-9 px-4 rounded-[3px] bg-[#a67c52] text-white text-[13px] font-semibold hover:bg-[#8e6a46] transition-colors disabled:opacity-60">
+                        <span className="inline-flex items-center gap-2">
+                          {saving ? <Spinner className="text-white/90" /> : null}
+                          <span>{saving ? "Saving…" : "Save themes"}</span>
                         </span>
                       </button>
                     </div>

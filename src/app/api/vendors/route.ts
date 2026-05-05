@@ -17,6 +17,7 @@ export async function GET(req: Request) {
   const location = (searchParams.get("location") ?? "").trim();
   const region = (searchParams.get("region") ?? "").trim();
   const affiliation = (searchParams.get("affiliation") ?? "").trim();
+  const theme = (searchParams.get("theme") ?? "").trim();
 
   const rawPage = searchParams.get("page") ?? "1";
   const rawSort = searchParams.get("vendorsSort") ?? "rating";
@@ -36,7 +37,7 @@ export async function GET(req: Request) {
 
     const { query } = await buildVendorsQuery({
       supabase,
-      filters: { q, category, location, region, affiliation },
+      filters: { q, category, location, region, affiliation, theme },
       sort,
       from,
       to,

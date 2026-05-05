@@ -10,6 +10,7 @@ export default async function SuperadminPage() {
           <QuickLink title="Vendors" href="/superadmin/vendors" description="Activate, feature, and assign plans." />
           <QuickLink title="Registrations" href="/superadmin/registrations" description="Approve or reject new vendor signups." />
           <QuickLink title="Promos" href="/superadmin/promos" description="Manage active promos and featured deals." />
+          <QuickLink title="Themes" href="/superadmin/themes" description="Manage wedding themes and custom themes." />
           <QuickLink title="Inquiries" href="/superadmin/inquiries" description="View inquiries sent to vendors." />
           <QuickLink title="Reviews" href="/superadmin/reviews" description="Moderate reviews and status." />
           <QuickLink title="Soon to Weds" href="/superadmin/users" description="View soon to wed accounts." />

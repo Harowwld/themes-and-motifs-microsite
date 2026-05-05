@@ -43,7 +43,20 @@ const getCachedCategories = unstable_cache(
   { revalidate: 3600 }
 );
 
+// Don't cache themes - they can be added dynamically by vendors
+async function getThemes() {
+  const supabase = createSupabaseServerClient();
+  const { data } = await supabase.from("themes").select("id,name,slug").order("name", { ascending: true }).limit(200);
+  return (data ?? []) as ThemeListItem[];
+}
+
 type CategoryListItem = {
+  id: number;
+  name: string;
+  slug: string;
+};
+
+type ThemeListItem = {
   id: number;
   name: string;
   slug: string;
@@ -108,6 +121,10 @@ function VendorsSearchBarSkeleton() {
           </label>
           <label className="grid gap-1.5">
             <span className="text-xs font-medium text-stone-500 uppercase tracking-wide">Category</span>
+            <div className="h-11 rounded-md border border-stone-200 bg-stone-50 animate-pulse" />
+          </label>
+          <label className="grid gap-1.5">
+            <span className="text-xs font-medium text-stone-500 uppercase tracking-wide">Theme</span>
             <div className="h-11 rounded-md border border-stone-200 bg-stone-50 animate-pulse" />
           </label>
           <label className="grid gap-1.5">
@@ -179,6 +196,7 @@ async function VendorsPageData({
   location,
   region,
   affiliation,
+  theme,
   limit,
   sort,
 }: {
@@ -187,16 +205,18 @@ async function VendorsPageData({
   location: string;
   region: string;
   affiliation: string;
+  theme: string;
   limit: number;
   sort: SortKey;
 }) {
   const supabase = createSupabaseServerClient();
 
-  const [regionsList, vendorLocations, affiliationsList, categoriesList] = await Promise.all([
+  const [regionsList, vendorLocations, affiliationsList, categoriesList, themesList] = await Promise.all([
     getCachedRegions(),
     getCachedVendorLocations(),
     getCachedAffiliations(),
     getCachedCategories(),
+    getThemes(),
   ]);
 
   // Build cities list from city field only (not location_text) to avoid duplicates
@@ -217,7 +237,7 @@ async function VendorsPageData({
   const to = limit - 1;
   const { query } = await buildVendorsQuery({
     supabase,
-    filters: { q, category, location, region, affiliation },
+    filters: { q, category, location, region, affiliation, theme },
     sort,
     from,
     to,
@@ -240,10 +260,12 @@ async function VendorsPageData({
         initialRegion={region}
         initialAffiliation={affiliation}
         initialSort={sort}
+        initialTheme={theme}
         regions={regionsList}
         cities={Array.from(citiesList).map((c, i) => ({ id: i + 1, name: c.name, region_id: c.region_id }))}
         affiliations={affiliationsList}
         categories={categoriesList}
+        themes={themesList}
       />
 
       <CategoryBrowser categories={categoriesList} />
@@ -256,7 +278,7 @@ async function VendorsPageData({
         limit={limit}
         total={vendorTotal ?? 0}
         sort={sort}
-        query={{ q, category, location, region, affiliation }}
+        query={{ q, category, location, region, affiliation, theme }}
       />
     </>
   );
@@ -274,6 +296,7 @@ export default async function VendorsPage({
   const location = (sp.location as string | undefined)?.trim() || "";
   const region = (sp.region as string | undefined)?.trim() || "";
   const affiliation = (sp.affiliation as string | undefined)?.trim() || "";
+  const theme = (sp.theme as string | undefined)?.trim() || "";
 
   const limit = 50;
   const rawSort = (sp.vendorsSort as string | undefined) ?? "rating";
@@ -295,6 +318,7 @@ export default async function VendorsPage({
               location={location}
               region={region}
               affiliation={affiliation}
+              theme={theme}
               limit={limit}
               sort={sort}
             />

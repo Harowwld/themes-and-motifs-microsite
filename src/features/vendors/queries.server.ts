@@ -14,6 +14,7 @@ export type VendorsQueryFilters = {
   location?: string;
   region?: string;
   affiliation?: string;
+  theme?: string;
 };
 
 type CategoryRow = {
@@ -25,6 +26,10 @@ type VendorCategoryRow = {
 };
 
 type VendorAffiliationRow = {
+  vendor_id: number;
+};
+
+type VendorThemeRow = {
   vendor_id: number;
 };
 
@@ -46,8 +51,9 @@ export async function buildVendorsQuery({
   const location = (filters.location ?? "").trim();
   const region = (filters.region ?? "").trim();
   const affiliation = (filters.affiliation ?? "").trim();
+  const theme = (filters.theme ?? "").trim();
 
-  const [categoryLookup, affiliationLookup] = await Promise.all([
+  const [categoryLookup, affiliationLookup, themeLookup] = await Promise.all([
     category
       ? (async () => {
           const { data: cat } = await supabase
@@ -82,10 +88,28 @@ export async function buildVendorsQuery({
           return ids.length > 0 ? ids : [-1];
         })()
       : Promise.resolve<number[] | undefined>(undefined),
+    theme
+      ? (async () => {
+          const { data: thm } = await supabase
+            .from("themes")
+            .select("id")
+            .eq("slug", theme)
+            .maybeSingle<{ id: number }>();
+          if (!thm?.id) return [-1];
+          const { data: vtRows } = await supabase
+            .from("vendor_themes")
+            .select("vendor_id")
+            .eq("theme_id", thm.id)
+            .limit(5000);
+          const ids = ((vtRows ?? []) as VendorThemeRow[]).map((r) => r.vendor_id);
+          return ids.length > 0 ? ids : [-1];
+        })()
+      : Promise.resolve<number[] | undefined>(undefined),
   ]);
 
   const vendorIds = categoryLookup;
   const affiliationVendorIds = affiliationLookup;
+  const themeVendorIds = themeLookup;
 
   let query = supabase
     .from("vendors")
@@ -102,6 +126,9 @@ export async function buildVendorsQuery({
   }
   if (affiliationVendorIds) {
     query = query.in("id", affiliationVendorIds);
+  }
+  if (themeVendorIds) {
+    query = query.in("id", themeVendorIds);
   }
 
   if (q) {
@@ -168,8 +195,9 @@ export async function buildVendorsQueryWithCursor({
   const location = (filters.location ?? "").trim();
   const region = (filters.region ?? "").trim();
   const affiliation = (filters.affiliation ?? "").trim();
+  const theme = (filters.theme ?? "").trim();
 
-  const [categoryLookup, affiliationLookup] = await Promise.all([
+  const [categoryLookup, affiliationLookup, themeLookup] = await Promise.all([
     category
       ? (async () => {
           const { data: cat } = await supabase
@@ -204,10 +232,28 @@ export async function buildVendorsQueryWithCursor({
           return ids.length > 0 ? ids : [-1];
         })()
       : Promise.resolve<number[] | undefined>(undefined),
+    theme
+      ? (async () => {
+          const { data: thm } = await supabase
+            .from("themes")
+            .select("id")
+            .eq("slug", theme)
+            .maybeSingle<{ id: number }>();
+          if (!thm?.id) return [-1];
+          const { data: vtRows } = await supabase
+            .from("vendor_themes")
+            .select("vendor_id")
+            .eq("theme_id", thm.id)
+            .limit(5000);
+          const ids = ((vtRows ?? []) as VendorThemeRow[]).map((r) => r.vendor_id);
+          return ids.length > 0 ? ids : [-1];
+        })()
+      : Promise.resolve<number[] | undefined>(undefined),
   ]);
 
   const vendorIds = categoryLookup;
   const affiliationVendorIds = affiliationLookup;
+  const themeVendorIds = themeLookup;
 
   let query = supabase
     .from("vendors")
@@ -222,6 +268,9 @@ export async function buildVendorsQueryWithCursor({
   }
   if (affiliationVendorIds) {
     query = query.in("id", affiliationVendorIds);
+  }
+  if (themeVendorIds) {
+    query = query.in("id", themeVendorIds);
   }
 
   if (q) {
