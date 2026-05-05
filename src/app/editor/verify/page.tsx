@@ -11,28 +11,39 @@ export default function EditorVerifyPage() {
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);
 
   const [error, setError] = useState<string | null>(null);
+  const [pkceError, setPkceError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
 
     async function run() {
       setError(null);
+      setPkceError(null);
+
+      const { data: sessionData, error: sessionErr } = await supabase.auth.getSession();
+      if (sessionErr) {
+        throw sessionErr;
+      }
 
       const type = searchParams.get("type");
       const tokenHash = searchParams.get("token_hash");
       const code = searchParams.get("code");
 
       try {
-        // Verify the OTP token
-        if (type && tokenHash) {
-          const { error: verifyErr } = await supabase.auth.verifyOtp({
-            type: type as any,
-            token_hash: tokenHash,
-          });
-          if (verifyErr) throw verifyErr;
-        } else if (code) {
-          const { error: exchErr } = await supabase.auth.exchangeCodeForSession(code);
-          if (exchErr) throw exchErr;
+        // If we already have a session, do not attempt to verify/exchange again.
+        // This avoids PKCE verifier errors when the user is already signed in elsewhere.
+        if (!sessionData.session?.user) {
+          // Verify the OTP token
+          if (type && tokenHash) {
+            const { error: verifyErr } = await supabase.auth.verifyOtp({
+              type: type as any,
+              token_hash: tokenHash,
+            });
+            if (verifyErr) throw verifyErr;
+          } else if (code) {
+            const { error: exchErr } = await supabase.auth.exchangeCodeForSession(code);
+            if (exchErr) throw exchErr;
+          }
         }
 
         // Get the session
@@ -83,7 +94,34 @@ export default function EditorVerifyPage() {
         // Redirect to dashboard (which will show access pending if no editor record)
         router.replace("/editor/dashboard");
       } catch (e: any) {
-        if (!cancelled) setError(e?.message ?? "Failed to complete sign-in.");
+        if (!cancelled) {
+          const message = e?.message ?? "Failed to complete sign-in."
+          setError(message);
+
+          if (
+            typeof message === "string" &&
+            message.toLowerCase().includes("pkce") &&
+            message.toLowerCase().includes("verifier")
+          ) {
+            setError(null);
+            setPkceError(
+              "PKCE code verifier not found in storage. This usually happens if the link was opened in a different browser/tab than the one that requested it, or if cookies/storage were cleared. Please request a new sign-in link and open it in the same browser."
+            );
+          }
+
+          if (typeof window !== "undefined") {
+            const hash = window.location.hash;
+            if (hash.includes("error")) {
+              const params = new URLSearchParams(hash.slice(1));
+              const errorCode = params.get("error");
+              const errorDesc = params.get("error_description");
+              if (errorCode) {
+                setError(null);
+                setPkceError(`${errorCode}: ${errorDesc || "An error occurred"}`);
+              }
+            }
+          }
+        }
       }
     }
 
@@ -102,9 +140,15 @@ export default function EditorVerifyPage() {
             <div className="text-[18px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">Verifying link…</div>
             <div className="mt-2 text-[13px] text-black/60">Please wait while we sign you in.</div>
 
-            {error ? (
+            {error && !pkceError ? (
               <div className="mt-4 rounded-[3px] border border-[#b42318]/20 bg-[#fff1f3] px-4 py-3 text-[13px] text-[#7a271a]">
                 {error}
+              </div>
+            ) : null}
+
+            {pkceError ? (
+              <div className="mt-4 rounded-[3px] border border-[#c17a4e]/30 bg-[#fff7ed] px-4 py-3 text-[13px] text-[#7a271a] whitespace-pre-line">
+                {pkceError}
               </div>
             ) : null}
           </div>

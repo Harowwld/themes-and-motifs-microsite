@@ -58,19 +58,33 @@ export function createBrowserClient() {
               .split('; ')
               .find((row) => row.startsWith(`${key}=`))
             if (!cookie) return undefined
-            return cookie.slice(key.length + 1)
+            const rawValue = cookie.slice(key.length + 1)
+            try {
+              return decodeURIComponent(rawValue)
+            } catch {
+              return rawValue
+            }
           },
           set(key, value, options) {
             if (typeof document === 'undefined') {
               return
             }
-            let cookie = `${key}=${value}`
+            const encodedValue = encodeURIComponent(value)
+            let cookie = `${key}=${encodedValue}`
             if (options?.maxAge) cookie += `; Max-Age=${options.maxAge}`
             if (options?.expires) cookie += `; Expires=${options.expires.toUTCString()}`
             cookie += `; Path=${options?.path ?? '/'}`
             if (options?.domain) cookie += `; Domain=${options.domain}`
-            if (options?.secure) cookie += '; Secure'
-            if (options?.sameSite) cookie += `; SameSite=${options.sameSite}`
+            const isHttps = typeof window !== 'undefined' && window.location?.protocol === 'https:'
+
+            let sameSite = options?.sameSite ?? 'Lax'
+            if (sameSite === 'none' && !isHttps) {
+              sameSite = 'Lax'
+            }
+
+            const shouldSecure = (options?.secure || sameSite === 'none') && isHttps
+            if (shouldSecure) cookie += '; Secure'
+            cookie += `; SameSite=${sameSite}`
             document.cookie = cookie
           },
           remove(key, options) {
@@ -78,7 +92,7 @@ export function createBrowserClient() {
               return
             }
             const path = options?.path ?? '/'
-            document.cookie = `${key}=; Max-Age=0; Path=${path}`
+            document.cookie = `${key}=; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=${path}`
           },
         },
       }
