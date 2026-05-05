@@ -539,7 +539,7 @@ async function VendorDetailData({ slug }: { slug: string }) {
                         href={withProtocol(vendor.website_url)}
                         target="_blank"
                         rel="noreferrer"
-                        className="flex items-center gap-3 text-[13px] text-[#6e4f33] hover:underline"
+                        className="flex items-center gap-3 text-[13px] text-[#6e4f33] hover:underline min-w-0 overflow-hidden"
                       >
                         <GlobeIcon className="h-4 w-4 shrink-0" />
                         <span className="truncate">{vendor.website_url}</span>
