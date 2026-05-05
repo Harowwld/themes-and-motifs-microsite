@@ -180,8 +180,7 @@ async function VendorsPageData({
   location,
   region,
   affiliation,
-  page,
-  pageSize,
+  limit,
   sort,
 }: {
   q: string;
@@ -189,8 +188,7 @@ async function VendorsPageData({
   location: string;
   region: string;
   affiliation: string;
-  page: number;
-  pageSize: number;
+  limit: number;
   sort: SortKey;
 }) {
   const supabase = createSupabaseServerClient();
@@ -215,15 +213,19 @@ async function VendorsPageData({
     ).values()
   );
 
+  // Use offset pagination for initial load
+  const from = 0;
+  const to = limit - 1;
   const { query } = await buildVendorsQuery({
     supabase,
     filters: { q, category, location, region, affiliation },
     sort,
-    from: (page - 1) * pageSize,
-    to: (page - 1) * pageSize + pageSize - 1,
+    from,
+    to,
   });
-
   const { data: vendors, count: vendorTotal } = await query;
+  const hasMore = (vendorTotal ?? 0) > limit;
+
   const vendorAllItems = (vendors ?? []) as VendorListItem[];
 
   const vendorAllItemsWithCovers = await attachCoverImages(supabase, vendorAllItems);
@@ -255,9 +257,10 @@ async function VendorsPageData({
       <FadeInOnView>
         <VirtualizedVendorsList
           initialVendors={vendorPageItemsSorted as any}
-          total={vendorTotal}
-          pageSize={pageSize}
-          initialPage={page}
+          initialPage={1}
+          hasMore={hasMore}
+          limit={limit}
+          total={vendorTotal ?? 0}
           sort={sort}
           query={{ q, category, location, region, affiliation }}
         />
@@ -279,10 +282,8 @@ export default async function VendorsPage({
   const region = (sp.region as string | undefined)?.trim() || "";
   const affiliation = (sp.affiliation as string | undefined)?.trim() || "";
 
-  const pageSize = 12;
-  const rawPage = (sp.vendorsPage as string | undefined) ?? "1";
+  const limit = 50;
   const rawSort = (sp.vendorsSort as string | undefined) ?? "rating";
-  const page = Math.max(1, Number(rawPage) || 1);
   const sort: SortKey =
     rawSort === "alpha" || rawSort === "newest" || rawSort === "saves" || rawSort === "views" ? rawSort : "rating";
 
@@ -301,8 +302,7 @@ export default async function VendorsPage({
               location={location}
               region={region}
               affiliation={affiliation}
-              page={page}
-              pageSize={pageSize}
+              limit={limit}
               sort={sort}
             />
           </Suspense>

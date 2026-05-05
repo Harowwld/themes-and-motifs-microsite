@@ -18,11 +18,11 @@ export async function GET(req: Request) {
   const region = (searchParams.get("region") ?? "").trim();
   const affiliation = (searchParams.get("affiliation") ?? "").trim();
 
-  const rawPage = searchParams.get("vendorsPage") ?? "1";
+  const rawPage = searchParams.get("page") ?? "1";
   const rawSort = searchParams.get("vendorsSort") ?? "rating";
-  const rawPageSize = searchParams.get("pageSize") ?? "12";
+  const rawLimit = searchParams.get("limit") ?? "12";
 
-  const pageSize = Math.max(1, Math.min(30, Number(rawPageSize) || 12));
+  const limit = Math.max(1, Math.min(30, Number(rawLimit) || 12));
   const page = Math.max(1, Number(rawPage) || 1);
 
   const sort: SortKey =
@@ -30,32 +30,37 @@ export async function GET(req: Request) {
 
   const supabase = createSupabaseServerClient();
 
-  const from = (page - 1) * pageSize;
-  const to = from + pageSize - 1;
+  try {
+    const from = (page - 1) * limit;
+    const to = from + limit - 1;
 
-  const { query } = await buildVendorsQuery({
-    supabase,
-    filters: { q, category, location, region, affiliation },
-    sort,
-    from,
-    to,
-  });
+    const { query } = await buildVendorsQuery({
+      supabase,
+      filters: { q, category, location, region, affiliation },
+      sort,
+      from,
+      to,
+    });
 
-  const { data: vendors, count: vendorTotal, error } = await query;
+    const { data: vendors, count } = await query;
+    const vendorAllItems = (vendors ?? []) as VendorWithSortFields[];
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const withCovers = await attachCoverImages(supabase, vendorAllItems) as VendorWithCoverImage[];
+    const sorted = sortVendors(withCovers, sort);
+
+    const total = count ?? 0;
+    const hasMore = from + sorted.length < total;
+
+    return NextResponse.json({
+      vendors: sorted,
+      nextPage: hasMore ? page + 1 : null,
+      hasMore,
+      total,
+    });
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Failed to fetch vendors" },
+      { status: 500 }
+    );
   }
-
-  const vendorAllItems = (vendors ?? []) as VendorWithSortFields[];
-
-  const withCovers = await attachCoverImages(supabase, vendorAllItems) as VendorWithCoverImage[];
-  const sorted = sortVendors(withCovers, sort);
-
-  return NextResponse.json({
-    vendors: sorted,
-    total: vendorTotal,
-    page,
-    pageSize,
-  });
 }

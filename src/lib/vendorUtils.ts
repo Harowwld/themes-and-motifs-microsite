@@ -11,7 +11,7 @@ export const getCachedVendorLocations = unstable_cache(
     const { data } = await supabase.from("vendors").select("region_id,city,location_text").eq("is_active", true).limit(5000);
     return data ?? [];
   },
-  ["vendor-locations-v4"],
+  ["vendor-locations-v5"],
   { revalidate: 1800 }
 );
 
