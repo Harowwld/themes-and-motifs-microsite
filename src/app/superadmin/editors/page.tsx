@@ -479,7 +479,7 @@ export default function SuperadminEditorsPage() {
                   type="button"
                   disabled={!!deletingId}
                   onClick={() => removeEditor(editorToRemove.id)}
-                  className="h-9 px-4 rounded-[6px] bg-red-600 text-white text-[12px] font-semibold hover:bg-red-700 disabled:opacity-60"
+                  className="h-9 px-4 rounded-[6px] bg-[#b42318] text-white text-[12px] font-semibold hover:bg-[#9a1d14] disabled:opacity-60"
                 >
                   {deletingId ? "Removing..." : "Remove"}
                 </button>
@@ -518,7 +518,7 @@ export default function SuperadminEditorsPage() {
                   type="button"
                   disabled={!!deletingPendingUserId}
                   onClick={() => pendingEditorToDelete.user_id && deletePendingEditor(pendingEditorToDelete.user_id)}
-                  className="h-9 px-4 rounded-[6px] bg-red-600 text-white text-[12px] font-semibold hover:bg-red-700 disabled:opacity-60"
+                  className="h-9 px-4 rounded-[6px] bg-[#b42318] text-white text-[12px] font-semibold hover:bg-[#9a1d14] disabled:opacity-60"
                 >
                   {deletingPendingUserId ? "Deleting..." : "Delete"}
                 </button>

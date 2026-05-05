@@ -92,7 +92,7 @@ export default function BugReportButton() {
           <div className="p-4">
             {sent ? (
               <div className="text-center py-4">
-                <div className="text-green-600 text-sm font-medium">Report sent!</div>
+                <div className="text-[#027a48] text-sm font-medium">Report sent!</div>
               </div>
             ) : (
               <>

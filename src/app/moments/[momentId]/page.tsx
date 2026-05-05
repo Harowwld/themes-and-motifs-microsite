@@ -169,7 +169,7 @@ function VendorReviewCard({ review }: { review: Moment["vendor_reviews"][0] }) {
             </span>
           </div>
           {review.would_recommend && (
-            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-[#ecfdf3] text-[#027a48]">
               Recommended
             </span>
           )}
@@ -386,7 +386,7 @@ export default function MomentDetailPage() {
                   {moment.visibility !== "private" && (
                     <>
                       <span className="text-gray-300">•</span>
-                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 capitalize">
+                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-[#ecfdf3] text-[#027a48] capitalize">
                         {moment.visibility}
                       </span>
                     </>
@@ -460,7 +460,7 @@ export default function MomentDetailPage() {
                         console.error("Error deleting moment:", error);
                       }
                     }}
-                    className="px-4 py-2 text-red-500 hover:text-red-700 transition-colors"
+                    className="px-4 py-2 text-[#b42318] hover:text-[#9a1d14] transition-colors"
                   >
                     Delete
                   </button>

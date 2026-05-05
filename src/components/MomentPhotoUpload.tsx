@@ -150,7 +150,7 @@ export function MomentPhotoUpload({
                     e.stopPropagation();
                     removeFile(index);
                   }}
-                  className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute top-2 right-2 p-1 bg-[#b42318] text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                 >
                   <X className="w-3 h-3" />
                 </button>

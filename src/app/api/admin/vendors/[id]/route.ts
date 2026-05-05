@@ -88,6 +88,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
       "is_featured",
       "plan_id",
       "verified_status",
+      "document_verified",
     ];
 
     const patch: Record<string, any> = {};

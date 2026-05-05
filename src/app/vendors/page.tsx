@@ -8,7 +8,6 @@ import VendorsScrollToResults from "./VendorsScrollToResults";
 import { attachCoverImages } from "../../features/vendors/coverImages.server";
 import type { VendorListItem } from "../../features/vendors/types";
 import { buildVendorsQuery } from "../../features/vendors/queries.server";
-import FadeInOnView from "../components/FadeInOnView";
 import { sortVendors, VendorWithSortFields, SortKey, getCachedVendorLocations } from "../../lib/vendorUtils";
 
 // Cache regions for 1 hour (3600 seconds)
@@ -233,38 +232,32 @@ async function VendorsPageData({
 
   return (
     <>
-      <FadeInOnView>
-        <VendorsScrollToResults />
-        <VendorsSearchBar
-          initialQ={q}
-          initialCategory={category}
-          initialLocation={location}
-          initialRegion={region}
-          initialAffiliation={affiliation}
-          initialSort={sort}
-          regions={regionsList}
-          cities={Array.from(citiesList).map((c, i) => ({ id: i + 1, name: c.name, region_id: c.region_id }))}
-          affiliations={affiliationsList}
-          categories={categoriesList}
-        />
-      </FadeInOnView>
+      <VendorsScrollToResults />
+      <VendorsSearchBar
+        initialQ={q}
+        initialCategory={category}
+        initialLocation={location}
+        initialRegion={region}
+        initialAffiliation={affiliation}
+        initialSort={sort}
+        regions={regionsList}
+        cities={Array.from(citiesList).map((c, i) => ({ id: i + 1, name: c.name, region_id: c.region_id }))}
+        affiliations={affiliationsList}
+        categories={categoriesList}
+      />
 
-      <FadeInOnView>
-        <CategoryBrowser categories={categoriesList} />
-      </FadeInOnView>
+      <CategoryBrowser categories={categoriesList} />
 
       <div id="vendors-results" />
-      <FadeInOnView>
-        <VirtualizedVendorsList
-          initialVendors={vendorPageItemsSorted as any}
-          initialPage={1}
-          hasMore={hasMore}
-          limit={limit}
-          total={vendorTotal ?? 0}
-          sort={sort}
-          query={{ q, category, location, region, affiliation }}
-        />
-      </FadeInOnView>
+      <VirtualizedVendorsList
+        initialVendors={vendorPageItemsSorted as any}
+        initialPage={1}
+        hasMore={hasMore}
+        limit={limit}
+        total={vendorTotal ?? 0}
+        sort={sort}
+        query={{ q, category, location, region, affiliation }}
+      />
     </>
   );
 }

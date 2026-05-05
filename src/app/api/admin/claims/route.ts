@@ -18,7 +18,7 @@ export async function GET(req: Request) {
       .order("created_at", { ascending: false })
       .limit(limit);
 
-    if (statusFilter && ["pending", "approved", "rejected"].includes(statusFilter)) {
+    if (statusFilter && ["pending", "approved", "rejected", "verified"].includes(statusFilter)) {
       query = query.eq("status", statusFilter);
     }
 
@@ -37,7 +37,8 @@ export async function GET(req: Request) {
 
 type PatchBody =
   | { id: number; action: "approve"; admin_notes?: string | null }
-  | { id: number; action: "reject"; admin_notes?: string | null };
+  | { id: number; action: "reject"; admin_notes?: string | null }
+  | { id: number; action: "verify" };
 
 export async function PATCH(req: Request) {
   try {
@@ -49,11 +50,40 @@ export async function PATCH(req: Request) {
       return Response.json({ error: "Invalid id" }, { status: 400 });
     }
 
-    if ((body as any)?.action !== "approve" && (body as any)?.action !== "reject") {
+    if ((body as any)?.action !== "approve" && (body as any)?.action !== "reject" && (body as any)?.action !== "verify") {
       return Response.json({ error: "Invalid action" }, { status: 400 });
     }
 
     const supabase = createSupabaseAdminClient();
+
+    if (body.action === "verify" && (body as any)?.id) {
+      const { data: claim, error: claimErr } = await supabase
+        .from("vendor_claims")
+        .select("id,vendor_id,status")
+        .eq("id", (body as any).id)
+        .single();
+
+      if (claimErr || !claim) {
+        return Response.json({ error: claimErr?.message ?? "Claim not found" }, { status: claimErr ? 500 : 404 });
+      }
+
+      if (claim.status !== "approved") {
+        return Response.json({ error: "Can only verify approved claims" }, { status: 400 });
+      }
+
+      const { data: vendor, error: vendorErr } = await supabase
+        .from("vendors")
+        .update({ verified_status: "verified" })
+        .eq("id", claim.vendor_id)
+        .select("id,slug,verified_status")
+        .single();
+
+      if (vendorErr) {
+        return Response.json({ error: vendorErr.message }, { status: 500 });
+      }
+
+      return Response.json({ vendor }, { status: 200 });
+    }
 
     const { data: claim, error: claimErr } = await supabase
       .from("vendor_claims")

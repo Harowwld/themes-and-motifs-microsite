@@ -79,9 +79,9 @@ export default function ClaimVendorButton({ vendorId, vendorName }: Props) {
 
   if (success) {
     return (
-      <div className="rounded-[3px] border border-green-200 bg-green-50 p-4 text-center">
-        <p className="text-sm text-green-700 font-medium">Claim request submitted!</p>
-        <p className="text-xs text-green-600 mt-1">We'll review your request and get back to you soon.</p>
+      <div className="rounded-[3px] border border-[#027a48]/20 bg-[#ecfdf3] p-4 text-center">
+        <p className="text-sm text-[#027a48] font-medium">Claim request submitted!</p>
+        <p className="text-xs text-[#027a48]/80 mt-1">We'll review your request and get back to you soon.</p>
       </div>
     );
   }
@@ -162,7 +162,7 @@ export default function ClaimVendorButton({ vendorId, vendorName }: Props) {
                           <button
                             type="button"
                             onClick={() => setDtiUrl("")}
-                            className="p-2 rounded-full bg-white/90 hover:bg-white text-xs font-medium text-red-600"
+                            className="p-2 rounded-full bg-white/90 hover:bg-white text-xs font-medium text-[#b42318]"
                           >
                             Remove
                           </button>
@@ -204,7 +204,7 @@ export default function ClaimVendorButton({ vendorId, vendorName }: Props) {
                           <button
                             type="button"
                             onClick={() => setSecUrl("")}
-                            className="p-2 rounded-full bg-white/90 hover:bg-white text-xs font-medium text-red-600"
+                            className="p-2 rounded-full bg-white/90 hover:bg-white text-xs font-medium text-[#b42318]"
                           >
                             Remove
                           </button>
@@ -246,7 +246,7 @@ export default function ClaimVendorButton({ vendorId, vendorName }: Props) {
                           <button
                             type="button"
                             onClick={() => setBusinessPermitUrl("")}
-                            className="p-2 rounded-full bg-white/90 hover:bg-white text-xs font-medium text-red-600"
+                            className="p-2 rounded-full bg-white/90 hover:bg-white text-xs font-medium text-[#b42318]"
                           >
                             Remove
                           </button>
@@ -340,7 +340,7 @@ export default function ClaimVendorButton({ vendorId, vendorName }: Props) {
               )}
 
               {error && (
-                <div className="rounded-[3px] bg-red-50 p-3 text-sm text-red-600">
+                <div className="rounded-[3px] bg-[#fff1f3] p-3 text-sm text-[#b42318]">
                   {error}
                 </div>
               )}

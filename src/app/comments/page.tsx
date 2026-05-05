@@ -217,7 +217,7 @@ export default function CommentsPage() {
               type="button"
               disabled={deleting}
               onClick={deleteSelected}
-              className="h-9 px-4 rounded-[3px] bg-red-600 text-white text-[13px] font-semibold hover:bg-red-700 disabled:opacity-60 transition-colors"
+              className="h-9 px-4 rounded-[3px] bg-[#b42318] text-white text-[13px] font-semibold hover:bg-[#9a1d14] disabled:opacity-60 transition-colors"
             >
               {deleting ? "Deleting..." : "Delete"}
             </button>

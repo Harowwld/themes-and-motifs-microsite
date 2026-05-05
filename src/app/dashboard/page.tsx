@@ -244,7 +244,7 @@ export default function DashboardPage() {
         </div>
 
         {error && (
-          <div className="mb-6 rounded-lg bg-red-50 border border-red-200 p-4 text-[13px] text-red-600 font-[family-name:var(--font-plus-jakarta)]">
+          <div className="mb-6 rounded-lg bg-[#fff1f3] border border-[#b42318]/20 p-4 text-[13px] text-[#b42318] font-[family-name:var(--font-plus-jakarta)]">
             {error}
           </div>
         )}

@@ -175,7 +175,7 @@ export default function SuperadminUsersPage() {
                           type="button"
                           disabled={deletingId === x.id}
                           onClick={() => setDeletingUser(x)}
-                          className="h-9 w-full rounded-[3px] border border-red-200 bg-red-50 text-[12px] font-semibold text-red-600 hover:bg-red-100 transition-colors disabled:opacity-60"
+                          className="h-9 w-full rounded-[3px] border border-[#b42318]/20 bg-[#fff1f3] text-[12px] font-semibold text-[#b42318] hover:bg-[#ffe4e8] transition-colors disabled:opacity-60"
                         >
                           Delete
                         </button>
@@ -217,7 +217,7 @@ export default function SuperadminUsersPage() {
                   type="button"
                   disabled={!!deletingId}
                   onClick={confirmDeleteUser}
-                  className="h-9 px-4 rounded-[6px] bg-red-600 text-white text-[12px] font-semibold hover:bg-red-700 disabled:opacity-60"
+                  className="h-9 px-4 rounded-[6px] bg-[#b42318] text-white text-[12px] font-semibold hover:bg-[#9a1d14] disabled:opacity-60"
                 >
                   {deletingId ? "Deleting..." : "Delete"}
                 </button>

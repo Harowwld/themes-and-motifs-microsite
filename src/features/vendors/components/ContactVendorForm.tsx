@@ -124,7 +124,7 @@ export default function ContactVendorForm({ vendorId, vendorName, className, chi
                   {/* Content */}
                   <div className="px-5 py-4">
                     {error ? (
-                      <div className="mb-4 rounded-[3px] border border-red-500/20 bg-red-50 px-3 py-2 text-[12px] text-red-900">
+                      <div className="mb-4 rounded-[3px] border border-[#b42318]/20 bg-[#fff1f3] px-3 py-2 text-[12px] text-[#b42318]">
                         {error}
                       </div>
                     ) : null}

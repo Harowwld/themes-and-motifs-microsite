@@ -49,18 +49,69 @@ export async function PATCH(req: Request) {
     }
 
     const supabase = createSupabaseAdminClient();
-    const { data, error } = await supabase
+    const { data: doc, error } = await supabase
       .from("verification_documents")
       .update(patch)
       .eq("id", id)
-      .select("*")
+      .select("vendor_id,registration_id,doc_type")
       .single();
 
     if (error) {
       return Response.json({ error: error.message }, { status: 500 });
     }
 
-    return Response.json({ document: data }, { status: 200 });
+    if (doc && patch.status === "approved") {
+      const vendorId = doc.vendor_id;
+      const regId = doc.registration_id;
+      const docType = doc.doc_type?.trim().toLowerCase();
+
+      if (vendorId) {
+        const requiredDocs = ["dti", "sec", "permit"];
+        const { data: allDocs } = await supabase
+          .from("verification_documents")
+          .select("doc_type,status")
+          .eq("vendor_id", vendorId);
+
+        if (allDocs) {
+          const approvedDocs = new Set(
+            allDocs
+              .filter((d) => d.status === "approved" && d.doc_type?.trim().toLowerCase())
+              .map((d) => d.doc_type!.trim().toLowerCase())
+          );
+          const allApproved = requiredDocs.every((d) => approvedDocs.has(d));
+          await supabase
+            .from("vendors")
+            .update({ document_verified: allApproved })
+            .eq("id", vendorId);
+        }
+      } else if (regId) {
+        const { data: allDocs } = await supabase
+          .from("verification_documents")
+          .select("doc_type,status")
+          .eq("registration_id", regId);
+
+        if (allDocs) {
+          const approvedDocs = new Set(
+            allDocs
+              .filter((d) => d.status === "approved" && d.doc_type?.trim().toLowerCase())
+              .map((d) => d.doc_type!.trim().toLowerCase())
+          );
+          const allApproved = ["dti", "sec", "permit"].every((d) => approvedDocs.has(d));
+          await supabase
+            .from("vendor_registrations")
+            .update({ document_verified: allApproved })
+            .eq("id", regId);
+        }
+      }
+    }
+
+    const { data: updatedDoc } = await supabase
+      .from("verification_documents")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    return Response.json({ document: updatedDoc }, { status: 200 });
   } catch (e: any) {
     const status = typeof e?.statusCode === "number" ? e.statusCode : 500;
     return Response.json({ error: e?.message ?? "Unknown error" }, { status });

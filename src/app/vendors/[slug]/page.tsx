@@ -28,6 +28,7 @@ type VendorRow = {
   review_count: number | null;
   save_count: number | null;
   verified_status: string | null;
+  document_verified: boolean | null;
   user_id: string | null;
   updated_at: string;
   plan?: { id: number; name: string } | { id: number; name: string }[] | null;
@@ -152,7 +153,7 @@ async function VendorDetailData({ slug }: { slug: string }) {
   const { data: vendor } = await supabase
     .from("vendors")
     .select(
-      "id,business_name,slug,logo_url,description,location_text,city,address,website_url,contact_email,contact_phone,sec_dti_number,average_rating,review_count,save_count,verified_status,user_id,updated_at,plan:plans(id,name)"
+      "id,business_name,slug,logo_url,description,location_text,city,address,website_url,contact_email,contact_phone,sec_dti_number,average_rating,review_count,save_count,verified_status,document_verified,user_id,updated_at,plan:plans(id,name)"
     )
     .eq("slug", slug)
     .eq("is_active", true)
@@ -578,23 +579,23 @@ async function VendorDetailData({ slug }: { slug: string }) {
               <div className="rounded-xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)]">
                 <h3 className="text-[14px] font-semibold text-[#2c2c2c]">Business Verification</h3>
                 <div className="mt-3 flex items-center gap-2">
-                  {vendor.verified_status === "verified" ? (
+                  {vendor.document_verified === true ? (
                     <>
-                      <span className="inline-flex h-5 w-5 items-center justify-center text-green-600">
+                      <span className="inline-flex h-5 w-5 items-center justify-center text-[#027a48]">
                         <svg viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5">
                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
                         </svg>
                       </span>
-                      <span className="text-[13px] font-semibold text-green-700">Verified</span>
+                      <span className="text-[13px] font-semibold text-[#027a48]">Verified</span>
                     </>
                   ) : (
                     <>
-                      <span className="inline-flex h-5 w-5 items-center justify-center text-gray-400">
+                      <span className="inline-flex h-5 w-5 items-center justify-center text-[#b42318]">
                         <svg viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5">
                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd" />
                         </svg>
                       </span>
-                      <span className="text-[13px] font-semibold text-gray-500">Unverified</span>
+                      <span className="text-[13px] font-semibold text-[#b42318]">Unreviewed</span>
                     </>
                   )}
                 </div>

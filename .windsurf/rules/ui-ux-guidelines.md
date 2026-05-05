@@ -184,3 +184,27 @@ For destructive actions like delete, use a modal instead of browser `confirm()`:
 - Include both Cancel and Confirm buttons
 - Disable action button while processing
 - Clicking backdrop should close the modal
+
+## Status Badge Colors
+
+### Status Colors (Superadmin)
+
+| Status | Background | Border | Text | Usage |
+|--------|------------|--------|------|-------|
+| **Approved/Success** | `bg-[#ecfdf3]` | `border-[#027a48]/20` | `text-[#027a48]` | Approved items, verified status |
+| **Rejected/Error** | `bg-[#fff1f3]` | `border-[#b42318]/20` | `text-[#b42318]` | Rejected items, errors |
+| **Pending/Warning** | `bg-[#fff7ed]` | `border-[#c17a4e]/30` | `text-[#6e4f33]` | Pending items, warnings |
+| **Blue/Info** | `bg-blue-50` | `border-blue-200` | `text-blue-700` | Informational status |
+
+### Verified Status Badge (Public)
+
+| Status | Icon Color | Text Color | Text |
+|--------|------------|------------|------|
+| **Verified** | `text-[#027a48]` | `text-[#027a48]` | "Verified" |
+| **Unreviewed** | `text-[#b42318]` | `text-[#b42318]` | "Unreviewed" |
+
+### Usage Guidelines
+
+- Use the exact color values above for consistency across admin and public pages
+- Verified = green (`#027a48`), Unreviewed = red (`#b42318`)
+- Do not use Tailwind's default `green-*` or `red-*` classes - use the specific hex codes

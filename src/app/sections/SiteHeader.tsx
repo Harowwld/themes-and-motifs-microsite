@@ -333,7 +333,7 @@ export default function SiteHeader() {
                     : accountType === "editor"
                     ? "bg-purple-50 text-purple-600 border border-purple-200"
                     : accountType === "superadmin"
-                    ? "bg-red-50 text-red-600 border border-red-200"
+                    ? "bg-[#fff1f3] text-[#b42318] border border-[#b42318]/20"
                     : "bg-gray-100 text-gray-600 border border-gray-200"
                 }`}>
                   {accountType === "soon_to_wed" ? "Couple" : accountType.charAt(0).toUpperCase() + accountType.slice(1)}
@@ -475,7 +475,7 @@ export default function SiteHeader() {
                       : accountType === "editor"
                       ? "bg-purple-50 text-purple-600 border border-purple-200"
                       : accountType === "superadmin"
-                      ? "bg-red-50 text-red-600 border border-red-200"
+                      ? "bg-[#fff1f3] text-[#b42318] border border-[#b42318]/20"
                       : "bg-gray-100 text-gray-600 border border-gray-200"
                   }`}>
                     {accountType === "soon_to_wed" ? "Couple" : accountType.charAt(0).toUpperCase() + accountType.slice(1)}

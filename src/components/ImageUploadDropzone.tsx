@@ -113,12 +113,12 @@ export function ImageUploadDropzone({
 
       {/* Success Toast */}
       {showSuccessToast && (
-        <div className="rounded-lg bg-green-50 border border-green-200 p-3 flex items-center gap-2 animate-in fade-in slide-in-from-top-2 duration-200">
-          <Check className="w-4 h-4 text-green-600" />
+        <div className="rounded-lg bg-[#ecfdf3] border border-[#027a48]/20 p-3 flex items-center gap-2 animate-in fade-in slide-in-from-top-2 duration-200">
+          <Check className="w-4 h-4 text-[#027a48]" />
           <div className="text-sm">
-            <span className="text-green-800 font-medium">Upload successful!</span>
+            <span className="text-[#027a48] font-medium">Upload successful!</span>
             {compressionInfo && (
-              <span className="text-green-600 block text-xs mt-0.5">
+              <span className="text-[#027a48]/80 block text-xs mt-0.5">
                 Compressed from {compressionInfo.original} to {compressionInfo.compressed}
               </span>
             )}
@@ -128,17 +128,17 @@ export function ImageUploadDropzone({
 
       {/* Error Toast */}
       {error && (
-        <div className="rounded-lg bg-red-50 border border-red-200 p-3 flex items-start gap-2 animate-in fade-in slide-in-from-top-2 duration-200">
-          <AlertCircle className="w-4 h-4 text-red-600 mt-0.5 flex-shrink-0" />
+        <div className="rounded-lg bg-[#fff1f3] border border-[#b42318]/20 p-3 flex items-start gap-2 animate-in fade-in slide-in-from-top-2 duration-200">
+          <AlertCircle className="w-4 h-4 text-[#b42318] mt-0.5 flex-shrink-0" />
           <div className="text-sm">
-            <span className="text-red-800 font-medium">Upload failed</span>
-            <span className="text-red-600 block text-xs mt-0.5">{error}</span>
+            <span className="text-[#b42318] font-medium">Upload failed</span>
+            <span className="text-[#b42318]/80 block text-xs mt-0.5">{error}</span>
           </div>
           <button
             onClick={reset}
-            className="ml-auto p-1 hover:bg-red-100 rounded transition-colors"
+            className="ml-auto p-1 hover:bg-[#ffe4e8] rounded transition-colors"
           >
-            <X className="w-3 h-3 text-red-500" />
+            <X className="w-3 h-3 text-[#b42318]" />
           </button>
         </div>
       )}

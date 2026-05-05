@@ -118,7 +118,7 @@ function MomentCard({ moment, onDelete }: { moment: Moment; onDelete: (id: strin
                 {moment.visibility === "public" && (
                   <>
                     <span>•</span>
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-[#ecfdf3] text-[#027a48]">
                       Public
                     </span>
                   </>
@@ -201,7 +201,7 @@ function MomentCard({ moment, onDelete }: { moment: Moment; onDelete: (id: strin
               </svg>
               <span className="text-sm">View</span>
             </button>
-            <button className="flex items-center gap-2 text-gray-600 hover:text-red-500 transition-colors">
+            <button className="flex items-center gap-2 text-gray-600 hover:text-[#b42318] transition-colors">
               <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
               </svg>
@@ -212,7 +212,7 @@ function MomentCard({ moment, onDelete }: { moment: Moment; onDelete: (id: strin
             <button
               onClick={handleDelete}
               disabled={deletingId === moment.id}
-              className="text-red-500 hover:text-red-700 transition-colors text-sm"
+              className="text-[#b42318] hover:text-[#9a1d14] transition-colors text-sm"
             >
               {deletingId === moment.id ? "Deleting..." : "Delete"}
             </button>

@@ -88,16 +88,20 @@ export default function SuperadminClaimsPage() {
     });
   }, [claims, query]);
 
-  async function act(id: number, action: "approve" | "reject") {
-    const admin_notes = window.prompt(action === "approve" ? "Admin notes (optional)" : "Reason / admin notes (optional)") ?? "";
+  async function act(id: number, action: "approve" | "reject" | "verify") {
+    const admin_notes = action !== "verify" ? (window.prompt(action === "approve" ? "Admin notes (optional)" : "Reason / admin notes (optional)") ?? "") : undefined;
     setError(null);
     setSavingId(id);
     try {
-      const res = await apiFetch<{ claim: Claim }>("/api/admin/claims", {
+      const res = await apiFetch<{ claim?: Claim; vendor?: { verified_status: string } }>("/api/admin/claims", {
         method: "PATCH",
-        body: JSON.stringify({ id, action, admin_notes: admin_notes.trim() ? admin_notes.trim() : null }),
+        body: JSON.stringify({ id, action, admin_notes: admin_notes?.trim() ? admin_notes.trim() : null }),
       });
-      setClaims((prev) => prev.map((c) => (c.id === id ? { ...c, ...(res.claim as any) } : c)));
+      if (action === "verify" && res.vendor) {
+        setClaims((prev) => prev.map((c) => (c.id === id ? { ...c, status: "verified" as const } : c)));
+      } else if (res.claim) {
+        setClaims((prev) => prev.map((c) => (c.id === id ? { ...c, ...(res.claim as any) } : c)));
+      }
     } catch (e: any) {
       setError(e?.message ?? "Failed to update claim.");
     } finally {
@@ -211,10 +215,12 @@ export default function SuperadminClaimsPage() {
                       <span
                         className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium ${
                           c.status === "pending"
-                            ? "bg-yellow-100 text-yellow-700"
+                            ? "bg-[#fff7ed] text-[#6e4f33]"
                             : c.status === "approved"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-red-100 text-red-700"
+                            ? "bg-[#ecfdf3] text-[#027a48]"
+                            : c.status === "verified"
+                            ? "bg-blue-50 text-blue-700"
+                            : "bg-[#fff1f3] text-[#b42318]"
                         }`}
                       >
                         {c.status}
@@ -227,7 +233,7 @@ export default function SuperadminClaimsPage() {
                             type="button"
                             disabled={savingId === c.id}
                             onClick={() => act(c.id, "approve")}
-                            className="px-3 h-8 rounded-[3px] bg-green-600 text-white text-[11px] font-medium hover:bg-green-700 transition-colors disabled:opacity-50"
+                            className="px-3 h-8 rounded-[3px] bg-[#027a48] text-white text-[11px] font-medium hover:bg-[#046c4e] transition-colors disabled:opacity-50"
                           >
                             Approve
                           </button>
@@ -235,13 +241,23 @@ export default function SuperadminClaimsPage() {
                             type="button"
                             disabled={savingId === c.id}
                             onClick={() => act(c.id, "reject")}
-                            className="px-3 h-8 rounded-[3px] border border-red-200 bg-white text-red-600 text-[11px] font-medium hover:bg-red-50 transition-colors disabled:opacity-50"
+                            className="px-3 h-8 rounded-[3px] border border-[#b42318]/20 bg-white text-[#b42318] text-[11px] font-medium hover:bg-[#fff1f3] transition-colors disabled:opacity-50"
                           >
                             Reject
                           </button>
                         </>
                       )}
-                      {c.status !== "pending" && (
+                      {c.status === "approved" && (
+                        <button
+                          type="button"
+                          disabled={savingId === c.id}
+                          onClick={() => act(c.id, "verify")}
+                          className="px-3 h-8 rounded-[3px] bg-blue-600 text-white text-[11px] font-medium hover:bg-blue-700 transition-colors disabled:opacity-50"
+                        >
+                          Verify Business
+                        </button>
+                      )}
+                      {(c.status === "rejected" || c.status === "verified") && (
                         <div className="text-[11px] text-black/40">
                           {c.reviewed_at ? fmtDate(c.reviewed_at) : "?"}
                         </div>

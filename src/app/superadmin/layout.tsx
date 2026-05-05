@@ -145,7 +145,7 @@ function LayoutContent({
                   <div className="mt-2">
                     <span className={`inline-flex text-[10px] font-semibold px-2 py-0.5 rounded-full ${
                       accountType === "superadmin"
-                        ? "bg-red-50 text-red-600 border border-red-200"
+                        ? "bg-[#fff1f3] text-[#b42318] border border-[#b42318]/20"
                         : "bg-purple-50 text-purple-600 border border-purple-200"
                     }`}>
                       {accountType.charAt(0).toUpperCase() + accountType.slice(1)}

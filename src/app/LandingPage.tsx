@@ -8,7 +8,6 @@ import VendorsSection from "../features/vendors/sections/VendorsSection";
 import { attachCoverImages, attachAffiliations } from "../features/vendors/coverImages.server";
 import type { FeaturedVendor, VendorListItem } from "../features/vendors/types";
 import { getCachedVendorLocations } from "../lib/vendorUtils";
-import FadeInOnView from "./components/FadeInOnView";
 import ScrollToTopOnMount from "./components/ScrollToTopOnMount";
 
 // Cache categories for 1 hour (3600 seconds)
@@ -108,12 +107,8 @@ export default async function LandingPage({
       <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
         <main className="py-10 sm:py-14">
           {/* Top section - cached, no Suspense */}
-          <FadeInOnView>
-            <HeroSection categories={categories} locations={locations} />
-          </FadeInOnView>
-          <FadeInOnView delayMs={60}>
-            <CategoryBrowser categories={categories} />
-          </FadeInOnView>
+          <HeroSection categories={categories} locations={locations} />
+          <CategoryBrowser categories={categories} />
 
           <div className="my-12 h-px bg-gradient-to-r from-transparent via-black/15 to-transparent" />
 
@@ -172,13 +167,9 @@ async function LandingFeaturedDirect() {
 
   return (
     <>
-      <FadeInOnView>
-        <PromosSection promos={promos} />
-      </FadeInOnView>
+      <PromosSection promos={promos} />
       <div className="my-12 h-px bg-gradient-to-r from-transparent via-black/15 to-transparent" />
-      <FadeInOnView delayMs={60}>
-        <FeaturedVendorsSection vendors={featuredSorted as any} />
-      </FadeInOnView>
+      <FeaturedVendorsSection vendors={featuredSorted as any} />
     </>
   );
 }
@@ -224,8 +215,6 @@ async function LandingVendorsDirect({ page, pageSize, sort }: { page: number; pa
   const pageSorted = sortWithImagesFirst(allWithCovers as any);
 
   return (
-    <FadeInOnView>
-      <VendorsSection vendors={pageSorted as any} total={vendorTotalCount} page={page} pageSize={pageSize} sort={sort} />
-    </FadeInOnView>
+    <VendorsSection vendors={pageSorted as any} total={vendorTotalCount} page={page} pageSize={pageSize} sort={sort} />
   );
 }
