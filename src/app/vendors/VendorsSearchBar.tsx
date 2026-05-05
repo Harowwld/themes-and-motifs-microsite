@@ -91,9 +91,15 @@ export default function VendorsSearchBar({
 
   const regionOptions = useMemo(() => regions ?? [], [regions]);
   const cityOptions = useMemo(() => {
-    const regionIdNum = Number(region);
     const base = cities ?? [];
-    const filtered = Number.isFinite(regionIdNum) ? base.filter((c) => c.region_id === regionIdNum) : base;
+    // Only filter by region if a specific region is selected (not empty string)
+    if (!region || region === "") {
+      return base.slice().sort((a, b) => a.name.localeCompare(b.name));
+    }
+    const regionIdNum = Number(region);
+    const filtered = Number.isFinite(regionIdNum) && regionIdNum > 0
+      ? base.filter((c) => c.region_id === regionIdNum)
+      : base;
     return filtered.slice().sort((a, b) => a.name.localeCompare(b.name));
   }, [cities, region]);
   const affiliationOptions = useMemo(() => affiliations ?? [], [affiliations]);
@@ -114,38 +120,25 @@ export default function VendorsSearchBar({
   };
 
   return (
-    <div className="rounded-lg border border-stone-200/60 bg-white/80 backdrop-blur-sm shadow-[0_2px_8px_rgba(0,0,0,0.04)] overflow-hidden">
+    <div className="rounded-lg border border-stone-200/60 bg-white/80 backdrop-blur-sm shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
       <div className="px-6 py-5 border-b border-stone-100">
         <div className="text-lg font-semibold text-stone-800 font-headline font-[family-name:var(--font-plus-jakarta)]">Search vendors</div>
         <div className="mt-1 text-sm text-stone-500 font-[family-name:var(--font-plus-jakarta)]">Refine by keyword, region, location, or affiliation.</div>
       </div>
 
       <div className="p-6">
-        <div className="grid gap-4 lg:grid-cols-[1fr_1fr_0.9fr_0.9fr_0.9fr_0.7fr_auto] items-end">
+        <div className="grid gap-3 items-end grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 justify-items-stretch">
           <label className="grid gap-1.5">
             <span className="text-xs font-medium text-stone-500 uppercase tracking-wide font-[family-name:var(--font-plus-jakarta)]">Keyword</span>
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") submit();
+              }}
               placeholder="Search vendor name"
-              className="h-11 rounded-md border border-stone-200 bg-stone-50 px-4 text-sm text-stone-700 placeholder:text-stone-400 outline-none transition-all focus:border-[#a68b6a] focus:bg-white focus:ring-2 focus:ring-[#a68b6a]/10 font-[family-name:var(--font-plus-jakarta)]"
+              className="h-11 w-full rounded-md border border-stone-200 bg-stone-50 px-4 text-sm text-stone-700 placeholder:text-stone-400 outline-none transition-all focus:border-[#a68b6a] focus:bg-white focus:ring-2 focus:ring-[#a68b6a]/10 font-[family-name:var(--font-plus-jakarta)]"
             />
-          </label>
-
-          <label className="grid gap-1.5">
-            <span className="text-xs font-medium text-stone-500 uppercase tracking-wide font-[family-name:var(--font-plus-jakarta)]">Category</span>
-            <select
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className="h-11 rounded-md border border-stone-200 bg-stone-50 px-4 text-sm text-stone-700 outline-none transition-all focus:border-[#a68b6a] focus:bg-white focus:ring-2 focus:ring-[#a68b6a]/10 appearance-none cursor-pointer font-[family-name:var(--font-plus-jakarta)]"
-            >
-              <option value="" className="font-[family-name:var(--font-plus-jakarta)]">All categories</option>
-              {categoryOptions.map((c) => (
-                <option key={c.id} value={c.slug} className="font-[family-name:var(--font-plus-jakarta)]">
-                  {c.name}
-                </option>
-              ))}
-            </select>
           </label>
 
           <label className="grid gap-1.5">
@@ -156,7 +149,7 @@ export default function VendorsSearchBar({
                 setRegion(e.target.value);
                 setLocation("");
               }}
-              className="h-11 rounded-md border border-stone-200 bg-stone-50 px-4 text-sm text-stone-700 outline-none transition-all focus:border-[#a68b6a] focus:bg-white focus:ring-2 focus:ring-[#a68b6a]/10 appearance-none cursor-pointer font-[family-name:var(--font-plus-jakarta)]"
+              className="h-11 rounded-md border border-stone-200 bg-stone-50 px-4 text-sm text-stone-700 outline-none transition-all focus:border-[#a68b6a] focus:bg-white focus:ring-2 focus:ring-[#a68b6a]/10 appearance-none cursor-pointer font-[family-name:var(--font-plus-jakarta)] truncate overflow-hidden w-full"
             >
               <option value="" className="font-[family-name:var(--font-plus-jakarta)]">All areas</option>
               {regionOptions.map((r) => (
@@ -171,8 +164,18 @@ export default function VendorsSearchBar({
             <span className="text-xs font-medium text-stone-500 uppercase tracking-wide font-[family-name:var(--font-plus-jakarta)]">City</span>
             <select
               value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              className="h-11 rounded-md border border-stone-200 bg-stone-50 px-4 text-sm text-stone-700 outline-none transition-all focus:border-[#a68b6a] focus:bg-white focus:ring-2 focus:ring-[#a68b6a]/10 appearance-none cursor-pointer font-[family-name:var(--font-plus-jakarta)]"
+              onChange={(e) => {
+                const selectedCity = e.target.value;
+                setLocation(selectedCity);
+                // Auto-select the region based on the chosen city
+                if (selectedCity && cities && cities.length > 0) {
+                  const city = cities.find((c) => c.name === selectedCity);
+                  if (city && city.region_id > 0) {
+                    setRegion(String(city.region_id));
+                  }
+                }
+              }}
+              className="h-11 w-full rounded-md border border-stone-200 bg-stone-50 px-4 text-sm text-stone-700 outline-none transition-all focus:border-[#a68b6a] focus:bg-white focus:ring-2 focus:ring-[#a68b6a]/10 appearance-none cursor-pointer font-[family-name:var(--font-plus-jakarta)]"
             >
               <option value="" className="font-[family-name:var(--font-plus-jakarta)]">All cities</option>
               {cityOptions.map((c) => (
@@ -188,7 +191,7 @@ export default function VendorsSearchBar({
             <select
               value={affiliation}
               onChange={(e) => setAffiliation(e.target.value)}
-              className="h-11 rounded-md border border-stone-200 bg-stone-50 px-4 text-sm text-stone-700 outline-none transition-all focus:border-[#a68b6a] focus:bg-white focus:ring-2 focus:ring-[#a68b6a]/10 appearance-none cursor-pointer font-[family-name:var(--font-plus-jakarta)]"
+              className="h-11 w-full rounded-md border border-stone-200 bg-stone-50 px-4 text-sm text-stone-700 outline-none transition-all focus:border-[#a68b6a] focus:bg-white focus:ring-2 focus:ring-[#a68b6a]/10 appearance-none cursor-pointer font-[family-name:var(--font-plus-jakarta)]"
             >
               <option value="" className="font-[family-name:var(--font-plus-jakarta)]">Any affiliation</option>
               {affiliationOptions.map((a) => (
@@ -204,7 +207,7 @@ export default function VendorsSearchBar({
             <select
               value={sort}
               onChange={(e) => setSort(e.target.value as SortKey)}
-              className="h-11 rounded-md border border-stone-200 bg-stone-50 px-4 text-sm text-stone-700 outline-none transition-all focus:border-[#a68b6a] focus:bg-white focus:ring-2 focus:ring-[#a68b6a]/10 appearance-none cursor-pointer font-[family-name:var(--font-plus-jakarta)]"
+              className="h-11 w-full rounded-md border border-stone-200 bg-stone-50 px-4 text-sm text-stone-700 outline-none transition-all focus:border-[#a68b6a] focus:bg-white focus:ring-2 focus:ring-[#a68b6a]/10 appearance-none cursor-pointer font-[family-name:var(--font-plus-jakarta)]"
             >
               <option value="rating" className="font-[family-name:var(--font-plus-jakarta)]">Top rated</option>
               <option value="alpha" className="font-[family-name:var(--font-plus-jakarta)]">A-Z</option>
@@ -217,7 +220,7 @@ export default function VendorsSearchBar({
           <button
             type="button"
             onClick={submit}
-            className="h-11 inline-flex items-center justify-center px-6 rounded-md bg-[#a68b6a] text-white text-sm font-medium hover:bg-[#957a5c] transition-colors shadow-sm hover:shadow-md"
+            className="h-11 w-full sm:w-auto sm:px-8 xl:w-full inline-flex items-center justify-center px-6 rounded-md bg-[#a68b6a] text-white text-sm font-medium hover:bg-[#957a5c] transition-colors shadow-sm hover:shadow-md"
           >
             Search
           </button>

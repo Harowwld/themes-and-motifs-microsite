@@ -202,16 +202,16 @@ async function VendorsPageData({
     getCachedCategories(),
   ]);
 
-  // Build cities list matching LandingPage logic - include both city and location_text
+  // Build cities list from city field only (not location_text) to avoid duplicates
+  // Deduplicate by city name only, keeping the first region_id encountered
   const citiesList = Array.from(
     new Map(
-      (vendorLocations as { region_id: number | null; city: string | null; location_text: string | null }[])
-        .flatMap((r) => [
-          { region_id: typeof r.region_id === "number" ? r.region_id : 0, name: (r.city ?? "").trim() },
-          { region_id: typeof r.region_id === "number" ? r.region_id : 0, name: (r.location_text ?? "").trim() },
-        ])
-        .filter((r) => Boolean(r.name))
-        .map((r) => [`${r.region_id}::${r.name.toLowerCase()}`, r] as const)
+      (vendorLocations as { region_id: number | null; city: string | null }[])
+        .filter((r) => Boolean(r.city?.trim()))
+        .map((r) => {
+          const name = r.city!.trim();
+          return [name.toLowerCase(), { region_id: typeof r.region_id === "number" ? r.region_id : 0, name }] as const;
+        })
     ).values()
   );
 

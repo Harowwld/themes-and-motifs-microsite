@@ -52,7 +52,12 @@ export default function SiteHeader() {
   const [accountType, setAccountType] = useState<string | null>(null);
   const [signingOut, setSigningOut] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -233,7 +238,7 @@ export default function SiteHeader() {
           </a>
           
           {/* Dashboard and Moments for couples */}
-          {signedIn && isSoonToWed && !isVendor && (
+          {mounted && signedIn && isSoonToWed && !isVendor && (
             <>
               <a
                 className="hover:text-[#a68b6a] transition-colors"
@@ -259,7 +264,7 @@ export default function SiteHeader() {
           )}
           
           {/* Dashboard for vendors */}
-          {isVendor && (
+          {mounted && isVendor && (
             <a
               className="hover:text-[#a68b6a] transition-colors"
               href="/vendor/dashboard"
@@ -273,7 +278,7 @@ export default function SiteHeader() {
           )}
           
           {/* Public Moments for non-couples */}
-          {!signedIn || isVendor ? (
+          {mounted && (!signedIn || isVendor) ? (
             <a
               className="hover:text-[#a68b6a] transition-colors"
               href="/moments"
@@ -289,7 +294,7 @@ export default function SiteHeader() {
 
         <div className="flex items-center gap-2">
           {/* Desktop nav items - Left side for Sign in */}
-          {!signedIn && (
+          {mounted && !signedIn && (
             <a
               className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-md text-[13px] font-medium text-gray-600 hover:text-gray-900 transition-colors font-[family-name:var(--font-plus-jakarta)]"
               href="/soon-to-wed/signin"
@@ -299,7 +304,7 @@ export default function SiteHeader() {
           )}
 
           {/* Desktop nav items - Right side */}
-          {signedIn && (
+          {mounted && signedIn && (
             <button
               type="button"
               disabled={signingOut}
@@ -311,7 +316,7 @@ export default function SiteHeader() {
           )}
 
           {/* Account info for signed in users */}
-          {signedIn && email && (
+          {mounted && signedIn && email && (
             <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-md bg-gray-50 border border-gray-200">
               <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -397,7 +402,7 @@ export default function SiteHeader() {
             </a>
             
             {/* Dashboard and Moments for couples */}
-            {signedIn && isSoonToWed && !isVendor && (
+            {mounted && signedIn && isSoonToWed && !isVendor && (
               <>
                 <a
                   className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
@@ -423,7 +428,7 @@ export default function SiteHeader() {
             )}
             
             {/* Dashboard for vendors */}
-            {isVendor && (
+            {mounted && isVendor && (
               <a
                 className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
                 href="/vendor/dashboard"
@@ -437,7 +442,7 @@ export default function SiteHeader() {
             )}
             
             {/* Public Moments for non-couples */}
-            {!signedIn || isVendor ? (
+            {mounted && (!signedIn || isVendor) ? (
               <a
                 className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
                 href="/moments"
@@ -453,7 +458,7 @@ export default function SiteHeader() {
             <div className="border-t border-gray-100 my-2" />
 
             {/* Account info in mobile menu */}
-            {signedIn && email && (
+            {mounted && signedIn && email && (
               <div className="flex items-center gap-2 px-3 py-3 rounded-md bg-gray-50 border border-gray-200">
                 <svg className="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -480,7 +485,7 @@ export default function SiteHeader() {
             )}
 
             {/* Sign out or Start Searching */}
-            {signedIn ? (
+            {mounted && signedIn ? (
               <button
                 type="button"
                 disabled={signingOut}
@@ -502,7 +507,7 @@ export default function SiteHeader() {
               </a>
             )}
 
-            {!signedIn ? (
+            {mounted && !signedIn ? (
               <a
                 className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
                 href="/soon-to-wed/signin"

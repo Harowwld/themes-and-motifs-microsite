@@ -19,6 +19,11 @@ export default function FadeInOnView({
 }: Props) {
   const ref = useRef<HTMLDivElement | null>(null);
   const [visible, setVisible] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const el = ref.current;
@@ -56,12 +61,15 @@ export default function FadeInOnView({
     return () => obs.disconnect();
   }, [once, offsetPx]);
 
+  // Show content during SSR/hydration (mounted=false), animate only after client mount
+  const isVisible = !mounted || visible;
+
   return (
     <div
       ref={ref}
       className={
         "transition-all duration-700 ease-out will-change-transform " +
-        (visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3") +
+        (isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3") +
         (className ? ` ${className}` : "")
       }
       style={{ transitionDelay: delayMs ? `${delayMs}ms` : undefined }}

@@ -61,13 +61,6 @@ type PromoRow = {
   image_zoom: number | null;
 };
 
-type VerificationDocumentRow = {
-  id: number;
-  doc_type: string;
-  status: string;
-  uploaded_at: string;
-};
-
 type ReviewRow = {
   id: number;
   rating: number;
@@ -167,7 +160,7 @@ async function VendorDetailData({ slug }: { slug: string }) {
 
   if (!vendor?.id) notFound();
 
-  const [categoriesRes, affiliationsRes, imagesRes, socialsRes, reviewsRes, promosRes, verificationDocsRes] = await Promise.all([
+  const [categoriesRes, affiliationsRes, imagesRes, socialsRes, reviewsRes, promosRes] = await Promise.all([
     supabase
       .from("vendor_categories")
       .select("category:categories(id,name,slug)")
@@ -205,12 +198,6 @@ async function VendorDetailData({ slug }: { slug: string }) {
       .eq("is_active", true)
       .order("updated_at", { ascending: false })
       .limit(24),
-    supabase
-      .from("verification_documents")
-      .select("id,doc_type,status,uploaded_at")
-      .eq("vendor_id", vendor.id)
-      .order("uploaded_at", { ascending: false })
-      .limit(50),
   ]);
 
   const categoryLinks = (categoriesRes.data ?? []) as unknown as {
@@ -223,7 +210,6 @@ async function VendorDetailData({ slug }: { slug: string }) {
   const socials = (socialsRes.data ?? []) as VendorSocialLinkRow[];
   const reviews = (reviewsRes.data ?? []) as unknown as ReviewRow[];
   const promos = ((promosRes.data ?? []) as PromoRow[]).filter(isPromoCurrentlyValid).slice(0, 12);
-  const verificationDocs = (verificationDocsRes.data ?? []) as VerificationDocumentRow[];
 
   const categories = categoryLinks
     .flatMap((r) => (Array.isArray(r.category) ? r.category : r.category ? [r.category] : []))
@@ -243,25 +229,6 @@ async function VendorDetailData({ slug }: { slug: string }) {
     .toLowerCase();
   const isPremium = planName.includes("premium");
   const websiteTooltip = "Website link is available for Premium vendors.";
-
-  const verificationByType = verificationDocs.reduce<Record<string, VerificationDocumentRow | undefined>>((acc, doc) => {
-    const t = (doc.doc_type ?? "").trim().toLowerCase();
-    if (!t) return acc;
-    if (!acc[t]) acc[t] = doc;
-    return acc;
-  }, {});
-
-  const tinDoc = verificationByType["bir"]; // used as TIN/BIR cert
-  const secDoc = verificationByType["sec"];
-  const dtiDoc = verificationByType["dti"];
-
-  function formatDocStatus(doc?: VerificationDocumentRow) {
-    if (!doc) return "Not verified";
-    const s = (doc.status ?? "").trim().toLowerCase();
-    if (s === "approved") return "Approved";
-    if (s === "rejected") return "Rejected";
-    return "Verified";
-  }
 
   function formatDate(value: string) {
     const d = new Date(value);
@@ -610,25 +577,26 @@ async function VendorDetailData({ slug }: { slug: string }) {
               {/* Business Verification */}
               <div className="rounded-xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)]">
                 <h3 className="text-[14px] font-semibold text-[#2c2c2c]">Business Verification</h3>
-                <div className="mt-4 grid gap-2 text-[13px] text-black/65">
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="text-black/50">TIN cert</span>
-                    <span className="font-semibold text-black/70">{formatDocStatus(tinDoc)}</span>
-                  </div>
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="text-black/50">SEC/DTI #</span>
-                    <span className={vendor.sec_dti_number ? "font-semibold text-black/70" : "font-semibold text-black/40"}>
-                      {vendor.sec_dti_number ? vendor.sec_dti_number : "?"}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="text-black/50">SEC cert</span>
-                    <span className="font-semibold text-black/70">{formatDocStatus(secDoc)}</span>
-                  </div>
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="text-black/50">DTI cert</span>
-                    <span className="font-semibold text-black/70">{formatDocStatus(dtiDoc)}</span>
-                  </div>
+                <div className="mt-3 flex items-center gap-2">
+                  {vendor.verified_status === "verified" ? (
+                    <>
+                      <span className="inline-flex h-5 w-5 items-center justify-center text-green-600">
+                        <svg viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
+                        </svg>
+                      </span>
+                      <span className="text-[13px] font-semibold text-green-700">Verified</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="inline-flex h-5 w-5 items-center justify-center text-gray-400">
+                        <svg viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd" />
+                        </svg>
+                      </span>
+                      <span className="text-[13px] font-semibold text-gray-500">Unverified</span>
+                    </>
+                  )}
                 </div>
               </div>
 
