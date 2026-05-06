@@ -25,8 +25,10 @@ type FeaturedPromo = {
   image_focus_y?: number | null;
   image_zoom?: number | null;
   vendors: {
+    id: number;
     business_name: string;
     slug: string;
+    logo_url?: string | null;
   }[];
 };
 
@@ -58,7 +60,15 @@ function PromoCard({
   index: number;
   tone: string;
 }) {
-  const vendorName = promo.vendors?.[0]?.business_name;
+  const vendorsRaw = promo.vendors;
+  let vendor = null;
+  if (Array.isArray(vendorsRaw)) {
+    vendor = vendorsRaw[0];
+  } else if (vendorsRaw && typeof vendorsRaw === 'object') {
+    vendor = vendorsRaw as any;
+  }
+  const vendorName = vendor?.business_name;
+  const vendorLogo = vendor?.logo_url;
   const coverUrl = promo.image_url ? proxiedImageUrl(promo.image_url) : "";
   const fx = clampPct(Number(promo.image_focus_x ?? 50));
   const fy = clampPct(Number(promo.image_focus_y ?? 50));
@@ -92,10 +102,10 @@ function PromoCard({
         )}
       </div>
 
-      <div className="absolute bottom-2 sm:bottom-3 left-2 sm:left-3 z-20 w-[68%] sm:w-[60%]">
-        <div className="backdrop-blur-md bg-white/75 border border-white/40 rounded-[6px] p-2.5 sm:p-3 shadow-lg">
+      <div className="absolute bottom-2 sm:bottom-3 left-2 sm:left-3 right-2 sm:right-3 z-20 flex items-end justify-between gap-2">
+        <div className="backdrop-blur-md bg-white/75 border border-white/40 rounded-[6px] p-2.5 sm:p-3 shadow-lg flex-1">
           <div className="text-[10px] font-semibold text-[#a68b6a] uppercase tracking-wide truncate font-[family-name:var(--font-plus-jakarta)]">
-            {vendorName ? vendorName : "Featured Deal"}
+            {vendorName}
           </div>
           <div className="mt-1 text-[13px] sm:text-[14px] font-bold text-[#2c2c2c] leading-tight line-clamp-2 font-[family-name:var(--font-plus-jakarta)]">
             {promo.title}
@@ -113,6 +123,18 @@ function PromoCard({
             )}
           </div>
         </div>
+        {vendorLogo ? (
+          <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-[6px] border border-white/40 bg-white/50 backdrop-blur-sm overflow-hidden flex-shrink-0 shadow-lg">
+            <img
+              src={proxiedImageUrl(vendorLogo)}
+              alt=""
+              className="h-full w-full object-cover"
+              loading="lazy"
+              decoding="async"
+              referrerPolicy="no-referrer"
+            />
+          </div>
+        ) : null}
       </div>
     </a>
   );

@@ -9,7 +9,7 @@ import { EditorSignOutButton } from "./EditorSignOutButton";
 async function getPathname(): Promise<string> {
   try {
     const headersList = await headers();
-    return headersList.get("x-invoke-path") ?? "";
+    return headersList.get("x-pathname") ?? "";
   } catch {
     return "";
   }
@@ -67,6 +67,7 @@ async function getCurrentUser(): Promise<{ isSuperadmin: boolean; isEditor: bool
 
 export default async function SuperadminLayout({ children }: { children: React.ReactNode }) {
   const user = await getCurrentUser();
+  const pathname = await getPathname();
 
   // If no user at all, redirect to admin login
   if (!user.email) {
@@ -76,7 +77,7 @@ export default async function SuperadminLayout({ children }: { children: React.R
   // If user is a superadmin, show superadmin layout
   if (user.isSuperadmin) {
     return (
-      <LayoutContent isSuperadmin={true} isEditor={false} email={user.email} accountType="superadmin">
+      <LayoutContent isSuperadmin={true} isEditor={false} email={user.email} accountType="superadmin" pathname={pathname}>
         {children}
       </LayoutContent>
     );
@@ -84,13 +85,12 @@ export default async function SuperadminLayout({ children }: { children: React.R
 
   // If user is an editor, redirect editors from dashboard to vendors page
   if (user.isEditor) {
-    const pathname = await getPathname();
     if (pathname === "/superadmin" || pathname === "/superadmin/") {
       redirect("/superadmin/vendors");
     }
 
     return (
-      <LayoutContent isSuperadmin={false} isEditor={true} email={user.email} accountType="editor">
+      <LayoutContent isSuperadmin={false} isEditor={true} email={user.email} accountType="editor" pathname={pathname}>
         {children}
       </LayoutContent>
     );
@@ -106,13 +106,30 @@ function LayoutContent({
   isEditor,
   email,
   accountType,
+  pathname,
 }: {
   children: React.ReactNode;
   isSuperadmin: boolean;
   isEditor: boolean;
   email: string | null;
   accountType: "superadmin" | "editor" | null;
+  pathname: string;
 }) {
+  const isActive = (href: string) => {
+    if (href === "/superadmin") {
+      return pathname === href || pathname === "/superadmin/";
+    }
+    return pathname.startsWith(href);
+  };
+
+  const navLinkClass = (href: string) => {
+    const active = isActive(href);
+    return `rounded-[3px] px-3 py-2 text-[13px] transition-colors ${
+      active
+        ? "bg-[#a68b6a]/10 text-[#a68b6a] font-medium"
+        : "text-black/75 hover:bg-black/[0.03]"
+    }`;
+  };
 
   return (
     <div
@@ -155,42 +172,45 @@ function LayoutContent({
               </div>
             )}
 
-            <nav className="p-2 grid gap-1 text-[13px]">
+            <nav className="p-2 grid gap-1">
               {isSuperadmin && (
-                <Link className="rounded-[3px] px-3 py-2 hover:bg-black/[0.03] text-black/75" href="/superadmin">
+                <Link className={navLinkClass("/superadmin")} href="/superadmin">
                   Dashboard
                 </Link>
               )}
-              <Link className="rounded-[3px] px-3 py-2 hover:bg-black/[0.03] text-black/75" href="/superadmin/vendors">
+              <Link className={navLinkClass("/superadmin/vendors")} href="/superadmin/vendors">
                 Vendors
               </Link>
-              <Link className="rounded-[3px] px-3 py-2 hover:bg-black/[0.03] text-black/75" href="/superadmin/promos">
+              <Link className={navLinkClass("/superadmin/promos")} href="/superadmin/promos">
                 Promos
               </Link>
               {isSuperadmin && (
                 <>
-                  <Link className="rounded-[3px] px-3 py-2 hover:bg-black/[0.03] text-black/75" href="/superadmin/registrations">
+                  <Link className={navLinkClass("/superadmin/registrations")} href="/superadmin/registrations">
                     Registrations
                   </Link>
-                  <Link className="rounded-[3px] px-3 py-2 hover:bg-black/[0.03] text-black/75" href="/superadmin/claims">
+                  <Link className={navLinkClass("/superadmin/claims")} href="/superadmin/claims">
                     Claims
                   </Link>
-                  <Link className="rounded-[3px] px-3 py-2 hover:bg-black/[0.03] text-black/75" href="/superadmin/inquiries">
+                  <Link className={navLinkClass("/superadmin/inquiries")} href="/superadmin/inquiries">
                     Inquiries
                   </Link>
-                  <Link className="rounded-[3px] px-3 py-2 hover:bg-black/[0.03] text-black/75" href="/superadmin/reviews">
+                  <Link className={navLinkClass("/superadmin/reviews")} href="/superadmin/reviews">
                     Reviews
                   </Link>
-                  <Link className="rounded-[3px] px-3 py-2 hover:bg-black/[0.03] text-black/75" href="/superadmin/verification-documents">
+                  <Link className={navLinkClass("/superadmin/verification-documents")} href="/superadmin/verification-documents">
                     Verification docs
                   </Link>
-                  <Link className="rounded-[3px] px-3 py-2 hover:bg-black/[0.03] text-black/75" href="/superadmin/users">
+                  <Link className={navLinkClass("/superadmin/themes")} href="/superadmin/themes">
+                    Themes
+                  </Link>
+                  <Link className={navLinkClass("/superadmin/users")} href="/superadmin/users">
                     Users
                   </Link>
-                  <Link className="rounded-[3px] px-3 py-2 hover:bg-black/[0.03] text-black/75" href="/superadmin/editors">
+                  <Link className={navLinkClass("/superadmin/editors")} href="/superadmin/editors">
                     Editors
                   </Link>
-                  <Link className="rounded-[3px] px-3 py-2 hover:bg-black/[0.03] text-black/75" href="/superadmin/settings">
+                  <Link className={navLinkClass("/superadmin/settings")} href="/superadmin/settings">
                     Settings
                   </Link>
                 </>

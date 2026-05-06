@@ -12,8 +12,10 @@ type FeaturedPromo = {
   image_focus_y?: number | null;
   image_zoom?: number | null;
   vendors: {
+    id: number;
     business_name: string;
     slug: string;
+    logo_url?: string | null;
   }[];
 };
 
@@ -41,10 +43,10 @@ export default function PromosSection({ promos }: { promos: FeaturedPromo[] }) {
     <section id="promos" className="mt-16 sm:mt-20">
       <div className="text-center">
         <h2 className="text-[18px] sm:text-[20px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">
-          Discover exciting promos
+          Unlock Exciting Promos
         </h2>
         <p className="mt-2 text-[13px] text-black/55 max-w-xl mx-auto font-[family-name:var(--font-plus-jakarta)]">
-          Time-bound deals from suppliers-great for shortlisting with confidence.
+          Limited time exclusive promos for your dream wedding.
         </p>
       </div>
 

@@ -125,7 +125,7 @@ async function PromosList({ query }: { query: string }) {
       {promos.map((promo, i) => {
         const tone = i % 3 === 0 ? "#a67c52" : i % 3 === 1 ? "#c17a4e" : "#8e6a46";
         const vendor = promo.vendors?.[0];
-        const vendorName = vendor?.business_name ?? "Featured Deal";
+        const vendorName = vendor?.business_name;
         const coverUrl = proxiedImageUrl(promo.image_url);
         const fx = clampPct(Number(promo.image_focus_x ?? 50));
         const fy = clampPct(Number(promo.image_focus_y ?? 50));

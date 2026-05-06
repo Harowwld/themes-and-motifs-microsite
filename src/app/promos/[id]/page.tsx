@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { createSupabaseServerClient } from "../../../lib/supabaseServer";
 import FadeInOnView from "../../components/FadeInOnView";
 import ShareDeal from "./ShareDeal";
+import PromoCTACard from "./PromoCTACard";
 
 type Vendor = {
   id: number;
@@ -140,7 +141,7 @@ export default async function PromoDetailPage({ params }: Props) {
                   </div>
 
                   {/* Large Cover Image */}
-                  <div className="relative h-64 sm:h-80 overflow-hidden">
+                  <div className="relative aspect-[3/4] overflow-hidden">
                     {coverUrl ? (
                       <img
                         src={coverUrl}
@@ -239,39 +240,14 @@ export default async function PromoDetailPage({ params }: Props) {
 
               {/* Sidebar */}
               <div className="space-y-4">
-                {/* CTA Card */}
-                <div className="rounded-md border border-black/10 bg-white p-6 shadow-sm">
-                  <h3 className="text-[16px] font-semibold text-[#2c2c2c]">Interested in this deal?</h3>
-                  <p className="mt-2 text-[13px] text-black/55">
-                    Contact {vendor?.business_name ?? "the vendor"} to claim this exclusive offer.
-                  </p>
-
-                  <div className="mt-4 space-y-3">
-                    {vendor?.contact_phone ? (
-                      <a
-                        href={`tel:${vendor.contact_phone}`}
-                        className="flex h-11 items-center justify-center gap-2 rounded-[3px] bg-[#a67c52] text-white text-[14px] font-semibold hover:bg-[#8e6a46] transition-colors"
-                      >
-                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                        </svg>
-                        Call Now
-                      </a>
-                    ) : null}
-
-                    {vendor ? (
-                      <a
-                        href={`/vendors/${vendor.slug}`}
-                        className="flex h-11 items-center justify-center gap-2 rounded-[3px] border-2 border-[#a67c52] text-[#a67c52] text-[14px] font-semibold hover:bg-[#a67c52] hover:text-white transition-colors"
-                      >
-                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        View Vendor Profile
-                      </a>
-                    ) : null}
-                  </div>
-                </div>
+                <PromoCTACard
+                  vendorId={vendor?.id ?? null}
+                  vendorName={vendor?.business_name ?? null}
+                  vendorEmail={vendor?.contact_email ?? null}
+                  vendorPhone={vendor?.contact_phone ?? null}
+                  vendorSlug={vendor?.slug ?? null}
+                  promoTitle={promo.title}
+                />
 
                 {/* Vendor Mini Card */}
                 {vendor ? (
@@ -368,7 +344,7 @@ async function MorePromos({ currentId }: { currentId: number }) {
         const tone = i % 3 === 0 ? "#a67c52" : i % 3 === 1 ? "#c17a4e" : "#8e6a46";
         const vendorRaw = promo.vendor;
         const vendor = Array.isArray(vendorRaw) ? vendorRaw[0] ?? null : vendorRaw;
-        const vendorName = vendor?.business_name ?? "Featured Deal";
+        const vendorName = vendor?.business_name;
         const coverUrl = proxiedImageUrl(promo.image_url);
         const fx = clampPct(Number(promo.image_focus_x ?? 50));
         const fy = clampPct(Number(promo.image_focus_y ?? 50));

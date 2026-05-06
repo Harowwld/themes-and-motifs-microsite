@@ -79,7 +79,7 @@ export default function VendorPlansPage() {
                   </div>
                   <div className="mt-auto pt-3">
                     <a href="/register?plan=2" className="block w-full h-8 text-[12px] font-medium text-white bg-[#a68b6a] rounded-md hover:bg-[#957a5c] transition-colors text-center leading-8 font-[family-name:var(--font-plus-jakarta)]">
-                      Select Leads Generator
+                      Get Leads / Potential Clients
                     </a>
                   </div>
                 </div>

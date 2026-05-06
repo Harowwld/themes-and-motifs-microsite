@@ -43,8 +43,10 @@ type FeaturedPromo = {
   image_focus_y?: number | null;
   image_zoom?: number | null;
   vendors: {
+    id: number;
     business_name: string;
     slug: string;
+    logo_url?: string | null;
   }[];
 };
 
@@ -142,7 +144,7 @@ async function LandingFeaturedDirect() {
     supabase
       .from("promos")
       .select(
-        "id,title,summary,valid_from,valid_to,image_url,discount_percentage,image_focus_x,image_focus_y,image_zoom,vendors(business_name,slug)"
+        "id,title,summary,valid_from,valid_to,image_url,discount_percentage,image_focus_x,image_focus_y,image_zoom,vendors(id,business_name,slug,logo_url)"
       )
       .eq("is_active", true)
       .eq("is_featured", true)

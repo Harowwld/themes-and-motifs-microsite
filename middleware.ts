@@ -100,6 +100,7 @@ export async function middleware(req: NextRequest) {
     
     if (superadminData) {
       // User is a superadmin, allow access
+      supabaseResponse.headers.set("x-pathname", pathname);
       return supabaseResponse;
     }
     
@@ -113,6 +114,7 @@ export async function middleware(req: NextRequest) {
         .maybeSingle<{ id: string }>();
       
       if (editorData) {
+        supabaseResponse.headers.set("x-pathname", pathname);
         return supabaseResponse;
       }
     }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
 import { createSupabaseBrowserClient } from "../../lib/supabaseBrowser";
@@ -191,14 +192,11 @@ export default function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 inset-x-0 backdrop-blur-md bg-white/90 supports-backdrop-filter:bg-white/90">
       <div className="mx-auto h-16 flex items-center justify-between px-4 sm:px-6 lg:px-8">
-        <a
+        <Link
           className="flex items-center"
           href="/"
           aria-label="Themes & Motifs"
-          onClick={(e) => {
-            e.preventDefault();
-            router.push("/", { scroll: false });
-          }}
+          prefetch={true}
         >
           <img
             src="https://themesnmotifs.com/wp-content/uploads/elementor/thumbs/T_M-Logo-1-qzxx62xvcaywvxz23bwwe4nm1tu4exw9i42ghzw8g6.png"
@@ -207,100 +205,92 @@ export default function SiteHeader() {
             loading="eager"
             referrerPolicy="no-referrer"
           />
-        </a>
+        </Link>
 
         <nav className="hidden sm:flex items-center gap-8 text-[13px] font-medium text-gray-500 font-[family-name:var(--font-plus-jakarta)]">
-          <a
+          <Link
             className="hover:text-[#a68b6a] transition-colors"
             href="/vendors"
-            onClick={(e) => {
-              e.preventDefault();
-              router.push("/vendors");
-            }}
+            prefetch={true}
           >
             Discover
-          </a>
-          <a
+          </Link>
+          <Link
             className="hover:text-[#a68b6a] transition-colors"
             href="/#featured"
             onClick={(e) => {
               e.preventDefault();
               goToHomeSection("featured");
             }}
+            prefetch={true}
           >
             Featured
-          </a>
-          <a
+          </Link>
+          <Link
             className="hover:text-[#a68b6a] transition-colors"
             href="/vendors/plans"
+            prefetch={true}
           >
             For vendors
-          </a>
+          </Link>
           
           {/* Dashboard and Moments for couples */}
           {mounted && signedIn && isSoonToWed && !isVendor && (
             <>
-              <a
+              <Link
                 className="hover:text-[#a68b6a] transition-colors"
                 href="/dashboard"
-                onClick={(e) => {
-                  e.preventDefault();
-                  router.push("/dashboard", { scroll: false });
-                }}
+                scroll={false}
+                prefetch={true}
               >
                 My Wedding
-              </a>
-              <a
+              </Link>
+              <Link
                 className="hover:text-[#a68b6a] transition-colors"
                 href="/moments"
-                onClick={(e) => {
-                  e.preventDefault();
-                  router.push("/moments", { scroll: false });
-                }}
+                scroll={false}
+                prefetch={true}
               >
                 Moments
-              </a>
+              </Link>
             </>
           )}
           
           {/* Dashboard for vendors */}
           {mounted && isVendor && (
-            <a
+            <Link
               className="hover:text-[#a68b6a] transition-colors"
               href="/vendor/dashboard"
-              onClick={(e) => {
-                e.preventDefault();
-                router.push("/vendor/dashboard", { scroll: false });
-              }}
+              scroll={false}
+              prefetch={true}
             >
               Dashboard
-            </a>
+            </Link>
           )}
           
           {/* Public Moments for non-couples */}
           {mounted && (!signedIn || isVendor) ? (
-            <a
+            <Link
               className="hover:text-[#a68b6a] transition-colors"
               href="/moments"
-              onClick={(e) => {
-                e.preventDefault();
-                router.push("/moments", { scroll: false });
-              }}
+              scroll={false}
+              prefetch={true}
             >
               Wedding Moments
-            </a>
+            </Link>
           ) : null}
         </nav>
 
         <div className="flex items-center gap-2">
           {/* Desktop nav items - Left side for Sign in */}
           {mounted && !signedIn && (
-            <a
+            <Link
               className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-md text-[13px] font-medium text-gray-600 hover:text-gray-900 transition-colors font-[family-name:var(--font-plus-jakarta)]"
               href="/soon-to-wed/signin"
+              prefetch={false}
             >
               Sign in
-            </a>
+            </Link>
           )}
 
           {/* Desktop nav items - Right side */}
@@ -342,16 +332,13 @@ export default function SiteHeader() {
             </div>
           )}
 
-          <a
+          <Link
             href="/vendors"
             className="hidden sm:inline-flex h-9 items-center justify-center px-4 rounded-md bg-[#a68b6a] text-white text-[13px] font-medium hover:bg-[#957a5c] transition-colors font-[family-name:var(--font-plus-jakarta)]"
-            onClick={(e) => {
-              e.preventDefault();
-              router.push("/vendors");
-            }}
+            prefetch={true}
           >
             Start Searching
-          </a>
+          </Link>
 
           {/* Mobile menu button */}
           <button
@@ -374,16 +361,13 @@ export default function SiteHeader() {
           className="sm:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-100 shadow-lg animate-fade-in"
         >
           <nav className="px-4 py-4 space-y-1">
-            <a
+            <Link
               className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
               href="/vendors"
-              onClick={(e) => {
-                e.preventDefault();
-                router.push("/vendors");
-              }}
+              prefetch={true}
             >
               Discover
-            </a>
+            </Link>
             <a
               className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
               href="/#featured"
@@ -394,65 +378,58 @@ export default function SiteHeader() {
             >
               Featured
             </a>
-            <a
+            <Link
               className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
               href="/vendors/plans"
+              prefetch={true}
             >
               For vendors
-            </a>
+            </Link>
             
             {/* Dashboard and Moments for couples */}
             {mounted && signedIn && isSoonToWed && !isVendor && (
               <>
-                <a
+                <Link
                   className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
                   href="/dashboard"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    router.push("/dashboard", { scroll: false });
-                  }}
+                  scroll={false}
+                  prefetch={true}
                 >
                   My Wedding
-                </a>
-                <a
+                </Link>
+                <Link
                   className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
                   href="/moments"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    router.push("/moments", { scroll: false });
-                  }}
+                  scroll={false}
+                  prefetch={true}
                 >
                   Moments
-                </a>
+                </Link>
               </>
             )}
             
             {/* Dashboard for vendors */}
             {mounted && isVendor && (
-              <a
+              <Link
                 className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
                 href="/vendor/dashboard"
-                onClick={(e) => {
-                  e.preventDefault();
-                  router.push("/vendor/dashboard", { scroll: false });
-                }}
+                scroll={false}
+                prefetch={true}
               >
                 Dashboard
-              </a>
+              </Link>
             )}
             
             {/* Public Moments for non-couples */}
             {mounted && (!signedIn || isVendor) ? (
-              <a
+              <Link
                 className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
                 href="/moments"
-                onClick={(e) => {
-                  e.preventDefault();
-                  router.push("/moments", { scroll: false });
-                }}
+                scroll={false}
+                prefetch={true}
               >
                 Wedding Moments
-              </a>
+              </Link>
             ) : null}
 
             <div className="border-t border-gray-100 my-2" />
@@ -495,37 +472,32 @@ export default function SiteHeader() {
                 {signingOut ? "Signing out…" : "Sign out"}
               </button>
             ) : (
-              <a
+              <Link
                 className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-[#a68b6a] hover:text-[#957a5c] hover:bg-gray-50 transition-colors"
                 href="/vendors"
-                onClick={(e) => {
-                  e.preventDefault();
-                  router.push("/vendors");
-                }}
+                prefetch={true}
               >
                 Start Searching
-              </a>
+              </Link>
             )}
 
             {mounted && !signedIn ? (
-              <a
+              <Link
                 className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
                 href="/soon-to-wed/signin"
+                prefetch={false}
               >
                 Sign in
-              </a>
+              </Link>
             ) : null}
 
-            <a
+            <Link
               className="flex items-center justify-center mt-3 px-3 py-3 rounded-md bg-[#a68b6a] text-white text-[14px] font-medium hover:bg-[#957a5c] transition-colors"
               href="/vendors"
-              onClick={(e) => {
-                e.preventDefault();
-                router.push("/vendors");
-              }}
+              prefetch={true}
             >
               Start searching
-            </a>
+            </Link>
           </nav>
         </div>
       )}

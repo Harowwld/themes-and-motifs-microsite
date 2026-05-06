@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { createSupabaseBrowserClient } from "@/lib/supabaseBrowser";
+import { useVendorSpeculation } from "@/hooks/useVendorSpeculation";
+import { useSmartPrefetch, prefetchOnHover } from "@/hooks/useSmartPrefetch";
 import type { VendorCardVendor } from "../types";
 
 type Props = {
@@ -24,6 +26,14 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight, featured }: 
   const [isSaved, setIsSaved] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const { onMouseEnter: onSpeculationEnter } = useVendorSpeculation(vendor.slug);
+  const { prefetchVendor } = useSmartPrefetch();
+  
+  // Combine speculation rules with data prefetching
+  const { onMouseEnter: onPrefetchEnter, onMouseLeave: onPrefetchLeave } = prefetchOnHover(
+    () => prefetchVendor(vendor.slug),
+    150 // 150ms delay to avoid prefetching on quick mouse passes
+  );
   
   const seed = toneSeed ?? vendor.id;
   const tone = seed % 2 === 0 ? "#a68b6a" : "#957a5c";
@@ -115,8 +125,15 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight, featured }: 
       href={`/vendors/${encodeURIComponent(vendor.slug)}`}
       className={rootClassName}
       aria-label={`View ${vendor.business_name}`}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={() => {
+        setIsHovered(true);
+        onSpeculationEnter();
+        onPrefetchEnter();
+      }}
+      onMouseLeave={() => {
+        setIsHovered(false);
+        onPrefetchLeave();
+      }}
     >
       <div className={`relative ${featured ? 'h-48' : 'h-28'} overflow-hidden`}>
         <button
