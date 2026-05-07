@@ -25,7 +25,6 @@ export default function SoonToWedSignInPage() {
   const [error, setError] = useState<string | null>(null);
   const [wasSignedOut, setWasSignedOut] = useState(false);
   const resetSuccess = searchParams.get("reset") === "success";
-  const authError = searchParams.get("error");
 
   useEffect(() => {
     let cancelled = false;
@@ -33,6 +32,7 @@ export default function SoonToWedSignInPage() {
     async function run() {
       const { data } = await supabase.auth.getSession();
       if (!cancelled && data.session?.user) {
+        // Auto sign out if already logged in
         await supabase.auth.signOut();
         setWasSignedOut(true);
       }
@@ -44,12 +44,6 @@ export default function SoonToWedSignInPage() {
       cancelled = true;
     };
   }, [supabase]);
-
-  useEffect(() => {
-    if (authError === "confirmation_failed") {
-      setError("Confirmation link expired or invalid. Please try signing in or request a new confirmation.");
-    }
-  }, [authError]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
