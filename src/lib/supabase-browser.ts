@@ -20,7 +20,12 @@ export function createBrowserClient() {
   if (!browserClient) {
     browserClient = createSBBrowserClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        auth: {
+          detectSessionInUrl: true
+        }
+      }
     )
   }
   
