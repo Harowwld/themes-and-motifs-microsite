@@ -266,7 +266,7 @@ export default function HeroSection({
             <div className="mt-1 text-[13px] sm:text-[14px] font-medium text-white font-[family-name:var(--font-plus-jakarta)]">Ratings</div>
           </div>
           <div className="rounded-lg border border-white/20 bg-white/10 backdrop-blur-md px-2 sm:px-3 py-2 sm:py-3">
-            <div className="text-[11px] sm:text-[12px] font-medium text-white/60 font-[family-name:var(--font-plus-jakarta)]">Save</div>
+            <div className="text-[11px] sm:text-[12px] font-medium text-white/60 font-[family-name:var(--font-plus-jakarta)]">Unlock</div>
             <div className="mt-1 text-[13px] sm:text-[14px] font-medium text-white font-[family-name:var(--font-plus-jakarta)]">Promos</div>
           </div>
         </div>

@@ -766,7 +766,7 @@ function CoverPhotoModal({
 
           <ImageUploadDropzone
             bucket="vendor-assets"
-            folder="covers"
+            folder="pending/covers"
             label="Upload Cover Photo"
             description="JPG, PNG, WebP up to 2MB. Will be compressed if needed."
             onUploadComplete={handleUploadComplete}
@@ -867,7 +867,7 @@ function LogoModal({
 
           <ImageUploadDropzone
             bucket="vendor-assets"
-            folder="logos"
+            folder="pending/logos"
             label="Upload Logo"
             description="JPG, PNG, WebP up to 2MB. Will be compressed if needed."
             onUploadComplete={handleUploadComplete}
