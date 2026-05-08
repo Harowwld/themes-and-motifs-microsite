@@ -359,21 +359,6 @@ async function VendorDetailData({ slug }: { slug: string }) {
                 </div>
               ) : null}
 
-              {/* Theme Pills */}
-              {themes.length > 0 ? (
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {themes.map((t) => (
-                    <a
-                      key={t.id}
-                      className="inline-flex items-center rounded-full border border-purple-200 bg-purple-50/50 px-3.5 py-1.5 text-[12px] font-medium text-purple-700 hover:bg-purple-50 transition-all duration-300 shadow-sm hover:shadow-md"
-                      href={`/vendors?theme=${encodeURIComponent(t.slug)}`}
-                    >
-                      <SparklesIcon className="h-3 w-3 mr-1.5" />
-                      {t.name}
-                    </a>
-                  ))}
-                </div>
-              ) : null}
             </div>
           </div>
         </section>
@@ -392,13 +377,6 @@ async function VendorDetailData({ slug }: { slug: string }) {
                   <p className="mt-3 text-[14px] leading-7 text-black/65 whitespace-pre-line">
                     {vendor.description}
                   </p>
-                </div>
-              ) : null}
-
-              {/* Photos - no label, carousel has its own */}
-              {images.length > 0 ? (
-                <div className="rounded-xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)]">
-                  <VendorPhotosCarousel images={images} />
                 </div>
               ) : null}
 
@@ -485,6 +463,13 @@ async function VendorDetailData({ slug }: { slug: string }) {
                 </div>
               ) : null}
 
+              {/* Photos - no label, carousel has its own */}
+              {images.length > 0 ? (
+                <div className="rounded-xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)]">
+                  <VendorPhotosCarousel images={images} />
+                </div>
+              ) : null}
+
               {/* Reviews */}
               <div className="rounded-xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)]">
                 <div className="flex items-center justify-between gap-4">
@@ -532,6 +517,32 @@ async function VendorDetailData({ slug }: { slug: string }) {
 
             {/* Sidebar */}
             <div className="grid gap-4 content-start">
+              {/* Business Verification */}
+              <div className="rounded-xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)]">
+                <h3 className="text-[14px] font-semibold text-[#2c2c2c]">Business Verification</h3>
+                <div className="mt-3 flex items-center gap-2">
+                  {vendor.document_verified === true ? (
+                    <>
+                      <span className="inline-flex h-5 w-5 items-center justify-center text-[#027a48]">
+                        <svg viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
+                        </svg>
+                      </span>
+                      <span className="text-[13px] font-semibold text-[#027a48]">Verified</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="inline-flex h-5 w-5 items-center justify-center text-[#b42318]">
+                        <svg viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd" />
+                        </svg>
+                      </span>
+                      <span className="text-[13px] font-semibold text-[#b42318]">Unreviewed</span>
+                    </>
+                  )}
+                </div>
+              </div>
+
               {/* Contact Card */}
               <div className="rounded-xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)]">
                 <h3 className="text-[14px] font-semibold text-[#2c2c2c]">Contact Information</h3>
@@ -609,31 +620,24 @@ async function VendorDetailData({ slug }: { slug: string }) {
                 </div>
               ) : null}
 
-              {/* Business Verification */}
-              <div className="rounded-xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)]">
-                <h3 className="text-[14px] font-semibold text-[#2c2c2c]">Business Verification</h3>
-                <div className="mt-3 flex items-center gap-2">
-                  {vendor.document_verified === true ? (
-                    <>
-                      <span className="inline-flex h-5 w-5 items-center justify-center text-[#027a48]">
-                        <svg viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
-                        </svg>
-                      </span>
-                      <span className="text-[13px] font-semibold text-[#027a48]">Verified</span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="inline-flex h-5 w-5 items-center justify-center text-[#b42318]">
-                        <svg viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd" />
-                        </svg>
-                      </span>
-                      <span className="text-[13px] font-semibold text-[#b42318]">Unreviewed</span>
-                    </>
-                  )}
+              {/* Themes */}
+              {themes.length > 0 ? (
+                <div className="rounded-xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)]">
+                  <h3 className="text-[14px] font-semibold text-[#2c2c2c]">Wedding Themes</h3>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {themes.map((t) => (
+                      <a
+                        key={t.id}
+                        className="inline-flex items-center rounded-full border border-purple-200 bg-purple-50/50 px-3 py-1.5 text-[12px] font-medium text-purple-700 hover:bg-purple-50 transition-all duration-300 shadow-sm hover:shadow-md"
+                        href={`/vendors?theme=${encodeURIComponent(t.slug)}`}
+                      >
+                        <SparklesIcon className="h-3 w-3 mr-1" />
+                        {t.name}
+                      </a>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              ) : null}
 
               {/* Claim Button for unclaimed vendors */}
               {!vendor.user_id && (
