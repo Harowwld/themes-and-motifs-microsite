@@ -3,9 +3,9 @@ import { Suspense } from "react";
 
 import { createSupabaseServerClient } from "../../../lib/supabaseServer";
 import VendorPhotosCarousel from "../../../features/vendors/components/VendorPhotosCarousel";
-import ContactVendorForm from "../../../features/vendors/components/ContactVendorForm";
-import SaveVendorButton from "../../../features/vendors/components/SaveVendorButton";
 import ClaimVendorButton from "../../../features/vendors/components/ClaimVendorButton";
+import VendorContactCTA from "../../../features/vendors/components/VendorContactCTA";
+import SaveVendorCTA from "../../../features/vendors/components/SaveVendorCTA";
 import VendorReviewForm from "./VendorReviewForm";
 import FadeInOnView from "../../components/FadeInOnView";
 
@@ -546,21 +546,27 @@ async function VendorDetailData({ slug }: { slug: string }) {
               {/* Contact Card */}
               <div className="rounded-xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)]">
                 <h3 className="text-[14px] font-semibold text-[#2c2c2c]">Contact Information</h3>
-                
-                {/* Quick Action Buttons */}
-                <div className="mt-4 flex gap-2">
-                  <SaveVendorButton 
-                    vendorId={vendor.id} 
-                    vendorSlug={vendor.slug}
-                    className="h-10 w-10"
-                  />
-                  <ContactVendorForm 
-                    vendorId={vendor.id} 
+
+                {/* Contact CTA */}
+                <p className="mt-2 text-[13px] text-black/55">
+                  Contact {vendor.business_name} directly to discuss your wedding needs.
+                </p>
+
+                <div className="mt-4">
+                  <VendorContactCTA
+                    vendorId={vendor.id}
                     vendorName={vendor.business_name}
-                    className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-[#a68b6a] text-white hover:bg-[#957a5c] transition-all duration-300"
-                  >
-                    <ChatIcon className="h-4 w-4" />
-                  </ContactVendorForm>
+                    vendorPhone={vendor.contact_phone}
+                    vendorEmail={vendor.contact_email}
+                  />
+                </div>
+
+                {/* Save CTA */}
+                <div className="mt-3">
+                  <SaveVendorCTA
+                    vendorId={vendor.id}
+                    vendorSlug={vendor.slug}
+                  />
                 </div>
 
                 <div className="mt-4 grid gap-3">
@@ -837,14 +843,6 @@ function PhoneIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-    </svg>
-  );
-}
-
-function ChatIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
     </svg>
   );
 }

@@ -50,3 +50,4 @@ commit-message-suggestions.md
 
 # todo
 TODO.md
+.env*.local

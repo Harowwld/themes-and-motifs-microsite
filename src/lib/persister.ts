@@ -13,13 +13,57 @@ const CACHE_KEY = "tanstack-query-cache";
 const MAX_AGE = 1000 * 60 * 60 * 24; // 24 hours
 
 /**
+ * Deep sanitize data to remove Promises, functions, and non-serializable objects
+ * This prevents DataCloneError when storing to IndexedDB
+ */
+function sanitizeForStorage<T>(value: T): T {
+  // Handle null/undefined
+  if (value === null || value === undefined) {
+    return value;
+  }
+
+  // Handle Promises - replace with null
+  if (value instanceof Promise) {
+    return null as T;
+  }
+
+  // Handle dates - convert to ISO string
+  if (value instanceof Date) {
+    return value.toISOString() as unknown as T;
+  }
+
+  // Handle arrays
+  if (Array.isArray(value)) {
+    return value.map(sanitizeForStorage) as unknown as T;
+  }
+
+  // Handle objects (but not functions, Maps, Sets, etc.)
+  if (typeof value === "object") {
+    const result: Record<string, unknown> = {};
+    for (const key of Object.keys(value)) {
+      const val = (value as Record<string, unknown>)[key];
+      // Skip functions, symbols, and other non-serializable types
+      if (typeof val === "function" || typeof val === "symbol") {
+        continue;
+      }
+      result[key] = sanitizeForStorage(val);
+    }
+    return result as T;
+  }
+
+  // Primitives are fine
+  return value;
+}
+
+/**
  * Serialize the client data to ensure it's JSON-safe
  * This prevents DataCloneError from Promises or other non-clonable objects
  */
 function serializeClient(client: PersistedClient): string {
-  // The client should already be dehydrated by react-query-persist-client
-  // but we double-serialize to ensure no Promises or other non-clonable objects
-  return JSON.stringify(client);
+  // Deep sanitize to remove any Promises or non-clonable objects
+  // that might have leaked into the cache during fast scrolling
+  const sanitized = sanitizeForStorage(client);
+  return JSON.stringify(sanitized);
 }
 
 /**
