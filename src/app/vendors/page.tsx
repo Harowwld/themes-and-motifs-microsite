@@ -5,10 +5,10 @@ import CategoryBrowser from "../components/CategoryBrowser";
 import VendorsSearchBar from "./VendorsSearchBar";
 import VendorsListWithSaved from "./VendorsListWithSaved";
 import VendorsScrollToResults from "./VendorsScrollToResults";
-import { attachCoverImages } from "../../features/vendors/coverImages.server";
 import type { VendorListItem } from "../../features/vendors/types";
 import { buildVendorsQuery } from "../../features/vendors/queries.server";
-import { sortVendors, VendorWithSortFields, SortKey, getCachedVendorLocations } from "../../lib/vendorUtils";
+import type { VendorWithSortFields, SortKey } from "../../lib/vendorUtils";
+import { getCachedVendorLocations } from "../../lib/vendorUtils";
 
 // Cache regions for 1 hour (3600 seconds)
 const getCachedRegions = unstable_cache(
@@ -235,20 +235,17 @@ async function VendorsPageData({
   // Use offset pagination for initial load
   const from = 0;
   const to = limit - 1;
-  const { query } = await buildVendorsQuery({
+  const { vendors, total: vendorTotal } = await buildVendorsQuery({
     supabase,
     filters: { q, category, location, region, affiliation, theme },
     sort,
     from,
     to,
   });
-  const { data: vendors, count: vendorTotal } = await query;
-  const hasMore = (vendorTotal ?? 0) > limit;
+  const loadedCount = (vendors ?? []).length;
+  const hasMore = loadedCount > 0 && from + loadedCount < (vendorTotal ?? 0);
 
-  const vendorAllItems = (vendors ?? []) as VendorListItem[];
-
-  const vendorAllItemsWithCovers = await attachCoverImages(supabase, vendorAllItems);
-  const vendorPageItemsSorted = sortVendors(vendorAllItemsWithCovers as VendorWithSortFields[], sort);
+  const vendorAllItemsWithCovers = (vendors ?? []) as VendorListItem[];
 
   return (
     <>
@@ -272,7 +269,7 @@ async function VendorsPageData({
 
       <div id="vendors-results" />
       <VendorsListWithSaved
-        initialVendors={vendorPageItemsSorted as any}
+        initialVendors={vendorAllItemsWithCovers as any}
         initialPage={1}
         hasMore={hasMore}
         limit={limit}

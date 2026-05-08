@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
 
 import { createSupabaseServerClient } from "../../../lib/supabaseServer";
-import { attachCoverImages } from "../../../features/vendors/coverImages.server";
 import { buildVendorsQuery } from "../../../features/vendors/queries.server";
-import { sortVendors, VendorWithSortFields, SortKey } from "../../../lib/vendorUtils";
+import type { VendorWithSortFields, SortKey } from "../../../lib/vendorUtils";
 
 export const dynamic = "force-dynamic";
 
@@ -23,7 +22,7 @@ export async function GET(req: Request) {
   const rawSort = searchParams.get("vendorsSort") ?? "rating";
   const rawLimit = searchParams.get("limit") ?? "12";
 
-  const limit = Math.max(1, Math.min(30, Number(rawLimit) || 12));
+  const limit = Math.max(1, Math.min(60, Number(rawLimit) || 60));
   const page = Math.max(1, Number(rawPage) || 1);
 
   const sort: SortKey =
@@ -35,7 +34,7 @@ export async function GET(req: Request) {
     const from = (page - 1) * limit;
     const to = from + limit - 1;
 
-    const { query } = await buildVendorsQuery({
+    const { vendors, total } = await buildVendorsQuery({
       supabase,
       filters: { q, category, location, region, affiliation, theme },
       sort,
@@ -43,17 +42,11 @@ export async function GET(req: Request) {
       to,
     });
 
-    const { data: vendors, count } = await query;
-    const vendorAllItems = (vendors ?? []) as VendorWithSortFields[];
-
-    const withCovers = await attachCoverImages(supabase, vendorAllItems) as VendorWithCoverImage[];
-    const sorted = sortVendors(withCovers, sort);
-
-    const total = count ?? 0;
-    const hasMore = from + sorted.length < total;
+    const vendorAllItems = (vendors ?? []) as VendorWithCoverImage[];
+    const hasMore = from + vendorAllItems.length < total;
 
     return NextResponse.json({
-      vendors: sorted,
+      vendors: vendorAllItems,
       nextPage: hasMore ? page + 1 : null,
       hasMore,
       total,
