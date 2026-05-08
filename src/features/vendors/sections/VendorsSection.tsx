@@ -89,7 +89,7 @@ export default function VendorsSection({
           </p>
         </div>
 
-        <div className="flex items-center gap-1 p-1 bg-white rounded-lg border border-black/10 shadow-sm">
+        <div className="flex flex-wrap items-center gap-1.5 p-1.5 bg-white rounded-xl border border-black/10 shadow-sm w-full sm:w-auto">
           {([
             { value: "rating", label: "Top rated" },
             { value: "alpha", label: "A-Z" },
@@ -100,7 +100,7 @@ export default function VendorsSection({
               key={option.value}
               type="button"
               onClick={() => navigate(makeHref({ page: 1, sort: option.value as SortKey, basePath, extraParams }))}
-              className={`px-3 py-1.5 rounded-md text-[12px] font-semibold transition-all font-[family-name:var(--font-plus-jakarta)] ${
+              className={`flex-1 sm:flex-none px-3 py-2 rounded-lg text-[13px] font-semibold transition-all font-[family-name:var(--font-plus-jakarta)] whitespace-nowrap ${
                 sort === option.value
                   ? "bg-[#a68b6a] text-white shadow-sm"
                   : "text-black/60 hover:text-black/80 hover:bg-black/[0.02]"
