@@ -1,5 +1,104 @@
 import { createSupabaseAdminClient } from "../../../../../lib/supabaseAdmin";
 import { assertAdminOrEditorRequest } from "../../../../../lib/editorAuth";
+import { createErrorResponse } from "../../../../../lib/errors";
+
+// Field validators for mass assignment protection
+const FIELD_VALIDATORS: Record<string, (val: unknown) => { valid: boolean; value?: unknown; error?: string }> = {
+  business_name: (val) => {
+    if (typeof val !== "string") return { valid: false, error: "business_name must be a string" };
+    if (val.length > 200) return { valid: false, error: "business_name must be under 200 characters" };
+    return { valid: true, value: val.trim() };
+  },
+  slug: (val) => {
+    if (typeof val !== "string") return { valid: false, error: "slug must be a string" };
+    if (val.length > 100) return { valid: false, error: "slug must be under 100 characters" };
+    if (!/^[a-z0-9-]+$/.test(val)) return { valid: false, error: "slug must be lowercase alphanumeric with hyphens only" };
+    return { valid: true, value: val.trim() };
+  },
+  description: (val) => {
+    if (typeof val !== "string") return { valid: false, error: "description must be a string" };
+    if (val.length > 5000) return { valid: false, error: "description must be under 5000 characters" };
+    return { valid: true, value: val.trim() };
+  },
+  location_text: (val) => {
+    if (typeof val !== "string" && val !== null) return { valid: false, error: "location_text must be a string or null" };
+    if (typeof val === "string" && val.length > 200) return { valid: false, error: "location_text must be under 200 characters" };
+    return { valid: true, value: val === null ? null : val.trim() };
+  },
+  city: (val) => {
+    if (typeof val !== "string" && val !== null) return { valid: false, error: "city must be a string or null" };
+    if (typeof val === "string" && val.length > 100) return { valid: false, error: "city must be under 100 characters" };
+    return { valid: true, value: val === null ? null : val.trim() };
+  },
+  address: (val) => {
+    if (typeof val !== "string" && val !== null) return { valid: false, error: "address must be a string or null" };
+    if (typeof val === "string" && val.length > 500) return { valid: false, error: "address must be under 500 characters" };
+    return { valid: true, value: val === null ? null : val.trim() };
+  },
+  contact_email: (val) => {
+    if (typeof val !== "string" && val !== null) return { valid: false, error: "contact_email must be a string or null" };
+    if (typeof val === "string" && val.length > 200) return { valid: false, error: "contact_email must be under 200 characters" };
+    if (typeof val === "string" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) return { valid: false, error: "contact_email must be a valid email" };
+    return { valid: true, value: val === null ? null : val.trim() };
+  },
+  contact_phone: (val) => {
+    if (typeof val !== "string" && val !== null) return { valid: false, error: "contact_phone must be a string or null" };
+    if (typeof val === "string" && val.length > 50) return { valid: false, error: "contact_phone must be under 50 characters" };
+    return { valid: true, value: val === null ? null : val.trim() };
+  },
+  website_url: (val) => {
+    if (typeof val !== "string" && val !== null) return { valid: false, error: "website_url must be a string or null" };
+    if (typeof val === "string" && val.length > 500) return { valid: false, error: "website_url must be under 500 characters" };
+    if (typeof val === "string" && !/^https?:\/\/.+/.test(val)) return { valid: false, error: "website_url must be a valid URL starting with http:// or https://" };
+    return { valid: true, value: val === null ? null : val.trim() };
+  },
+  logo_url: (val) => {
+    if (typeof val !== "string" && val !== null) return { valid: false, error: "logo_url must be a string or null" };
+    if (typeof val === "string" && val.length > 500) return { valid: false, error: "logo_url must be under 500 characters" };
+    if (typeof val === "string" && !/^https?:\/\/.+/.test(val)) return { valid: false, error: "logo_url must be a valid URL" };
+    return { valid: true, value: val === null ? null : val.trim() };
+  },
+  is_active: (val) => {
+    if (typeof val !== "boolean") return { valid: false, error: "is_active must be a boolean" };
+    return { valid: true, value: val };
+  },
+  is_featured: (val) => {
+    if (typeof val !== "boolean") return { valid: false, error: "is_featured must be a boolean" };
+    return { valid: true, value: val };
+  },
+  plan_id: (val) => {
+    if (typeof val !== "number" && val !== null) return { valid: false, error: "plan_id must be a number or null" };
+    return { valid: true, value: val };
+  },
+  verified_status: (val) => {
+    if (typeof val !== "string") return { valid: false, error: "verified_status must be a string" };
+    if (!["pending", "verified", "rejected"].includes(val)) return { valid: false, error: "verified_status must be pending, verified, or rejected" };
+    return { valid: true, value: val };
+  },
+  document_verified: (val) => {
+    if (typeof val !== "boolean") return { valid: false, error: "document_verified must be a boolean" };
+    return { valid: true, value: val };
+  },
+};
+
+// Sanitize and validate patch object
+function validatePatch(body: Record<string, unknown>): { patch: Record<string, unknown>; errors: string[] } {
+  const patch: Record<string, unknown> = {};
+  const errors: string[] = [];
+  
+  for (const [field, validator] of Object.entries(FIELD_VALIDATORS)) {
+    if (field in body) {
+      const result = validator(body[field]);
+      if (result.valid) {
+        patch[field] = result.value;
+      } else {
+        errors.push(result.error || `Invalid value for ${field}`);
+      }
+    }
+  }
+  
+  return { patch, errors };
+}
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -48,7 +147,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
     ]);
 
     if (vendorRes.error) {
-      return Response.json({ error: vendorRes.error.message }, { status: 500 });
+      return createErrorResponse(vendorRes.error, 500, { source: "vendor_fetch", vendorId });
     }
 
     if (!vendorRes.data) {
@@ -66,7 +165,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
     }, { status: 200 });
   } catch (e: any) {
     const status = typeof e?.statusCode === "number" ? e.statusCode : 500;
-    return Response.json({ error: e?.message ?? "Unknown error" }, { status });
+    return createErrorResponse(e, status, { source: "admin_vendor_get", vendorId: (await params).id });
   }
 }
 
@@ -82,34 +181,15 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 
     const body = (await req.json().catch(() => null)) ?? {};
 
-    // Allow updating all vendor profile fields
-    const allowedFields = [
-      "business_name",
-      "slug",
-      "description",
-      "location_text",
-      "city",
-      "address",
-      "contact_email",
-      "contact_phone",
-      "website_url",
-      "logo_url",
-      "is_active",
-      "is_featured",
-      "plan_id",
-      "verified_status",
-      "document_verified",
-    ];
+    // Validate and sanitize patch data (mass assignment protection)
+    const { patch, errors } = validatePatch(body);
 
-    const patch: Record<string, any> = {};
-    for (const field of allowedFields) {
-      if (field in body) {
-        patch[field] = body[field];
-      }
+    if (errors.length > 0) {
+      return createErrorResponse(new Error(errors.join("; ")), 400, { validationErrors: errors });
     }
 
     if (Object.keys(patch).length === 0) {
-      return Response.json({ error: "No fields to update" }, { status: 400 });
+      return Response.json({ error: "No valid fields to update" }, { status: 400 });
     }
 
     const supabase = createSupabaseAdminClient();
@@ -141,12 +221,12 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
       .single();
 
     if (error) {
-      return Response.json({ error: error.message }, { status: 500 });
+      return createErrorResponse(error, 500, { source: "vendor_update", vendorId });
     }
 
     return Response.json({ vendor: data }, { status: 200 });
   } catch (e: any) {
     const status = typeof e?.statusCode === "number" ? e.statusCode : 500;
-    return Response.json({ error: e?.message ?? "Unknown error" }, { status });
+    return createErrorResponse(e, status, { source: "admin_vendor_patch", vendorId: (await params).id });
   }
 }

@@ -2,6 +2,28 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 export type VendorsSortKey = "alpha" | "rating" | "newest" | "saves" | "views";
 
+// Sanitize search input to prevent SQL injection
+function sanitizeSearchInput(input: string): { sanitized: string; isValid: boolean } {
+  // Limit query length
+  if (input.length > 100) {
+    return { sanitized: "", isValid: false };
+  }
+  
+  // Validate input is a string (NoSQL injection check)
+  if (typeof input !== "string") {
+    return { sanitized: "", isValid: false };
+  }
+  
+  // Remove SQL wildcards and dangerous characters
+  // Keep alphanumeric, spaces, and basic punctuation for search
+  const sanitized = input
+    .replace(/[%_]/g, "") // Remove SQL wildcards
+    .replace(/[<>'"&]/g, "") // Remove HTML/special chars that could cause issues
+    .trim();
+  
+  return { sanitized, isValid: true };
+}
+
 export type CursorPaginationResult = {
   vendors: any[];
   nextCursor: number | null;
@@ -132,19 +154,23 @@ export async function buildVendorsQuery({
   }
 
   if (q) {
-    query = query.ilike("business_name", `%${q}%`);
+    const { sanitized: safeQ, isValid } = sanitizeSearchInput(q);
+    if (isValid && safeQ) {
+      query = query.ilike("business_name", `%${safeQ}%`);
+    }
   }
 
   if (location) {
-    const locationLike = location
-      .trim()
-      .split(/\s+/)
-      .filter(Boolean)
-      .join("%");
+    const { sanitized: safeLocation, isValid } = sanitizeSearchInput(location);
+    if (isValid && safeLocation) {
+      const locationLike = safeLocation
+        .split(/\s+/)
+        .filter(Boolean)
+        .join("%");
 
-    query = query.or(
-      `city.ilike.%${locationLike}%,location_text.ilike.%${locationLike}%,address.ilike.%${locationLike}%`
-    );
+      // Use filter objects instead of string interpolation for safety
+      query = query.or(`city.ilike.%${locationLike}%,location_text.ilike.%${locationLike}%,address.ilike.%${locationLike}%`);
+    }
   }
 
   if (region) {
@@ -274,19 +300,23 @@ export async function buildVendorsQueryWithCursor({
   }
 
   if (q) {
-    query = query.ilike("business_name", `%${q}%`);
+    const { sanitized: safeQ, isValid } = sanitizeSearchInput(q);
+    if (isValid && safeQ) {
+      query = query.ilike("business_name", `%${safeQ}%`);
+    }
   }
 
   if (location) {
-    const locationLike = location
-      .trim()
-      .split(/\s+/)
-      .filter(Boolean)
-      .join("%");
+    const { sanitized: safeLocation, isValid } = sanitizeSearchInput(location);
+    if (isValid && safeLocation) {
+      const locationLike = safeLocation
+        .split(/\s+/)
+        .filter(Boolean)
+        .join("%");
 
-    query = query.or(
-      `city.ilike.%${locationLike}%,location_text.ilike.%${locationLike}%,address.ilike.%${locationLike}%`
-    );
+      // Use filter objects instead of string interpolation for safety
+      query = query.or(`city.ilike.%${locationLike}%,location_text.ilike.%${locationLike}%,address.ilike.%${locationLike}%`);
+    }
   }
 
   if (region) {

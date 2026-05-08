@@ -181,7 +181,7 @@ function VendorsPageSkeleton() {
           <div className="h-3 w-24 rounded bg-black/10 animate-pulse" />
         </div>
         <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 12 }).map((_, i) => (
+          {Array.from({ length: 3 }).map((_, i) => (
             <VendorCardSkeleton key={i} />
           ))}
         </div>
@@ -298,7 +298,7 @@ export default async function VendorsPage({
   const affiliation = (sp.affiliation as string | undefined)?.trim() || "";
   const theme = (sp.theme as string | undefined)?.trim() || "";
 
-  const limit = 50;
+  const limit = 60;
   const rawSort = (sp.vendorsSort as string | undefined) ?? "rating";
   const sort: SortKey =
     rawSort === "alpha" || rawSort === "newest" || rawSort === "saves" || rawSort === "views" ? rawSort : "rating";

@@ -142,8 +142,8 @@ export default function VendorsSearchBar({
         <div className="mt-1 text-sm text-stone-500 font-[family-name:var(--font-plus-jakarta)]">Refine by keyword, region, location, or affiliation.</div>
       </div>
 
-      <div className="p-6">
-        <div className="grid gap-3 items-end grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 justify-items-stretch">
+      <div className="p-6 space-y-4">
+        <div className="grid gap-3 items-end grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
           <label className="grid gap-1.5">
             <span className="text-xs font-medium text-stone-500 uppercase tracking-wide font-[family-name:var(--font-plus-jakarta)]">Keyword</span>
             <input
@@ -248,11 +248,13 @@ export default function VendorsSearchBar({
               <option value="views" className="font-[family-name:var(--font-plus-jakarta)]">Most viewed</option>
             </select>
           </label>
+        </div>
 
+        <div className="flex justify-center">
           <button
             type="button"
             onClick={submit}
-            className="h-11 w-full sm:w-auto sm:px-8 xl:w-full inline-flex items-center justify-center px-6 rounded-md bg-[#a68b6a] text-white text-sm font-medium hover:bg-[#957a5c] transition-colors shadow-sm hover:shadow-md"
+            className="h-11 w-full max-w-[200px] inline-flex items-center justify-center px-6 rounded-md bg-[#a68b6a] text-white text-sm font-medium hover:bg-[#957a5c] transition-colors shadow-lg hover:shadow-xl"
           >
             Search
           </button>

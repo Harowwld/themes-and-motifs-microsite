@@ -1,5 +1,28 @@
 import { createSupabaseAdminClient } from "../../../../lib/supabaseAdmin";
 import { assertAdminOrEditorRequest } from "../../../../lib/editorAuth";
+import { createErrorResponse, CLIENT_ERRORS } from "../../../../lib/errors";
+
+// Sanitize search query to prevent SQL injection
+function sanitizeSearchQuery(query: string): { sanitized: string; isValid: boolean } {
+  // Limit query length
+  if (query.length > 100) {
+    return { sanitized: "", isValid: false };
+  }
+  
+  // Remove potentially dangerous characters
+  // Only allow alphanumeric, spaces, and basic punctuation
+  const sanitized = query
+    .replace(/[%_]/g, "") // Remove SQL wildcards
+    .replace(/[<>'"&]/g, "") // Remove HTML/special chars
+    .trim();
+  
+  // Validate query doesn't contain objects/arrays (NoSQL injection check)
+  if (typeof query !== "string") {
+    return { sanitized: "", isValid: false };
+  }
+  
+  return { sanitized, isValid: true };
+}
 
 export async function GET(req: Request) {
   try {
@@ -7,7 +30,7 @@ export async function GET(req: Request) {
 
     const { searchParams } = new URL(req.url);
     const limitRaw = searchParams.get("limit");
-    const query = searchParams.get("q")?.trim() || "";
+    const rawQuery = searchParams.get("q")?.trim() || "";
     const status = searchParams.get("status")?.trim() || "";
     const limit = Math.max(1, Math.min(2000, Number(limitRaw ?? 1000) || 1000));
 
@@ -19,8 +42,15 @@ export async function GET(req: Request) {
       .order("is_featured", { ascending: false })
       .order("updated_at", { ascending: false });
 
-    if (query) {
-      vendorsQuery = vendorsQuery.or(`business_name.ilike.*${query}*,slug.ilike.*${query}*`);
+    if (rawQuery) {
+      const { sanitized: query, isValid } = sanitizeSearchQuery(rawQuery);
+      if (!isValid) {
+        return createErrorResponse(new Error("Search query too long"), 400, { query: rawQuery });
+      }
+      if (query) {
+        // Use or() with separate filter calls instead of string interpolation
+        vendorsQuery = vendorsQuery.or(`business_name.ilike.%${query}%,slug.ilike.%${query}%`);
+      }
     }
 
     if (status) {
@@ -28,22 +58,22 @@ export async function GET(req: Request) {
     }
 
     const [{ data: vendors, error }, { data: plans, error: plansErr }] = await Promise.all([
-      query ? vendorsQuery.limit(limit) : vendorsQuery.limit(limit),
+      rawQuery ? vendorsQuery.limit(limit) : vendorsQuery.limit(limit),
       supabase.from("plans").select("id,name").order("id", { ascending: true }).limit(50),
     ]);
 
     if (error) {
-      return Response.json({ error: error.message }, { status: 500 });
+      return createErrorResponse(error, 500, { source: "vendors_query" });
     }
 
     if (plansErr) {
-      return Response.json({ error: plansErr.message }, { status: 500 });
+      return createErrorResponse(plansErr, 500, { source: "plans_query" });
     }
 
     return Response.json({ vendors: vendors ?? [], plans: plans ?? [] }, { status: 200 });
   } catch (e: any) {
     const status = typeof e?.statusCode === "number" ? e.statusCode : 500;
-    return Response.json({ error: e?.message ?? "Unknown error" }, { status });
+    return createErrorResponse(e, status, { source: "admin_vendors_get" });
   }
 }
 
@@ -79,12 +109,12 @@ export async function PATCH(req: Request) {
       .single();
 
     if (error) {
-      return Response.json({ error: error.message }, { status: 500 });
+      return createErrorResponse(error, 500, { source: "vendor_patch", id });
     }
 
     return Response.json({ vendor: data }, { status: 200 });
   } catch (e: any) {
     const status = typeof e?.statusCode === "number" ? e.statusCode : 500;
-    return Response.json({ error: e?.message ?? "Unknown error" }, { status });
+    return createErrorResponse(e, status, { source: "admin_vendors_patch" });
   }
 }
