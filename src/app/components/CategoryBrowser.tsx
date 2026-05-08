@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 type Category = {
@@ -74,8 +74,14 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
   const router = useRouter();
   const searchParams = useSearchParams();
   const [expanded, setExpanded] = useState(false);
+  const [pendingCategory, setPendingCategory] = useState<string | null>(null);
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const activeCategory = (searchParams?.get("category") ?? "").trim().toLowerCase();
+
+  // Clear pending state when URL actually updates
+  useEffect(() => {
+    setPendingCategory(null);
+  }, [searchParams?.get("category")]);
 
   const prefetchCategory = (slug: string) => {
     router.prefetch(`/vendors?category=${encodeURIComponent(slug)}`);
@@ -85,6 +91,25 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
     const safe = categories ?? [];
     return expanded ? safe : safe;
   }, [categories, expanded]);
+
+  const isCategoryActive = (slug: string) => {
+    const normalizedSlug = slug.trim().toLowerCase();
+    // Show pending state immediately when clicked
+    if (pendingCategory === normalizedSlug) return true;
+    // Fall back to URL state
+    return activeCategory === normalizedSlug;
+  };
+
+  const handleCategoryClick = (e: React.MouseEvent, slug: string, isActive: boolean) => {
+    e.preventDefault();
+    if (isActive) {
+      setPendingCategory(null);
+      router.push("/vendors", { scroll: false });
+    } else {
+      setPendingCategory(slug.trim().toLowerCase());
+      router.push(`/vendors?category=${encodeURIComponent(slug)}`, { scroll: false });
+    }
+  };
 
   return (
     <section className="mt-8 sm:mt-10 lg:mt-14">
@@ -111,23 +136,17 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
           <div className="grid gap-3 sm:gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
             {items.map((c) => (
               (() => {
-                const isActive = activeCategory === (c.slug ?? "").trim().toLowerCase();
+                const isActive = isCategoryActive(c.slug);
+                const isPending = pendingCategory === (c.slug ?? "").trim().toLowerCase();
                 return (
               <a
                 key={c.id}
                 href={`/vendors?category=${encodeURIComponent(c.slug)}`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (isActive) {
-                    router.push("/vendors", { scroll: false });
-                  } else {
-                    router.push(`/vendors?category=${encodeURIComponent(c.slug)}`, { scroll: false });
-                  }
-                }}
+                onClick={(e) => handleCategoryClick(e, c.slug, isActive)}
                 onMouseEnter={() => !isActive && prefetchCategory(c.slug)}
                 className={
                   isActive
-                    ? "group rounded-lg bg-[#a68b6a]/10 shadow-sm transition-all px-3 py-3 text-center min-h-24 touch-manipulation"
+                    ? `group rounded-lg bg-[#a68b6a]/10 shadow-sm transition-all px-3 py-3 text-center min-h-24 touch-manipulation ${isPending ? "opacity-70 animate-pulse" : ""}`
                     : "group rounded-lg bg-white shadow-sm hover:shadow-md transition-all px-3 py-3 text-center min-h-24 touch-manipulation"
                 }
                 aria-label={`Browse ${c.name}`}
@@ -166,23 +185,17 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
             >
               {items.map((c) => (
                 (() => {
-                  const isActive = activeCategory === (c.slug ?? "").trim().toLowerCase();
+                  const isActive = isCategoryActive(c.slug);
+                  const isPending = pendingCategory === (c.slug ?? "").trim().toLowerCase();
                   return (
                 <a
                   key={c.id}
                   href={`/vendors?category=${encodeURIComponent(c.slug)}`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    if (isActive) {
-                      router.push("/vendors", { scroll: false });
-                    } else {
-                      router.push(`/vendors?category=${encodeURIComponent(c.slug)}`, { scroll: false });
-                    }
-                  }}
+                  onClick={(e) => handleCategoryClick(e, c.slug, isActive)}
                   onMouseEnter={() => !isActive && prefetchCategory(c.slug)}
                   className={
                     isActive
-                      ? "group shrink-0 rounded-lg bg-[#a68b6a]/10 shadow-sm transition-all px-3 py-3 text-center w-[calc(45vw-1rem)] max-w-[180px] min-h-24 snap-start touch-manipulation"
+                      ? `group shrink-0 rounded-lg bg-[#a68b6a]/10 shadow-sm transition-all px-3 py-3 text-center w-[calc(45vw-1rem)] max-w-[180px] min-h-24 snap-start touch-manipulation ${isPending ? "opacity-70 animate-pulse" : ""}`
                       : "group shrink-0 rounded-lg bg-white shadow-sm hover:shadow-md transition-all px-3 py-3 text-center w-[calc(45vw-1rem)] max-w-[180px] min-h-24 snap-start touch-manipulation"
                   }
                   aria-label={`Browse ${c.name}`}

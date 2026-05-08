@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { createSupabaseBrowserClient } from "@/lib/supabaseBrowser";
 import { useVendorSpeculation } from "@/hooks/useVendorSpeculation";
 import { useSmartPrefetch, prefetchOnHover } from "@/hooks/useSmartPrefetch";
+import { useSavedVendors } from "./SavedVendorsProvider";
 import type { VendorCardVendor } from "../types";
 
 type Props = {
@@ -23,9 +24,10 @@ function proxiedImageUrl(url: string | null | undefined) {
 }
 
 export default function VendorCard({ vendor, toneSeed, fixedHeight, featured }: Props) {
-  const [isSaved, setIsSaved] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { savedVendorIds, toggleSavedVendor } = useSavedVendors();
+  const isSaved = savedVendorIds.has(vendor.id);
   const { onMouseEnter: onSpeculationEnter } = useVendorSpeculation(vendor.slug);
   const { prefetchVendor } = useSmartPrefetch();
   
@@ -59,27 +61,6 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight, featured }: 
     ? "h-[240px] rounded-xl border border-black/5 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] overflow-hidden flex flex-col hover:shadow-[0_10px_25px_rgba(0,0,0,0.08),0_4px_10px_rgba(0,0,0,0.04)] hover:scale-[1.01] transition-all duration-300"
     : "block rounded-xl border border-black/5 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] overflow-hidden hover:shadow-[0_10px_25px_rgba(0,0,0,0.08),0_4px_10px_rgba(0,0,0,0.04)] hover:scale-[1.01] transition-all duration-300 cursor-pointer";
 
-  useEffect(() => {
-    const checkSavedStatus = async () => {
-      const supabase = createSupabaseBrowserClient();
-      const { data: { session } } = await supabase.auth.getSession();
-      const token = session?.access_token ?? "";
-      
-      if (!token) return;
-      
-      const res = await fetch(`/api/saved-vendors?vendorId=${vendor.id}`, {
-        method: "PATCH",
-        headers: { authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      if (data.isSaved) {
-        setIsSaved(true);
-      }
-    };
-    
-    checkSavedStatus();
-  }, [vendor.id]);
-
   const handleSaveClick = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -94,14 +75,16 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight, featured }: 
     }
     
     setIsLoading(true);
-    
+
+    // Optimistic update
+    toggleSavedVendor(vendor.id, !isSaved);
+
     try {
       if (isSaved) {
         await fetch(`/api/saved-vendors?vendorId=${vendor.id}`, {
           method: "DELETE",
           headers: { authorization: `Bearer ${token}` },
         });
-        setIsSaved(false);
       } else {
         await fetch("/api/saved-vendors", {
           method: "POST",
@@ -111,10 +94,11 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight, featured }: 
           },
           body: JSON.stringify({ vendorId: vendor.id }),
         });
-        setIsSaved(true);
       }
     } catch (error) {
       console.error("Error saving vendor:", error);
+      // Revert optimistic update on error
+      toggleSavedVendor(vendor.id, isSaved);
     } finally {
       setIsLoading(false);
     }

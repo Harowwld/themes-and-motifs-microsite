@@ -20,6 +20,42 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 
     const supabase = createSupabaseAdminClient();
 
+    // Fetch existing images to identify which ones are being removed
+    const { data: existingImages, error: fetchErr } = await supabase
+      .from("vendor_images")
+      .select("image_url")
+      .eq("vendor_id", vendorId);
+
+    if (fetchErr) {
+      console.error("Error fetching existing vendor images:", fetchErr);
+    }
+
+    // Identify images being removed (exist in DB but not in new list)
+    const newUrls = new Set(images.map((img: any) => img.image_url?.trim()).filter(Boolean));
+    const imagesToDeleteFromStorage: string[] = [];
+
+    if (existingImages) {
+      for (const img of existingImages) {
+        if (img.image_url && !newUrls.has(img.image_url)) {
+          // This image is being removed
+          try {
+            const url = new URL(img.image_url);
+            const pathMatch = url.pathname.match(/\/(gallery|logos|promos)\/(.+)$/);
+            if (pathMatch) {
+              imagesToDeleteFromStorage.push(`${pathMatch[1]}/${pathMatch[2]}`);
+            }
+          } catch {
+            if (img.image_url.includes("/gallery/") || img.image_url.includes("/logos/") || img.image_url.includes("/promos/")) {
+              const pathMatch = img.image_url.match(/(gallery|logos|promos)\/.+$/);
+              if (pathMatch) {
+                imagesToDeleteFromStorage.push(pathMatch[0]);
+              }
+            }
+          }
+        }
+      }
+    }
+
     // Delete existing images for this vendor
     await supabase.from("vendor_images").delete().eq("vendor_id", vendorId);
 
@@ -50,6 +86,17 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
       .select("id, image_url, caption, is_cover, display_order, focus_x, focus_y, zoom")
       .eq("vendor_id", vendorId)
       .order("display_order", { ascending: true });
+
+    // Delete removed images from Supabase Storage after successful DB operations
+    if (imagesToDeleteFromStorage.length > 0) {
+      const { error: storageError } = await supabase.storage
+        .from("vendor-assets")
+        .remove(imagesToDeleteFromStorage);
+
+      if (storageError) {
+        console.error("Failed to delete some vendor images from storage:", storageError);
+      }
+    }
 
     return Response.json({ images: updatedImages ?? [] }, { status: 200 });
   } catch (e: any) {

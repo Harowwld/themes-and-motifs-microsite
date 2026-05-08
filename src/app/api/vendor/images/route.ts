@@ -53,6 +53,42 @@ export async function PUT(req: Request) {
       return NextResponse.json({ error: "Cover photo is required." }, { status: 400 });
     }
 
+    // Fetch existing images to identify which ones are being removed
+    const { data: existingImages, error: fetchErr } = await supabase
+      .from("vendor_images")
+      .select("image_url")
+      .eq("vendor_id", vendor.id);
+
+    if (fetchErr) {
+      console.error("[API/vendor/images] Error fetching existing images:", fetchErr);
+    }
+
+    // Identify images being removed (exist in DB but not in new list)
+    const newUrls = new Set(normalized.map((x) => x.url));
+    const imagesToDeleteFromStorage: string[] = [];
+
+    if (existingImages) {
+      for (const img of existingImages) {
+        if (img.image_url && !newUrls.has(img.image_url)) {
+          // This image is being removed
+          try {
+            const url = new URL(img.image_url);
+            const pathMatch = url.pathname.match(/\/(gallery|logos)\/(.+)$/);
+            if (pathMatch) {
+              imagesToDeleteFromStorage.push(`${pathMatch[1]}/${pathMatch[2]}`);
+            }
+          } catch {
+            if (img.image_url.includes("/gallery/") || img.image_url.includes("/logos/")) {
+              const pathMatch = img.image_url.match(/(gallery|logos)\/.+$/);
+              if (pathMatch) {
+                imagesToDeleteFromStorage.push(pathMatch[0]);
+              }
+            }
+          }
+        }
+      }
+    }
+
     const { error: delErr } = await supabase.from("vendor_images").delete().eq("vendor_id", vendor.id);
     if (delErr) return NextResponse.json({ error: delErr.message }, { status: 500 });
 
@@ -83,6 +119,17 @@ export async function PUT(req: Request) {
       .order("display_order", { ascending: true });
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+    // Delete removed images from Supabase Storage after successful DB operations
+    if (imagesToDeleteFromStorage.length > 0) {
+      const { error: storageError } = await supabase.storage
+        .from("vendor-assets")
+        .remove(imagesToDeleteFromStorage);
+
+      if (storageError) {
+        console.error("[API/vendor/images] Failed to delete some images from storage:", storageError);
+      }
+    }
 
     return NextResponse.json({ images: data ?? [] }, { status: 200 });
   } catch (e: any) {

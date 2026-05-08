@@ -219,10 +219,54 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: "Invalid id" }, { status: 400 });
     }
 
+    // Fetch promo to get image URL for storage cleanup
+    const { data: promo, error: fetchErr } = await supabase
+      .from("promos")
+      .select("image_url")
+      .eq("id", id)
+      .eq("vendor_id", vendor.id)
+      .single();
+
+    if (fetchErr && fetchErr.code !== "PGRST116") {
+      console.error("Error fetching promo for deletion:", fetchErr);
+    }
+
+    // Delete from DB first
     const { error } = await supabase.from("promos").delete().eq("id", id).eq("vendor_id", vendor.id);
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    // Delete promo image from storage after successful DB deletion
+    if (promo?.image_url) {
+      try {
+        const url = new URL(promo.image_url);
+        const pathMatch = url.pathname.match(/\/(promos)\/(.+)$/);
+        if (pathMatch) {
+          const storagePath = `${pathMatch[1]}/${pathMatch[2]}`;
+          const { error: storageError } = await supabase.storage
+            .from("promo-assets")
+            .remove([storagePath]);
+
+          if (storageError) {
+            console.error("Failed to delete promo image from storage:", storageError);
+          }
+        }
+      } catch {
+        if (promo.image_url.includes("/promos/")) {
+          const pathMatch = promo.image_url.match(/promos\/.+$/);
+          if (pathMatch) {
+            const { error: storageError } = await supabase.storage
+              .from("promo-assets")
+              .remove([pathMatch[0]]);
+
+            if (storageError) {
+              console.error("Failed to delete promo image from storage:", storageError);
+            }
+          }
+        }
+      }
     }
 
     return NextResponse.json({ ok: true }, { status: 200 });

@@ -133,7 +133,7 @@ export async function DELETE(
     // Extract token from Authorization header
     const auth = request.headers.get("authorization") ?? "";
     const token = auth.toLowerCase().startsWith("bearer ") ? auth.slice(7).trim() : "";
-    
+
     const supabase = createSupabaseServerClient(token);
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
@@ -143,10 +143,10 @@ export async function DELETE(
 
     const { momentId } = await params;
 
-    // First check if user owns this moment
+    // Fetch moment with photos to get storage paths for cleanup
     const { data: existingMoment, error: fetchError } = await supabase
       .from("wedding_moments")
-      .select("id, user_id")
+      .select("id, user_id, moment_photos(id, image_url)")
       .eq("id", momentId)
       .single();
 
@@ -158,6 +158,30 @@ export async function DELETE(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
+    // Extract storage paths from photo URLs for cleanup
+    const photos = (existingMoment as any).moment_photos || [];
+    const storagePaths: string[] = [];
+
+    for (const photo of photos) {
+      if (photo.image_url) {
+        try {
+          const url = new URL(photo.image_url);
+          const pathMatch = url.pathname.match(/\/moments\/(.+)$/);
+          if (pathMatch) {
+            storagePaths.push(`moments/${pathMatch[1]}`);
+          }
+        } catch {
+          if (photo.image_url.includes('moments/')) {
+            const pathMatch = photo.image_url.match(/moments\/.+$/);
+            if (pathMatch) {
+              storagePaths.push(pathMatch[0]);
+            }
+          }
+        }
+      }
+    }
+
+    // Delete moment from DB first (cascades to moment_photos via foreign key)
     const { error } = await supabase
       .from("wedding_moments")
       .delete()
@@ -166,6 +190,18 @@ export async function DELETE(
     if (error) {
       console.error("Error deleting moment:", error);
       return NextResponse.json({ error: "Failed to delete moment" }, { status: 500 });
+    }
+
+    // Delete files from Supabase Storage after successful DB deletion
+    if (storagePaths.length > 0) {
+      const { error: storageError } = await supabase.storage
+        .from("user-assets")
+        .remove(storagePaths);
+
+      if (storageError) {
+        console.error("Failed to delete some photos from storage:", storageError);
+        // Storage cleanup failure doesn't affect the response since DB is already consistent
+      }
     }
 
     return NextResponse.json({ success: true });

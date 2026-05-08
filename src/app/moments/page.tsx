@@ -37,13 +37,15 @@ type Moment = {
   }>;
 };
 
-function MomentCard({ moment, onDelete }: { moment: Moment; onDelete: (id: string) => void }) {
+function MomentCard({ moment, onDelete, onRequestDelete }: { moment: Moment; onDelete: (id: string) => void; onRequestDelete: (moment: Moment) => void }) {
   const router = useRouter();
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  const handleDelete = async () => {
-    if (!confirm("Are you sure you want to delete this moment?")) return;
-    
+  const handleDeleteRequest = () => {
+    onRequestDelete(moment);
+  };
+
+  const handleDeleteConfirm = async () => {
     setDeletingId(moment.id);
     try {
       const token = (await createSupabaseBrowserClient().auth.getSession()).data.session?.access_token;
@@ -210,7 +212,7 @@ function MomentCard({ moment, onDelete }: { moment: Moment; onDelete: (id: strin
           </div>
           {isOwner && (
             <button
-              onClick={handleDelete}
+              onClick={handleDeleteRequest}
               disabled={deletingId === moment.id}
               className="text-[#b42318] hover:text-[#9a1d14] transition-colors text-sm"
             >
@@ -261,6 +263,10 @@ export default function MomentsPage() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "private" | "public">("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
+
+  // Delete modal state
+  const [momentToDelete, setMomentToDelete] = useState<Moment | null>(null);
+  const [deletingMomentId, setDeletingMomentId] = useState<string | null>(null);
 
   const fetchMoments = useCallback(async () => {
     try {
@@ -463,7 +469,7 @@ export default function MomentsPage() {
           <div className="max-w-2xl mx-auto">
             <div className="space-y-6">
               {moments.map((moment) => (
-                <MomentCard key={moment.id} moment={moment} onDelete={handleDeleteMoment} />
+                <MomentCard key={moment.id} moment={moment} onDelete={handleDeleteMoment} onRequestDelete={setMomentToDelete} />
               ))}
             </div>
           </div>

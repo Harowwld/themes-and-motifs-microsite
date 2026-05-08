@@ -3,7 +3,7 @@ import { unstable_cache } from "next/cache";
 import { createSupabaseServerClient } from "../../lib/supabaseServer";
 import CategoryBrowser from "../components/CategoryBrowser";
 import VendorsSearchBar from "./VendorsSearchBar";
-import VirtualizedVendorsList from "./VirtualizedVendorsList";
+import VendorsListWithSaved from "./VendorsListWithSaved";
 import VendorsScrollToResults from "./VendorsScrollToResults";
 import { attachCoverImages } from "../../features/vendors/coverImages.server";
 import type { VendorListItem } from "../../features/vendors/types";
@@ -271,7 +271,7 @@ async function VendorsPageData({
       <CategoryBrowser categories={categoriesList} />
 
       <div id="vendors-results" />
-      <VirtualizedVendorsList
+      <VendorsListWithSaved
         initialVendors={vendorPageItemsSorted as any}
         initialPage={1}
         hasMore={hasMore}
