@@ -304,13 +304,13 @@ async function VendorDetailData({ slug }: { slug: string }) {
                   <span>{vendor.business_name}</span>
                   {isPremium ? (
                     <span
-                      className="inline-flex items-center justify-center h-5 w-5"
+                      className="inline-flex items-center justify-center h-6 w-6"
                       title="Verified Premium Vendor"
                       aria-label="Verified Premium Vendor"
                     >
                       <img
-                        src="/Icons/hd-blue-badge-verified-tick-mark-png-704081694710438adyvtbqafw.png"
-                        alt="Verified"
+                        src="/cropped-vecteezy_verification-badge-set-guaranteed-stamp-or-verified-badge_23900241.svg"
+                        alt="Verified Premium Vendor"
                         className="h-full w-full"
                         loading="lazy"
                         decoding="async"
@@ -320,6 +320,21 @@ async function VendorDetailData({ slug }: { slug: string }) {
                   ) : null}
                 </span>
               </h1>
+
+              {/* Category Pills */}
+              {categories.length > 0 ? (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {categories.map((c) => (
+                    <a
+                      key={c.id}
+                      className="inline-flex items-center rounded-full border border-[#a68b6a]/25 bg-white px-3.5 py-1.5 text-[12px] font-medium text-[#6e4f33] hover:bg-[#fffaf5] transition-all duration-300 shadow-sm hover:shadow-md"
+                      href={`/vendors?category=${encodeURIComponent(c.slug)}`}
+                    >
+                      {c.name}
+                    </a>
+                  ))}
+                </div>
+              ) : null}
 
               <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1 text-[14px] text-black/55">
                 {location ? (
@@ -339,25 +354,15 @@ async function VendorDetailData({ slug }: { slug: string }) {
                 {affiliations.length > 0 ? (
                   <span className="flex items-center gap-1.5">
                     <span className="text-black/40">·</span>
-                    <span className="text-black/55">affiliated with {affiliations.map(a => a.name).join(" · ")}</span>
+                    <span className="inline-flex items-center gap-1 text-[#a68b6a]">
+                      <svg className="h-4 w-4" viewBox="0 0 256 256" fill="currentColor">
+                        <path d="M254.3,107.91,228.78,56.85a16,16,0,0,0-21.47-7.15L182.44,62.13,130.05,48.27a8.14,8.14,0,0,0-4.1,0L73.56,62.13,48.69,49.7a16,16,0,0,0-21.47,7.15L1.7,107.9a16,16,0,0,0,7.15,21.47l27,13.51,55.49,39.63a8.06,8.06,0,0,0,2.71,1.25l64,16a8,8,0,0,0,7.6-2.1l55.07-55.08,26.42-13.21a16,16,0,0,0,7.15-21.46Zm-54.89,33.37L165,113.72a8,8,0,0,0-10.68.61C136.51,132.27,116.66,130,104,122L147.24,80h31.81l27.21,54.41ZM41.53,64,62,74.22,36.43,125.27,16,115.06Zm116,119.13L99.42,168.61l-49.2-35.14,28-56L128,64.28l9.8,2.59-45,43.68-.08.09a16,16,0,0,0,2.72,24.81c20.56,13.13,45.37,11,64.91-5L188,152.66Zm62-57.87-25.52-51L214.47,64,240,115.06Zm-87.75,92.67a8,8,0,0,1-7.75,6.06,8.13,8.13,0,0,1-1.95-.24L80.41,213.33a7.89,7.89,0,0,1-2.71-1.25L51.35,193.26a8,8,0,0,1,9.3-13l25.11,17.94L126,208.24A8,8,0,0,1,131.82,217.94Z"/>
+                      </svg>
+                    </span>
+                    <span className="text-black/55">{affiliations.map(a => a.name).join(" · ")}</span>
                   </span>
                 ) : null}
               </div>
-
-              {/* Category Pills */}
-              {categories.length > 0 ? (
-                <div className="mt-5 flex flex-wrap gap-2">
-                  {categories.map((c) => (
-                    <a
-                      key={c.id}
-                      className="inline-flex items-center rounded-full border border-[#a68b6a]/25 bg-white px-3.5 py-1.5 text-[12px] font-medium text-[#6e4f33] hover:bg-[#fffaf5] transition-all duration-300 shadow-sm hover:shadow-md"
-                      href={`/vendors?category=${encodeURIComponent(c.slug)}`}
-                    >
-                      {c.name}
-                    </a>
-                  ))}
-                </div>
-              ) : null}
 
             </div>
           </div>
@@ -387,7 +392,7 @@ async function VendorDetailData({ slug }: { slug: string }) {
                   <p className="mt-1 text-[13px] text-black/55">Promos and marketplace deals from this vendor.</p>
                   <div className="mt-4 grid gap-3">
                     {promos.map((p) => (
-                      <div key={p.id} className="rounded-md border-2 border-dashed border-[#c17a4e]/40 bg-linear-to-br from-[#fff7ed] to-white overflow-hidden relative">
+                      <a key={p.id} href={`/promos/${p.id}`} className="block rounded-md border-2 border-dashed border-[#c17a4e]/40 bg-linear-to-br from-[#fff7ed] to-white overflow-hidden relative hover:shadow-md transition-shadow">
                         {/* Promo Badge */}
                         <div className="absolute top-0 left-0 z-10">
                           <div className="bg-[#c17a4e] text-white text-[10px] font-bold px-2.5 py-0.5 rounded-br-md">
@@ -395,11 +400,11 @@ async function VendorDetailData({ slug }: { slug: string }) {
                           </div>
                         </div>
 
-                        <div className="flex">
+                        <div className="flex min-w-0">
                           {/* Left: Image */}
                           {p.image_url ? (
-                            <div className="w-24 sm:w-28 shrink-0 relative overflow-hidden">
-                              <div className="h-full min-h-25">
+                            <div className="w-20 sm:w-24 md:w-28 shrink-0 relative overflow-hidden">
+                              <div className="h-full min-h-20 sm:min-h-24">
                                 <img
                                   src={proxiedImageUrl(p.image_url)}
                                   alt=""
@@ -418,12 +423,12 @@ async function VendorDetailData({ slug }: { slug: string }) {
                           ) : null}
 
                           {/* Right: Content */}
-                          <div className="flex-1 p-3.5">
+                          <div className="flex-1 p-2.5 sm:p-3.5 min-w-0">
                             <div className="text-[11px] font-semibold text-[#a67c52] uppercase tracking-wide">
                               Exclusive Deal
                             </div>
 
-                            <div className="mt-0.5 text-[14px] font-bold text-[#2c2c2c] leading-tight">
+                            <div className="mt-0.5 text-[14px] font-bold text-[#2c2c2c] leading-tight line-clamp-2">
                               {p.title}
                             </div>
 
@@ -454,10 +459,10 @@ async function VendorDetailData({ slug }: { slug: string }) {
                               </div>
                             ) : null}
 
-                            {p.terms ? <div className="mt-2 text-[11px] leading-5 text-black/50 whitespace-pre-line">{p.terms}</div> : null}
+                            {p.terms ? <div className="mt-2 text-[11px] leading-5 text-black/50 whitespace-pre-line line-clamp-3">{p.terms}</div> : null}
                           </div>
                         </div>
-                      </div>
+                      </a>
                     ))}
                   </div>
                 </div>

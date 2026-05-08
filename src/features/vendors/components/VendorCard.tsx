@@ -198,13 +198,13 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight, featured }: 
           <span className="truncate">{vendor.business_name}</span>
           {isPremium ? (
             <span
-              className="inline-flex items-center justify-center h-3.75 w-3.75 shrink-0"
+              className="inline-flex items-center justify-center h-5 w-5 shrink-0"
               title="Verified Premium Vendor"
               aria-label="Verified Premium Vendor"
             >
               <img
-                src="/Icons/hd-blue-badge-verified-tick-mark-png-704081694710438adyvtbqafw.png"
-                alt="Verified"
+                src="/cropped-vecteezy_verification-badge-set-guaranteed-stamp-or-verified-badge_23900241.svg"
+                alt="Verified Premium Vendor"
                 className="h-full w-full"
                 loading="lazy"
                 decoding="async"

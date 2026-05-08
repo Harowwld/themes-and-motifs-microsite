@@ -50,7 +50,7 @@ function preloadVendorAssets() {
     requestIdleCallback(() => {
       // Preload common vendor detail images/styles
       const preloadLinks = [
-        { rel: "prefetch", href: "/Icons/hd-blue-badge-verified-tick-mark-png-704081694710438adyvtbqafw.png" },
+        { rel: "prefetch", href: "/cropped-vecteezy_verification-badge-set-guaranteed-stamp-or-verified-badge_23900241.svg" },
       ];
 
       preloadLinks.forEach(({ rel, href }) => {

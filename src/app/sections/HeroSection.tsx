@@ -230,12 +230,15 @@ export default function HeroSection({
         </div>
 
         <h1 className="mt-4 sm:mt-5 text-[32px] leading-[1.08] sm:text-[38px] sm:leading-[1.06] lg:text-[52px] font-medium tracking-[-0.02em] text-white">
-          Build your Wedding Dream Team - Fast!
-          <span className="block text-white/80 italic">Choose trusted professionals nationwide.</span>
+          Build your Wedding Dream Team.
+          {/* <span className="block text-white/80 italic">From the Philippines’ most trusted wedding platform.</span> */}
+        </h1>
+        <h1 className="text-2xl block text-white/80 italic">
+        From the Philippines’ most trusted wedding platform.
         </h1>
 
         <p className="mt-3 sm:mt-4 max-w-xl text-[14px] sm:text-[15px] lg:text-[16px] leading-6 sm:leading-7 text-white/75 font-[family-name:var(--font-plus-jakarta)]">
-          Choose from 1,000+ verified wedding vendors with real couple reviews & exclusive promos.
+          Plan with confidence—connect with verified vendors across the Philippines, with real couple reviews and exclusive offers.
         </p>
 
         <div className="mt-5 sm:mt-6 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
@@ -252,7 +255,7 @@ export default function HeroSection({
             className="h-11 inline-flex items-center justify-center px-5 rounded-md border border-white/30 bg-white/10 backdrop-blur-sm text-white text-[14px] font-medium hover:bg-white/20 transition-colors touch-manipulation"
             href="/vendors/plans"
           >
-            Become a vendor
+            Be a verified vendor
           </a>
         </div>
 

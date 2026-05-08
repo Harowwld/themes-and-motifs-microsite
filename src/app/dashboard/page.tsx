@@ -71,8 +71,8 @@ function VendorCard({ vendor, onRemove }: { vendor: SavedVendor["vendor"]; onRem
           <div className="flex items-center gap-1 text-[14px] sm:text-[15px] font-semibold text-neutral-800 leading-5 line-clamp-1 mb-1 font-[family-name:var(--font-plus-jakarta)]">
             <span className="truncate">{vendor.business_name}</span>
             {isPremium ? (
-              <span className="inline-flex items-center justify-center h-3.75 w-3.75 shrink-0" title="Verified Premium Vendor">
-                <img src="/Icons/hd-blue-badge-verified-tick-mark-png-704081694710438adyvtbqafw.png" alt="Verified" className="h-full w-full" loading="lazy" draggable={false} />
+              <span className="inline-flex items-center justify-center h-5 w-5 shrink-0" title="Verified Premium Vendor">
+                <img src="/cropped-vecteezy_verification-badge-set-guaranteed-stamp-or-verified-badge_23900241.svg" alt="Verified Premium Vendor" className="h-full w-full" loading="lazy" draggable={false} />
               </span>
             ) : null}
           </div>
