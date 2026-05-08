@@ -6,6 +6,7 @@ import FeaturedVendorsSection from "../features/vendors/sections/FeaturedVendors
 import PromosSection from "./sections/PromosSection";
 import VendorsSection from "../features/vendors/sections/VendorsSection";
 import { attachCoverImages, attachAffiliations } from "../features/vendors/coverImages.server";
+import SavedVendorsProvider from "../features/vendors/components/SavedVendorsProvider";
 import type { FeaturedVendor, VendorListItem } from "../features/vendors/types";
 import { getCachedVendorLocations } from "../lib/vendorUtils";
 import ScrollToTopOnMount from "./components/ScrollToTopOnMount";
@@ -217,6 +218,8 @@ async function LandingVendorsDirect({ page, pageSize, sort }: { page: number; pa
   const pageSorted = sortWithImagesFirst(allWithCovers as any);
 
   return (
-    <VendorsSection vendors={pageSorted as any} total={vendorTotalCount} page={page} pageSize={pageSize} sort={sort} />
+    <SavedVendorsProvider>
+      <VendorsSection vendors={pageSorted as any} total={vendorTotalCount} page={page} pageSize={pageSize} sort={sort} />
+    </SavedVendorsProvider>
   );
 }

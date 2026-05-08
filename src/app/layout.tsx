@@ -60,13 +60,6 @@ export default function RootLayout({
             </ScrollContainer>
           </PageCacheProvider>
         </Providers>
-        {/* instant.page - Hover prefetching for Safari/Firefox */}
-        <Script
-          src="//instant.page/5.2.0"
-          type="module"
-          strategy="lazyOnload"
-          integrity="sha384-jnZyxPjiipYXnSU0ygqeac2q7CVYMbh84q0uHVRRxEtvFPiQYbXWUog+aSTojFNFj"
-        />
       </body>
     </html>
   );
