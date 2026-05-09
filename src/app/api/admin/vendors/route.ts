@@ -91,7 +91,7 @@ export async function PATCH(req: Request) {
     if (typeof is_active === "boolean") patch.is_active = is_active;
     if (typeof is_featured === "boolean") patch.is_featured = is_featured;
     if (typeof plan_id === "number" || plan_id === null) patch.plan_id = plan_id;
-    if (typeof verified_status === "string" && ["pending", "verified", "rejected"].includes(verified_status)) {
+    if (typeof verified_status === "boolean") {
       patch.verified_status = verified_status;
     }
 

@@ -81,7 +81,7 @@ export async function PATCH(req: Request) {
           const allApproved = requiredDocs.every((d) => approvedDocs.has(d));
           await supabase
             .from("vendors")
-            .update({ document_verified: allApproved })
+            .update({ document_verified: allApproved ? "verified" : "pending" })
             .eq("id", vendorId);
         }
       } else if (regId) {

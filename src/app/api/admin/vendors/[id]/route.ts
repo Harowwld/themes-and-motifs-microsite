@@ -71,12 +71,12 @@ const FIELD_VALIDATORS: Record<string, (val: unknown) => { valid: boolean; value
     return { valid: true, value: val };
   },
   verified_status: (val) => {
-    if (typeof val !== "string") return { valid: false, error: "verified_status must be a string" };
-    if (!["pending", "verified", "community_listed", "rejected"].includes(val)) return { valid: false, error: "verified_status must be pending, verified, community_listed, or rejected" };
+    if (typeof val !== "boolean") return { valid: false, error: "verified_status must be a boolean" };
     return { valid: true, value: val };
   },
   document_verified: (val) => {
-    if (typeof val !== "boolean") return { valid: false, error: "document_verified must be a boolean" };
+    if (typeof val !== "string") return { valid: false, error: "document_verified must be a string" };
+    if (!["pending", "verified", "approved", "rejected"].includes(val)) return { valid: false, error: "document_verified must be pending, verified, approved, or rejected" };
     return { valid: true, value: val };
   },
 };
@@ -215,8 +215,8 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
         isPremium = planName.includes("premium");
       }
 
-      // Set verified_status: verified if premium, pending if not premium
-      patch.verified_status = isPremium ? "verified" : "pending";
+      // Set verified_status: true if premium, false if not premium
+      patch.verified_status = isPremium ? true : false;
     }
 
     const { data, error } = await supabase

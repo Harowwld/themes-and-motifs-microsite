@@ -36,7 +36,8 @@ type Vendor = {
   contact_phone?: string | null;
   website_url?: string | null;
   logo_url?: string | null;
-  verified_status?: string | null;
+  verified_status?: boolean | null;
+  document_verified?: string | null;
 };
 
 type VendorImage = {
@@ -159,7 +160,8 @@ export default function SuperadminVendorsPage() {
     contact_phone: "",
     website_url: "",
     logo_url: "",
-    verified_status: "",
+    verified_status: false,
+    document_verified: "pending",
   });
   const [editImages, setEditImages] = useState<VendorImage[]>([]);
   const [editSocials, setEditSocials] = useState<VendorSocial[]>([]);
@@ -276,7 +278,8 @@ export default function SuperadminVendorsPage() {
         contact_phone: v.contact_phone ?? "",
         website_url: v.website_url ?? "",
         logo_url: v.logo_url ?? "",
-        verified_status: v.verified_status ?? "",
+        verified_status: v.verified_status ?? false,
+        document_verified: v.document_verified ?? "pending",
       });
 
       const normalizedImgs = (res.images ?? []).map((img: any, idx: number) => ({
@@ -365,7 +368,8 @@ export default function SuperadminVendorsPage() {
           contact_phone: editForm.contact_phone || null,
           website_url: editForm.website_url || null,
           logo_url: editForm.logo_url || null,
-          verified_status: editForm.verified_status || null,
+          verified_status: editForm.verified_status,
+          document_verified: editForm.document_verified || null,
         }),
       });
 
@@ -846,19 +850,24 @@ export default function SuperadminVendorsPage() {
                       className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]"
                     />
                   </label>
-                  <label className="grid gap-1.5 sm:col-span-2">
-                    <span className="text-[12px] font-semibold text-black/55">About Us</span>
-                    <div className="relative">
-                      <textarea
-                        value={editForm.description}
-                        onChange={(e) => setEditForm((f) => ({ ...f, description: e.target.value.slice(0, 300) }))}
-                        rows={3}
-                        maxLength={300}
-                        className="rounded-[3px] border border-black/10 px-3 py-2 text-[13px] pr-14 break-words"
-                      />
-                      <span className="absolute bottom-2 right-3 text-[11px] text-black/40">{(editForm.description?.length ?? 0)}/300</span>
-                    </div>
-                  </label>
+                </div>
+
+                {/* About Us - Full Width */}
+                <label className="grid gap-1.5">
+                  <span className="text-[12px] font-semibold text-black/55">About Us</span>
+                  <div className="relative">
+                    <textarea
+                      value={editForm.description}
+                      onChange={(e) => setEditForm((f) => ({ ...f, description: e.target.value.slice(0, 300) }))}
+                      rows={3}
+                      maxLength={300}
+                      className="rounded-[3px] border border-black/10 px-3 py-2 text-[13px] pr-14 break-words w-full"
+                    />
+                    <span className="absolute bottom-2 right-3 text-[11px] text-black/40">{(editForm.description?.length ?? 0)}/300</span>
+                  </div>
+                </label>
+
+                <div className="grid gap-4 sm:grid-cols-2">
                   <label className="grid gap-1.5">
                     <span className="text-[12px] font-semibold text-black/55">Location Text</span>
                     <input
@@ -957,14 +966,12 @@ export default function SuperadminVendorsPage() {
                   <label className="grid gap-1.5">
                     <span className="text-[12px] font-semibold text-black/55">Verified Status</span>
                     <select
-                      value={editForm.verified_status}
-                      onChange={(e) => setEditForm((f) => ({ ...f, verified_status: e.target.value }))}
+                      value={String(editForm.verified_status)}
+                      onChange={(e) => setEditForm((f) => ({ ...f, verified_status: e.target.value === "true" }))}
                       className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]"
                     >
-                      <option value="">(None)</option>
-                      <option value="pending">pending</option>
-                      <option value="verified">verified</option>
-                      <option value="rejected">rejected</option>
+                      <option value="false">Not Verified</option>
+                      <option value="true">Verified</option>
                     </select>
                   </label>
                 </div>
@@ -1329,22 +1336,22 @@ export default function SuperadminVendorsPage() {
 
               </section>
 
-              {/* Verification Section */}
+              {/* Document Verification Section */}
               <section className="grid gap-4">
                 <div className="text-[13px] font-semibold text-[#2c2c2c] border-b border-black/5 pb-2">
-                  Business Verification
+                  Document Verification
                 </div>
 
-                {/* Verification State Buttons */}
+                {/* Document Verification State Buttons */}
                 <div className="grid gap-3">
-                  <span className="text-[12px] font-semibold text-black/55">Verification Status</span>
+                  <span className="text-[12px] font-semibold text-black/55">Document Status</span>
                   <div className="flex flex-wrap gap-2">
                     {/* Verified Button */}
                     <button
                       type="button"
-                      onClick={() => setEditForm((f) => ({ ...f, verified_status: "verified" }))}
+                      onClick={() => setEditForm((f) => ({ ...f, document_verified: "verified" }))}
                       className={`inline-flex items-center gap-2 px-3 py-2 rounded-[3px] border text-[12px] font-semibold transition-colors ${
-                        editForm.verified_status === "verified"
+                        editForm.document_verified === "verified"
                           ? "border-blue-600/30 bg-blue-50 text-blue-600"
                           : "border-black/10 bg-white text-black/60 hover:bg-black/5"
                       }`}
@@ -1356,31 +1363,12 @@ export default function SuperadminVendorsPage() {
                       Verified
                     </button>
 
-                    {/* Community Listed Button */}
+                    {/* Pending Button */}
                     <button
                       type="button"
-                      onClick={() => setEditForm((f) => ({ ...f, verified_status: "community_listed" }))}
+                      onClick={() => setEditForm((f) => ({ ...f, document_verified: "pending" }))}
                       className={`inline-flex items-center gap-2 px-3 py-2 rounded-[3px] border text-[12px] font-semibold transition-colors ${
-                        editForm.verified_status === "community_listed"
-                          ? "border-blue-600/30 bg-blue-50 text-blue-600"
-                          : "border-black/10 bg-white text-black/60 hover:bg-black/5"
-                      }`}
-                    >
-                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                        <circle cx="9" cy="7" r="4" />
-                        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                      </svg>
-                      Community Listed
-                    </button>
-
-                    {/* Pending Verification Button */}
-                    <button
-                      type="button"
-                      onClick={() => setEditForm((f) => ({ ...f, verified_status: "pending" }))}
-                      className={`inline-flex items-center gap-2 px-3 py-2 rounded-[3px] border text-[12px] font-semibold transition-colors ${
-                        editForm.verified_status === "pending"
+                        editForm.document_verified === "pending"
                           ? "border-[#b54708]/30 bg-[#fff7ed] text-[#b54708]"
                           : "border-black/10 bg-white text-black/60 hover:bg-black/5"
                       }`}
@@ -1390,7 +1378,25 @@ export default function SuperadminVendorsPage() {
                         <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
                         <line x1="12" y1="17" x2="12.01" y2="17" />
                       </svg>
-                      Pending Verification
+                      Pending
+                    </button>
+
+                    {/* Rejected Button */}
+                    <button
+                      type="button"
+                      onClick={() => setEditForm((f) => ({ ...f, document_verified: "rejected" }))}
+                      className={`inline-flex items-center gap-2 px-3 py-2 rounded-[3px] border text-[12px] font-semibold transition-colors ${
+                        editForm.document_verified === "rejected"
+                          ? "border-[#b42318]/30 bg-[#fff1f3] text-[#b42318]"
+                          : "border-black/10 bg-white text-black/60 hover:bg-black/5"
+                      }`}
+                    >
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="15" y1="9" x2="9" y2="15" />
+                        <line x1="9" y1="9" x2="15" y2="15" />
+                      </svg>
+                      Rejected
                     </button>
                   </div>
                 </div>

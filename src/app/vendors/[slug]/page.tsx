@@ -36,8 +36,8 @@ type VendorRow = {
   average_rating: number | null;
   review_count: number | null;
   save_count: number | null;
-  verified_status: string | null;
-  document_verified: boolean | null;
+  verified_status: boolean | null;
+  document_verified: string | null;
   user_id: string | null;
   updated_at: string;
   plan?: { id: number; name: string } | { id: number; name: string }[] | null;
@@ -526,11 +526,11 @@ async function VendorDetailData({ slug }: { slug: string }) {
 
             {/* Sidebar */}
             <div className="grid gap-4 content-start">
-              {/* Business Verification */}
+              {/* Document Verification */}
               <div className="rounded-xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)]">
-                <h3 className="text-[14px] font-semibold text-[#2c2c2c]">Business Verification</h3>
+                <h3 className="text-[14px] font-semibold text-[#2c2c2c]">Document Verification</h3>
                 <div className="mt-3 flex items-center gap-2">
-                  {vendor.verified_status === "verified" ? (
+                  {vendor.document_verified === "verified" || vendor.document_verified === "approved" ? (
                     <>
                       <span className="inline-flex items-center justify-center h-5 w-5">
                         <img
@@ -540,19 +540,18 @@ async function VendorDetailData({ slug }: { slug: string }) {
                           loading="lazy"
                         />
                       </span>
-                      <span className="text-[13px] font-semibold text-blue-500">Verified</span>
+                      <span className="text-[13px] font-semibold text-blue-500">Documents Verified</span>
                     </>
-                  ) : vendor.verified_status === "community_listed" ? (
+                  ) : vendor.document_verified === "rejected" ? (
                     <>
-                      <span className="inline-flex items-center justify-center h-5 w-5">
-                        <img
-                          src="/cropped-vecteezy_verification-badge-set-guaranteed-stamp_or_verified-badge_23900241.svg"
-                          alt="Community Listed"
-                          className="h-full w-full"
-                          loading="lazy"
-                        />
+                      <span className="inline-flex h-5 w-5 items-center justify-center text-[#b42318]">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
+                          <circle cx="12" cy="12" r="10" />
+                          <line x1="15" y1="9" x2="9" y2="15" />
+                          <line x1="9" y1="9" x2="15" y2="15" />
+                        </svg>
                       </span>
-                      <span className="text-[13px] font-semibold text-blue-500">Community Listed</span>
+                      <span className="text-[13px] font-semibold text-[#b42318]">Documents Rejected</span>
                     </>
                   ) : (
                     <>
@@ -563,7 +562,7 @@ async function VendorDetailData({ slug }: { slug: string }) {
                           <line x1="12" y1="17" x2="12.01" y2="17" />
                         </svg>
                       </span>
-                      <span className="text-[13px] font-semibold text-[#b54708]">Pending Verification</span>
+                      <span className="text-[13px] font-semibold text-[#b54708]">Documents Pending</span>
                     </>
                   )}
                 </div>
