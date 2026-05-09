@@ -1,5 +1,15 @@
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import {
+  FaFacebookF,
+  FaInstagram,
+  FaXTwitter,
+  FaTiktok,
+  FaYoutube,
+  FaPinterestP,
+  FaGlobe,
+  FaLink,
+} from "react-icons/fa6";
 
 import { createSupabaseServerClient } from "../../../lib/supabaseServer";
 import VendorPhotosCarousel from "../../../features/vendors/components/VendorPhotosCarousel";
@@ -7,7 +17,6 @@ import ClaimVendorButton from "../../../features/vendors/components/ClaimVendorB
 import VendorContactCTA from "../../../features/vendors/components/VendorContactCTA";
 import SaveVendorCTA from "../../../features/vendors/components/SaveVendorCTA";
 import VendorReviewForm from "./VendorReviewForm";
-import FadeInOnView from "../../components/FadeInOnView";
 
 export const dynamic = "force-dynamic";
 
@@ -258,22 +267,19 @@ async function VendorDetailData({ slug }: { slug: string }) {
   return (
     <main className="pb-10 sm:pb-14">
       {/* Hero Section with Cover */}
-      <FadeInOnView>
-        <section className="relative">
-          <div
-            className="h-56 sm:h-72 w-full shadow-[0_4px_12px_rgba(0,0,0,0.08)]"
-            style={{
-              background: cover
-                ? `url(${coverUrl}) center/cover no-repeat`
-                : "linear-gradient(135deg, rgba(166,139,106,0.2), rgba(166,139,106,0.05))",
-            }}
-          />
-        </section>
-      </FadeInOnView>
+      <section className="relative">
+        <div
+          className="h-56 sm:h-72 w-full shadow-[0_4px_12px_rgba(0,0,0,0.08)]"
+          style={{
+            background: cover
+              ? `url(${coverUrl}) center/cover no-repeat`
+              : "linear-gradient(135deg, rgba(166,139,106,0.2), rgba(166,139,106,0.05))",
+          }}
+        />
+      </section>
 
       {/* Profile Header */}
-      <FadeInOnView>
-        <section className="relative -mt-20 sm:-mt-24 px-4 sm:px-6">
+      <section className="relative -mt-20 sm:-mt-24 px-4 sm:px-6">
           <div className="mx-auto max-w-4xl">
             <div className="flex items-end gap-4">
               {/* Logo */}
@@ -367,11 +373,9 @@ async function VendorDetailData({ slug }: { slug: string }) {
             </div>
           </div>
         </section>
-      </FadeInOnView>
 
       {/* Content Grid */}
-      <FadeInOnView>
-        <section className="mt-8 px-4 sm:px-6">
+      <section className="mt-8 px-4 sm:px-6">
           <div className="mx-auto max-w-4xl grid gap-6 lg:grid-cols-[1fr_320px] lg:gap-8">
             {/* Main Content */}
             <div className="grid gap-6">
@@ -526,23 +530,40 @@ async function VendorDetailData({ slug }: { slug: string }) {
               <div className="rounded-xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)]">
                 <h3 className="text-[14px] font-semibold text-[#2c2c2c]">Business Verification</h3>
                 <div className="mt-3 flex items-center gap-2">
-                  {vendor.document_verified === true ? (
+                  {vendor.verified_status === "verified" ? (
                     <>
-                      <span className="inline-flex h-5 w-5 items-center justify-center text-[#027a48]">
-                        <svg viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
-                        </svg>
+                      <span className="inline-flex items-center justify-center h-5 w-5">
+                        <img
+                          src="/cropped-vecteezy_verification-badge-set-guaranteed-stamp-or-verified-badge_23900241.svg"
+                          alt="Verified"
+                          className="h-full w-full"
+                          loading="lazy"
+                        />
                       </span>
-                      <span className="text-[13px] font-semibold text-[#027a48]">Verified</span>
+                      <span className="text-[13px] font-semibold text-blue-500">Verified</span>
+                    </>
+                  ) : vendor.verified_status === "community_listed" ? (
+                    <>
+                      <span className="inline-flex items-center justify-center h-5 w-5">
+                        <img
+                          src="/cropped-vecteezy_verification-badge-set-guaranteed-stamp_or_verified-badge_23900241.svg"
+                          alt="Community Listed"
+                          className="h-full w-full"
+                          loading="lazy"
+                        />
+                      </span>
+                      <span className="text-[13px] font-semibold text-blue-500">Community Listed</span>
                     </>
                   ) : (
                     <>
-                      <span className="inline-flex h-5 w-5 items-center justify-center text-[#b42318]">
-                        <svg viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd" />
+                      <span className="inline-flex h-5 w-5 items-center justify-center text-[#b54708]">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
+                          <circle cx="12" cy="12" r="10" />
+                          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                          <line x1="12" y1="17" x2="12.01" y2="17" />
                         </svg>
                       </span>
-                      <span className="text-[13px] font-semibold text-[#b42318]">Unreviewed</span>
+                      <span className="text-[13px] font-semibold text-[#b54708]">Pending Verification</span>
                     </>
                   )}
                 </div>
@@ -550,7 +571,7 @@ async function VendorDetailData({ slug }: { slug: string }) {
 
               {/* Contact Card */}
               <div className="rounded-xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)]">
-                <h3 className="text-[14px] font-semibold text-[#2c2c2c]">Contact Information</h3>
+                <h3 className="text-[14px] font-semibold text-[#2c2c2c]">Contact Us!</h3>
 
                 {/* Contact CTA */}
                 <p className="mt-2 text-[13px] text-black/55">
@@ -574,32 +595,27 @@ async function VendorDetailData({ slug }: { slug: string }) {
                   />
                 </div>
 
+                {/* Visit Website CTA */}
+                {vendor.website_url && isPremium ? (
+                  <div className="mt-3">
+                    <a
+                      href={withProtocol(vendor.website_url)}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="w-full flex h-11 items-center justify-center gap-2 rounded-[3px] border-2 border-[#a67c52] text-[14px] font-semibold text-[#a67c52] hover:bg-[#a67c52] hover:text-white bg-white transition-colors"
+                    >
+                      <GlobeIcon className="h-4 w-4" />
+                      Visit Website
+                    </a>
+                  </div>
+                ) : null}
+
                 <div className="mt-4 grid gap-3">
                   {vendor.address ? (
                     <div className="flex items-start gap-3 text-[13px] text-black/65">
                       <MapPinIcon className="h-4 w-4 shrink-0 mt-0.5 text-black/40" />
                       <span>{vendor.address}</span>
                     </div>
-                  ) : null}
-                  {vendor.contact_phone ? (
-                    <a
-                      href={`tel:${vendor.contact_phone.replace(/\s/g, '')}`}
-                      className="flex items-center gap-3 text-[13px] text-[#6e4f33] hover:underline"
-                    >
-                      <PhoneIcon className="h-4 w-4 shrink-0" />
-                      <span>{vendor.contact_phone}</span>
-                    </a>
-                  ) : null}
-                  {vendor.website_url && isPremium ? (
-                      <a
-                        href={withProtocol(vendor.website_url)}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="flex items-center gap-3 text-[13px] text-[#6e4f33] hover:underline min-w-0 overflow-hidden"
-                      >
-                        <GlobeIcon className="h-4 w-4 shrink-0" />
-                        <span className="truncate">{vendor.website_url}</span>
-                      </a>
                   ) : null}
                   <div className="flex items-center justify-between gap-3 pt-2 border-t border-black/5">
                     <span className="text-black/50">Last updated</span>
@@ -616,7 +632,7 @@ async function VendorDetailData({ slug }: { slug: string }) {
                     {socials.map((s) => (
                       <a
                         key={s.id}
-                        className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-black/10 bg-[#fcfbf9] text-[#6e4f33] hover:bg-[#a68b6a] hover:text-white hover:border-[#a68b6a] transition-all duration-300"
+                        className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-black/10 bg-[#fcfbf9] p-0 text-[18px] text-[#6e4f33] hover:bg-[#a68b6a] hover:text-white hover:border-[#a68b6a] transition-all duration-300"
                         href={withProtocol(s.url)}
                         target="_blank"
                         rel="noreferrer"
@@ -666,7 +682,6 @@ async function VendorDetailData({ slug }: { slug: string }) {
             </div>
           </div>
         </section>
-      </FadeInOnView>
     </main>
   );
 }
@@ -705,91 +720,36 @@ function normalizePlatform(platform: string) {
 
 function getPlatformIcon(platform: string) {
   const p = normalizePlatform(platform);
-  const common = {
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: 1.6,
-    strokeLinecap: "square" as const,
-    strokeLinejoin: "miter" as const,
-  };
 
   if (p === "facebook" || p === "fb") {
-    return (
-      <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden="true">
-        <path
-          fill="currentColor"
-          d="M13.5 22v-8h2.7l.4-3H13.5V9.1c0-.9.2-1.5 1.5-1.5h1.6V5c-.3 0-1.4-.1-2.6-.1-2.6 0-4.3 1.6-4.3 4.5V11H7v3h2.1v8h4.4Z"
-        />
-      </svg>
-    );
+    return <FaFacebookF />;
   }
 
   if (p === "instagram" || p === "ig") {
-    return (
-      <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden="true" {...common}>
-        <rect x="7" y="7" width="10" height="10" rx="3" />
-        <path d="M16.5 7.5h.01" />
-        <path d="M12 10.2a1.8 1.8 0 1 0 0 3.6 1.8 1.8 0 0 0 0-3.6Z" />
-      </svg>
-    );
+    return <FaInstagram />;
   }
 
   if (p === "x" || p === "twitter") {
-    return (
-      <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden="true">
-        <path
-          fill="currentColor"
-          d="M18.8 4H20l-6.6 7.5L21 20h-6.2l-3.8-4.5L6.9 20H4l7.1-8.1L3 4h6.4l3.4 4.1L18.8 4Zm-2.2 14.4h1.7L9.3 5.5H7.5l9.1 12.9Z"
-        />
-      </svg>
-    );
+    return <FaXTwitter />;
   }
 
   if (p === "tiktok") {
-    return (
-      <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden="true" {...common}>
-        <path d="M14 6c1 1.5 2.3 2.4 4 2.6" />
-        <path d="M14 6v9.5a3.5 3.5 0 1 1-3-3.5" />
-      </svg>
-    );
+    return <FaTiktok />;
   }
 
   if (p === "youtube") {
-    return (
-      <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden="true" {...common}>
-        <path d="M22 12s0-3.1-.4-4.5a3 3 0 0 0-2.1-2.1C18 5 12 5 12 5s-6 0-7.5.4A3 3 0 0 0 2.4 7.5C2 8.9 2 12 2 12s0 3.1.4 4.5a3 3 0 0 0 2.1 2.1C6 19 12 19 12 19s6 0 7.5-.4a3 3 0 0 0 2.1-2.1c.4-1.4.4-4.5.4-4.5Z" />
-        <path d="M10 15V9l5 3-5 3Z" fill="currentColor" stroke="none" />
-      </svg>
-    );
+    return <FaYoutube />;
   }
 
   if (p === "pinterest") {
-    return (
-      <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden="true" {...common}>
-        <path d="M12 21c3.9 0 7-3.1 7-7 0-4-3.1-7-7-7s-7 3-7 7c0 3 1.8 5.5 4.4 6.5" />
-        <path d="M10.6 19.2 12 13.4" />
-        <path d="M14.5 10.4c.4 2-1 3.9-2.7 3.9-1.3 0-2.1-1.1-1.7-2.4.3-1.1.9-2.3.9-3.1 0-.7-.4-1.3-1.3-1.3-1 0-1.9 1-1.9 2.4" />
-      </svg>
-    );
+    return <FaPinterestP />;
   }
 
   if (p === "website" || p === "site" || p === "link") {
-    return (
-      <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden="true" {...common}>
-        <circle cx="12" cy="12" r="9" />
-        <path d="M3 12h18" />
-        <path d="M12 3c2.5 2.6 4 5.7 4 9s-1.5 6.4-4 9" />
-        <path d="M12 3c-2.5 2.6-4 5.7-4 9s1.5 6.4 4 9" />
-      </svg>
-    );
+    return <FaGlobe />;
   }
 
-  return (
-    <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden="true" {...common}>
-      <path d="M10 13a5 5 0 0 1 0-7l1-1a5 5 0 0 1 7 7l-1 1" />
-      <path d="M14 11a5 5 0 0 1 0 7l-1 1a5 5 0 0 1-7-7l1-1" />
-    </svg>
-  );
+  return <FaLink />;
 }
 
 function maskEmail(email: string) {

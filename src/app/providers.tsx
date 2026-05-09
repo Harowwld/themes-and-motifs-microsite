@@ -2,6 +2,7 @@
 
 import type { Query } from "@tanstack/react-query";
 import { PersistQueryClientProvider, type PersistQueryClientOptions } from "@tanstack/react-query-persist-client";
+import { Toaster } from "sonner";
 import { queryClient } from "../lib/queryClient";
 import { idbPersister } from "../lib/persister";
 
@@ -36,6 +37,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       }}
     >
       {children}
+      <Toaster position="top-right" richColors closeButton />
     </PersistQueryClientProvider>
   );
 }

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { createSupabaseBrowserClient } from "../../../lib/supabaseBrowser";
+import { toast } from "../../../lib/toast";
 import CoverCropperModal from "./CoverCropperModal";
 
 type VendorProfile = {
@@ -69,7 +70,7 @@ type Inquiry = {
   updated_at: string;
 };
 
-const SOCIAL_PLATFORM_OPTIONS = ["facebook", "instagram", "tiktok", "x", "pinterest", "youtube", "website"] as const;
+const SOCIAL_PLATFORM_OPTIONS = ["facebook", "instagram", "tiktok", "x", "pinterest", "youtube", "website", "linkedin", "other"] as const;
 type SocialPlatformOption = (typeof SOCIAL_PLATFORM_OPTIONS)[number] | "other";
 
 function isKnownPlatform(p: string) {
@@ -415,7 +416,6 @@ export default function VendorDashboardPage() {
   const [loading, setLoading] = useState(true);
   const [email, setEmail] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
   const [vendor, setVendor] = useState<VendorProfile | null>(null);
@@ -469,7 +469,6 @@ export default function VendorDashboardPage() {
 
   async function saveCoverCrop(next: { focusX: number; focusY: number; zoom: number }) {
     if (!token) return;
-    setError(null);
     setSaving(true);
     try {
       const res = await apiFetch<{ vendor: VendorProfile }>("/api/vendor/profile", token, {
@@ -489,7 +488,7 @@ export default function VendorDashboardPage() {
       }));
       setCropperOpen(false);
     } catch (e: any) {
-      setError(e?.message ?? "Failed to save cover crop.");
+      toast.error(e?.message ?? "Failed to save cover crop.");
     } finally {
       setSaving(false);
     }
@@ -520,10 +519,9 @@ export default function VendorDashboardPage() {
   }) {
     if (!token) return;
     if (!isPremium) {
-      setError("Promos are available on Premium plans only.");
+      toast.error("Promos are available on Premium plans only.");
       return;
     }
-    setError(null);
     setSaving(true);
     try {
       await apiFetch<{ promo: VendorPromo }>("/api/vendor/promos", token, {
@@ -532,7 +530,7 @@ export default function VendorDashboardPage() {
       });
       await refreshPromos();
     } catch (e: any) {
-      setError(e?.message ?? "Failed to save promo.");
+      toast.error(e?.message ?? "Failed to save promo.");
     } finally {
       setSaving(false);
     }
@@ -556,10 +554,9 @@ export default function VendorDashboardPage() {
   ) {
     if (!token) return;
     if (!isPremium) {
-      setError("Promos are available on Premium plans only.");
+      toast.error("Promos are available on Premium plans only.");
       return;
     }
-    setError(null);
     setSaving(true);
     try {
       await apiFetch<{ promo: VendorPromo }>("/api/vendor/promos", token, {
@@ -568,7 +565,7 @@ export default function VendorDashboardPage() {
       });
       await refreshPromos();
     } catch (e: any) {
-      setError(e?.message ?? "Failed to save promo.");
+      toast.error(e?.message ?? "Failed to save promo.");
     } finally {
       setSaving(false);
     }
@@ -577,10 +574,9 @@ export default function VendorDashboardPage() {
   async function deletePromo(id: number) {
     if (!token) return;
     if (!isPremium) {
-      setError("Promos are available on Premium plans only.");
+      toast.error("Promos are available on Premium plans only.");
       return;
     }
-    setError(null);
     setSaving(true);
     try {
       await apiFetch<{ ok: boolean }>(`/api/vendor/promos?id=${encodeURIComponent(String(id))}`, token, {
@@ -588,7 +584,7 @@ export default function VendorDashboardPage() {
       });
       await refreshPromos();
     } catch (e: any) {
-      setError(e?.message ?? "Failed to delete promo.");
+      toast.error(e?.message ?? "Failed to delete promo.");
     } finally {
       setSaving(false);
     }
@@ -606,7 +602,6 @@ export default function VendorDashboardPage() {
 
   async function updateInquiryStatus(id: number, status: string) {
     if (!token) return;
-    setError(null);
     setSaving(true);
     try {
       const res = await apiFetch<{ inquiry: Inquiry }>("/api/vendor/inquiries", token, {
@@ -615,7 +610,7 @@ export default function VendorDashboardPage() {
       });
       setInquiries((prev) => prev.map((x) => (x.id === id ? res.inquiry : x)));
     } catch (e: any) {
-      setError(e?.message ?? "Failed to update inquiry.");
+      toast.error(e?.message ?? "Failed to update inquiry.");
     } finally {
       setSaving(false);
     }
@@ -628,17 +623,16 @@ export default function VendorDashboardPage() {
       const res = await apiFetch<{ albums: Array<{ id: number; title: string; slug: string; photo_count: number; created_at: string }> }>("/api/vendor/albums", token);
       setAlbums(res.albums ?? []);
     } catch (e: any) {
-      setError(e?.message ?? "Failed to load albums.");
+      toast.error(e?.message ?? "Failed to load albums.");
     }
   }
 
   async function createAlbum() {
     if (!token) return;
     if (!albumTitle.trim()) {
-      setError("Album title is required");
+      toast.error("Album title is required");
       return;
     }
-    setError(null);
     setSaving(true);
     try {
       const res = await apiFetch<{ album: { id: number; title: string; slug: string; photo_count: number; created_at: string } }>("/api/vendor/albums", token, {
@@ -649,7 +643,7 @@ export default function VendorDashboardPage() {
       setAlbumTitle("");
       setAlbumModalOpen(false);
     } catch (e: any) {
-      setError(e?.message ?? "Failed to create album.");
+      toast.error(e?.message ?? "Failed to create album.");
     } finally {
       setSaving(false);
     }
@@ -658,10 +652,9 @@ export default function VendorDashboardPage() {
   async function updateAlbum(id: number, title: string) {
     if (!token) return;
     if (!title.trim()) {
-      setError("Album title is required");
+      toast.error("Album title is required");
       return;
     }
-    setError(null);
     setSaving(true);
     try {
       const res = await apiFetch<{ album: { id: number; title: string; slug: string; photo_count: number; created_at: string } }>("/api/vendor/albums", token, {
@@ -673,7 +666,7 @@ export default function VendorDashboardPage() {
         setSelectedAlbum(res.album);
       }
     } catch (e: any) {
-      setError(e?.message ?? "Failed to update album.");
+      toast.error(e?.message ?? "Failed to update album.");
     } finally {
       setSaving(false);
     }
@@ -681,7 +674,6 @@ export default function VendorDashboardPage() {
 
   async function deleteAlbum(id: number) {
     if (!token) return;
-    setError(null);
     setSaving(true);
     try {
       await apiFetch("/api/vendor/albums", token, {
@@ -696,7 +688,7 @@ export default function VendorDashboardPage() {
       setDeleteAlbumModalOpen(false);
       setAlbumToDelete(null);
     } catch (e: any) {
-      setError(e?.message ?? "Failed to delete album.");
+      toast.error(e?.message ?? "Failed to delete album.");
     } finally {
       setSaving(false);
     }
@@ -708,13 +700,12 @@ export default function VendorDashboardPage() {
       const res = await apiFetch<{ album: any; photos: Array<{ id: number; image_url: string; display_order: number }> }>(`/api/vendor/albums/${albumId}/photos`, token);
       setAlbumPhotos(res.photos ?? []);
     } catch (e: any) {
-      setError(e?.message ?? "Failed to load album photos.");
+      toast.error(e?.message ?? "Failed to load album photos.");
     }
   }
 
   async function saveAlbumPhotos(albumId: number, photoUrls: string[]) {
     if (!token) return;
-    setError(null);
     setSaving(true);
     try {
       const photosWithOrder = photoUrls.map((url, idx) => ({
@@ -729,7 +720,7 @@ export default function VendorDashboardPage() {
       // Update album photo count
       setAlbums((prev) => prev.map((a) => (a.id === albumId ? { ...a, photo_count: photoUrls.length } : a)));
     } catch (e: any) {
-      setError(e?.message ?? "Failed to save album photos.");
+      toast.error(e?.message ?? "Failed to save album photos.");
     } finally {
       setSaving(false);
     }
@@ -744,7 +735,6 @@ export default function VendorDashboardPage() {
     let cancelled = false;
 
     async function run() {
-      setError(null);
       const { data } = await supabase.auth.getSession();
       const session = data.session ?? null;
       const user = session?.user ?? null;
@@ -758,7 +748,7 @@ export default function VendorDashboardPage() {
         }
 
         if (!session?.access_token) {
-          setError("Missing auth session. Please open the invite link again.");
+          toast.error("Missing auth session. Please open the invite link again.");
           setLoading(false);
           return;
         }
@@ -841,7 +831,7 @@ export default function VendorDashboardPage() {
           );
           setAlbums(albumsRes.albums ?? []);
         } catch (e: any) {
-          setError(e?.message ?? "Failed to load vendor profile.");
+          toast.error(e?.message ?? "Failed to load vendor profile.");
         } finally {
           setLoading(false);
         }
@@ -857,7 +847,6 @@ export default function VendorDashboardPage() {
 
   async function saveProfile() {
     if (!token) return;
-    setError(null);
     setSaving(true);
     try {
       const res = await apiFetch<{ vendor: VendorProfile }>("/api/vendor/profile", token, {
@@ -878,7 +867,7 @@ export default function VendorDashboardPage() {
       });
       setVendor(res.vendor);
     } catch (e: any) {
-      setError(e?.message ?? "Failed to save profile.");
+      toast.error(e?.message ?? "Failed to save profile.");
     } finally {
       setSaving(false);
     }
@@ -887,10 +876,9 @@ export default function VendorDashboardPage() {
   async function saveSocials() {
     if (!token) return;
     if (!isPremium) {
-      setError("Social links are available on Premium plans only.");
+      toast.error("Social links are available on Premium plans only.");
       return;
     }
-    setError(null);
     setSaving(true);
     try {
       const payload = socials.map((s) => ({ platform: s.platform, url: s.url }));
@@ -915,7 +903,7 @@ export default function VendorDashboardPage() {
         })
       );
     } catch (e: any) {
-      setError(e?.message ?? "Failed to save social links.");
+      toast.error(e?.message ?? "Failed to save social links.");
     } finally {
       setSaving(false);
     }
@@ -923,7 +911,6 @@ export default function VendorDashboardPage() {
 
   async function saveThemes() {
     if (!token) return;
-    setError(null);
     setSaving(true);
     try {
       const res = await apiFetch<{ themes: { id: number; theme: Theme | Theme[] | null }[]; allThemes: Theme[]; created: Theme[] }>("/api/vendor/themes", token, {
@@ -940,7 +927,7 @@ export default function VendorDashboardPage() {
       setThemes(normalizedThemes);
       setAllThemes(res.allThemes ?? []);
     } catch (e: any) {
-      setError(e?.message ?? "Failed to save themes.");
+      toast.error(e?.message ?? "Failed to save themes.");
     } finally {
       setSaving(false);
     }
@@ -948,18 +935,17 @@ export default function VendorDashboardPage() {
 
   async function saveImages() {
     if (!token) return;
-    setError(null);
     setSaving(true);
     try {
       const cleaned = ensureSingleCover(images).filter((i) => i.image_url.trim().length > 0);
 
       if (cleaned.length === 0) {
-        setError("Cover photo is required.");
+        toast.error("Cover photo is required.");
         return;
       }
 
       if (!cleaned.some((i) => i.is_cover)) {
-        setError("Cover photo is required.");
+        toast.error("Cover photo is required.");
         return;
       }
 
@@ -988,7 +974,7 @@ export default function VendorDashboardPage() {
           : [{ image_url: "", caption: "", is_cover: true, display_order: 1 }]
       );
     } catch (e: any) {
-      setError(e?.message ?? "Failed to save photos.");
+      toast.error(e?.message ?? "Failed to save photos.");
     } finally {
       setSaving(false);
     }
@@ -1025,11 +1011,6 @@ export default function VendorDashboardPage() {
 
               <div className="p-6 grid gap-6">
                 {loading ? <DashboardSkeleton /> : null}
-                {error ? (
-                  <div className="rounded-[3px] border border-[#c17a4e]/30 bg-[#fff7ed] px-4 py-3 text-[13px] text-[#6e4f33]">
-                    {error}
-                  </div>
-                ) : null}
 
                 {!loading && vendor ? (
                   <div className="rounded-[3px] border border-black/10 bg-[#fcfbf9] px-4 py-3 text-[13px] text-black/60">
@@ -1154,7 +1135,15 @@ export default function VendorDashboardPage() {
                     </div>
 
                     <Field label="About">
-                      <textarea className="min-h-24 w-full rounded-[3px] border border-black/10 px-3 py-2 text-[13px]" value={form.description} onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))} />
+                      <div className="relative">
+                        <textarea
+                          className="min-h-24 w-full rounded-[3px] border border-black/10 px-3 py-2 text-[13px] pr-14"
+                          value={form.description}
+                          onChange={(e) => setForm((p) => ({ ...p, description: e.target.value.slice(0, 300) }))}
+                          maxLength={300}
+                        />
+                        <span className="absolute bottom-2 right-3 text-[11px] text-black/40">{(form.description?.length ?? 0)}/300</span>
+                      </div>
                     </Field>
 
                     <div className="grid gap-4 sm:grid-cols-3">
@@ -1193,21 +1182,28 @@ export default function VendorDashboardPage() {
                 <section className="rounded-[3px] border border-black/10 bg-white overflow-hidden">
                   <div className="px-4 py-3 border-b border-black/5">
                     <div className="text-[13px] font-semibold text-[#2c2c2c]">Themes</div>
-                    <div className="mt-1 text-[12px] text-black/45">Click to select/deselect themes. Click +Add to create custom themes.</div>
+                    <div className="mt-1 text-[12px] text-black/45">Click to select or deselect themes (max 10).</div>
                   </div>
                   <div className="p-4 grid gap-4">
+                    {themes.length >= 10 && (
+                      <div className="px-3 py-2 rounded-[3px] border border-[#c17a4e]/30 bg-[#fff7ed] text-[12px] text-[#6e4f33]">
+                        Maximum 10 themes reached. Unselect some to choose others.
+                      </div>
+                    )}
                     <div className="flex flex-wrap gap-2">
                       {/* Available themes as pills */}
                       {allThemes.map((theme) => {
                         const isSelected = themes.some((t) => t.id === theme.id);
+                        const atLimit = themes.length >= 10;
                         return (
                           <button
                             key={theme.id}
                             type="button"
+                            disabled={!isSelected && atLimit}
                             onClick={() => {
                               if (isSelected) {
                                 setThemes((prev) => prev.filter((t) => t.id !== theme.id));
-                              } else {
+                              } else if (themes.length < 10) {
                                 setThemes((prev) => [...prev, theme]);
                               }
                             }}
@@ -1227,86 +1223,6 @@ export default function VendorDashboardPage() {
                         );
                       })}
 
-                      {/* Custom themes as selected pills */}
-                      {themes
-                        .filter((t) => !allThemes.some((at) => at.id === t.id))
-                        .map((theme) => (
-                          <span
-                            key={theme.id}
-                            className="inline-flex items-center gap-1 rounded-full border border-purple-200 bg-purple-50 px-3 py-1.5 text-[12px] font-medium text-purple-700"
-                          >
-                            <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M20 6L9 17l-5-5" />
-                            </svg>
-                            {theme.name}
-                            <button
-                              type="button"
-                              onClick={() => setThemes((prev) => prev.filter((t) => t.id !== theme.id))}
-                              className="ml-1 text-purple-400 hover:text-purple-900"
-                            >
-                              ×
-                            </button>
-                          </span>
-                        ))}
-
-                      {/* Add custom theme button */}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const name = themeInput.trim();
-                          if (!name) {
-                            // Focus the input if empty
-                            const input = document.getElementById("custom-theme-input") as HTMLInputElement;
-                            input?.focus();
-                            return;
-                          }
-                          if (themes.some((t) => t.name.toLowerCase() === name.toLowerCase())) {
-                            setThemeInput("");
-                            return;
-                          }
-                          const existing = allThemes.find((t) => t.name.toLowerCase() === name.toLowerCase());
-                          if (existing) {
-                            setThemes((prev) => [...prev, existing]);
-                          } else {
-                            const newTheme: Theme = { id: -Date.now(), name, slug: "" };
-                            setThemes((prev) => [...prev, newTheme]);
-                          }
-                          setThemeInput("");
-                        }}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-[12px] font-medium bg-[#fcfbf9] text-[#a67c52] border border-dashed border-[#a67c52]/40 hover:bg-[#a67c52]/5 transition-colors"
-                      >
-                        + Add
-                      </button>
-                    </div>
-
-                    {/* Hidden input for custom theme entry */}
-                    <div className="flex gap-2">
-                      <input
-                        id="custom-theme-input"
-                        value={themeInput}
-                        onChange={(e) => setThemeInput(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            e.preventDefault();
-                            const name = themeInput.trim();
-                            if (!name) return;
-                            if (themes.some((t) => t.name.toLowerCase() === name.toLowerCase())) {
-                              setThemeInput("");
-                              return;
-                            }
-                            const existing = allThemes.find((t) => t.name.toLowerCase() === name.toLowerCase());
-                            if (existing) {
-                              setThemes((prev) => [...prev, existing]);
-                            } else {
-                              const newTheme: Theme = { id: -Date.now(), name, slug: "" };
-                              setThemes((prev) => [...prev, newTheme]);
-                            }
-                            setThemeInput("");
-                          }
-                        }}
-                        className="h-10 flex-1 rounded-[3px] border border-black/10 bg-white px-3 text-[13px] outline-none focus:border-[#a68b6a] focus:ring-2 focus:ring-[#a68b6a]/10"
-                        placeholder="Type custom theme name and press Enter or click +Add..."
-                      />
                     </div>
 
                     <div className="flex justify-end pt-2">

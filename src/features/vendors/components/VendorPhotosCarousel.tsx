@@ -36,7 +36,6 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
   }, [normalized]);
 
   const [activeIndex, setActiveIndex] = useState(initialIndex);
-  const [ratiosById, setRatiosById] = useState<Record<number, number>>({});
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const stripRef = useRef<HTMLDivElement | null>(null);
@@ -104,7 +103,7 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
   const active = normalized[activeIndex];
   if (!active) return null;
 
-  const activeRatio = ratiosById[active.id] ?? 16 / 9;
+  const activeRatio = 4 / 6;
 
   const openLightbox = useCallback(
     (idx: number) => {
@@ -148,7 +147,7 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
   }, [closeLightbox, goNext, goPrev, isLightboxOpen]);
 
   return (
-    <section className="mt-8">
+    <section>
       <h2 className="text-[16px] font-semibold text-[#2c2c2c]">Photos</h2>
 
       <div ref={mainMediaRef} className="mt-3 rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden">
@@ -165,14 +164,6 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
               className="h-full w-full object-contain"
               loading="lazy"
               referrerPolicy="no-referrer"
-              onLoad={(e) => {
-                const el = e.currentTarget;
-                const w = el.naturalWidth;
-                const h = el.naturalHeight;
-                if (!w || !h) return;
-                const ratio = w / h;
-                setRatiosById((prev) => (prev[active.id] === ratio ? prev : { ...prev, [active.id]: ratio }));
-              }}
             />
           </button>
         </div>

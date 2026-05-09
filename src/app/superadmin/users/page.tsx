@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "../../../lib/toast";
 
 type UserRow = Record<string, any> & { id: string };
 
@@ -22,7 +23,6 @@ async function apiFetch<T>(url: string, init?: RequestInit): Promise<T> {
 
 export default function SuperadminUsersPage() {
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [items, setItems] = useState<UserRow[]>([]);
   const [query, setQuery] = useState("");
   const [savingId, setSavingId] = useState<string | null>(null);
@@ -30,13 +30,12 @@ export default function SuperadminUsersPage() {
   const [deletingUser, setDeletingUser] = useState<UserRow | null>(null);
 
   async function refresh() {
-    setError(null);
     setLoading(true);
     try {
       const res = await apiFetch<{ users: UserRow[] }>("/api/admin/users?limit=500");
       setItems(res.users ?? []);
     } catch (e: any) {
-      setError(e?.message ?? "Failed to load users.");
+      toast.error(e?.message ?? "Failed to load users.");
     } finally {
       setLoading(false);
     }
@@ -53,7 +52,6 @@ export default function SuperadminUsersPage() {
   }, [items, query]);
 
   async function patchUser(id: string, patch: Record<string, any>) {
-    setError(null);
     setSavingId(id);
     try {
       const res = await apiFetch<{ user: UserRow }>("/api/admin/users", {
@@ -62,7 +60,7 @@ export default function SuperadminUsersPage() {
       });
       setItems((prev) => prev.map((x) => (x.id === id ? (res.user as any) : x)));
     } catch (e: any) {
-      setError(e?.message ?? "Failed to update user.");
+      toast.error(e?.message ?? "Failed to update user.");
     } finally {
       setSavingId(null);
     }
@@ -70,7 +68,6 @@ export default function SuperadminUsersPage() {
 
   async function confirmDeleteUser() {
     if (!deletingUser) return;
-    setError(null);
     setDeletingId(deletingUser.id);
     try {
       await apiFetch("/api/admin/users", {
@@ -80,7 +77,7 @@ export default function SuperadminUsersPage() {
       setItems((prev) => prev.filter((x) => x.id !== deletingUser.id));
       setDeletingUser(null);
     } catch (e: any) {
-      setError(e?.message ?? "Failed to delete user.");
+      toast.error(e?.message ?? "Failed to delete user.");
     } finally {
       setDeletingId(null);
     }
@@ -95,12 +92,6 @@ export default function SuperadminUsersPage() {
         </div>
 
         <div className="p-6 grid gap-4">
-          {error ? (
-            <div className="rounded-[3px] border border-[#c17a4e]/30 bg-[#fff7ed] px-4 py-3 text-[13px] text-[#6e4f33]">
-              {error}
-            </div>
-          ) : null}
-
           <div className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
             <label className="grid gap-1.5">
               <span className="text-[12px] font-semibold text-black/55">Search</span>

@@ -72,7 +72,7 @@ const FIELD_VALIDATORS: Record<string, (val: unknown) => { valid: boolean; value
   },
   verified_status: (val) => {
     if (typeof val !== "string") return { valid: false, error: "verified_status must be a string" };
-    if (!["pending", "verified", "rejected"].includes(val)) return { valid: false, error: "verified_status must be pending, verified, or rejected" };
+    if (!["pending", "verified", "community_listed", "rejected"].includes(val)) return { valid: false, error: "verified_status must be pending, verified, community_listed, or rejected" };
     return { valid: true, value: val };
   },
   document_verified: (val) => {
@@ -112,7 +112,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 
     const supabase = createSupabaseAdminClient();
 
-    const [vendorRes, imagesRes, socialsRes, affiliationsRes, allAffiliationsRes, themesRes, allThemesRes] = await Promise.all([
+    const [vendorRes, imagesRes, socialsRes, affiliationsRes, allAffiliationsRes, themesRes, allThemesRes, verificationDocsRes] = await Promise.all([
       supabase
         .from("vendors")
         .select("*")
@@ -130,7 +130,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
         .order("id", { ascending: true }),
       supabase
         .from("vendor_affiliations")
-        .select("id, affiliation:affiliations(id, name, slug)")
+        .select("vendor_id, affiliation_id, affiliation:affiliations(id, name, slug)")
         .eq("vendor_id", vendorId),
       supabase
         .from("affiliations")
@@ -144,6 +144,11 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
         .from("themes")
         .select("id, name, slug")
         .order("name", { ascending: true }),
+      supabase
+        .from("verification_documents")
+        .select("id, doc_type, file_url, file_name, status, uploaded_at, reviewed_at, notes")
+        .eq("vendor_id", vendorId)
+        .order("uploaded_at", { ascending: false }),
     ]);
 
     if (vendorRes.error) {
@@ -162,6 +167,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
       allAffiliations: allAffiliationsRes.data ?? [],
       themes: themesRes.data ?? [],
       allThemes: allThemesRes.data ?? [],
+      verificationDocuments: verificationDocsRes.data ?? [],
     }, { status: 200 });
   } catch (e: any) {
     const status = typeof e?.statusCode === "number" ? e.statusCode : 500;

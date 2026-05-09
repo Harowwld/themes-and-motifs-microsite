@@ -4,23 +4,22 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 
 import { createSupabaseBrowserClient } from "../../lib/supabaseBrowser";
+import { toast } from "../../lib/toast";
 
 export default function ForgotPasswordPage() {
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);
 
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError(null);
     setSuccess(false);
 
     const e1 = email.trim();
     if (!e1) {
-      setError("Email is required.");
+      toast.error("Email is required.");
       return;
     }
 
@@ -39,7 +38,7 @@ export default function ForgotPasswordPage() {
       setSuccess(true);
       setEmail("");
     } catch (err: any) {
-      setError(err?.message ?? "Failed to send reset email.");
+      toast.error(err?.message ?? "Failed to send reset email.");
     } finally {
       setSubmitting(false);
     }
@@ -61,12 +60,6 @@ export default function ForgotPasswordPage() {
               <div className="mt-4 rounded-[3px] border border-[#a68b6a]/30 bg-[#faf6f1] px-4 py-3 text-[13px] text-[#6e4f33]">
                 Check your email for a password reset link. If you don&apos;t see it,
                 check your spam folder.
-              </div>
-            ) : null}
-
-            {error ? (
-              <div className="mt-4 rounded-[3px] border border-[#c17a4e]/30 bg-[#fff7ed] px-4 py-3 text-[13px] text-[#6e4f33]">
-                {error}
               </div>
             ) : null}
 

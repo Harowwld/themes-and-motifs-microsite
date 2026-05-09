@@ -67,7 +67,7 @@ export type VendorPromo = {
   updated_at: string;
 };
 
-export const SOCIAL_PLATFORM_OPTIONS = ["facebook", "instagram", "tiktok", "x", "pinterest", "youtube", "website"] as const;
+export const SOCIAL_PLATFORM_OPTIONS = ["facebook", "instagram", "tiktok", "x", "pinterest", "youtube", "website", "linkedin", "other"] as const;
 export type SocialPlatformOption = (typeof SOCIAL_PLATFORM_OPTIONS)[number] | "other";
 
 export function isKnownPlatform(p: string) {

@@ -10,6 +10,7 @@ type Props = {
 
 export default function ClaimVendorButton({ vendorId, vendorName }: Props) {
   const [isOpen, setIsOpen] = useState(false);
+  const [fullName, setFullName] = useState("");
   const [contactEmail, setContactEmail] = useState("");
   const [contactPhone, setContactPhone] = useState("");
   const [dtiUrl, setDtiUrl] = useState("");
@@ -52,6 +53,7 @@ export default function ClaimVendorButton({ vendorId, vendorName }: Props) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           vendorId: String(vendorId),
+          fullName: fullName.trim(),
           contactEmail,
           contactPhone,
           documents: {
@@ -108,6 +110,21 @@ export default function ClaimVendorButton({ vendorId, vendorName }: Props) {
             </p>
 
             <form onSubmit={handleSubmit} className="mt-4 grid gap-4">
+              <div>
+                <label htmlFor="fullName" className="block text-sm font-medium text-[#2c2c2c]">
+                  Full Name *
+                </label>
+                <input
+                  id="fullName"
+                  type="text"
+                  required
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  className="mt-1 block w-full rounded-[3px] border border-black/20 px-3 py-2 text-sm focus:border-[#a67c52] focus:outline-none focus:ring-1 focus:ring-[#a67c52]"
+                  placeholder="Juan Dela Cruz"
+                />
+              </div>
+
               <div>
                 <label htmlFor="contactEmail" className="block text-sm font-medium text-[#2c2c2c]">
                   Business Email *

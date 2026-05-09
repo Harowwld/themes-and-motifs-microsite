@@ -107,7 +107,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     // Fetch updated affiliations for this vendor
     const { data: updatedAffiliations } = await supabase
       .from("vendor_affiliations")
-      .select("id, affiliation:affiliations(id, name, slug)")
+      .select("vendor_id, affiliation_id, affiliation:affiliations(id, name, slug)")
       .eq("vendor_id", vendorId);
 
     // Fetch all affiliations for the dropdown

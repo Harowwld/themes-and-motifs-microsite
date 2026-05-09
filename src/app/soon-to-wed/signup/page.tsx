@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { createSupabaseBrowserClient } from "../../../lib/supabaseBrowser";
+import { toast } from "../../../lib/toast";
 
 function normalizeReturnTo(v: string | null) {
   const raw = (v ?? "").trim();
@@ -26,7 +27,6 @@ export default function SoonToWedSignupPage() {
   const returnTo = normalizeReturnTo(searchParams.get("returnTo"));
 
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
   const [email, setEmail] = useState("");
@@ -45,7 +45,6 @@ export default function SoonToWedSignupPage() {
     let cancelled = false;
 
     async function run() {
-      setError(null);
       setSuccess(null);
 
       const { data } = await supabase.auth.getSession();
@@ -63,7 +62,6 @@ export default function SoonToWedSignupPage() {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError(null);
     setSuccess(null);
 
     const e1 = email.trim();
@@ -74,7 +72,7 @@ export default function SoonToWedSignupPage() {
     const loc = location.trim();
 
     if (!e1) {
-      setError("Email is required.");
+      toast.error("Email is required.");
       return;
     }
 
@@ -90,7 +88,7 @@ export default function SoonToWedSignupPage() {
       const checkData = await checkRes.json();
 
       if (!checkRes.ok) {
-        setError(checkData.error || "Email check failed");
+        toast.error(checkData.error || "Email check failed");
         setSubmitting(false);
         return;
       }
@@ -99,28 +97,32 @@ export default function SoonToWedSignupPage() {
     }
 
     if (!bride) {
-      setError("Nickname of bride is required.");
+      toast.error("Nickname of bride is required.");
       setSubmitting(false);
       return;
     }
 
     if (!groom) {
-      setError("Nickname of groom is required.");
+      toast.error("Nickname of groom is required.");
+      setSubmitting(false);
       return;
     }
 
     if (!loc) {
-      setError("Location is required.");
+      toast.error("Location is required.");
+      setSubmitting(false);
       return;
     }
 
     if (password.trim().length < 8) {
-      setError("Password must be at least 8 characters.");
+      toast.error("Password must be at least 8 characters.");
+      setSubmitting(false);
       return;
     }
 
     if (!agreeTerms) {
-      setError("You must agree to the terms & conditions.");
+      toast.error("You must agree to the terms & conditions.");
+      setSubmitting(false);
       return;
     }
 
@@ -132,7 +134,7 @@ export default function SoonToWedSignupPage() {
 
       if (signUpErr) {
         if (signUpErr.message.includes("User already registered") || signUpErr.message.includes("already exists")) {
-          setError("An account with this email already exists. Please sign in.");
+          toast.error("An account with this email already exists. Please sign in.");
           setSubmitting(false);
           return;
         }
@@ -143,6 +145,7 @@ export default function SoonToWedSignupPage() {
       if (!user) {
         setSuccess("Account created. Please check your email to confirm your account.");
         setPassword("");
+        setSubmitting(false);
         return;
       }
 
@@ -167,7 +170,7 @@ export default function SoonToWedSignupPage() {
 
       router.replace(returnTo);
     } catch (err: any) {
-      setError(err?.message ?? "Failed to save your profile.");
+      toast.error(err?.message ?? "Failed to save your profile.");
     } finally {
       setSubmitting(false);
     }
@@ -182,12 +185,6 @@ export default function SoonToWedSignupPage() {
           <div className="p-7">
             <div className="text-[18px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">Create account</div>
             <div className="mt-2 text-[13px] text-black/60">Create your account and complete your profile.</div>
-
-            {error ? (
-              <div className="mt-4 rounded-[3px] border border-[#b42318]/20 bg-[#fff1f3] px-4 py-3 text-[13px] text-[#7a271a]">
-                {error}
-              </div>
-            ) : null}
 
             {success ? (
               <div className="mt-4 rounded-[3px] border border-black/10 bg-[#fcfbf9] px-4 py-3 text-[13px] text-black/70">

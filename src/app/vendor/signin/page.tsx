@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { createSupabaseBrowserClient } from "../../../lib/supabaseBrowser";
+import { toast } from "../../../lib/toast";
 
 export default function VendorSignInPage() {
   const router = useRouter();
@@ -13,7 +14,6 @@ export default function VendorSignInPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [wasSignedOut, setWasSignedOut] = useState(false);
   const resetSuccess = searchParams.get("reset") === "success";
 
@@ -38,16 +38,15 @@ export default function VendorSignInPage() {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError(null);
 
     const e1 = email.trim();
     if (!e1) {
-      setError("Email is required.");
+      toast.error("Email is required.");
       return;
     }
 
     if (!password) {
-      setError("Password is required.");
+      toast.error("Password is required.");
       return;
     }
 
@@ -63,7 +62,7 @@ export default function VendorSignInPage() {
       setPassword("");
       router.push("/vendor/dashboard");
     } catch (err: any) {
-      setError(err?.message ?? "Failed to sign in.");
+      toast.error(err?.message ?? "Failed to sign in.");
     } finally {
       setSubmitting(false);
     }
@@ -88,12 +87,6 @@ export default function VendorSignInPage() {
             {wasSignedOut ? (
               <div className="mt-4 rounded-[3px] border border-[#a68b6a]/30 bg-[#faf6f1] px-4 py-3 text-[13px] text-[#6e4f33]">
                 You have been signed out. Please sign in again.
-              </div>
-            ) : null}
-
-            {error ? (
-              <div className="mt-4 rounded-[3px] border border-[#c17a4e]/30 bg-[#fff7ed] px-4 py-3 text-[13px] text-[#6e4f33]">
-                {error}
               </div>
             ) : null}
 

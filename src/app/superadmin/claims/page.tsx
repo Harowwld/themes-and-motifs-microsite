@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "../../../lib/toast";
 
 type Claim = {
   id: number;
   vendor_id: number;
+  full_name: string | null;
   contact_email: string;
   contact_phone: string | null;
   business_name: string | null;
@@ -52,21 +54,19 @@ function fmtDate(iso: string) {
 export default function SuperadminClaimsPage() {
   const [loading, setLoading] = useState(true);
   const [savingId, setSavingId] = useState<number | null>(null);
-  const [error, setError] = useState<string | null>(null);
 
   const [claims, setClaims] = useState<Claim[]>([]);
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("");
 
   async function refresh() {
-    setError(null);
     setLoading(true);
     try {
       const statusParam = statusFilter ? `&status=${statusFilter}` : "";
       const res = await apiFetch<{ claims: Claim[] }>(`/api/admin/claims?limit=500${statusParam}`);
       setClaims(res.claims ?? []);
     } catch (e: any) {
-      setError(e?.message ?? "Failed to load claims.");
+      toast.error(e?.message ?? "Failed to load claims.");
     } finally {
       setLoading(false);
     }
@@ -90,7 +90,6 @@ export default function SuperadminClaimsPage() {
 
   async function act(id: number, action: "approve" | "reject" | "verify") {
     const admin_notes = action !== "verify" ? (window.prompt(action === "approve" ? "Admin notes (optional)" : "Reason / admin notes (optional)") ?? "") : undefined;
-    setError(null);
     setSavingId(id);
     try {
       const res = await apiFetch<{ claim?: Claim; vendor?: { verified_status: string } }>("/api/admin/claims", {
@@ -103,7 +102,7 @@ export default function SuperadminClaimsPage() {
         setClaims((prev) => prev.map((c) => (c.id === id ? { ...c, ...(res.claim as any) } : c)));
       }
     } catch (e: any) {
-      setError(e?.message ?? "Failed to update claim.");
+      toast.error(e?.message ?? "Failed to update claim.");
     } finally {
       setSavingId(null);
     }
@@ -124,12 +123,6 @@ export default function SuperadminClaimsPage() {
         </div>
 
         <div className="p-6 grid gap-4">
-          {error ? (
-            <div className="rounded-[3px] border border-[#c17a4e]/30 bg-[#fff7ed] px-4 py-3 text-[13px] text-[#6e4f33]">
-              {error}
-            </div>
-          ) : null}
-
           <div className="grid gap-3 sm:grid-cols-[1fr_200px_auto] sm:items-end">
             <label className="grid gap-1.5">
               <span className="text-[12px] font-semibold text-black/55">Search</span>
@@ -186,10 +179,11 @@ export default function SuperadminClaimsPage() {
                   <div key={c.id} className="grid grid-cols-[60px_1.2fr_1fr_1fr_120px_150px] gap-0 items-center text-[13px]">
                     <div className="px-3 py-3 text-black/50 font-mono">{c.id}</div>
                     <div className="px-3 py-3">
-                      <div className="font-medium text-[#2c2c2c]">{c.vendor?.business_name ?? c.business_name ?? `Vendor #${c.vendor_id}`}</div>
-                      <div className="text-[11px] text-black/40">vendor_id: {c.vendor_id}</div>
+                      <div className="font-medium text-[#2c2c2c]">{c.full_name || c.vendor?.business_name || c.business_name || `Vendor #${c.vendor_id}`}</div>
+                      <div className="text-[11px] text-black/40">{c.vendor?.business_name ? `vendor_id: ${c.vendor_id}` : c.vendor_id}</div>
                     </div>
                     <div className="px-3 py-3">
+                      {c.full_name && <div className="font-medium text-[#2c2c2c]">{c.full_name}</div>}
                       <div className="text-[#2c2c2c]">{c.contact_email}</div>
                       {c.contact_phone && <div className="text-[11px] text-black/40">{c.contact_phone}</div>}
                     </div>

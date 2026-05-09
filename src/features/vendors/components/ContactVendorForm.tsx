@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { createPortal } from "react-dom";
+import { toast } from "../../../lib/toast";
 
 type Props = {
   vendorId: number;
@@ -23,7 +24,6 @@ export default function ContactVendorForm({ vendorId, vendorName, className, chi
   const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
 
   const [startedAt, setStartedAt] = useState<number | null>(null);
   const [form, setForm] = useState({
@@ -39,11 +39,10 @@ export default function ContactVendorForm({ vendorId, vendorName, className, chi
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError(null);
     setSuccess(null);
 
     if (!canSubmit) {
-      setError("Please fill in your name, email, and message.");
+      toast.error("Please fill in your name, email, and message.");
       return;
     }
 
@@ -66,7 +65,7 @@ export default function ContactVendorForm({ vendorId, vendorName, className, chi
       const json = (await res.json().catch(() => null)) as { error?: string } | null;
 
       if (!res.ok) {
-        setError(json?.error ?? "Failed to send message.");
+        toast.error(json?.error ?? "Failed to send message.");
         return;
       }
 
@@ -74,7 +73,7 @@ export default function ContactVendorForm({ vendorId, vendorName, className, chi
       setForm({ name: "", email: "", message: "", company: "" });
       setStartedAt(Date.now());
     } catch {
-      setError("Failed to send message.");
+      toast.error("Failed to send message.");
     } finally {
       setSubmitting(false);
     }
@@ -87,7 +86,6 @@ export default function ContactVendorForm({ vendorId, vendorName, className, chi
 
   function handleClose() {
     setOpen(false);
-    setError(null);
     setSuccess(null);
   }
 
@@ -123,11 +121,6 @@ export default function ContactVendorForm({ vendorId, vendorName, className, chi
 
                   {/* Content */}
                   <div className="px-5 py-4">
-                    {error ? (
-                      <div className="mb-4 rounded-[3px] border border-[#b42318]/20 bg-[#fff1f3] px-3 py-2 text-[12px] text-[#b42318]">
-                        {error}
-                      </div>
-                    ) : null}
                     {success ? (
                       <div className="mb-4 rounded-[3px] border border-[#a67c52]/25 bg-[#fffaf5] px-3 py-2 text-[12px] text-[#2c2c2c]">
                         {success}

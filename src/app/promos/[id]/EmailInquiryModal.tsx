@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { createPortal } from "react-dom";
+import { toast } from "../../../lib/toast";
 
 interface EmailInquiryModalProps {
   isOpen: boolean;
@@ -25,21 +26,19 @@ export default function EmailInquiryModal({
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!vendorEmail) {
-      setError("Vendor contact email is not available.");
+      toast.error("Vendor contact email is not available.");
       return;
     }
 
     setIsSubmitting(true);
-    setError(null);
 
     try {
       if (!vendorId) {
-        setError("Vendor information is not available.");
+        toast.error("Vendor information is not available.");
         setIsSubmitting(false);
         return;
       }
@@ -65,7 +64,7 @@ export default function EmailInquiryModal({
 
       setIsSuccess(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      toast.error(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setIsSubmitting(false);
     }
@@ -77,7 +76,6 @@ export default function EmailInquiryModal({
       // Reset form after closing
       setTimeout(() => {
         setIsSuccess(false);
-        setError(null);
         setMessage("Please email more info about this promo.");
         setName("");
         setEmail("");
@@ -124,12 +122,6 @@ export default function EmailInquiryModal({
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
-                {error && (
-                  <div className="rounded-[3px] border border-[#b42318]/20 bg-[#fff1f3] px-3 py-2 text-[13px] text-[#b42318]">
-                    {error}
-                  </div>
-                )}
-
                 <div>
                   <label className="block text-[12px] font-medium text-black/70 mb-1.5">
                     Your Name

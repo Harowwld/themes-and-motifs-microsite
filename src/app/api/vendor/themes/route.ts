@@ -2,15 +2,6 @@ import { assertVendor, getVendorForUser } from "../_auth";
 
 export const dynamic = "force-dynamic";
 
-function slugify(input: string) {
-  const s = (input ?? "").trim().toLowerCase();
-  const cleaned = s
-    .replace(/['']g/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-  return cleaned || "theme";
-}
-
 // GET - fetch vendor themes and all available themes
 export async function GET(req: Request) {
   try {
@@ -58,65 +49,18 @@ export async function PUT(req: Request) {
       return Response.json({ error: "Invalid themes array" }, { status: 400 });
     }
 
-    // Get existing themes to check for new ones
-    const { data: existingThemes } = await supabase
-      .from("themes")
-      .select("id, name, slug")
-      .order("name", { ascending: true });
+    // Limit to max 10 themes
+    if (themes.length > 10) {
+      return Response.json({ error: "Maximum 10 themes allowed" }, { status: 400 });
+    }
 
-    const existingByName = new Map((existingThemes ?? []).map((t) => [t.name.toLowerCase(), t]));
-    const existingBySlug = new Map((existingThemes ?? []).map((t) => [t.slug, t]));
-
-    // Process themes - create new ones if needed
+    // Only allow selecting existing themes (no custom theme creation)
     const themeIds: number[] = [];
-    const createdThemes: { id: number; name: string; slug: string }[] = [];
 
     for (const theme of themes) {
-      const name = (theme.name ?? "").trim();
-      if (!name) continue;
-
-      const nameLower = name.toLowerCase();
-      let themeId: number | null = null;
-
-      // Check if theme already exists by name
-      const existingByNameMatch = existingByName.get(nameLower);
-      if (existingByNameMatch) {
-        themeId = existingByNameMatch.id;
-      } else if (theme.id && theme.id > 0) {
-        // Use provided ID if it's a positive number (existing theme)
-        themeId = theme.id;
-      } else {
-        // Create new theme
-        const slug = slugify(name);
-        // Ensure unique slug
-        let uniqueSlug = slug;
-        let counter = 1;
-        while (existingBySlug.has(uniqueSlug)) {
-          uniqueSlug = `${slug}-${counter}`;
-          counter++;
-        }
-
-        const { data: newTheme, error: createError } = await supabase
-          .from("themes")
-          .insert({ name, slug: uniqueSlug })
-          .select("id, name, slug")
-          .single();
-
-        if (createError) {
-          return Response.json({ error: createError.message }, { status: 500 });
-        }
-
-        if (newTheme) {
-          themeId = newTheme.id;
-          createdThemes.push(newTheme);
-          // Add to maps for subsequent iterations
-          existingByName.set(nameLower, newTheme);
-          existingBySlug.set(uniqueSlug, newTheme);
-        }
-      }
-
-      if (themeId) {
-        themeIds.push(themeId);
+      // Only accept positive IDs (existing themes from database)
+      if (theme.id && theme.id > 0) {
+        themeIds.push(theme.id);
       }
     }
 
@@ -169,7 +113,6 @@ export async function PUT(req: Request) {
     return Response.json({
       themes: updatedThemes ?? [],
       allThemes: allThemes ?? [],
-      created: createdThemes,
     }, { status: 200 });
   } catch (e: any) {
     const status = typeof e?.statusCode === "number" ? e.statusCode : 500;

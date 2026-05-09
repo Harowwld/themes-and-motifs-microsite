@@ -14,7 +14,7 @@ export async function GET(req: Request) {
 
     let query = supabase
       .from("vendor_claims")
-      .select("id,vendor_id,contact_email,contact_phone,business_name,status,admin_notes,documents,reviewed_by,reviewed_at,created_at,vendor:vendors(id,business_name,slug)")
+      .select("id,vendor_id,full_name,contact_email,contact_phone,business_name,status,admin_notes,documents,reviewed_by,reviewed_at,created_at,vendor:vendors(id,business_name,slug)")
       .order("created_at", { ascending: false })
       .limit(limit);
 

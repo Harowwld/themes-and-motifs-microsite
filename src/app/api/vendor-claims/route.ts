@@ -6,6 +6,7 @@ export const dynamic = "force-dynamic";
 
 type ClaimPayload = {
   vendorId: string;
+  fullName?: string;
   contactEmail: string;
   contactPhone?: string;
   businessName?: string;
@@ -26,10 +27,15 @@ export async function POST(req: Request) {
   }
 
   const vendorIdNum = Number(body.vendorId);
+  const fullName = (body.fullName ?? "").trim();
   const contactEmail = (body.contactEmail ?? "").trim();
 
   if (!Number.isFinite(vendorIdNum)) {
     return NextResponse.json({ error: "Valid vendor ID is required" }, { status: 400 });
+  }
+
+  if (!fullName) {
+    return NextResponse.json({ error: "Full name is required" }, { status: 400 });
   }
 
   if (!contactEmail) {
@@ -80,6 +86,7 @@ export async function POST(req: Request) {
     .from("vendor_claims")
     .insert({
       vendor_id: vendorIdNum,
+      full_name: fullName,
       contact_email: contactEmail,
       contact_phone: (body.contactPhone ?? "").trim() || null,
       business_name: (body.businessName ?? "").trim() || null,
