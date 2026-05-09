@@ -169,7 +169,6 @@ export default function SuperadminVendorsPage() {
   const [showAffiliationDropdown, setShowAffiliationDropdown] = useState(false);
   const [editThemes, setEditThemes] = useState<Theme[]>([]);
   const [allThemes, setAllThemes] = useState<Theme[]>([]);
-  const [themeInput, setThemeInput] = useState("");
 
   // Verification documents state
   const [verificationDocuments, setVerificationDocuments] = useState<VerificationDocument[]>([]);
@@ -1326,87 +1325,8 @@ export default function SuperadminVendorsPage() {
                       </button>
                     );
                   })}
-
-                  {/* Custom themes */}
-                  {editThemes
-                    .filter((t) => !allThemes.some((at) => at.id === t.id))
-                    .map((theme) => (
-                      <span
-                        key={theme.id}
-                        className="inline-flex items-center gap-1 rounded-full border border-purple-200 bg-purple-50 px-3 py-1.5 text-[12px] font-medium text-purple-700"
-                      >
-                        <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M20 6L9 17l-5-5" />
-                        </svg>
-                        {theme.name}
-                        <button
-                          type="button"
-                          onClick={() => setEditThemes((prev) => prev.filter((t) => t.id !== theme.id))}
-                          className="ml-1 text-purple-400 hover:text-purple-900"
-                        >
-                          ×
-                        </button>
-                      </span>
-                    ))}
-
-                  {/* Add custom theme button */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const name = themeInput.trim();
-                      if (!name) {
-                        const input = document.getElementById("admin-custom-theme-input") as HTMLInputElement;
-                        input?.focus();
-                        return;
-                      }
-                      if (editThemes.some((t) => t.name.toLowerCase() === name.toLowerCase())) {
-                        setThemeInput("");
-                        return;
-                      }
-                      const existing = allThemes.find((t) => t.name.toLowerCase() === name.toLowerCase());
-                      if (existing) {
-                        setEditThemes((prev) => [...prev, existing]);
-                      } else {
-                        const newTheme: Theme = { id: -Date.now(), name, slug: "" };
-                        setEditThemes((prev) => [...prev, newTheme]);
-                      }
-                      setThemeInput("");
-                    }}
-                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-[12px] font-medium bg-[#fcfbf9] text-[#a67c52] border border-dashed border-[#a67c52]/40 hover:bg-[#a67c52]/5 transition-colors"
-                  >
-                    + Add
-                  </button>
                 </div>
 
-                {/* Custom theme input */}
-                <div className="flex gap-2">
-                  <input
-                    id="admin-custom-theme-input"
-                    value={themeInput}
-                    onChange={(e) => setThemeInput(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        const name = themeInput.trim();
-                        if (!name) return;
-                        if (editThemes.some((t) => t.name.toLowerCase() === name.toLowerCase())) {
-                          setThemeInput("");
-                          return;
-                        }
-                        const existing = allThemes.find((t) => t.name.toLowerCase() === name.toLowerCase());
-                        if (existing) {
-                          setEditThemes((prev) => [...prev, existing]);
-                        } else {
-                          const newTheme: Theme = { id: -Date.now(), name, slug: "" };
-                          setEditThemes((prev) => [...prev, newTheme]);
-                        }
-                        setThemeInput("");
-                      }
-                    }}
-                    className="h-10 flex-1 rounded-[3px] border border-black/10 bg-white px-3 text-[13px] outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15"
-                    placeholder="Type custom theme name and press Enter or click +Add..."
-                  />
-                </div>
               </section>
 
               {/* Verification Section */}
