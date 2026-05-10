@@ -89,7 +89,7 @@ function VendorCard({
         <div className="absolute inset-x-0 bottom-0 z-20 h-[35%] sm:h-[32%]">
         {/* Glass blur - clip-path + webkit prefix for Safari */}
         <div
-          className="absolute inset-0 bg-white/70 border-t border-white/40"
+          className="absolute inset-0 bg-white/70 border-t border-white/40 rounded-b-[12px]"
           style={{
             clipPath: "polygon(0 12%, 100% 0, 100% 100%, 0 100%)",
             backdropFilter: "blur(12px)",

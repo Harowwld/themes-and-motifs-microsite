@@ -343,7 +343,10 @@ export default function SiteHeader() {
           {/* Mobile menu button */}
           <button
             type="button"
-            onClick={() => setMobileMenuOpen((v) => !v)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setMobileMenuOpen((v) => !v);
+            }}
             className="sm:hidden h-10 w-10 inline-flex items-center justify-center rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
             aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
             aria-expanded={mobileMenuOpen}
