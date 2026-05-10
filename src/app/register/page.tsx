@@ -1,4 +1,5 @@
 import { createSupabaseServerClient } from "../../lib/supabaseServer";
+import { getCachedVendorLocations } from "../../lib/vendorUtils";
 
 import RegisterForm from "./RegisterForm";
 
@@ -14,18 +15,28 @@ export default async function RegisterPage({
 
   const supabase = createSupabaseServerClient();
 
-  const [{ data: categories }, { data: regionRows }, { data: plans }, { data: affiliations }] = await Promise.all([
+  const [{ data: categories }, { data: regionRows }, { data: plans }, { data: affiliations }, vendorLocations] = await Promise.all([
     supabase.from("categories").select("id,name,slug").order("display_order", { ascending: true }).order("name", { ascending: true }).limit(200),
     supabase.from("regions").select("id,name,parent_id").order("name", { ascending: true }).limit(2000),
     supabase.from("plans").select("id,name").order("id", { ascending: true }).limit(20),
     supabase.from("affiliations").select("id,name,slug").order("name", { ascending: true }).limit(500),
+    getCachedVendorLocations(),
   ]);
 
   const allRegions = (regionRows ?? []) as { id: number; name: string; parent_id: number | null }[];
   const regions = allRegions.filter((r) => r.parent_id == null).map((r) => ({ id: r.id, name: r.name }));
-  const cities = allRegions
-    .filter((r) => r.parent_id != null)
-    .map((r) => ({ id: r.id, name: r.name, region_id: r.parent_id as number }));
+  
+  // Build cities list from vendor locations (same as vendor search)
+  const cities = Array.from(
+    new Map(
+      (vendorLocations as { region_id: number | null; city: string | null }[])
+        .filter((r) => Boolean(r.city?.trim()))
+        .map((r, index) => {
+          const name = r.city!.trim();
+          return [name.toLowerCase(), { id: index + 1, name, region_id: typeof r.region_id === "number" ? r.region_id : 0 }] as const;
+        })
+    ).values()
+  );
 
   return (
     <div className="min-h-screen bg-[#fafafa]">

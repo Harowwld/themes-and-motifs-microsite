@@ -126,12 +126,16 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
   }, [preselectedPlan]);
 
   const cityOptions = useMemo(() => {
+    const base = cities ?? [];
+    // Only filter by region if a specific region is selected (not empty string)
+    if (!form.regionId || form.regionId === "") {
+      return base.slice().sort((a, b) => a.name.localeCompare(b.name));
+    }
     const regionIdNum = Number(form.regionId);
-    if (!Number.isFinite(regionIdNum)) return [] as City[];
-    return (cities ?? [])
-      .filter((c) => c.region_id === regionIdNum)
-      .slice()
-      .sort((a, b) => a.name.localeCompare(b.name));
+    const filtered = Number.isFinite(regionIdNum) && regionIdNum > 0
+      ? base.filter((c) => c.region_id === regionIdNum)
+      : base;
+    return filtered.slice().sort((a, b) => a.name.localeCompare(b.name));
   }, [cities, form.regionId]);
 
   const affiliationOptions = useMemo(() => {
@@ -463,9 +467,8 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
             }`}
             value={form.city}
             onChange={(e) => set("city", e.target.value)}
-            disabled={!form.regionId}
           >
-            <option value="">{form.regionId ? "Select" : "Select region first"}</option>
+            <option value="">Select</option>
             {cityOptions.map((c) => (
               <option key={c.id} value={c.name}>
                 {c.name}
