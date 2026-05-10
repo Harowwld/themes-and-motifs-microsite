@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { createSupabaseServerClient } from "../../../lib/supabaseServer";
+import { attachCoverImages } from "../../../features/vendors/coverImages.server";
 import { buildVendorsQuery } from "../../../features/vendors/queries.server";
 import type { VendorWithSortFields, SortKey } from "../../../lib/vendorUtils";
 
@@ -10,6 +11,8 @@ type VendorWithCoverImage = VendorWithSortFields & { cover_image_url: string | n
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
+
+  const slug = (searchParams.get("slug") ?? "").trim();
 
   const q = (searchParams.get("q") ?? "").trim();
   const category = (searchParams.get("category") ?? "").trim();
@@ -31,6 +34,25 @@ export async function GET(req: Request) {
   const supabase = createSupabaseServerClient();
 
   try {
+    if (slug) {
+      const { data: vendor, error } = await supabase
+        .from("vendors")
+        .select(
+          "id,business_name,slug,logo_url,average_rating,review_count,location_text,city,verified_status,cover_focus_x,cover_focus_y,cover_zoom,plan:plans(id,name)"
+        )
+        .eq("slug", slug)
+        .eq("is_active", true)
+        .maybeSingle();
+
+      if (error) throw error;
+      if (!vendor) {
+        return NextResponse.json({ error: "Vendor not found" }, { status: 404 });
+      }
+
+      const [vendorWithCover] = await attachCoverImages(supabase, [vendor as any]);
+      return NextResponse.json(vendorWithCover);
+    }
+
     const from = (page - 1) * limit;
     const to = from + limit - 1;
 

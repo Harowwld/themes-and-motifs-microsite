@@ -137,7 +137,7 @@ async function LandingFeaturedDirect() {
     supabase
       .from("vendors")
       .select(
-        "id,business_name,slug,logo_url,average_rating,review_count,location_text,city,cover_focus_x,cover_focus_y,cover_zoom,plan:plans(id,name)"
+        "id,business_name,slug,logo_url,average_rating,review_count,location_text,city,verified_status,cover_focus_x,cover_focus_y,cover_zoom,plan:plans(id,name)"
       )
       .eq("is_active", true)
       .eq("is_featured", true)
@@ -162,7 +162,7 @@ async function LandingFeaturedDirect() {
   }
 
   const vendors = shuffle((featuredVendors ?? []) as FeaturedVendor[]).slice(0, 6);
-  const promos = shuffle((featuredPromos ?? []) as FeaturedPromo[]).filter(isPromoCurrentlyValid).slice(0, 4);
+  const promos = shuffle((featuredPromos ?? []) as FeaturedPromo[]).filter(isPromoCurrentlyValid);
 
   const featuredWithCovers = await attachCoverImages(supabase, vendors);
   const featuredWithAffiliations = await attachAffiliations(supabase, featuredWithCovers);

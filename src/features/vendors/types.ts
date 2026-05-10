@@ -25,6 +25,7 @@ export type VendorListItem = {
   review_count: number | null;
   location_text: string | null;
   city: string | null;
+  verified_status?: boolean | null;
   cover_image_url?: string | null;
   cover_focus_x?: number | null;
   cover_focus_y?: number | null;

@@ -114,8 +114,20 @@ function VendorCard({
               </div>
             )}
             <div className="min-w-0">
-              <div className="text-[14px] sm:text-[16px] font-semibold text-[#a68b6a] uppercase tracking-wide truncate font-[family-name:var(--font-plus-jakarta)]">
-                {vendor.business_name}
+              <div className="flex items-center gap-1.5 min-w-0">
+                <div className="text-[14px] sm:text-[16px] font-semibold text-[#a68b6a] uppercase tracking-wide truncate font-[family-name:var(--font-plus-jakarta)] flex-1 min-w-0">
+                  {vendor.business_name}
+                </div>
+                {vendor.verified_status === true && (
+                  <span className="inline-flex items-center justify-center h-5 w-5 shrink-0" aria-label="Verified">
+                    <img
+                      src="/cropped-vecteezy_verification-badge-set-guaranteed-stamp-or-verified-badge_23900241.svg"
+                      alt="Verified"
+                      className="h-full w-full"
+                      loading="lazy"
+                    />
+                  </span>
+                )}
               </div>
               <div className="flex items-center gap-1 text-[13px] sm:text-[15px] text-neutral-600 font-[family-name:var(--font-plus-jakarta)]">
                 <span className="font-semibold text-[#a68b6a]">{rating.toFixed(1)}</span>

@@ -360,7 +360,7 @@ export default function SuperadminVendorsPage() {
         body: JSON.stringify({
           business_name: editForm.business_name,
           slug: editForm.slug,
-          description: editForm.description || null,
+          description: editForm.description,
           location_text: editForm.location_text || null,
           city: editForm.city || null,
           address: editForm.address || null,

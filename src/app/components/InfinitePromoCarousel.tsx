@@ -13,6 +13,20 @@ function useIsMobile() {
   return isMobile;
 }
 
+function useIsTablet() {
+  const [isTablet, setIsTablet] = useState(false);
+  useEffect(() => {
+    const check = () => {
+      const w = window.innerWidth;
+      setIsTablet(w >= 640 && w < 1024);
+    };
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+  return isTablet;
+}
+
 type FeaturedPromo = {
   id: number;
   title: string;
@@ -55,10 +69,12 @@ function PromoCard({
   promo,
   index,
   tone,
+  isGrid = false,
 }: {
   promo: FeaturedPromo;
   index: number;
   tone: string;
+  isGrid?: boolean;
 }) {
   const vendorsRaw = promo.vendors;
   let vendor = null;
@@ -74,11 +90,16 @@ function PromoCard({
   const fy = clampPct(Number(promo.image_focus_y ?? 50));
   const z = clampZoom(Number(promo.image_zoom ?? 1));
 
+  // Grid card classes (mobile 2x3)
+  const gridClasses = "rounded-[10px] aspect-[3/4] shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] hover:shadow-[0_10px_25px_rgba(0,0,0,0.08),0_4px_10px_rgba(0,0,0,0.04)] hover:-translate-y-1 transition-all duration-500 w-full";
+  // Carousel card classes (desktop)
+  const carouselClasses = "rounded-[12px] aspect-[3/4] shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] hover:shadow-[0_10px_25px_rgba(0,0,0,0.08),0_4px_10px_rgba(0,0,0,0.04)] hover:-translate-y-3 transition-all duration-500 flex-shrink-0 w-[320px]";
+
   return (
     <a
       key={`${promo.id}-${index}`}
       href={`/promos/${promo.id}`}
-      className="group block rounded-[12px] overflow-hidden relative aspect-[3/4] shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] hover:shadow-[0_10px_25px_rgba(0,0,0,0.08),0_4px_10px_rgba(0,0,0,0.04)] hover:-translate-y-3 transition-all duration-500 flex-shrink-0 w-[280px] sm:w-[320px]"
+      className={`group block overflow-hidden relative ${isGrid ? gridClasses : carouselClasses}`}
     >
       <div className="absolute inset-0">
         {coverUrl ? (
@@ -102,29 +123,29 @@ function PromoCard({
         )}
       </div>
 
-      <div className="absolute bottom-2 sm:bottom-3 left-2 sm:left-3 right-2 sm:right-3 z-20 flex items-end justify-between gap-2">
-        <div className="backdrop-blur-md bg-white/75 border border-white/40 rounded-[6px] p-2.5 sm:p-3 shadow-lg flex-1">
-          <div className="text-[10px] font-semibold text-[#a68b6a] uppercase tracking-wide truncate font-[family-name:var(--font-plus-jakarta)]">
+      <div className={`absolute z-20 flex items-end justify-between ${isGrid ? 'bottom-2 left-2 right-2 gap-2' : 'bottom-3 left-3 right-3 gap-2'}`}>
+        <div className={`backdrop-blur-md bg-white/75 border border-white/40 shadow-lg flex-1 min-w-0 ${isGrid ? 'rounded-[6px] p-2' : 'rounded-[6px] p-3'}`}>
+          <div className={`font-semibold text-[#a68b6a] uppercase tracking-wide truncate font-[family-name:var(--font-plus-jakarta)] ${isGrid ? 'text-[9px]' : 'text-[10px]'}`}>
             {vendorName}
           </div>
-          <div className="mt-1 text-[13px] sm:text-[14px] font-bold text-[#2c2c2c] leading-tight line-clamp-2 font-[family-name:var(--font-plus-jakarta)]">
+          <div className={`font-bold text-[#2c2c2c] leading-tight line-clamp-2 font-[family-name:var(--font-plus-jakarta)] ${isGrid ? 'mt-0.5 text-[11px]' : 'mt-1 text-[14px]'}`}>
             {promo.title}
           </div>
-          <div className="mt-2">
+          <div className={isGrid ? 'mt-1' : 'mt-2'}>
             {typeof promo.discount_percentage === "number" ? (
-              <span className="inline-flex items-center rounded-sm bg-[#a68b6a] px-2 py-0.5 text-[10px] sm:text-[11px] font-bold text-white font-[family-name:var(--font-plus-jakarta)]">
-                {promo.discount_percentage}% OFF
+              <span className={`inline-flex items-center rounded-sm bg-[#a68b6a] font-bold text-white font-[family-name:var(--font-plus-jakarta)] ${isGrid ? 'px-1.5 py-0.5 text-[9px]' : 'px-2 py-0.5 text-[11px]'}`}>
+                {isGrid ? `${promo.discount_percentage}%` : `${promo.discount_percentage}% OFF`}
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-[#a68b6a] font-[family-name:var(--font-plus-jakarta)]">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#a68b6a] animate-pulse" aria-hidden />
+              <span className={`inline-flex items-center font-semibold text-[#a68b6a] font-[family-name:var(--font-plus-jakarta)] ${isGrid ? 'gap-1 text-[9px]' : 'gap-1.5 text-[10px]'}`}>
+                <span className={`rounded-full bg-[#a68b6a] animate-pulse ${isGrid ? 'h-1 w-1' : 'h-1.5 w-1.5'}`} aria-hidden />
                 Limited Time
               </span>
             )}
           </div>
         </div>
         {vendorLogo ? (
-          <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-[6px] border border-white/40 bg-white/50 backdrop-blur-sm overflow-hidden flex-shrink-0 shadow-lg">
+          <div className={`rounded-[6px] border border-white/40 bg-white/50 backdrop-blur-sm overflow-hidden flex-shrink-0 shadow-lg ${isGrid ? 'h-10 w-10' : 'h-16 w-16'}`}>
             <img
               src={proxiedImageUrl(vendorLogo)}
               alt=""
@@ -148,10 +169,11 @@ export default function InfinitePromoCarousel({ promos }: { promos: FeaturedProm
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
   const isMobile = useIsMobile();
+  const isTablet = useIsTablet();
 
   const duplicatedPromos = [...promos, ...promos, ...promos];
-  const cardWidth = isMobile ? 280 : 320;
-  const gap = isMobile ? 16 : 24;
+  const cardWidth = 320;
+  const gap = 24;
 
   const goToSlide = useCallback(
     (index: number, instant = false) => {
@@ -220,6 +242,40 @@ export default function InfinitePromoCarousel({ promos }: { promos: FeaturedProm
     );
   }
 
+  // Mobile: Show 2x3 grid (6 promos)
+  if (isMobile) {
+    const gridPromos = promos.slice(0, 6);
+    return (
+      <div className="pt-4">
+        <div className="grid grid-cols-2 gap-3">
+          {gridPromos.map((promo, i) => (
+            <PromoCard
+              key={`${promo.id}-${i}`}
+              promo={promo}
+              index={i}
+              tone={i % 2 === 0 ? "#a68b6a" : "#957a5c"}
+              isGrid={true}
+            />
+          ))}
+        </div>
+        {promos.length > 6 && (
+          <div className="flex justify-center gap-2 mt-6">
+            <a
+              href="/promos"
+              className="inline-flex items-center gap-1 text-[13px] font-semibold text-[#a68b6a] hover:text-[#957a5c] transition-colors font-[family-name:var(--font-plus-jakarta)]"
+            >
+              View All {promos.length} Promos
+              <svg width="16" height="16" viewBox="0 0 20 16" fill="none" aria-hidden className="w-4 h-4">
+                <path d="M2 8h16M12 2l6 6-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </a>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Tablet/Desktop: Show carousel
   return (
     <div
       className="relative overflow-x-hidden overflow-y-visible pt-4"
@@ -228,7 +284,7 @@ export default function InfinitePromoCarousel({ promos }: { promos: FeaturedProm
     >
       <div
         ref={containerRef}
-        className="flex gap-4 sm:gap-6 cursor-grab active:cursor-grabbing pl-4 sm:pl-0"
+        className="flex gap-6 cursor-grab active:cursor-grabbing"
         style={{
           transform: `translateX(-${currentIndex * (cardWidth + gap)}px)`,
           transition: isTransitioning ? "transform 500ms cubic-bezier(0.4, 0, 0.2, 1)" : "none",
@@ -244,11 +300,12 @@ export default function InfinitePromoCarousel({ promos }: { promos: FeaturedProm
             promo={promo}
             index={i}
             tone={i % 2 === 0 ? "#a68b6a" : "#957a5c"}
+            isGrid={false}
           />
         ))}
       </div>
 
-      <div className="flex justify-center gap-2 mt-6 sm:mt-8">
+      <div className="flex justify-center gap-2 mt-8">
         {promos.map((_, i) => {
           const actualIndex = currentIndex % promos.length;
           const isActive = actualIndex === i;

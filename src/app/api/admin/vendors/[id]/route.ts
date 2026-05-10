@@ -49,7 +49,13 @@ const FIELD_VALIDATORS: Record<string, (val: unknown) => { valid: boolean; value
   website_url: (val) => {
     if (typeof val !== "string" && val !== null) return { valid: false, error: "website_url must be a string or null" };
     if (typeof val === "string" && val.length > 500) return { valid: false, error: "website_url must be under 500 characters" };
-    if (typeof val === "string" && !/^https?:\/\/.+/.test(val)) return { valid: false, error: "website_url must be a valid URL starting with http:// or https://" };
+    if (typeof val === "string" && val.trim()) {
+      let url = val.trim();
+      // Auto-prepend https:// if no protocol provided
+      if (!/^https?:\/\//.test(url)) url = `https://${url}`;
+      if (!/^https?:\/\/.+/.test(url)) return { valid: false, error: "website_url must be a valid URL" };
+      return { valid: true, value: url };
+    }
     return { valid: true, value: val === null ? null : val.trim() };
   },
   logo_url: (val) => {
@@ -75,8 +81,8 @@ const FIELD_VALIDATORS: Record<string, (val: unknown) => { valid: boolean; value
     return { valid: true, value: val };
   },
   document_verified: (val) => {
-    if (typeof val !== "string") return { valid: false, error: "document_verified must be a string" };
-    if (!["pending", "verified", "approved", "rejected"].includes(val)) return { valid: false, error: "document_verified must be pending, verified, approved, or rejected" };
+    if (val !== null && typeof val !== "string") return { valid: false, error: "document_verified must be a string or null" };
+    if (typeof val === "string" && !["pending", "verified", "approved", "rejected"].includes(val)) return { valid: false, error: "document_verified must be pending, verified, approved, or rejected" };
     return { valid: true, value: val };
   },
 };
