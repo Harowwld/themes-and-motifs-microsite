@@ -112,7 +112,6 @@ export async function PATCH(req: Request) {
         website_url: reg.website_url ?? null,
         sec_dti_number: (reg as any).sec_dti_number ?? null,
         plan_id: reg.plan_id ?? null,
-        cover_image_url: (reg as any)?.extra?.cover_photo_url ?? null,
         logo_url: (reg as any)?.extra?.logo_url ?? null,
         verified_status: "unverified",
         is_active: true,
@@ -123,6 +122,37 @@ export async function PATCH(req: Request) {
 
     if (vendorErr) {
       return Response.json({ error: vendorErr.message }, { status: 500 });
+    }
+
+    // Create default album and add cover photo if provided
+    const coverPhotoUrl = (reg as any)?.extra?.cover_photo_url ?? null;
+    if (coverPhotoUrl && vendor?.id) {
+      // Create default "Gallery" album
+      const { data: album, error: albumErr } = await supabase
+        .from("vendor_albums")
+        .insert({
+          vendor_id: vendor.id,
+          title: "Gallery",
+          slug: "gallery",
+        })
+        .select("id")
+        .single();
+
+      if (albumErr) {
+        console.error("[API/admin/registrations] Failed to create album:", albumErr);
+      } else if (album?.id) {
+        // Insert cover photo into album
+        const { error: photoErr } = await supabase.from("vendor_album_photos").insert({
+          vendor_id: vendor.id,
+          album_id: album.id,
+          image_url: coverPhotoUrl,
+          display_order: 0,
+        });
+
+        if (photoErr) {
+          console.error("[API/admin/registrations] Failed to insert cover photo:", photoErr);
+        }
+      }
     }
 
     if (reg.category_id) {
