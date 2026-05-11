@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "@/lib/toast";
 
 type Editor = {
   id: string;
@@ -37,7 +38,6 @@ async function apiFetch<T>(url: string, init?: RequestInit): Promise<T> {
 
 export default function SuperadminEditorsPage() {
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [items, setItems] = useState<Editor[]>([]);
   const [query, setQuery] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -63,13 +63,12 @@ export default function SuperadminEditorsPage() {
   const [pendingEditorsLoading, setPendingEditorsLoading] = useState(true);
 
   async function refresh() {
-    setError(null);
     setLoading(true);
     try {
       const res = await apiFetch<{ editors: Editor[] }>("/api/admin/editors?limit=500");
       setItems(res.editors ?? []);
     } catch (e: any) {
-      setError(e?.message ?? "Failed to load editors.");
+      toast.error(e?.message ?? "Failed to load editors.");
     } finally {
       setLoading(false);
     }
@@ -81,7 +80,7 @@ export default function SuperadminEditorsPage() {
       const res = await apiFetch<{ pendingEditors: PendingEditor[] }>("/api/admin/editors?pending=true&limit=50");
       setPendingEditors(res.pendingEditors ?? []);
     } catch (e: any) {
-      // Silently fail
+      toast.error(e?.message ?? "Failed to load pending editors.");
     } finally {
       setPendingEditorsLoading(false);
     }
@@ -107,7 +106,6 @@ export default function SuperadminEditorsPage() {
     if (!newEmail.trim()) return;
 
     setAddLoading(true);
-    setError(null);
     try {
       const res = await apiFetch<{ editor: Editor }>("/api/admin/editors", {
         method: "POST",
@@ -116,8 +114,9 @@ export default function SuperadminEditorsPage() {
       setItems((prev) => [res.editor, ...prev]);
       setNewEmail("");
       setIsAdding(false);
+      toast.success("Editor added successfully");
     } catch (e: any) {
-      setError(e?.message ?? "Failed to add editor.");
+      toast.error(e?.message ?? "Failed to add editor.");
     } finally {
       setAddLoading(false);
     }
@@ -125,15 +124,15 @@ export default function SuperadminEditorsPage() {
 
   async function removeEditor(id: string) {
     setDeletingId(id);
-    setError(null);
     try {
       await apiFetch<{ ok: boolean }>(`/api/admin/editors?id=${encodeURIComponent(id)}`, {
         method: "DELETE",
       });
       setItems((prev) => prev.filter((x) => x.id !== id));
       setEditorToRemove(null);
+      toast.success("Editor removed successfully");
     } catch (e: any) {
-      setError(e?.message ?? "Failed to remove editor.");
+      toast.error(e?.message ?? "Failed to remove editor.");
     } finally {
       setDeletingId(null);
     }
@@ -141,7 +140,6 @@ export default function SuperadminEditorsPage() {
 
   async function approveEditor(email: string) {
     setApprovingId(email);
-    setError(null);
     try {
       const res = await apiFetch<{ editor: Editor }>("/api/admin/editors", {
         method: "POST",
@@ -152,8 +150,9 @@ export default function SuperadminEditorsPage() {
       // Add to approved list
       setItems((prev) => [res.editor, ...prev]);
       setEditorToApprove(null);
+      toast.success("Editor approved successfully");
     } catch (e: any) {
-      setError(e?.message ?? "Failed to approve editor.");
+      toast.error(e?.message ?? "Failed to approve editor.");
     } finally {
       setApprovingId(null);
     }
@@ -161,7 +160,6 @@ export default function SuperadminEditorsPage() {
 
   async function deletePendingEditor(userId: string) {
     setDeletingPendingUserId(userId);
-    setError(null);
     try {
       await apiFetch<{ ok: boolean }>(`/api/admin/editors?user_id=${encodeURIComponent(userId)}`, {
         method: "DELETE",
@@ -169,8 +167,9 @@ export default function SuperadminEditorsPage() {
       // Remove from pending list
       setPendingEditors((prev) => prev.filter((p) => p.user_id !== userId));
       setPendingEditorToDelete(null);
+      toast.success("User deleted successfully");
     } catch (e: any) {
-      setError(e?.message ?? "Failed to delete user.");
+      toast.error(e?.message ?? "Failed to delete user.");
     } finally {
       setDeletingPendingUserId(null);
     }
@@ -187,11 +186,6 @@ export default function SuperadminEditorsPage() {
         </div>
 
         <div className="p-6 grid gap-4">
-          {error ? (
-            <div className="rounded-[3px] border border-[#c17a4e]/30 bg-[#fff7ed] px-4 py-3 text-[13px] text-[#6e4f33]">
-              {error}
-            </div>
-          ) : null}
 
           {/* Add Editor Form */}
           {isAdding ? (

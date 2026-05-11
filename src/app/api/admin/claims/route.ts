@@ -148,21 +148,18 @@ export async function PATCH(req: Request) {
         const message = inviteRes.error?.message ?? "";
         const looksLikeAlreadyExists = /already\s*(registered|exists)|user\s*already/i.test(message);
 
-        if (!looksLikeAlreadyExists) {
+        if (looksLikeAlreadyExists) {
+          // User already exists - get their ID
+          const { data: existingUsers } = await supabase.auth.admin.listUsers();
+          const existingUser = existingUsers?.users?.find((u: { email?: string }) => u.email?.toLowerCase() === claim.contact_email.toLowerCase());
+          if (existingUser?.id) {
+            userId = existingUser.id;
+          } else {
+            return Response.json({ error: "User already exists but could not be found" }, { status: 500 });
+          }
+        } else {
           return Response.json({ error: inviteRes.error?.message ?? "Failed to invite user" }, { status: 500 });
         }
-
-        const linkRes = await supabase.auth.admin.generateLink({
-          type: "magiclink",
-          email: claim.contact_email,
-          options: { redirectTo },
-        });
-
-        if (linkRes.error || !linkRes.data?.user?.id) {
-          return Response.json({ error: linkRes.error?.message ?? "Failed to generate login link" }, { status: 500 });
-        }
-
-        userId = linkRes.data.user.id;
       } else {
         userId = inviteRes.data.user.id;
       }

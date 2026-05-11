@@ -18,3 +18,7 @@ port = 54324
 
 [storage]
 file_size_limit = "50MiB"
+
+[auth.email.template.invite]
+subject = "Welcome to Themes & Motifs! Your vendor account has been approved"
+content_path = "./supabase/templates/invite.html"

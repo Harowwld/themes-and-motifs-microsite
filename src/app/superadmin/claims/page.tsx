@@ -98,8 +98,10 @@ export default function SuperadminClaimsPage() {
       });
       if (action === "verify" && res.vendor) {
         setClaims((prev) => prev.map((c) => (c.id === id ? { ...c, status: "verified" as const } : c)));
+        toast.success("Vendor verified successfully");
       } else if (res.claim) {
         setClaims((prev) => prev.map((c) => (c.id === id ? { ...c, ...(res.claim as any) } : c)));
+        toast.success(action === "approve" ? "Claim approved successfully" : "Claim rejected");
       }
     } catch (e: any) {
       toast.error(e?.message ?? "Failed to update claim.");

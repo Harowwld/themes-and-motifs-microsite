@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>You're Invited to Themes & Motifs</title>
+  <style>
+    /* Reset and Core Styles */
+    body { margin: 0; padding: 0; background-color: #f4f4f4; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+    table { border-spacing: 0; border-collapse: collapse; }
+    td { padding: 0; }
+    
+    /* Container Styles */
+    .wrapper { width: 100%; table-layout: fixed; background-color: #f4f4f4; padding-bottom: 40px; }
+    .main-table { background-color: #ffffff; margin: 0 auto; width: 100%; max-width: 600px; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    
+    /* Content Styles */
+    .header { background-color: #ffffff; padding: 40px 0 20px; text-align: center; border-bottom: 3px solid #C5A059; }
+    .logo-text { font-family: 'Georgia', serif; font-size: 28px; color: #333333; letter-spacing: 1px; text-transform: uppercase; text-decoration: none; }
+    
+    .content { padding: 40px 40px; text-align: center; color: #555555; }
+    .h1 { font-family: 'Georgia', serif; font-size: 26px; color: #333333; margin-bottom: 20px; }
+    .text { font-size: 16px; line-height: 26px; margin-bottom: 30px; }
+    
+    /* Button Styles */
+    .btn-container { margin: 35px 0; }
+    .btn { background-color: #C5A059; color: #ffffff !important; display: inline-block; padding: 14px 32px; font-size: 16px; font-weight: bold; text-decoration: none; border-radius: 4px; transition: background-color 0.3s; }
+    .btn:hover { background-color: #b08d4b; }
+    
+    /* Info Box Styles */
+    .info-box { background-color: #fdf6e9; border: 1px solid #e8d5b7; border-radius: 6px; padding: 20px; margin: 25px 0; text-align: left; }
+    .info-box-title { font-weight: bold; color: #8b6914; margin-bottom: 10px; font-size: 15px; }
+    .info-box-text { font-size: 14px; color: #6b5a3a; line-height: 22px; margin: 0; }
+    .info-box-text ol { margin: 10px 0 0 20px; padding: 0; }
+    .info-box-text li { margin-bottom: 8px; }
+    
+    /* Footer Styles */
+    .footer { background-color: #f8f8f8; padding: 25px; text-align: center; font-size: 12px; color: #999999; border-top: 1px solid #eeeeee; }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <table class="main-table" align="center">
+      <tr>
+        <td class="header">
+          <span class="logo-text">Themes & Motifs</span>
+        </td>
+      </tr>
+
+      <tr>
+        <td class="content">
+          <h1 class="h1">Welcome to Themes & Motifs!</h1>
+          <p class="text">
+            Your vendor registration has been <strong>approved</strong>. You can now manage your business profile, promos, and inquiries.
+          </p>
+          
+          <div class="btn-container">
+            <a href="{{ .ConfirmationURL }}" class="btn">Access Vendor Dashboard</a>
+          </div>
+          
+          <div class="info-box">
+            <p class="info-box-title">🔐 First-Time Login Instructions</p>
+            <p class="info-box-text">
+              Since this is your first time accessing your account, you'll need to set up your password:
+              <ol>
+                <li>Click the button above to access your account</li>
+                <li>You'll be redirected to the sign-in page</li>
+                <li>Click <strong>"Forgot password?"</strong> to set your password</li>
+                <li>Enter your email and follow the password reset instructions</li>
+              </ol>
+            </p>
+          </div>
+          
+          <p class="text" style="font-size: 14px; margin-top: 30px; color: #777;">
+            or copy this link into your browser:<br>
+            <a href="{{ .ConfirmationURL }}" style="color: #C5A059; text-decoration: underline; word-break: break-all;">{{ .ConfirmationURL }}</a>
+          </p>
+        </td>
+      </tr>
+
+      <tr>
+        <td class="footer">
+          <p>This invitation was sent to {{ .Email }}.</p>
+          <p>&​copy; 2026 Themes & Motifs. All rights reserved.</p>
+        </td>
+      </tr>
+    </table>
+  </div>
+</body>
+</html>

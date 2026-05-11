@@ -59,6 +59,7 @@ export default function SuperadminUsersPage() {
         body: JSON.stringify({ id, ...patch }),
       });
       setItems((prev) => prev.map((x) => (x.id === id ? (res.user as any) : x)));
+      toast.success("User updated successfully");
     } catch (e: any) {
       toast.error(e?.message ?? "Failed to update user.");
     } finally {
@@ -76,6 +77,7 @@ export default function SuperadminUsersPage() {
       });
       setItems((prev) => prev.filter((x) => x.id !== deletingUser.id));
       setDeletingUser(null);
+      toast.success("User deleted successfully");
     } catch (e: any) {
       toast.error(e?.message ?? "Failed to delete user.");
     } finally {

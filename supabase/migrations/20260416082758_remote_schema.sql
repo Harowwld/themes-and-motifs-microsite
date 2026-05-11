@@ -474,7 +474,6 @@ alter table "public"."vendors" enable row level security;
     "notes" text
       );
 
-
 alter table "public"."verification_documents" enable row level security;
 
 alter table "public"."superadmin_sessions" alter column "id" set default gen_random_uuid();

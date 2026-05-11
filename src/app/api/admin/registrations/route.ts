@@ -34,7 +34,7 @@ type PatchBody =
 
 export async function PATCH(req: Request) {
   try {
-    await assertSuperadminRequest(req);
+    const { userId: adminUserId } = await assertSuperadminRequest(req);
 
     const body = ((await req.json()) ?? {}) as PatchBody;
 
@@ -72,7 +72,7 @@ export async function PATCH(req: Request) {
           status: "rejected",
           admin_notes: adminNotes,
           reviewed_at: now,
-          reviewed_by: "admin",
+          reviewed_by: adminUserId,
         })
         .eq("id", body.id)
         .select("id,business_name,contact_email,contact_phone,category_id,location,website_url,plan_id,status,created_at")
@@ -94,7 +94,7 @@ export async function PATCH(req: Request) {
     const slug = await ensureUniqueSlug(supabase, baseSlug);
 
     const redirectTo = getRedirectTo();
-    const invited = await inviteOrMagicLinkUser(supabase, reg.contact_email, redirectTo);
+    const invited = await inviteUser(supabase, reg.contact_email, redirectTo);
 
     const { data: vendor, error: vendorErr } = await supabase
       .from("vendors")
@@ -113,7 +113,7 @@ export async function PATCH(req: Request) {
         sec_dti_number: (reg as any).sec_dti_number ?? null,
         plan_id: reg.plan_id ?? null,
         logo_url: (reg as any)?.extra?.logo_url ?? null,
-        verified_status: "unverified",
+        verified_status: false,
         is_active: true,
         is_featured: false,
       })
@@ -193,7 +193,7 @@ export async function PATCH(req: Request) {
         status: "approved",
         admin_notes: adminNotes,
         reviewed_at: now,
-        reviewed_by: "admin",
+        reviewed_by: adminUserId,
       })
       .eq("id", body.id)
       .select("id,business_name,contact_email,contact_phone,category_id,location,website_url,plan_id,status,created_at")
@@ -217,7 +217,7 @@ function getRedirectTo() {
   return `${url}/vendor/signup`;
 }
 
-async function inviteOrMagicLinkUser(
+async function inviteUser(
   supabase: ReturnType<typeof createSupabaseAdminClient>,
   email: string,
   redirectTo?: string
@@ -238,21 +238,17 @@ async function inviteOrMagicLinkUser(
   const message = inviteRes.error?.message ?? "";
   const looksLikeAlreadyExists = /already\s*(registered|exists)|user\s*already/i.test(message);
 
-  if (!looksLikeAlreadyExists) {
-    throw new Error(inviteRes.error?.message ?? "Failed to invite user");
+  if (looksLikeAlreadyExists) {
+    // User already exists - get their ID from the error or fetch it
+    const { data: existingUser } = await supabase.auth.admin.listUsers();
+    const user = existingUser?.users?.find((u: { email?: string }) => u.email?.toLowerCase() === e.toLowerCase());
+    if (user?.id) {
+      return { userId: user.id, method: "existing" as const };
+    }
+    throw new Error("User already exists but could not be found");
   }
 
-  const linkRes = await supabase.auth.admin.generateLink({
-    type: "magiclink",
-    email: e,
-    options: { redirectTo },
-  });
-
-  if (linkRes.error || !linkRes.data?.user?.id) {
-    throw new Error(linkRes.error?.message ?? "Failed to generate login link");
-  }
-
-  return { userId: linkRes.data.user.id, method: "magiclink" as const };
+  throw new Error(inviteRes.error?.message ?? "Failed to invite user");
 }
 
 function slugify(input: string) {

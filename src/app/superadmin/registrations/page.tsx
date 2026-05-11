@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "@/lib/toast";
 
 type Registration = {
   id: number;
@@ -43,20 +44,18 @@ function fmtDate(iso: string) {
 export default function SuperadminRegistrationsPage() {
   const [loading, setLoading] = useState(true);
   const [savingId, setSavingId] = useState<number | null>(null);
-  const [error, setError] = useState<string | null>(null);
 
   const [registrations, setRegistrations] = useState<Registration[]>([]);
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("");
 
   async function refresh() {
-    setError(null);
     setLoading(true);
     try {
       const res = await apiFetch<{ registrations: Registration[] }>("/api/admin/registrations?limit=500");
       setRegistrations(res.registrations ?? []);
     } catch (e: any) {
-      setError(e?.message ?? "Failed to load registrations.");
+      toast.error(e?.message ?? "Failed to load registrations.");
     } finally {
       setLoading(false);
     }
@@ -81,7 +80,6 @@ export default function SuperadminRegistrationsPage() {
 
   async function act(id: number, action: "approve" | "reject") {
     const admin_notes = window.prompt(action === "approve" ? "Admin notes (optional)" : "Reason / admin notes (optional)") ?? "";
-    setError(null);
     setSavingId(id);
     try {
       const res = await apiFetch<{ registration: Registration }>("/api/admin/registrations", {
@@ -89,8 +87,9 @@ export default function SuperadminRegistrationsPage() {
         body: JSON.stringify({ id, action, admin_notes: admin_notes.trim() ? admin_notes.trim() : null }),
       });
       setRegistrations((prev) => prev.map((r) => (r.id === id ? { ...r, ...(res.registration as any) } : r)));
+      toast.success(action === "approve" ? "Vendor approved successfully" : "Registration rejected");
     } catch (e: any) {
-      setError(e?.message ?? "Failed to update registration.");
+      toast.error(e?.message ?? "Failed to update registration.");
     } finally {
       setSavingId(null);
     }
@@ -111,11 +110,6 @@ export default function SuperadminRegistrationsPage() {
         </div>
 
         <div className="p-6 grid gap-4">
-          {error ? (
-            <div className="rounded-[3px] border border-[#c17a4e]/30 bg-[#fff7ed] px-4 py-3 text-[13px] text-[#6e4f33]">
-              {error}
-            </div>
-          ) : null}
 
           <div className="grid gap-3 sm:grid-cols-[1fr_200px_auto] sm:items-end">
             <label className="grid gap-1.5">
