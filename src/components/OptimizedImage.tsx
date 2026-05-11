@@ -51,6 +51,7 @@ export default function OptimizedImage({
   blurDataURL,
   onLoad,
   onError,
+  style,
 }: OptimizedImageProps) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isInView, setIsInView] = useState(priority);
@@ -120,8 +121,14 @@ export default function OptimizedImage({
     );
   }
 
-  return (
-    <div className={`relative overflow-hidden ${className}`} style={Object.assign({ width, height }, style)}>
+  const containerStyle = {
+  width,
+  height,
+  ...style,
+};
+
+return (
+    <div className={`relative overflow-hidden ${className}`} style={containerStyle}>
       {/* Blur placeholder */}
       <img
         src={blurSrc}

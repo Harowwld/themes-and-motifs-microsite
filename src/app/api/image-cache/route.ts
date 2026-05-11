@@ -1,6 +1,45 @@
 export const dynamic = "force-dynamic";
 
-const CACHE = caches.open("image-cache");
+// Only initialize cache in runtime environment
+const getCache = () => {
+  if (typeof caches !== 'undefined') {
+    return caches.open("image-cache");
+  }
+  return null;
+};
+
+// Helper function to fetch image directly when cache is unavailable
+async function fetchImageDirectly(url: string) {
+  try {
+    const response = await fetch(url, {
+      headers: {
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "accept": "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
+        "accept-encoding": "gzip, deflate, br",
+        "referer": "https://themes-and-motifs.harolddelapena-11.workers.dev/",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch image: ${response.status}`);
+    }
+
+    const imageBuffer = await response.arrayBuffer();
+    const contentType = response.headers.get("content-type") || "image/jpeg";
+
+    return new Response(imageBuffer, {
+      status: 200,
+      headers: {
+        "cache-control": "public, max-age=3600",
+        "content-type": contentType,
+        "cross-origin-resource-policy": "cross-origin",
+      },
+    });
+  } catch (error) {
+    console.error("Direct fetch error:", error);
+    return new Response("Failed to fetch image", { status: 500 });
+  }
+}
 
 // Enhanced cache headers for Cloudflare CDN
 const CACHE_HEADERS = {
@@ -19,7 +58,12 @@ export async function GET(req: Request) {
 
   try {
     // Check cache first
-    const cache = await CACHE;
+    const cache = await getCache();
+    if (!cache) {
+      // Cache not available, fetch directly
+      return fetchImageDirectly(url);
+    }
+    
     const cached = await cache.match(url);
     
     if (cached) {
@@ -73,7 +117,11 @@ export async function GET(req: Request) {
       },
     });
     
-    await cache.put(url, cacheResponse.clone());
+    // Only cache if cache is available
+    const cacheStore = await getCache();
+    if (cacheStore) {
+      await cacheStore.put(url, cacheResponse.clone());
+    }
 
     return new Response(imageBuffer, {
       status: 200,
