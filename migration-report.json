@@ -1,0 +1,112 @@
+{
+  "timestamp": "2026-05-11T06:06:16.341Z",
+  "options": {
+    "batchSize": 30,
+    "vendorId": null,
+    "dryRun": false,
+    "useEdgeFunction": true
+  },
+  "summary": {
+    "total": 16,
+    "successful": 0,
+    "failed": 16
+  },
+  "results": [
+    {
+      "success": false,
+      "vendor_id": 591,
+      "original_url": "https://themes-and-motifs-microsite.vercel.app/api/image-proxy?url=https%3A%2F%2Fdrive.google.com%2Fuc%3Fexport%3Dview%26id%3D1FOwwW7fYl9fMqqgNujygVFDmu3QM4rQa",
+      "error": "Could not extract Google Drive file ID"
+    },
+    {
+      "success": false,
+      "vendor_id": 546,
+      "original_url": "https://drive.google.com/file/d/1K7h7jCn6q5QrTNjvPPMohsTc-ODpyOpg/view?usp=sharing",
+      "error": "Image is not defined"
+    },
+    {
+      "success": false,
+      "vendor_id": 459,
+      "original_url": "https://drive.google.com/file/d/1V-nuOKXKnZWN8kM76hjXnAzDP3qpRVOh/view?usp=sharing",
+      "error": "Image is not defined"
+    },
+    {
+      "success": false,
+      "vendor_id": 855,
+      "original_url": "https://drive.google.com/file/d/1gYcclSVXOTcnlQ1UcaDEnGr3Dc5tfIy_/view?usp=sharing",
+      "error": "Image is not defined"
+    },
+    {
+      "success": false,
+      "vendor_id": 212,
+      "original_url": "https://themes-and-motifs-microsite.vercel.app/api/image-proxy?url=https%3A%2F%2Fdrive.google.com%2Fuc%3Fexport%3Dview%26id%3D1uG1WEIYlDQoOe_38h7DdiNjXFZTts7dh",
+      "error": "Could not extract Google Drive file ID"
+    },
+    {
+      "success": false,
+      "vendor_id": 293,
+      "original_url": "https://themes-and-motifs-microsite.vercel.app/api/image-proxy?url=https%3A%2F%2Fdrive.google.com%2Fuc%3Fexport%3Dview%26id%3D1vJGBVz4U5A7ZCgD0cRkAXub5bsK2nPV4",
+      "error": "Could not extract Google Drive file ID"
+    },
+    {
+      "success": false,
+      "vendor_id": 274,
+      "original_url": "https://themes-and-motifs-microsite.vercel.app/api/image-proxy?url=https%3A%2F%2Fdrive.google.com%2Fuc%3Fexport%3Dview%26id%3D18D6AilAkpBG5ocLCR3q_dEQuiHFqTOl8",
+      "error": "Could not extract Google Drive file ID"
+    },
+    {
+      "success": false,
+      "vendor_id": 720,
+      "original_url": "https://drive.google.com/file/d/1Fn5uWyff9OHhTF-FUImk5AOUA84CcOys/view?usp=drive_link",
+      "error": "Image is not defined"
+    },
+    {
+      "success": false,
+      "vendor_id": 636,
+      "original_url": "https://themes-and-motifs-microsite.vercel.app/api/image-proxy?url=https%3A%2F%2Fdrive.google.com%2Fuc%3Fexport%3Dview%26id%3D1ViQnuG4I4CxJZAHeaLCpqSN5JN05TzOd",
+      "error": "Could not extract Google Drive file ID"
+    },
+    {
+      "success": false,
+      "vendor_id": 241,
+      "original_url": "https://themes-and-motifs-microsite.vercel.app/api/image-proxy?url=https%3A%2F%2Fdrive.google.com%2Fuc%3Fexport%3Dview%26id%3D1H9lMXgvGjOILkmr8qFRWbxuIN3AdmDLh",
+      "error": "Could not extract Google Drive file ID"
+    },
+    {
+      "success": false,
+      "vendor_id": 199,
+      "original_url": "https://themes-and-motifs-microsite.vercel.app/api/image-proxy?url=https%3A%2F%2Fdrive.google.com%2Fuc%3Fexport%3Dview%26id%3D1KXtBGDeTKaD5OIyTUvkIsVlS5qQ5YK5P",
+      "error": "Could not extract Google Drive file ID"
+    },
+    {
+      "success": false,
+      "vendor_id": 222,
+      "original_url": "https://themes-and-motifs-microsite.vercel.app/api/image-proxy?url=https%3A%2F%2Fdrive.google.com%2Fuc%3Fexport%3Dview%26id%3D1UWYdcIt4MZOW8hUkJcjKHf6JNYmC89gk",
+      "error": "Could not extract Google Drive file ID"
+    },
+    {
+      "success": false,
+      "vendor_id": 632,
+      "original_url": "https://lh3.googleusercontent.com/p/AF1QipM2-0LXthTe88C9EE45_waIHf-3tGqSX39E8jfI=s680-w680-h510-rw",
+      "error": "Could not extract Google Drive file ID"
+    },
+    {
+      "success": false,
+      "vendor_id": 320,
+      "original_url": "https://themes-and-motifs-microsite.vercel.app/api/image-proxy?url=https%3A%2F%2Fdrive.google.com%2Fuc%3Fexport%3Dview%26id%3D1JS-OO3mK3zlD0YV4z7qoZvixJUQGEXpH",
+      "error": "Could not extract Google Drive file ID"
+    },
+    {
+      "success": false,
+      "vendor_id": 670,
+      "original_url": "https://drive.google.com/file/d/1iSIOmb71NJgL_c9ndtSKu8r_rWNFTGt4/view?usp=drive_link",
+      "error": "Image is not defined"
+    },
+    {
+      "success": false,
+      "vendor_id": 611,
+      "original_url": "https://themes-and-motifs-microsite.vercel.app/api/image-proxy?url=https%3A%2F%2Fdrive.google.com%2Fuc%3Fexport%3Dview%26id%3D1AyQ6VWOlQvRY06VnwTBMwh3nv_VzHAah",
+      "error": "Could not extract Google Drive file ID"
+    }
+  ]
+}

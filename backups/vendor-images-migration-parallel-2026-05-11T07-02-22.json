@@ -1,0 +1,3589 @@
+{
+  "timestamp": "2026-05-11T07-02-22",
+  "config": {
+    "concurrency": 10,
+    "batchSize": 50,
+    "delayBetweenBatches": 2000,
+    "requestTimeout": 15000,
+    "retryAttempts": 2
+  },
+  "summary": {
+    "total": 402,
+    "successful": 353,
+    "failed": 49,
+    "total_mb": "66.69",
+    "duration_minutes": "3.8",
+    "images_per_minute": 106
+  },
+  "results": [
+    {
+      "success": false,
+      "id": 7690,
+      "vendor_id": 744,
+      "previous_url": "https://drive.google.com/file/d/1HpWbBKcYJlvxiXLLAOGTSsCxiIU6cWSC/view?usp=drive_link",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7691,
+      "vendor_id": 744,
+      "previous_url": "https://drive.google.com/file/d/10N4vFMSzIjgyfd58OVXjNOslcHXsBOCx/view?usp=drive_link",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7692,
+      "vendor_id": 744,
+      "previous_url": "https://drive.google.com/file/d/1MTQID9cbpeSgFS8R6gCpcrRz92EWIIcO/view?usp=drive_link",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7693,
+      "vendor_id": 744,
+      "previous_url": "https://drive.google.com/file/d/1AUN_tiABbajc7SnYtDlAapukiTRWWN4s/view?usp=drive_link",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7710,
+      "vendor_id": 846,
+      "previous_url": "https://drive.google.com/file/d/1At0AstF0VLu8SsKL2ycFrdrHNTziMHO1/view?usp=drive_link",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7711,
+      "vendor_id": 846,
+      "previous_url": "https://drive.google.com/file/d/14fbuvZYl5eyX48AvxnN1EZpF3f8Kuit2/view?usp=drive_link",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": true,
+      "id": 7712,
+      "vendor_id": 846,
+      "previous_url": "https://drive.google.com/file/d/1e4Yg7YXC8lhEfvD8p8Ni4-har4Fsu9Em/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-846-img-7712-1778482797657.jpg",
+      "size_kb": 9,
+      "retry_count": 1
+    },
+    {
+      "success": false,
+      "id": 7713,
+      "vendor_id": 846,
+      "previous_url": "https://drive.google.com/file/d/1g18ah1iQRp5tjwpGnphyms-ZwyO8fj5P/view?usp=drive_link",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7714,
+      "vendor_id": 846,
+      "previous_url": "https://drive.google.com/file/d/14U8-ZXBLpaK93j1tf15ld-XAgZmbxS1m/view?usp=drive_link",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7715,
+      "vendor_id": 846,
+      "previous_url": "https://drive.google.com/file/d/1X7BBVBTtZnKpL-j9Kh34KXQ0mesTZ3Qr/view?usp=drive_link",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7716,
+      "vendor_id": 846,
+      "previous_url": "https://drive.google.com/file/d/1oSgucIEPeIOdMAKGsDczIav9kplLZJn6/view?usp=drive_link",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7717,
+      "vendor_id": 846,
+      "previous_url": "https://drive.google.com/file/d/1SXcuY8ArGM8HAGks7fdJ66w8BGJZG2GN/view?usp=drive_link",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7718,
+      "vendor_id": 761,
+      "previous_url": "https://drive.google.com/file/d/1NcJtvpKRxQjm8znTrUyZ8rBEAtGHGwTG/view?usp=drive_link",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7719,
+      "vendor_id": 761,
+      "previous_url": "https://drive.google.com/file/d/17PyM7pyu7CJqBZlW5diSEnRVe5IgEHw8/view?usp=drive_link",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7720,
+      "vendor_id": 761,
+      "previous_url": "https://drive.google.com/file/d/1iSseU-3gOEbLBuKRih-wov3P1GeXydsh/view?usp=drive_link",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7721,
+      "vendor_id": 761,
+      "previous_url": "https://drive.google.com/file/d/13e-EkZGIkYidHtvdOnOgI1bYEDIgHe61/view?usp=drive_link",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7722,
+      "vendor_id": 761,
+      "previous_url": "https://drive.google.com/file/d/1DM5X-pDYap_HDHvKkwkdGN3FIwyjdwmA/view?usp=drive_link",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7723,
+      "vendor_id": 499,
+      "previous_url": "https://drive.google.com/file/d/1HJlsVeR0q_HW2GELyLqyISqnQvGC1Ynj/view?usp=sharing",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7724,
+      "vendor_id": 499,
+      "previous_url": "https://drive.google.com/file/d/1mdnkNNrgsFXq-vi5YGtREnddedQbhp8j/view?usp=sharing",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7725,
+      "vendor_id": 499,
+      "previous_url": "https://drive.google.com/file/d/1o223RctC3WC_WVdqRu2WMi3CcpMgKy0w/view?usp=sharing",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7726,
+      "vendor_id": 499,
+      "previous_url": "https://drive.google.com/file/d/1qJgaXJnpz0iTrQyEAHv6fJ3KeM6Q4mTj/view?usp=sharing",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7727,
+      "vendor_id": 499,
+      "previous_url": "https://drive.google.com/file/d/1PF1G_vXVAJPEDkotDlNOhRv2WzfqNa_I/view?usp=sharing",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7728,
+      "vendor_id": 499,
+      "previous_url": "https://drive.google.com/file/d/1Xo2RRu2fLUOMN3d9G8L_oJMqX3BVaeht/view?usp=sharing",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7729,
+      "vendor_id": 499,
+      "previous_url": "https://drive.google.com/file/d/1QCFBzcYBrL18v1FF_xNPkThMXsShhNnb/view?usp=sharing",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7730,
+      "vendor_id": 499,
+      "previous_url": "https://drive.google.com/file/d/1uqc9BYxDDYjA61cIj8yRn4dypYKW06Gm/view?usp=sharing",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7731,
+      "vendor_id": 455,
+      "previous_url": "https://drive.google.com/file/d/1DM5X-pDYap_HDHvKkwkdGN3FIwyjdwmA/view?usp=drive_link",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7732,
+      "vendor_id": 455,
+      "previous_url": "https://drive.google.com/file/d/13e-EkZGIkYidHtvdOnOgI1bYEDIgHe61/view?usp=drive_link",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7733,
+      "vendor_id": 455,
+      "previous_url": "https://drive.google.com/file/d/1iSseU-3gOEbLBuKRih-wov3P1GeXydsh/view?usp=drive_link",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7734,
+      "vendor_id": 455,
+      "previous_url": "https://drive.google.com/file/d/17PyM7pyu7CJqBZlW5diSEnRVe5IgEHw8/view?usp=drive_link",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7735,
+      "vendor_id": 455,
+      "previous_url": "https://drive.google.com/file/d/1NcJtvpKRxQjm8znTrUyZ8rBEAtGHGwTG/view?usp=drive_link",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7736,
+      "vendor_id": 588,
+      "previous_url": "https://drive.google.com/file/d/1W6j3qFsqhE7Z6St2MPRw7waLPNv3U-54/view?usp=sharing",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7737,
+      "vendor_id": 588,
+      "previous_url": "https://drive.google.com/file/d/120wcLDh-kraZo6EMbFtlQjJROx2d-zRU/view?usp=drive_link",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7738,
+      "vendor_id": 588,
+      "previous_url": "https://drive.google.com/file/d/1cPuXYABMgFBzZD0TWilWsGi4cjgVGOIN/view?usp=drive_link",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7739,
+      "vendor_id": 588,
+      "previous_url": "https://drive.google.com/file/d/1Gr-0rkanzwVl1FZVJxssVVNrgHrqO1_w/view?usp=drive_link",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7740,
+      "vendor_id": 588,
+      "previous_url": "https://drive.google.com/file/d/1I0T5Ui0DLhuDJqu3QMkqinsiAVNaMWRj/view?usp=drive_link",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7741,
+      "vendor_id": 588,
+      "previous_url": "https://drive.google.com/file/d/10zX_VN4700XCYf0SYPVs04p5NVfT7xJc/view?usp=drive_link",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7742,
+      "vendor_id": 588,
+      "previous_url": "https://drive.google.com/file/d/1BXhwtpEzYDFpy_OLYzk95EbS2ono9b5L/view?usp=drive_link",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7749,
+      "vendor_id": 256,
+      "previous_url": "https://drive.google.com/file/d/1xu3Er1266AeeFhwWz2nkg1aU5mqgZTL2/view?usp=drive_link",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7750,
+      "vendor_id": 256,
+      "previous_url": "https://drive.google.com/file/d/1y1oUICIf5995DyBxSAL0kNdm8KFbrfnc/view?usp=drive_link",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7751,
+      "vendor_id": 256,
+      "previous_url": "https://drive.google.com/file/d/1PbmmrsyW8zhSEYOLoEBwtxhvuCz9gWv6/view?usp=drive_link",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7752,
+      "vendor_id": 256,
+      "previous_url": "https://drive.google.com/file/d/1ENVhvdYy85_KeCc-NVJ0C-YsjdDUOia9/view?usp=drive_link",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7753,
+      "vendor_id": 256,
+      "previous_url": "https://drive.google.com/file/d/19tWTESo1xGZCU4fNTTVV-wihDl919ihq/view?usp=drive_link",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7760,
+      "vendor_id": 893,
+      "previous_url": "https://drive.google.com/file/d/1HOOT0k7YbmvbZhepSctbl13RWXbsDVq2/view?usp=drive_link",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7761,
+      "vendor_id": 893,
+      "previous_url": "https://drive.google.com/file/d/11w76Q3Q5QcQW7kKL-NGbO1HdIiHZGOct/view?usp=drive_link",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7762,
+      "vendor_id": 893,
+      "previous_url": "https://drive.google.com/file/d/1zFVRqwGC_sD7PjnBvjzP0chf_BajwlDy/view?usp=drive_link",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7763,
+      "vendor_id": 893,
+      "previous_url": "https://drive.google.com/file/d/1PGEZ0_ZiOFWr5-jNNO1GBON0oj0jLngD/view?usp=drive_link",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7764,
+      "vendor_id": 893,
+      "previous_url": "https://drive.google.com/file/d/1UaFL-C5_fznDv1-syUKWLDpGEhik6XL9/view?usp=drive_link",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7765,
+      "vendor_id": 893,
+      "previous_url": "https://drive.google.com/file/d/1bTXzkvjHOwUzldK6RqSwjM23hBgtPRjq/view?usp=drive_link",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7766,
+      "vendor_id": 828,
+      "previous_url": "https://drive.google.com/file/d/1bKtwLlrIbDef_6bpsDuWP-gHTa2W-pP7/view?usp=drive_link",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": false,
+      "id": 7767,
+      "vendor_id": 828,
+      "previous_url": "https://drive.google.com/file/d/1ygZpLxfG2bxlOQ4KNFiuJGdh0mJvQ-i0/view?usp=drive_link",
+      "error": "Download failed",
+      "retry_count": 2
+    },
+    {
+      "success": true,
+      "id": 7768,
+      "vendor_id": 828,
+      "previous_url": "https://drive.google.com/file/d/14U6Py-AG63zgF2BLEoIa2bpN3mjODJjS/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-828-img-7768-1778482805691.jpg",
+      "size_kb": 875,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7769,
+      "vendor_id": 828,
+      "previous_url": "https://drive.google.com/file/d/1poEYgOQzrZBCKbZrMlRrJLdmLA1HZ81U/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-828-img-7769-1778482806692.jpg",
+      "size_kb": 621,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7770,
+      "vendor_id": 828,
+      "previous_url": "https://drive.google.com/file/d/1T4NvYPwS5aPEkS63eCCxfNkjJ7DiXmIf/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-828-img-7770-1778482805268.jpg",
+      "size_kb": 944,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7771,
+      "vendor_id": 542,
+      "previous_url": "https://drive.google.com/file/d/1d5j1XoFbko7gvNjw2bczzw8WAsbQN-jw/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-542-img-7771-1778482803139.jpg",
+      "size_kb": 10,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7772,
+      "vendor_id": 542,
+      "previous_url": "https://drive.google.com/file/d/1HZmUQTPdaWo7an1H-nNulg_Y2h5fdsVD/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-542-img-7772-1778482803010.jpg",
+      "size_kb": 13,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7773,
+      "vendor_id": 542,
+      "previous_url": "https://drive.google.com/file/d/1Ef-FfARlwCLm2GlPlOtJrZEfar0-mhIF/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-542-img-7773-1778482804713.jpg",
+      "size_kb": 13,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7774,
+      "vendor_id": 542,
+      "previous_url": "https://drive.google.com/file/d/1WmF1ucLw8et6ArxLjZa975VmquxOctjC/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-542-img-7774-1778482802508.jpg",
+      "size_kb": 15,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7775,
+      "vendor_id": 542,
+      "previous_url": "https://drive.google.com/file/d/1Sh9MmfT6L4vUQIT0_9NVxGuvQsxYvY8S/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-542-img-7775-1778482803778.jpg",
+      "size_kb": 13,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7776,
+      "vendor_id": 542,
+      "previous_url": "https://drive.google.com/file/d/1L7loGwqUkrd6Zc0A3nfgWk3SUUM0YrOM/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-542-img-7776-1778482803084.jpg",
+      "size_kb": 13,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7777,
+      "vendor_id": 542,
+      "previous_url": "https://drive.google.com/file/d/1Fd23NK79zJKBAvJ9gXp54TGsn1CUzhJv/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-542-img-7777-1778482802915.jpg",
+      "size_kb": 55,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7778,
+      "vendor_id": 235,
+      "previous_url": "https://drive.google.com/file/d/16dBTG_JQhhgVLUgDxln_b1KkJ2PjvGXJ/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-235-img-7778-1778482803176.jpg",
+      "size_kb": 303,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7779,
+      "vendor_id": 235,
+      "previous_url": "https://drive.google.com/file/d/14TnXCmovSKUcns2Gnzjp1RgDDaAPm1Q1/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-235-img-7779-1778482804090.jpg",
+      "size_kb": 348,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7780,
+      "vendor_id": 235,
+      "previous_url": "https://drive.google.com/file/d/1pPn0ZJ5twl96Msp6N1L21ThOxm-IXlVR/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-235-img-7780-1778482803066.jpg",
+      "size_kb": 166,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7781,
+      "vendor_id": 235,
+      "previous_url": "https://drive.google.com/file/d/10xVmsbQqLbNHDryXQzV6xx6UW62bYWsU/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-235-img-7781-1778482804870.jpg",
+      "size_kb": 126,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7782,
+      "vendor_id": 235,
+      "previous_url": "https://drive.google.com/file/d/1P3G4tNNBEQjBwLcNevtvA3uF7RHKkHjM/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-235-img-7782-1778482803738.jpg",
+      "size_kb": 145,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7783,
+      "vendor_id": 470,
+      "previous_url": "https://drive.google.com/file/d/1gnsr5TaSlwJCLehxq0I_ZSmepnsmJ7WB/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-470-img-7783-1778482805144.jpg",
+      "size_kb": 81,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7784,
+      "vendor_id": 470,
+      "previous_url": "https://drive.google.com/file/d/1wvvCd8n4Lqb2ob4FPOaA1TqJlywcDTLB/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-470-img-7784-1778482803953.jpg",
+      "size_kb": 12,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7785,
+      "vendor_id": 470,
+      "previous_url": "https://drive.google.com/file/d/1WY_3gsNWhw9mrFxrC0ZjCsxTEoVe-0DL/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-470-img-7785-1778482804254.jpg",
+      "size_kb": 12,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7786,
+      "vendor_id": 470,
+      "previous_url": "https://drive.google.com/file/d/1ezf62ovhUE-_GqYjAZN_e7z0O396JMqz/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-470-img-7786-1778482803484.jpg",
+      "size_kb": 11,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7787,
+      "vendor_id": 470,
+      "previous_url": "https://drive.google.com/file/d/14FzRc5AkH1aUOf0BKiSx0AQls40lycwA/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-470-img-7787-1778482803961.jpg",
+      "size_kb": 13,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7788,
+      "vendor_id": 470,
+      "previous_url": "https://drive.google.com/file/d/1mAaXfdIgkexgMB5DOUwrt4GMJ17VvhOr/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-470-img-7788-1778482804304.jpg",
+      "size_kb": 12,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7789,
+      "vendor_id": 470,
+      "previous_url": "https://drive.google.com/file/d/13t0eXam7XJCQjtj7qIey3N5lXA9d_GTU/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-470-img-7789-1778482802861.jpg",
+      "size_kb": 11,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7790,
+      "vendor_id": 866,
+      "previous_url": "https://drive.google.com/file/d/1b1OFHKQjY-Mc6enxvsIhZw1qM6ytQTd5/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-866-img-7790-1778482803554.jpg",
+      "size_kb": 178,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7791,
+      "vendor_id": 866,
+      "previous_url": "https://drive.google.com/file/d/1MdhSPcxN_27Vbr2w1G75GMiC70HRtRKX/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-866-img-7791-1778482803667.jpg",
+      "size_kb": 183,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7792,
+      "vendor_id": 866,
+      "previous_url": "https://drive.google.com/file/d/1E3SM1JErwtfgl1EZ9NLOANY7BV6PauXf/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-866-img-7792-1778482803728.jpg",
+      "size_kb": 56,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7793,
+      "vendor_id": 866,
+      "previous_url": "https://drive.google.com/file/d/1nMYqHGJzzSV1rB_odmD_V8uovB-unOIf/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-866-img-7793-1778482804114.jpg",
+      "size_kb": 369,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7794,
+      "vendor_id": 866,
+      "previous_url": "https://drive.google.com/file/d/13Unynwhrs5caBSR9YcoKYBOiN2mWjlYn/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-866-img-7794-1778482804159.jpg",
+      "size_kb": 160,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7795,
+      "vendor_id": 866,
+      "previous_url": "https://drive.google.com/file/d/1HSbByAuf3MWlRAP8RYY-3xj6ZH38z5Il/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-866-img-7795-1778482803684.jpg",
+      "size_kb": 112,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7796,
+      "vendor_id": 340,
+      "previous_url": "https://drive.google.com/file/d/1O2hf9xC2VwA9Vt-lbgFroqWn24oKpmoL/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-340-img-7796-1778482804339.jpg",
+      "size_kb": 224,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7797,
+      "vendor_id": 340,
+      "previous_url": "https://drive.google.com/file/d/1qtgwg_nN6SZMhIeOwUaLdjllaGIahKFn/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-340-img-7797-1778482807572.jpg",
+      "size_kb": 458,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7798,
+      "vendor_id": 340,
+      "previous_url": "https://drive.google.com/file/d/1UaNcO2iSSInuCcxZewhbM1j9Imo2RbD_/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-340-img-7798-1778482803036.jpg",
+      "size_kb": 97,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7799,
+      "vendor_id": 340,
+      "previous_url": "https://drive.google.com/file/d/1vAR12wgdZNMPD3iMSRUBCvCICSv8Phj-/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-340-img-7799-1778482806317.jpg",
+      "size_kb": 261,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7800,
+      "vendor_id": 340,
+      "previous_url": "https://drive.google.com/file/d/1QFCbJgL81gWk3LPOaPTqv5b1FOkHYYf2/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-340-img-7800-1778482803069.jpg",
+      "size_kb": 103,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7801,
+      "vendor_id": 920,
+      "previous_url": "https://drive.google.com/file/d/1XnS2OJKOInNDRuMIVzi6mkz9cpqxknKn/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-920-img-7801-1778482802878.jpg",
+      "size_kb": 8,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7802,
+      "vendor_id": 920,
+      "previous_url": "https://drive.google.com/file/d/115sIIojNdA6A-H0OeZnWCQ0t5_9_xnIM/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-920-img-7802-1778482804239.jpg",
+      "size_kb": 9,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7803,
+      "vendor_id": 920,
+      "previous_url": "https://drive.google.com/file/d/1pUklQPhwdjHy6FOZmwRIHibjgSvumr7I/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-920-img-7803-1778482802797.jpg",
+      "size_kb": 7,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7804,
+      "vendor_id": 920,
+      "previous_url": "https://drive.google.com/file/d/1ITnVPaQH8so2Z6EKwb6uAQfbGKiHSERX/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-920-img-7804-1778482802660.jpg",
+      "size_kb": 10,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7805,
+      "vendor_id": 920,
+      "previous_url": "https://drive.google.com/file/d/1ozANbWZPBFofPWhwn63prEsu5Ov5OS22/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-920-img-7805-1778482802840.jpg",
+      "size_kb": 11,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7806,
+      "vendor_id": 920,
+      "previous_url": "https://drive.google.com/file/d/1nv4wYSY4o5lopi9VE51Fyh9V_4PU-wTI/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-920-img-7806-1778482803453.jpg",
+      "size_kb": 10,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7807,
+      "vendor_id": 920,
+      "previous_url": "https://drive.google.com/file/d/1bqSFSXK-m9nI9fTr7m015Ld3pqRdyp6P/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-920-img-7807-1778482808190.jpg",
+      "size_kb": 87,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7808,
+      "vendor_id": 572,
+      "previous_url": "https://drive.google.com/file/d/18FiNmi-lug_LzsEWTZELpWEdKZvQqm7M/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-572-img-7808-1778482803490.jpg",
+      "size_kb": 206,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7809,
+      "vendor_id": 572,
+      "previous_url": "https://drive.google.com/file/d/1o7pGk5nefb3NldlEvnGDhyHBnge615Ma/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-572-img-7809-1778482805369.jpg",
+      "size_kb": 770,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7810,
+      "vendor_id": 572,
+      "previous_url": "https://drive.google.com/file/d/1WJUVw_rrZkeegXxZwP-aEtd_SM8K48cq/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-572-img-7810-1778482814510.jpg",
+      "size_kb": 1060,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7811,
+      "vendor_id": 572,
+      "previous_url": "https://drive.google.com/file/d/1EstjYO-JDZsgL4tEBS8ppGBqrEAhWVww/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-572-img-7811-1778482814364.jpg",
+      "size_kb": 1482,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7812,
+      "vendor_id": 572,
+      "previous_url": "https://drive.google.com/file/d/10xbQOkoxd9b7D_ngnqS9oGAKROFlswnQ/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-572-img-7812-1778482806384.jpg",
+      "size_kb": 735,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7813,
+      "vendor_id": 572,
+      "previous_url": "https://drive.google.com/file/d/1kIqVh2-ZWR0FA5yqC1T0S40R3EADkC3g/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-572-img-7813-1778482804798.jpg",
+      "size_kb": 812,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7814,
+      "vendor_id": 638,
+      "previous_url": "https://drive.google.com/file/d/17t1CMaNqnXwJUuTjWHtE2gPZk1O6OhK7/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-638-img-7814-1778482804471.jpg",
+      "size_kb": 417,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7815,
+      "vendor_id": 638,
+      "previous_url": "https://drive.google.com/file/d/1Z4HQWBX3CrMUepQ9HcU_Ya3jgeIDlleQ/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-638-img-7815-1778482803421.jpg",
+      "size_kb": 11,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7816,
+      "vendor_id": 638,
+      "previous_url": "https://drive.google.com/file/d/1YsTZBVocBuCdOBqnywwUDiO00MBBn6dk/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-638-img-7816-1778482804154.jpg",
+      "size_kb": 10,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7817,
+      "vendor_id": 638,
+      "previous_url": "https://drive.google.com/file/d/1Z9ODuTI-zC-lLdj_sODembtdKHvOZIjN/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-638-img-7817-1778482803885.jpg",
+      "size_kb": 10,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7818,
+      "vendor_id": 638,
+      "previous_url": "https://drive.google.com/file/d/1Z9ODuTI-zC-lLdj_sODembtdKHvOZIjN/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-638-img-7818-1778482823884.jpg",
+      "size_kb": 10,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7819,
+      "vendor_id": 638,
+      "previous_url": "https://drive.google.com/file/d/1gV5i0505FL68Aw49RGGIhsQBeCLGlYGE/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-638-img-7819-1778482820971.jpg",
+      "size_kb": 9,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7820,
+      "vendor_id": 638,
+      "previous_url": "https://drive.google.com/file/d/1DP7U1W0FsRpidlWSWhfsNJ19ZAYI64Hr/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-638-img-7820-1778482820844.jpg",
+      "size_kb": 10,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7821,
+      "vendor_id": 638,
+      "previous_url": "https://drive.google.com/file/d/1_H_0bd2C9mEnV4hy4zdELOqY9NDaY62Z/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-638-img-7821-1778482822419.jpg",
+      "size_kb": 8,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7822,
+      "vendor_id": 465,
+      "previous_url": "https://drive.google.com/file/d/1IPsKJvSlqyUih7Nmf-n5v3pbTT0ZZP8X/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-465-img-7822-1778482821718.jpg",
+      "size_kb": 115,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7823,
+      "vendor_id": 465,
+      "previous_url": "https://drive.google.com/file/d/1qGCgXWgh02f-DpxgetNlUgQYHzm3cOwJ/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-465-img-7823-1778482822119.jpg",
+      "size_kb": 680,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7824,
+      "vendor_id": 465,
+      "previous_url": "https://drive.google.com/file/d/1gcxbBga6LPDPQOJqHoQ7lbspSTUUIv7-/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-465-img-7824-1778482821310.jpg",
+      "size_kb": 107,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7825,
+      "vendor_id": 465,
+      "previous_url": "https://drive.google.com/file/d/1a4VvkRcnDS3pFQDKkniHRS6R91QoxzPI/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-465-img-7825-1778482821692.jpg",
+      "size_kb": 122,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7826,
+      "vendor_id": 465,
+      "previous_url": "https://drive.google.com/file/d/13yIOI8W9tzn_Km7qVzlyqjAIAbu4_1QO/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-465-img-7826-1778482821515.jpg",
+      "size_kb": 326,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7827,
+      "vendor_id": 234,
+      "previous_url": "https://drive.google.com/file/d/1Gq9EWbX1jV17kkGAUEkBUMzIkk9kY6Hw/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-234-img-7827-1778482821551.jpg",
+      "size_kb": 167,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7828,
+      "vendor_id": 234,
+      "previous_url": "https://drive.google.com/file/d/1YzJqBT353su0ZRlTSmW0HmHsv5NpP-X-/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-234-img-7828-1778482820602.jpg",
+      "size_kb": 201,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7829,
+      "vendor_id": 234,
+      "previous_url": "https://drive.google.com/file/d/12Ol1-nMHbZ-Sh8JzGO1o_2XqzM829D3y/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-234-img-7829-1778482822165.jpg",
+      "size_kb": 231,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7830,
+      "vendor_id": 234,
+      "previous_url": "https://drive.google.com/file/d/1o2DSGK6GPLQ3NMD10NgGgXkRUExDi4Iw/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-234-img-7830-1778482822229.jpg",
+      "size_kb": 197,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7831,
+      "vendor_id": 234,
+      "previous_url": "https://drive.google.com/file/d/18uNFiQqkQ5u7hWduoFHCZG0BG98fwCL7/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-234-img-7831-1778482821494.jpg",
+      "size_kb": 55,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7832,
+      "vendor_id": 234,
+      "previous_url": "https://drive.google.com/file/d/1ah_rQaLvDhCMsmu6yEqErxfD0yIrW29R/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-234-img-7832-1778482821725.jpg",
+      "size_kb": 148,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7833,
+      "vendor_id": 234,
+      "previous_url": "https://drive.google.com/file/d/1Pr1Us4szfNH4TH3s45w3kzJ0b-EAeLF-/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-234-img-7833-1778482820430.jpg",
+      "size_kb": 45,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7834,
+      "vendor_id": 594,
+      "previous_url": "https://drive.google.com/file/d/1qtCbaQselkAZ0TqqFfhttEk0QMn_jk4I/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-594-img-7834-1778482823467.jpg",
+      "size_kb": 894,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7835,
+      "vendor_id": 594,
+      "previous_url": "https://drive.google.com/file/d/1RIPEfZRBkpHYeOW3iNPsQhNA8d07ta_3/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-594-img-7835-1778482823186.jpg",
+      "size_kb": 644,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7836,
+      "vendor_id": 594,
+      "previous_url": "https://drive.google.com/file/d/10IzWNuzpbJFATnMj15YCtfcIy1XbwsGY/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-594-img-7836-1778482822806.jpg",
+      "size_kb": 665,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7837,
+      "vendor_id": 594,
+      "previous_url": "https://drive.google.com/file/d/1MIBdFfCxNHgohYSLrwoRKQR4QH5IlKe9/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-594-img-7837-1778482820690.jpg",
+      "size_kb": 53,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7838,
+      "vendor_id": 594,
+      "previous_url": "https://drive.google.com/file/d/1XVLkP22apQ0EiTi-aibKX9fvsQHdwIDN/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-594-img-7838-1778482824407.jpg",
+      "size_kb": 922,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7839,
+      "vendor_id": 594,
+      "previous_url": "https://drive.google.com/file/d/1KpTRLUemBI5T-Fe0jIkoKW4ngXd_dqga/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-594-img-7839-1778482821081.jpg",
+      "size_kb": 221,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7840,
+      "vendor_id": 594,
+      "previous_url": "https://drive.google.com/file/d/1K5EDmDSe58COY9mvyvQ_8FU0xUiPLpp4/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-594-img-7840-1778482821465.jpg",
+      "size_kb": 454,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7841,
+      "vendor_id": 640,
+      "previous_url": "https://drive.google.com/file/d/1V4MpSGnnm_rze9Di14LBSzRExp2T9k92/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-640-img-7841-1778482821178.jpg",
+      "size_kb": 8,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7842,
+      "vendor_id": 640,
+      "previous_url": "https://drive.google.com/file/d/16BuvQDelvPdS3wJ1Zou0yVygUo6BpvPv/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-640-img-7842-1778482821383.jpg",
+      "size_kb": 11,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7843,
+      "vendor_id": 640,
+      "previous_url": "https://drive.google.com/file/d/1iRkebh8w0z-EaH7mcP09HYt6XFRLC5cM/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-640-img-7843-1778482820604.jpg",
+      "size_kb": 9,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7844,
+      "vendor_id": 640,
+      "previous_url": "https://drive.google.com/file/d/1_OxhlbeH0JAV9la_bi-ufjFpAfe8cv79/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-640-img-7844-1778482820753.jpg",
+      "size_kb": 10,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7845,
+      "vendor_id": 640,
+      "previous_url": "https://drive.google.com/file/d/1ksjLYJfSbR8OVkwH0da2JSZGY0w3ESBM/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-640-img-7845-1778482821518.jpg",
+      "size_kb": 9,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7846,
+      "vendor_id": 640,
+      "previous_url": "https://drive.google.com/file/d/16_vBowg57_47Jx4wJ-gW5uvnrtYV-HfH/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-640-img-7846-1778482821134.jpg",
+      "size_kb": 9,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7847,
+      "vendor_id": 640,
+      "previous_url": "https://drive.google.com/file/d/1n1flO06ZaNmoLQhy8sVbBYpST41z3UhG/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-640-img-7847-1778482820649.jpg",
+      "size_kb": 8,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7848,
+      "vendor_id": 640,
+      "previous_url": "https://drive.google.com/file/d/1YKuyuc7s_o9MCYv-k3o9QrKH0roN2RaL/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-640-img-7848-1778482821050.jpg",
+      "size_kb": 13,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7849,
+      "vendor_id": 640,
+      "previous_url": "https://drive.google.com/file/d/1qBGUm-vl4UklmHXJ6EIoWJrao4VM5Dn-/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-640-img-7849-1778482820296.jpg",
+      "size_kb": 75,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7850,
+      "vendor_id": 624,
+      "previous_url": "https://drive.google.com/file/d/1PV60jK8YZeZ04hWYCmCmjr6NTte2vYIr/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-624-img-7850-1778482820917.jpg",
+      "size_kb": 175,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7851,
+      "vendor_id": 624,
+      "previous_url": "https://drive.google.com/file/d/1YBY5oC8TszDUSTDSMvk_I2vpcYOd8mIZ/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-624-img-7851-1778482820453.jpg",
+      "size_kb": 10,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7852,
+      "vendor_id": 624,
+      "previous_url": "https://drive.google.com/file/d/1SilgbXoRXK4O0xCfKQONaoc3cvEz-NoQ/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-624-img-7852-1778482820595.jpg",
+      "size_kb": 14,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7853,
+      "vendor_id": 624,
+      "previous_url": "https://drive.google.com/file/d/1gvdh3vh4XgeQZaUGz8tZWGp15mJdTiit/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-624-img-7853-1778482820533.jpg",
+      "size_kb": 13,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7854,
+      "vendor_id": 624,
+      "previous_url": "https://drive.google.com/file/d/1WvTUCwZcv0rtDm7lmb-pgnoxvWbJ0iUJ/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-624-img-7854-1778482820563.jpg",
+      "size_kb": 13,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7855,
+      "vendor_id": 624,
+      "previous_url": "https://drive.google.com/file/d/1Tyv2cniQLNv59E-iE2RK8Fq9G4HsSZ9r/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-624-img-7855-1778482821553.jpg",
+      "size_kb": 14,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7856,
+      "vendor_id": 624,
+      "previous_url": "https://drive.google.com/file/d/1klKFbqhRQe82SEqL5ubb7Td8NqkfQ40o/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-624-img-7856-1778482823344.jpg",
+      "size_kb": 16,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7857,
+      "vendor_id": 624,
+      "previous_url": "https://drive.google.com/file/d/1Af3vwRw-gPL9x0IvstAmpXzKaNUQibuS/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-624-img-7857-1778482821478.jpg",
+      "size_kb": 14,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7858,
+      "vendor_id": 409,
+      "previous_url": "https://drive.google.com/file/d/1tVgcIj5pzpO9bGGw7U_iVf4O5kdw1Upi/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-409-img-7858-1778482820743.jpg",
+      "size_kb": 35,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7859,
+      "vendor_id": 409,
+      "previous_url": "https://drive.google.com/file/d/18EPm3r5nXrk-asDWRZDRzq3dcP7I8503/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-409-img-7859-1778482822497.jpg",
+      "size_kb": 854,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7860,
+      "vendor_id": 409,
+      "previous_url": "https://drive.google.com/file/d/13Ob709Pbm2z6vYrp7nyKkZKO5Dc6ZSSe/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-409-img-7860-1778482822883.jpg",
+      "size_kb": 941,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7861,
+      "vendor_id": 409,
+      "previous_url": "https://drive.google.com/file/d/17MSTT4JJOgE1AfXhP0g6BquTAyFrh3-A/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-409-img-7861-1778482822262.jpg",
+      "size_kb": 562,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7862,
+      "vendor_id": 409,
+      "previous_url": "https://drive.google.com/file/d/1DvAeQzAO33MYYDZW8a95WaVPYdk_WHe3/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-409-img-7862-1778482822437.jpg",
+      "size_kb": 570,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7863,
+      "vendor_id": 403,
+      "previous_url": "https://drive.google.com/file/d/1VOBHYrb0v7bbtCJctg-4UZRkvnQf-s3-/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-403-img-7863-1778482820855.jpg",
+      "size_kb": 26,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7864,
+      "vendor_id": 403,
+      "previous_url": "https://drive.google.com/file/d/1_jWEX-oKKHESys9ITerp6Qb6uX-8mvjQ/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-403-img-7864-1778482820434.jpg",
+      "size_kb": 13,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7865,
+      "vendor_id": 403,
+      "previous_url": "https://drive.google.com/file/d/1rZMQOrDuecWej0omPgdie9r2elH5av-J/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-403-img-7865-1778482820511.jpg",
+      "size_kb": 14,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7866,
+      "vendor_id": 403,
+      "previous_url": "https://drive.google.com/file/d/1Z--cCfjmWSn7NoG22jeroLBlLnBUGZIs/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-403-img-7866-1778482820504.jpg",
+      "size_kb": 11,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7867,
+      "vendor_id": 403,
+      "previous_url": "https://drive.google.com/file/d/1l7oFAno7kIdDUtgacWS4SosQmr1ipEqp/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-403-img-7867-1778482821227.jpg",
+      "size_kb": 13,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7868,
+      "vendor_id": 403,
+      "previous_url": "https://drive.google.com/file/d/1Ltv4nDVoyGSLaykJRGvyRfn3hg6RlXru/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-403-img-7868-1778482832680.jpg",
+      "size_kb": 10,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7869,
+      "vendor_id": 403,
+      "previous_url": "https://drive.google.com/file/d/1sibHLQdMSvHJx8fzH4saiDnpL_aMrVgY/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-403-img-7869-1778482836577.jpg",
+      "size_kb": 14,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7870,
+      "vendor_id": 403,
+      "previous_url": "https://drive.google.com/file/d/1T8HtYdjo_OkLl-zgQlZV2yBTHvefQLFQ/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-403-img-7870-1778482833427.jpg",
+      "size_kb": 11,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7871,
+      "vendor_id": 230,
+      "previous_url": "https://drive.google.com/file/d/1KRUI8W9LA0wqMdcKgvYdrwwtgXrDSR3X/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-230-img-7871-1778482834133.jpg",
+      "size_kb": 6,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7872,
+      "vendor_id": 230,
+      "previous_url": "https://drive.google.com/file/d/16C_zwGLzLv2tM389IHHXFCnmrMN1-ZT_/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-230-img-7872-1778482833334.jpg",
+      "size_kb": 103,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7873,
+      "vendor_id": 230,
+      "previous_url": "https://drive.google.com/file/d/1X4TKvDgAiJZ4iqD-J81SsXC-kZ0WS9Er/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-230-img-7873-1778482835033.jpg",
+      "size_kb": 639,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7874,
+      "vendor_id": 230,
+      "previous_url": "https://drive.google.com/file/d/1As_0bDdwQDYGl2iNzvzkfANf8iLd0IxN/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-230-img-7874-1778482834416.jpg",
+      "size_kb": 289,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7875,
+      "vendor_id": 230,
+      "previous_url": "https://drive.google.com/file/d/1FySd42mx3j03tBQUbgKf9uM3Yls-FZLK/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-230-img-7875-1778482833285.jpg",
+      "size_kb": 198,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7876,
+      "vendor_id": 923,
+      "previous_url": "https://drive.google.com/file/d/1aLgOE8BLfcQRTyMsl3evs4A1cfOu-kya/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-923-img-7876-1778482832536.jpg",
+      "size_kb": 45,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7877,
+      "vendor_id": 923,
+      "previous_url": "https://drive.google.com/file/d/1qK2ycyzhNDhlupfJF1rym-A-2Y0RlFBw/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-923-img-7877-1778482832752.jpg",
+      "size_kb": 11,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7878,
+      "vendor_id": 923,
+      "previous_url": "https://drive.google.com/file/d/1rtb5pq5JxYn-MDsX94axS10XmGW958_n/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-923-img-7878-1778482833203.jpg",
+      "size_kb": 12,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7879,
+      "vendor_id": 923,
+      "previous_url": "https://drive.google.com/file/d/1ut_u7eiX85T9aSfKGOgUAXQiIuJhOE3M/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-923-img-7879-1778482833998.jpg",
+      "size_kb": 12,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7880,
+      "vendor_id": 923,
+      "previous_url": "https://drive.google.com/file/d/1I4ekmnJ5L1E_lfL1k7IoQO6YG1-U69jR/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-923-img-7880-1778482832230.jpg",
+      "size_kb": 13,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7881,
+      "vendor_id": 923,
+      "previous_url": "https://drive.google.com/file/d/1qCQ3Kb-Z7HD2gucnBnuJj4zMXXiXsDzG/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-923-img-7881-1778482833659.jpg",
+      "size_kb": 12,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7882,
+      "vendor_id": 651,
+      "previous_url": "https://drive.google.com/file/d/1h18LYi42gDtzuVoCJPy5Rhyz80ncr40x/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-651-img-7882-1778482834961.jpg",
+      "size_kb": 60,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7883,
+      "vendor_id": 651,
+      "previous_url": "https://drive.google.com/file/d/1K6D2GzA78NUa1n8eZ1jEqrToNoaNOfwW/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-651-img-7883-1778482833858.jpg",
+      "size_kb": 12,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7884,
+      "vendor_id": 651,
+      "previous_url": "https://drive.google.com/file/d/1B5lTwQJUWxmwQruiBhE3tD3Ackq-rg92/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-651-img-7884-1778482833618.jpg",
+      "size_kb": 17,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7885,
+      "vendor_id": 651,
+      "previous_url": "https://drive.google.com/file/d/1Y8qCiarOK1maBIwmIAgAsVYCqrNEPDNv/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-651-img-7885-1778482832879.jpg",
+      "size_kb": 12,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7886,
+      "vendor_id": 651,
+      "previous_url": "https://drive.google.com/file/d/1FZU-M3s15PjIWPCAcGPExUoSfD_wR3Sw/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-651-img-7886-1778482833996.jpg",
+      "size_kb": 11,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7887,
+      "vendor_id": 472,
+      "previous_url": "https://drive.google.com/file/d/1MdKjAYbxO1wF_u_IsF5QQ9IyKWZE8BQn/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-472-img-7887-1778482834076.jpg",
+      "size_kb": 146,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7888,
+      "vendor_id": 472,
+      "previous_url": "https://drive.google.com/file/d/13RI8f-EH_QeBPDXgCHG-nrffUxRupxea/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-472-img-7888-1778482833787.jpg",
+      "size_kb": 102,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7889,
+      "vendor_id": 472,
+      "previous_url": "https://drive.google.com/file/d/1UaaT8a4p6BdwzStnKehSPib5G21cjroh/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-472-img-7889-1778482834319.jpg",
+      "size_kb": 261,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7890,
+      "vendor_id": 472,
+      "previous_url": "https://drive.google.com/file/d/1v7ZBgSI3EoIoY5P6E-bnVS5q-i4kWHS2/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-472-img-7890-1778482833196.jpg",
+      "size_kb": 8,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7891,
+      "vendor_id": 472,
+      "previous_url": "https://drive.google.com/file/d/1fHZFuixcU1zguMrCvPDmWQdF9EVVWLqj/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-472-img-7891-1778482833320.jpg",
+      "size_kb": 10,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7892,
+      "vendor_id": 244,
+      "previous_url": "https://drive.google.com/file/d/1WwM4RTNmLVumTiSswYt82Fh0LrWrxYan/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-244-img-7892-1778482832914.jpg",
+      "size_kb": 11,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7893,
+      "vendor_id": 244,
+      "previous_url": "https://drive.google.com/file/d/1lg2nWSiwlvTvIA6ScuPSoRsRic6MJ49Q/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-244-img-7893-1778482833471.jpg",
+      "size_kb": 14,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7894,
+      "vendor_id": 244,
+      "previous_url": "https://drive.google.com/file/d/1y_KktZvOJVEjOIpk1iHNvKSPKgu8O-1k/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-244-img-7894-1778482833407.jpg",
+      "size_kb": 11,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7895,
+      "vendor_id": 244,
+      "previous_url": "https://drive.google.com/file/d/17shPgwYt-wE-DgWtJvsCwaDv-wV6OyUD/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-244-img-7895-1778482834296.jpg",
+      "size_kb": 31,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7896,
+      "vendor_id": 244,
+      "previous_url": "https://drive.google.com/file/d/1ZzKMhpCDfb7ovi-1r30a9MAUKw5oUJSg/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-244-img-7896-1778482834002.jpg",
+      "size_kb": 9,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7897,
+      "vendor_id": 244,
+      "previous_url": "https://drive.google.com/file/d/1oMEpakfzLClYF4qc6WM7hYWl3khVXGZN/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-244-img-7897-1778482834332.jpg",
+      "size_kb": 7,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7898,
+      "vendor_id": 244,
+      "previous_url": "https://drive.google.com/file/d/1SUsnuS9JQUB41b7CZSQsM_yjAKJk5UcW/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-244-img-7898-1778482833532.jpg",
+      "size_kb": 11,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7899,
+      "vendor_id": 244,
+      "previous_url": "https://drive.google.com/file/d/1mn4Tt85E3ZkYRg34-Rtdd9rMLbUeUHLn/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-244-img-7899-1778482833191.jpg",
+      "size_kb": 11,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7900,
+      "vendor_id": 703,
+      "previous_url": "https://drive.google.com/file/d/1jluIjv4-LdxfS3_Tk9PlRPTJCVrkW18W/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-703-img-7900-1778482834893.jpg",
+      "size_kb": 212,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7901,
+      "vendor_id": 703,
+      "previous_url": "https://drive.google.com/file/d/1Nev8XL3BduoJcqH4bve-QkTmHvz7Czp1/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-703-img-7901-1778482834092.jpg",
+      "size_kb": 380,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7902,
+      "vendor_id": 703,
+      "previous_url": "https://drive.google.com/file/d/1loCuOkHRbE6QEmvT0mqTNnPT3sottQwQ/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-703-img-7902-1778482839472.jpg",
+      "size_kb": 726,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7903,
+      "vendor_id": 703,
+      "previous_url": "https://drive.google.com/file/d/1QxkQU3Zy6toqR7u3jfXfX5K-5sNMsyoy/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-703-img-7903-1778482834461.jpg",
+      "size_kb": 220,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7904,
+      "vendor_id": 703,
+      "previous_url": "https://drive.google.com/file/d/1KvOD5ssc6_Om3LOmf04PFpzKpmbfCApL/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-703-img-7904-1778482834007.jpg",
+      "size_kb": 368,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7905,
+      "vendor_id": 809,
+      "previous_url": "https://drive.google.com/file/d/1dwgxsjT7puDJeTMftBbtXzklvzisvrRU/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-809-img-7905-1778482833888.jpg",
+      "size_kb": 355,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7906,
+      "vendor_id": 809,
+      "previous_url": "https://drive.google.com/file/d/1TJUuhHLQolOVKSI8jkWppT22asOmqTg5/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-809-img-7906-1778482834711.jpg",
+      "size_kb": 342,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7907,
+      "vendor_id": 809,
+      "previous_url": "https://drive.google.com/file/d/1uJQdNlx38lBX2_jrw7l02Xc0W0Vlj1Oq/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-809-img-7907-1778482834036.jpg",
+      "size_kb": 282,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7908,
+      "vendor_id": 809,
+      "previous_url": "https://drive.google.com/file/d/1O3zXwObGt6wXLhFMo-9RXgV-Hhh8UJGp/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-809-img-7908-1778482833962.jpg",
+      "size_kb": 205,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7909,
+      "vendor_id": 809,
+      "previous_url": "https://drive.google.com/file/d/1IeVo-xdZrv-rvYXOi2bElF7bP0PT3LXd/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-809-img-7909-1778482833137.jpg",
+      "size_kb": 61,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7910,
+      "vendor_id": 851,
+      "previous_url": "https://drive.google.com/file/d/1Kbyd1q_zYmnsO63JDj3YII7_ix-b_R-4/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-851-img-7910-1778482833410.jpg",
+      "size_kb": 16,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7911,
+      "vendor_id": 851,
+      "previous_url": "https://drive.google.com/file/d/1ZnnbP_WyftbRLj5EfkSMHJ4vhLYHIZ_Z/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-851-img-7911-1778482834011.jpg",
+      "size_kb": 8,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7912,
+      "vendor_id": 851,
+      "previous_url": "https://drive.google.com/file/d/1Bp4bOu4ejOUpeczzjfZNPNsb7Y75ncWc/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-851-img-7912-1778482834819.jpg",
+      "size_kb": 7,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7913,
+      "vendor_id": 851,
+      "previous_url": "https://drive.google.com/file/d/1GxPi-nLMPGnWk6O832VcnWqvUcIL8Keq/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-851-img-7913-1778482832665.jpg",
+      "size_kb": 9,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7914,
+      "vendor_id": 851,
+      "previous_url": "https://drive.google.com/file/d/1IfeEi2ryFpGr9dqixIblqwdyH_QPA-tw/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-851-img-7914-1778482833600.jpg",
+      "size_kb": 10,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7915,
+      "vendor_id": 851,
+      "previous_url": "https://drive.google.com/file/d/16ewiIWPIbKs3NmQ4lkQjckYDflOkpXjf/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-851-img-7915-1778482832350.jpg",
+      "size_kb": 10,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7916,
+      "vendor_id": 851,
+      "previous_url": "https://drive.google.com/file/d/1jr2ghweCb-t4735JQhwRRww6RCbXmqfF/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-851-img-7916-1778482832926.jpg",
+      "size_kb": 6,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7917,
+      "vendor_id": 822,
+      "previous_url": "https://drive.google.com/file/d/1MzJUJR4tz5wirwwxRiNp2f9sdCPzNMJ8/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-822-img-7917-1778482834049.jpg",
+      "size_kb": 256,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7918,
+      "vendor_id": 822,
+      "previous_url": "https://drive.google.com/file/d/1uAV2Rctp5PnDGcis4LITxbUFTC0QC6zu/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-822-img-7918-1778482846243.jpg",
+      "size_kb": 128,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7919,
+      "vendor_id": 822,
+      "previous_url": "https://drive.google.com/file/d/1JnZ2rRqAhgMzHS8AWNIWMrwEGl4xn75-/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-822-img-7919-1778482849156.jpg",
+      "size_kb": 169,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7920,
+      "vendor_id": 822,
+      "previous_url": "https://drive.google.com/file/d/1zYAfigmstnHIip6ZSyhaT7bVvlTEm2zw/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-822-img-7920-1778482852747.jpg",
+      "size_kb": 765,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7921,
+      "vendor_id": 822,
+      "previous_url": "https://drive.google.com/file/d/14SuzaTv9das4fgQ3S-jAsee5IAcKIv0N/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-822-img-7921-1778482848277.jpg",
+      "size_kb": 165,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7922,
+      "vendor_id": 516,
+      "previous_url": "https://drive.google.com/file/d/1gIvxCKYCrOGkal4ZVx0TK4RLnS0EErzP/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-516-img-7922-1778482845763.jpg",
+      "size_kb": 10,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7923,
+      "vendor_id": 516,
+      "previous_url": "https://drive.google.com/file/d/16d3K4QEveuIepPYw9Viwcjzbbs6xcp1r/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-516-img-7923-1778482846607.jpg",
+      "size_kb": 12,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7924,
+      "vendor_id": 516,
+      "previous_url": "https://drive.google.com/file/d/1Sc_xa-HKBaoFMF0Owns9tmHPOh1RZACi/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-516-img-7924-1778482846153.jpg",
+      "size_kb": 6,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7925,
+      "vendor_id": 516,
+      "previous_url": "https://drive.google.com/file/d/1yajLIsgrQ_PHmVESW6scdPnS9J2dlhaC/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-516-img-7925-1778482844999.jpg",
+      "size_kb": 12,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7926,
+      "vendor_id": 516,
+      "previous_url": "https://drive.google.com/file/d/1PXqs4SCg5H3tr7ozRmxT4pZM1scJm6jN/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-516-img-7926-1778482846118.jpg",
+      "size_kb": 8,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7927,
+      "vendor_id": 516,
+      "previous_url": "https://drive.google.com/file/d/10UoqUVVPwvmm7EXk1a5_0R4Gug_ls61H/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-516-img-7927-1778482844719.jpg",
+      "size_kb": 10,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7928,
+      "vendor_id": 516,
+      "previous_url": "https://drive.google.com/file/d/1KiwTR3CdtTdW2nGkmG-OOCkyWD3YBw7g/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-516-img-7928-1778482844504.jpg",
+      "size_kb": 10,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7929,
+      "vendor_id": 516,
+      "previous_url": "https://drive.google.com/file/d/1GIaNkI4Sk7EjTWGaXlcV9a9TQfrUPefY/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-516-img-7929-1778482847518.jpg",
+      "size_kb": 106,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7930,
+      "vendor_id": 423,
+      "previous_url": "https://drive.google.com/file/d/1K5xgzOUrD-hgxZLKB5pAdaDTyhsJMz_x/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-423-img-7930-1778482847105.jpg",
+      "size_kb": 7,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7931,
+      "vendor_id": 423,
+      "previous_url": "https://drive.google.com/file/d/1oBd53xg-rL0uA8-CAbtZhWq5V4BqTF0W/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-423-img-7931-1778482845364.jpg",
+      "size_kb": 12,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7932,
+      "vendor_id": 423,
+      "previous_url": "https://drive.google.com/file/d/1RO9JqIpO2g-zH9LqmO9EyEmESFJRVoLt/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-423-img-7932-1778482848794.jpg",
+      "size_kb": 13,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7933,
+      "vendor_id": 423,
+      "previous_url": "https://drive.google.com/file/d/1jcMefnIHYB5JxBqn7uVv3gebkNaUMl8l/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-423-img-7933-1778482846558.jpg",
+      "size_kb": 8,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7934,
+      "vendor_id": 423,
+      "previous_url": "https://drive.google.com/file/d/1Ix6ChwBVtF9_wf-nbggZfR0pcWEDtsUk/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-423-img-7934-1778482846584.jpg",
+      "size_kb": 12,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7935,
+      "vendor_id": 423,
+      "previous_url": "https://drive.google.com/file/d/1D1fvlMM30dorYlb0KYeznGmoBZcYaKd-/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-423-img-7935-1778482844643.jpg",
+      "size_kb": 8,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7936,
+      "vendor_id": 423,
+      "previous_url": "https://drive.google.com/file/d/1MrLLB61qPZbud7tObmrRClRUQJBu5h_i/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-423-img-7936-1778482846621.jpg",
+      "size_kb": 13,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7937,
+      "vendor_id": 423,
+      "previous_url": "https://drive.google.com/file/d/1Ol8KtEwoqVfOgc5hJhmdlbgCZnCL53p6/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-423-img-7937-1778482846746.jpg",
+      "size_kb": 57,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7938,
+      "vendor_id": 720,
+      "previous_url": "https://drive.google.com/file/d/1i9qzT6cLjjAU3qlo81K8Xpbvg7Ob8qG-/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-720-img-7938-1778482846536.jpg",
+      "size_kb": 59,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7939,
+      "vendor_id": 720,
+      "previous_url": "https://drive.google.com/file/d/1AEU57r112-qZV9yzzSsLGjsxXxvH63aS/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-720-img-7939-1778482848939.jpg",
+      "size_kb": 212,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7940,
+      "vendor_id": 720,
+      "previous_url": "https://drive.google.com/file/d/1m87KjndXW0D7LD62q8n43yIWRCVT6fSq/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-720-img-7940-1778482846554.jpg",
+      "size_kb": 80,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7941,
+      "vendor_id": 224,
+      "previous_url": "https://drive.google.com/file/d/1LdlobhVejzSxJoWUILlcrw_WLIE84jg4/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-224-img-7941-1778482847268.jpg",
+      "size_kb": 800,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7942,
+      "vendor_id": 224,
+      "previous_url": "https://drive.google.com/file/d/1h-gS42Ld2hsMz-81Oz-pnIL2VUIkpRw3/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-224-img-7942-1778482864335.jpg",
+      "size_kb": 959,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7943,
+      "vendor_id": 224,
+      "previous_url": "https://drive.google.com/file/d/1iFfQ-u6u7jVBRZgnMdPNrlzbEbP8PcoV/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-224-img-7943-1778482863241.jpg",
+      "size_kb": 1033,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7944,
+      "vendor_id": 224,
+      "previous_url": "https://drive.google.com/file/d/1j87FyDjcY6pjdPY8Uy-w3s4x2AmNfJyw/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-224-img-7944-1778482854260.jpg",
+      "size_kb": 773,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7955,
+      "vendor_id": 274,
+      "previous_url": "https://drive.google.com/uc?export=view&id=1-m7L3gWgKAKagvS0p-B6WDAqSmdmpvZU",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-274-img-7955-1778482859590.jpg",
+      "size_kb": 131,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7956,
+      "vendor_id": 274,
+      "previous_url": "https://drive.google.com/uc?export=view&id=13xOc2SsV6IQHc5HBnZMEgGGYhmTVUb1u",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-274-img-7956-1778482857013.jpg",
+      "size_kb": 574,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7957,
+      "vendor_id": 274,
+      "previous_url": "https://drive.google.com/uc?export=view&id=16kUTdqUgfck1YpVw_ooDELCuq2u28Ywg",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-274-img-7957-1778482853594.jpg",
+      "size_kb": 573,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7958,
+      "vendor_id": 274,
+      "previous_url": "https://drive.google.com/uc?export=view&id=18D6AilAkpBG5ocLCR3q_dEQuiHFqTOl8",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-274-img-7958-1778482850609.jpg",
+      "size_kb": 240,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7959,
+      "vendor_id": 274,
+      "previous_url": "https://drive.google.com/uc?export=view&id=1Or4qCzi93x_fneVTgt1Nv0cgSEABgAhf",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-274-img-7959-1778482847371.jpg",
+      "size_kb": 536,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7960,
+      "vendor_id": 274,
+      "previous_url": "https://drive.google.com/uc?export=view&id=1UHmcX4lTXNPop8pkPXmlmFsnZCYvdbAX",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-274-img-7960-1778482849781.jpg",
+      "size_kb": 713,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7961,
+      "vendor_id": 274,
+      "previous_url": "https://drive.google.com/uc?export=view&id=1aru72yH5_te4wVAfxUKtwmTT6-X-c3ov",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-274-img-7961-1778482863119.jpg",
+      "size_kb": 209,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7962,
+      "vendor_id": 274,
+      "previous_url": "https://drive.google.com/uc?export=view&id=1dCkv_35ooT0mlpbAI_0oWuPseQh296jY",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-274-img-7962-1778482847819.jpg",
+      "size_kb": 355,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7963,
+      "vendor_id": 274,
+      "previous_url": "https://drive.google.com/uc?export=view&id=1lYJjLEMfGAdVrJuwPYAXu29T7w74MhDv",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-274-img-7963-1778482847681.jpg",
+      "size_kb": 103,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7964,
+      "vendor_id": 274,
+      "previous_url": "https://drive.google.com/uc?export=view&id=1qGiuukj4avAbMcyt92Rpeup1C_3XtB8n",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-274-img-7964-1778482859839.jpg",
+      "size_kb": 191,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7965,
+      "vendor_id": 602,
+      "previous_url": "https://drive.google.com/file/d/1kljRDtImsHeCkKbmzpk2NsZYITLqMbIu/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-602-img-7965-1778482846638.jpg",
+      "size_kb": 12,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7966,
+      "vendor_id": 602,
+      "previous_url": "https://drive.google.com/file/d/1gwL2cssASnd4ZggGQ29st6KkQ8yL5_8v/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-602-img-7966-1778482850312.jpg",
+      "size_kb": 10,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7967,
+      "vendor_id": 602,
+      "previous_url": "https://drive.google.com/file/d/1dCKwHnS0N-SKw1Jr5Ah62pRvObvpvDXh/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-602-img-7967-1778482846792.jpg",
+      "size_kb": 139,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7968,
+      "vendor_id": 602,
+      "previous_url": "https://drive.google.com/file/d/17es-ZpoloAPD3LIONdpGMW-h_z2gLJts/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-602-img-7968-1778482846862.jpg",
+      "size_kb": 12,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7969,
+      "vendor_id": 602,
+      "previous_url": "https://drive.google.com/file/d/1sGdjYOsAO1NwvKwfpHlBlLCVa24X3fqy/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-602-img-7969-1778482853940.jpg",
+      "size_kb": 502,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7970,
+      "vendor_id": 464,
+      "previous_url": "https://drive.google.com/file/d/1rVyPwxCenIZk6CL8UL0indBObPGAdGQE/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-464-img-7970-1778482848200.jpg",
+      "size_kb": 175,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7971,
+      "vendor_id": 464,
+      "previous_url": "https://drive.google.com/file/d/1lRoS82wjvXqLeEElUhi8JWglradUuGBB/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-464-img-7971-1778482852580.jpg",
+      "size_kb": 375,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7972,
+      "vendor_id": 464,
+      "previous_url": "https://drive.google.com/file/d/1Q_1_w_K2x-dUgJPAqBWHxgG50hIL0tmO/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-464-img-7972-1778482848788.jpg",
+      "size_kb": 483,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7973,
+      "vendor_id": 464,
+      "previous_url": "https://drive.google.com/file/d/1O0GlSMVMUJ-AkaNW2FzYNP9yMO0v1qhO/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-464-img-7973-1778482846656.jpg",
+      "size_kb": 8,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7974,
+      "vendor_id": 464,
+      "previous_url": "https://drive.google.com/file/d/18S-d5LP9PWdYFRNrR96M560zJb_lTPyt/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-464-img-7974-1778482848725.jpg",
+      "size_kb": 440,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7975,
+      "vendor_id": 464,
+      "previous_url": "https://drive.google.com/file/d/1IfjtXR2v8Q4o3A8P2QF8TCQZr-PaKWcL/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-464-img-7975-1778482845129.jpg",
+      "size_kb": 38,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7976,
+      "vendor_id": 424,
+      "previous_url": "https://drive.google.com/file/d/1Js6CVZPLQiEzrk7R99X1saLkLyj5Ksr9/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-424-img-7976-1778482847047.jpg",
+      "size_kb": 535,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7977,
+      "vendor_id": 424,
+      "previous_url": "https://drive.google.com/file/d/14H-1txWoA1Xvne45ykwLadPjcTFZh4ma/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-424-img-7977-1778482850821.jpg",
+      "size_kb": 369,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7978,
+      "vendor_id": 424,
+      "previous_url": "https://drive.google.com/file/d/1NJf2urOyGRHbNhgRDMBi0Huqq_90uN3r/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-424-img-7978-1778482873868.jpg",
+      "size_kb": 410,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7979,
+      "vendor_id": 424,
+      "previous_url": "https://drive.google.com/file/d/1TauGQ_jI-uxYHr1d9OVu4aUAGXcLdMpu/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-424-img-7979-1778482870343.jpg",
+      "size_kb": 231,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7980,
+      "vendor_id": 424,
+      "previous_url": "https://drive.google.com/file/d/1TRvVkYORiCy9gc5jGRfeGPtmBZxw9lwn/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-424-img-7980-1778482871136.jpg",
+      "size_kb": 241,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7981,
+      "vendor_id": 424,
+      "previous_url": "https://drive.google.com/file/d/1oNKgtYnGUVzSNMDSUmB3sMJ_StJSsE0c/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-424-img-7981-1778482870828.jpg",
+      "size_kb": 78,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7982,
+      "vendor_id": 618,
+      "previous_url": "https://drive.google.com/file/d/1b4aZoseRqgTziEuPWftU0yHwDMXScd8o/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-618-img-7982-1778482870428.jpg",
+      "size_kb": 200,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7983,
+      "vendor_id": 618,
+      "previous_url": "https://drive.google.com/file/d/1FkmBLOIWjQxZCss4zh_YDGnjasIkM6PQ/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-618-img-7983-1778482870169.jpg",
+      "size_kb": 209,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7984,
+      "vendor_id": 618,
+      "previous_url": "https://drive.google.com/file/d/1D6AOerm0im4oJNn-17e9GmUMnpBB2QQp/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-618-img-7984-1778482871351.jpg",
+      "size_kb": 10,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7985,
+      "vendor_id": 618,
+      "previous_url": "https://drive.google.com/file/d/18HmAhzbGhir-Ht6MdXiWgIDE74bCJcoi/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-618-img-7985-1778482876875.jpg",
+      "size_kb": 647,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7986,
+      "vendor_id": 618,
+      "previous_url": "https://drive.google.com/file/d/18AYAsXXswqp4pm2wiMozI7aEbkhu0M3j/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-618-img-7986-1778482870798.jpg",
+      "size_kb": 97,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7987,
+      "vendor_id": 618,
+      "previous_url": "https://drive.google.com/file/d/1vE9CGFm1AdDJOia-QKSXzwQ7UyF_NSFI/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-618-img-7987-1778482870168.jpg",
+      "size_kb": 112,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7988,
+      "vendor_id": 618,
+      "previous_url": "https://drive.google.com/file/d/1hSKlHIH2HzNvBKoBNuUOwoRRUOY7TR5p/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-618-img-7988-1778482872651.jpg",
+      "size_kb": 690,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7989,
+      "vendor_id": 795,
+      "previous_url": "https://drive.google.com/file/d/1cVJkHKOaK1-rNaZg4XP2k-7SRwzxoKkZ/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-795-img-7989-1778482869644.jpg",
+      "size_kb": 96,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7990,
+      "vendor_id": 795,
+      "previous_url": "https://drive.google.com/file/d/1-Mz2pgO1Q_xY3FDCz0EnBw5JgA_Pnsef/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-795-img-7990-1778482870390.jpg",
+      "size_kb": 195,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7991,
+      "vendor_id": 795,
+      "previous_url": "https://drive.google.com/file/d/1CtxMJZN9b_WWsZvoOr_wSY4RQ21eh-4j/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-795-img-7991-1778482870225.jpg",
+      "size_kb": 111,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7992,
+      "vendor_id": 795,
+      "previous_url": "https://drive.google.com/file/d/1ApH02jgwxOCZVjQj8NWxXLzOGKYBKArV/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-795-img-7992-1778482872079.jpg",
+      "size_kb": 120,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7993,
+      "vendor_id": 466,
+      "previous_url": "https://drive.google.com/file/d/13TpYquj9nckzgjXzvD0KcAo_-LxsmVwx/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-466-img-7993-1778482869381.jpg",
+      "size_kb": 28,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7994,
+      "vendor_id": 466,
+      "previous_url": "https://drive.google.com/file/d/1TLB1XukEjpRBPcTe1smIUEzH4xdL30YF/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-466-img-7994-1778482871198.jpg",
+      "size_kb": 12,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7995,
+      "vendor_id": 466,
+      "previous_url": "https://drive.google.com/file/d/1WmxQMvVJME_MZOAPhY9FxrNEHTY6VZIy/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-466-img-7995-1778482871003.jpg",
+      "size_kb": 8,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7996,
+      "vendor_id": 466,
+      "previous_url": "https://drive.google.com/file/d/1NPskIAGRG72C54YLgtZ3IrU66FK4IOH2/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-466-img-7996-1778482870009.jpg",
+      "size_kb": 8,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7997,
+      "vendor_id": 466,
+      "previous_url": "https://drive.google.com/file/d/1jsMuaMPwbkBO9LammI2qq1QG2wMt8oQf/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-466-img-7997-1778482871113.jpg",
+      "size_kb": 9,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7998,
+      "vendor_id": 466,
+      "previous_url": "https://drive.google.com/file/d/1Nh2757xnL5PJnogLb6P1r_K6-uNZ6aw0/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-466-img-7998-1778482869874.jpg",
+      "size_kb": 9,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 7999,
+      "vendor_id": 292,
+      "previous_url": "https://drive.google.com/file/d/1O7Swv1eVG8dSP0n3vudlsAO_1BRymlfq/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-292-img-7999-1778482872197.jpg",
+      "size_kb": 115,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8000,
+      "vendor_id": 292,
+      "previous_url": "https://drive.google.com/file/d/1CSG5_qZbodytthyq-ElOxy8Wnxm2cidl/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-292-img-8000-1778482872302.jpg",
+      "size_kb": 210,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8001,
+      "vendor_id": 292,
+      "previous_url": "https://drive.google.com/file/d/1euIBfgI1HNpL9LZ1bf4Dj3h4yqsftbvm/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-292-img-8001-1778482870749.jpg",
+      "size_kb": 333,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8002,
+      "vendor_id": 292,
+      "previous_url": "https://drive.google.com/file/d/1KVppiKw5HRl_PRD_iV1cSZtmwVCSqH-I/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-292-img-8002-1778482871660.jpg",
+      "size_kb": 343,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8003,
+      "vendor_id": 292,
+      "previous_url": "https://drive.google.com/file/d/1E7iwlDC_meP_I3TmfluYIOn1hCZDP6gK/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-292-img-8003-1778482871939.jpg",
+      "size_kb": 733,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8004,
+      "vendor_id": 292,
+      "previous_url": "https://drive.google.com/file/d/1bhPDfTx67wE3lIDq0oeT0NBuMKneBys-/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-292-img-8004-1778482871361.jpg",
+      "size_kb": 307,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8005,
+      "vendor_id": 861,
+      "previous_url": "https://drive.google.com/file/d/1i4roqerfvl0lu1IwL2_mgvToCEu9vyaL/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-861-img-8005-1778482869591.jpg",
+      "size_kb": 9,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8006,
+      "vendor_id": 861,
+      "previous_url": "https://drive.google.com/file/d/1mx2OiqGL8cpBIffbUXpW-FqSOa2lmrm-/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-861-img-8006-1778482870876.jpg",
+      "size_kb": 5,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8007,
+      "vendor_id": 861,
+      "previous_url": "https://drive.google.com/file/d/1HwY9GQ0qxSd4tLWy2-45Yc5EcqEou0lK/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-861-img-8007-1778482870744.jpg",
+      "size_kb": 7,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8008,
+      "vendor_id": 861,
+      "previous_url": "https://drive.google.com/file/d/1Nz6zh58S4CFbRRovbijM03EDYsmiH-5Q/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-861-img-8008-1778482869810.jpg",
+      "size_kb": 8,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8009,
+      "vendor_id": 861,
+      "previous_url": "https://drive.google.com/file/d/1-6a7QtUPHVfvENKJVshqNqQPcLtxmRrU/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-861-img-8009-1778482869434.jpg",
+      "size_kb": 9,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8010,
+      "vendor_id": 861,
+      "previous_url": "https://drive.google.com/file/d/1N8oi4gHscCRit4JCysvMY5sgxxS0GmOq/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-861-img-8010-1778482869334.jpg",
+      "size_kb": 5,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8011,
+      "vendor_id": 800,
+      "previous_url": "https://drive.google.com/file/d/1Jrem8fDqfFQIKqNSNAF4KLI0sOAHcaHy/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-800-img-8011-1778482871524.jpg",
+      "size_kb": 522,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8012,
+      "vendor_id": 800,
+      "previous_url": "https://drive.google.com/file/d/1V_yMEA8Njc3ZGIEvLBqPLCExY7j4GMvf/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-800-img-8012-1778482869987.jpg",
+      "size_kb": 8,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8013,
+      "vendor_id": 800,
+      "previous_url": "https://drive.google.com/file/d/1a0QJJeBoMElZPtxxGwH4M7SUuEvJnLgT/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-800-img-8013-1778482869822.jpg",
+      "size_kb": 9,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8014,
+      "vendor_id": 800,
+      "previous_url": "https://drive.google.com/file/d/1ee9UpbYuf6QtBu4vB9WfzbivWIK0ZSAd/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-800-img-8014-1778482872023.jpg",
+      "size_kb": 11,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8015,
+      "vendor_id": 800,
+      "previous_url": "https://drive.google.com/file/d/1iUjXtJUl93uHJabcAi_58LykvmviCmT8/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-800-img-8015-1778482869748.jpg",
+      "size_kb": 12,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8016,
+      "vendor_id": 800,
+      "previous_url": "https://drive.google.com/file/d/1zE2jc1WK3go9IE5XykzhiG6TJkqESSM7/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-800-img-8016-1778482870342.jpg",
+      "size_kb": 10,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8017,
+      "vendor_id": 800,
+      "previous_url": "https://drive.google.com/file/d/1irOw2m6VeztW2zZkl8J_EouC5ozTi57m/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-800-img-8017-1778482871470.jpg",
+      "size_kb": 13,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8018,
+      "vendor_id": 800,
+      "previous_url": "https://drive.google.com/file/d/1rLNsH0xiijCjAm6KvDpsU8qzSBKGqT1J/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-800-img-8018-1778482870850.jpg",
+      "size_kb": 10,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8019,
+      "vendor_id": 856,
+      "previous_url": "https://drive.google.com/file/d/1nS_rxmajj8pX1CZh9soVboFp6yUgFHqH/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-856-img-8019-1778482872136.jpg",
+      "size_kb": 29,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8020,
+      "vendor_id": 856,
+      "previous_url": "https://drive.google.com/file/d/1OSahWO-e2TNC64sSd1zTqBivIdaUbjrk/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-856-img-8020-1778482870181.jpg",
+      "size_kb": 9,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8021,
+      "vendor_id": 856,
+      "previous_url": "https://drive.google.com/file/d/1bSL32g-gkFQU3xbCicBODqUsvR-Vr1G8/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-856-img-8021-1778482871404.jpg",
+      "size_kb": 10,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8022,
+      "vendor_id": 856,
+      "previous_url": "https://drive.google.com/file/d/1FbnmWCqTKL3ma-PjtJEKSsY4D52YWaXq/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-856-img-8022-1778482871845.jpg",
+      "size_kb": 11,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8023,
+      "vendor_id": 856,
+      "previous_url": "https://drive.google.com/file/d/1Vf4ZyxK9TaupFUqb6RXrjW5vTmEcVF9C/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-856-img-8023-1778482870163.jpg",
+      "size_kb": 259,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8024,
+      "vendor_id": 827,
+      "previous_url": "https://drive.google.com/file/d/1AtRSS5qcnNx380-ucSEjXvjkhdr0hWk8/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-827-img-8024-1778482869900.jpg",
+      "size_kb": 7,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8025,
+      "vendor_id": 827,
+      "previous_url": "https://drive.google.com/file/d/18vODJsOkrQNf-JayaXZIXS_mXuxL1xIu/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-827-img-8025-1778482870522.jpg",
+      "size_kb": 12,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8026,
+      "vendor_id": 827,
+      "previous_url": "https://drive.google.com/file/d/1nMrD3r0N2O6FWZTWErqiDNHGQAHaJ4dL/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-827-img-8026-1778482869623.jpg",
+      "size_kb": 7,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8027,
+      "vendor_id": 827,
+      "previous_url": "https://drive.google.com/file/d/1Pp3arloUDXcP9yL730m4h7L_iEB-j6kd/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-827-img-8027-1778482870693.jpg",
+      "size_kb": 7,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8028,
+      "vendor_id": 827,
+      "previous_url": "https://drive.google.com/file/d/1uWHboY7bC1UlCjOAx40i1gcMOylKrm2C/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-827-img-8028-1778482886921.jpg",
+      "size_kb": 7,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8029,
+      "vendor_id": 827,
+      "previous_url": "https://drive.google.com/file/d/1G2nGdX3j91ypgDI1IU0YPiEDQfJdm2vm/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-827-img-8029-1778482884612.jpg",
+      "size_kb": 9,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8030,
+      "vendor_id": 827,
+      "previous_url": "https://drive.google.com/file/d/1buYQvp3_wKqbTA_6zPlu-joH2327SWah/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-827-img-8030-1778482884314.jpg",
+      "size_kb": 91,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8031,
+      "vendor_id": 779,
+      "previous_url": "https://drive.google.com/file/d/1bbcyRUAPNLmeZVbKBR-YEVAzqYnNhCEr/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-779-img-8031-1778482883917.jpg",
+      "size_kb": 12,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8032,
+      "vendor_id": 779,
+      "previous_url": "https://drive.google.com/file/d/19cfY6L3eZ-qvaLUWfPjoYhQyr2rAXA6w/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-779-img-8032-1778482883433.jpg",
+      "size_kb": 13,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8033,
+      "vendor_id": 779,
+      "previous_url": "https://drive.google.com/file/d/1Ca6UnsDyxJr964WZntipURsxtjteQ0TK/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-779-img-8033-1778482883208.jpg",
+      "size_kb": 8,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8034,
+      "vendor_id": 779,
+      "previous_url": "https://drive.google.com/file/d/1A1GKMIubNexqVGhE8R0LG9g44V6GiQ4V/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-779-img-8034-1778482883640.jpg",
+      "size_kb": 13,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8035,
+      "vendor_id": 779,
+      "previous_url": "https://drive.google.com/file/d/1YWghlNaYCla6UQ-n5v89E6oXqNO6WOcy/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-779-img-8035-1778482884185.jpg",
+      "size_kb": 12,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8036,
+      "vendor_id": 779,
+      "previous_url": "https://drive.google.com/file/d/1N6IfKhFS8xYR1ajhtnDAz6nyulfAEduS/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-779-img-8036-1778482885633.jpg",
+      "size_kb": 14,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8037,
+      "vendor_id": 779,
+      "previous_url": "https://drive.google.com/file/d/19PC0WoDlzuilezC5qGIkJhJIrqLAZkMf/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-779-img-8037-1778482884954.jpg",
+      "size_kb": 9,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8038,
+      "vendor_id": 525,
+      "previous_url": "https://drive.google.com/file/d/14LT6FGZMWhqQao0Bk_dtXJ2tmfBlVkn2/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-525-img-8038-1778482884072.jpg",
+      "size_kb": 7,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8039,
+      "vendor_id": 525,
+      "previous_url": "https://drive.google.com/file/d/1Ln2ZGZfkxe3dkZO53K8w2CMBo6gscryv/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-525-img-8039-1778482886012.jpg",
+      "size_kb": 7,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8040,
+      "vendor_id": 525,
+      "previous_url": "https://drive.google.com/file/d/1Cixb_qtVHvfSxjUBlI4I_rzRNl4pmXNV/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-525-img-8040-1778482883920.jpg",
+      "size_kb": 74,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8041,
+      "vendor_id": 525,
+      "previous_url": "https://drive.google.com/file/d/1IoUFeParytydTWVAnKSSNSM5SCKnq6ZW/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-525-img-8041-1778482884340.jpg",
+      "size_kb": 9,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8042,
+      "vendor_id": 525,
+      "previous_url": "https://drive.google.com/file/d/19AUg8te1ROFM2xdodZTmP0mOBUUD40bd/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-525-img-8042-1778482885424.jpg",
+      "size_kb": 8,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8043,
+      "vendor_id": 525,
+      "previous_url": "https://drive.google.com/file/d/1ihKFgJPgZ9rSPXskbj6qRSzfyqnhCnoe/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-525-img-8043-1778482884888.jpg",
+      "size_kb": 11,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8044,
+      "vendor_id": 525,
+      "previous_url": "https://drive.google.com/file/d/1MBla9RN9ici_2mP3ulGHFd-eSc4pG9V7/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-525-img-8044-1778482884607.jpg",
+      "size_kb": 11,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8045,
+      "vendor_id": 561,
+      "previous_url": "https://drive.google.com/file/d/1vP33pNPZPadkqJJZKHnt2WlOdQl9JJiG/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-561-img-8045-1778482884401.jpg",
+      "size_kb": 122,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8046,
+      "vendor_id": 676,
+      "previous_url": "https://drive.google.com/file/d/1IuShf9R4BzAYMQAjaUDJ8ey8uPnmsM6c/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-676-img-8046-1778482884529.jpg",
+      "size_kb": 200,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8047,
+      "vendor_id": 676,
+      "previous_url": "https://drive.google.com/file/d/1hCyREP9lyfbxCLpvIutvZ6vmVT8B6xQF/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-676-img-8047-1778482884631.jpg",
+      "size_kb": 14,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8048,
+      "vendor_id": 676,
+      "previous_url": "https://drive.google.com/file/d/1_e74TERIRe233AUzEWLQ4U85lIwEranC/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-676-img-8048-1778482886076.jpg",
+      "size_kb": 15,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8049,
+      "vendor_id": 676,
+      "previous_url": "https://drive.google.com/file/d/11eEf82-g010mLQBAPpi7x-9DKlt_nn61/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-676-img-8049-1778482884773.jpg",
+      "size_kb": 14,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8050,
+      "vendor_id": 676,
+      "previous_url": "https://drive.google.com/file/d/1LCJqNRVDyjR91zRrmymciNqbwcCusV0O/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-676-img-8050-1778482884629.jpg",
+      "size_kb": 16,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8051,
+      "vendor_id": 676,
+      "previous_url": "https://drive.google.com/file/d/1s3rTVma24J5rZKFU_GA1zN2SNGZWkF0C/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-676-img-8051-1778482883663.jpg",
+      "size_kb": 15,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8052,
+      "vendor_id": 531,
+      "previous_url": "https://drive.google.com/file/d/1qGtwKaVt2ZKCoKS5qhhfFJZlO3FZfXX-/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-531-img-8052-1778482886794.jpg",
+      "size_kb": 67,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8053,
+      "vendor_id": 531,
+      "previous_url": "https://drive.google.com/file/d/14e1HExaqXo5DrZRsOAZwXf0vn5D1E_vB/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-531-img-8053-1778482885135.jpg",
+      "size_kb": 8,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8054,
+      "vendor_id": 531,
+      "previous_url": "https://drive.google.com/file/d/1LxTf9d5jS-ToAtPe9y3vgHPgPIBziu0F/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-531-img-8054-1778482883945.jpg",
+      "size_kb": 8,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8055,
+      "vendor_id": 531,
+      "previous_url": "https://drive.google.com/file/d/1jfz9dpLeN_CIyZv5NrVQ2VNFZa8v-Nsu/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-531-img-8055-1778482883526.jpg",
+      "size_kb": 10,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8056,
+      "vendor_id": 531,
+      "previous_url": "https://drive.google.com/file/d/1UPf2c14TRaXKquDqKGjNoQz4vLrxuLLy/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-531-img-8056-1778482884211.jpg",
+      "size_kb": 6,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8057,
+      "vendor_id": 531,
+      "previous_url": "https://drive.google.com/file/d/1tZeuB2THYZDfnoEOAD6RF6n8LiPplNR3/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-531-img-8057-1778482884663.jpg",
+      "size_kb": 8,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8058,
+      "vendor_id": 531,
+      "previous_url": "https://drive.google.com/file/d/1WzTy8fcAsWPPgXPBIEz1bZqiuUUqZuVT/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-531-img-8058-1778482884216.jpg",
+      "size_kb": 5,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8059,
+      "vendor_id": 587,
+      "previous_url": "https://drive.google.com/file/d/1Su994tRroFCxmgamQjJs1M5lYwoWPNRq/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-587-img-8059-1778482884441.jpg",
+      "size_kb": 384,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8060,
+      "vendor_id": 587,
+      "previous_url": "https://drive.google.com/file/d/1N8qpzg6Wu59yaV3wveN8WBwWVBnRudHV/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-587-img-8060-1778482887340.jpg",
+      "size_kb": 609,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8061,
+      "vendor_id": 587,
+      "previous_url": "https://drive.google.com/file/d/1YULFih5vAR7iVjdR_rmtfFBE8b9RM0Ye/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-587-img-8061-1778482887317.jpg",
+      "size_kb": 889,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8062,
+      "vendor_id": 587,
+      "previous_url": "https://drive.google.com/file/d/1XxAl59Pt0qBB2D78xyc3Apy0M3_nQyJU/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-587-img-8062-1778482886314.jpg",
+      "size_kb": 656,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8063,
+      "vendor_id": 587,
+      "previous_url": "https://drive.google.com/file/d/13FUheFbqIWNj9C1zxtcPXylFMX7qEAgB/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-587-img-8063-1778482893318.jpg",
+      "size_kb": 1302,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8064,
+      "vendor_id": 533,
+      "previous_url": "https://drive.google.com/file/d/1etSEo_5UGVREZJ8qRACtt7Bw1qI6Njr0/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-533-img-8064-1778482885496.jpg",
+      "size_kb": 662,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8065,
+      "vendor_id": 533,
+      "previous_url": "https://drive.google.com/file/d/1e8yrykav0LLWFWY7Vq31kzI3eQpKzLky/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-533-img-8065-1778482883562.jpg",
+      "size_kb": 10,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8066,
+      "vendor_id": 533,
+      "previous_url": "https://drive.google.com/file/d/11DW274LRIp9SNgurZNKDVsB0E6uuq3XF/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-533-img-8066-1778482883791.jpg",
+      "size_kb": 10,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8067,
+      "vendor_id": 533,
+      "previous_url": "https://drive.google.com/file/d/1t-Gp6Ped24BcGr9k6WghLIwx8PbXDI5z/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-533-img-8067-1778482884004.jpg",
+      "size_kb": 116,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8068,
+      "vendor_id": 533,
+      "previous_url": "https://drive.google.com/file/d/1R5BelJh-ocGhR_7I_EgZ-xvdXCgqsOap/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-533-img-8068-1778482883728.jpg",
+      "size_kb": 10,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8069,
+      "vendor_id": 533,
+      "previous_url": "https://drive.google.com/file/d/19HY1JvCRFuTBjjOeM4DhS_UWxITW8rAu/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-533-img-8069-1778482884842.jpg",
+      "size_kb": 9,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8071,
+      "vendor_id": 384,
+      "previous_url": "https://drive.google.com/file/d/1pbZEMlDVYqdD5b2MoRXoDyzLQOVDiOMp/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-384-img-8071-1778482887169.jpg",
+      "size_kb": 406,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8072,
+      "vendor_id": 384,
+      "previous_url": "https://drive.google.com/file/d/1pSj7zrd_ZxaCHYtCqz5DvMrhOaTGS_Ey/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-384-img-8072-1778482885955.jpg",
+      "size_kb": 397,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8073,
+      "vendor_id": 384,
+      "previous_url": "https://drive.google.com/file/d/1QRi2ryuB9vEH_i4A4HbF9Ade53Bj4Yxe/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-384-img-8073-1778482885478.jpg",
+      "size_kb": 342,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8074,
+      "vendor_id": 384,
+      "previous_url": "https://drive.google.com/file/d/1aIQqQ0U7H3vyOWFNteXGtT-PJSUFPsst/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-384-img-8074-1778482887307.jpg",
+      "size_kb": 443,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8075,
+      "vendor_id": 384,
+      "previous_url": "https://drive.google.com/file/d/1sTQOsd8RsFcANHP9dNOZraqD9JLl-0JV/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-384-img-8075-1778482885349.jpg",
+      "size_kb": 254,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8094,
+      "vendor_id": 583,
+      "previous_url": "https://drive.google.com/file/d/1T3aZ1FkF_k_c-Y8aYkebhVrbizSrv2IC/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-583-img-8094-1778482884684.jpg",
+      "size_kb": 10,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8095,
+      "vendor_id": 583,
+      "previous_url": "https://drive.google.com/file/d/1GJJuBIMX1WQxlU8ehMUa_f5zO036pggR/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-583-img-8095-1778482884493.jpg",
+      "size_kb": 11,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8096,
+      "vendor_id": 583,
+      "previous_url": "https://drive.google.com/file/d/1Dg1Pyl4f-uGxZcRM2fisJZH5DeD3avZh/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-583-img-8096-1778482884975.jpg",
+      "size_kb": 7,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8097,
+      "vendor_id": 583,
+      "previous_url": "https://drive.google.com/file/d/1UH9MeiZfNLp2MGnzxcZuNv1TFM7L7JDI/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-583-img-8097-1778482899682.jpg",
+      "size_kb": 12,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8098,
+      "vendor_id": 583,
+      "previous_url": "https://drive.google.com/file/d/1cUokgmMQYIqXxAgVJQRJKn7xpsbARlhh/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-583-img-8098-1778482898714.jpg",
+      "size_kb": 9,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8099,
+      "vendor_id": 583,
+      "previous_url": "https://drive.google.com/file/d/17UxCZY-FibTysVqBKwQKFvGnnALhmiLw/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-583-img-8099-1778482898839.jpg",
+      "size_kb": 12,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8100,
+      "vendor_id": 583,
+      "previous_url": "https://drive.google.com/file/d/19jTeWyAh3EOqQC1AM0H62rQDhrn3Vjt8/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-583-img-8100-1778482898840.jpg",
+      "size_kb": 56,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8362,
+      "vendor_id": 576,
+      "previous_url": "https://drive.google.com/uc?export=view&id=1ql8I6Hn1DzPCTuw7318Ce0Wu6v6L7wrd",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-576-img-8362-1778482914025.jpg",
+      "size_kb": 328,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8363,
+      "vendor_id": 576,
+      "previous_url": "https://drive.google.com/uc?export=view&id=14CbnPG0ySLqK3vgil8DPlEHghmwzoGEz",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-576-img-8363-1778482900647.jpg",
+      "size_kb": 86,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8364,
+      "vendor_id": 576,
+      "previous_url": "https://drive.google.com/uc?export=view&id=1CNMQOl3CAl4O6nCJGlGYDVBbhaSiiqtL",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-576-img-8364-1778482899869.jpg",
+      "size_kb": 163,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8365,
+      "vendor_id": 576,
+      "previous_url": "https://drive.google.com/uc?export=view&id=1GSqtIiPz5L8bxE4lPIhr_6fvpJN5uXEz",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-576-img-8365-1778482913607.jpg",
+      "size_kb": 157,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8366,
+      "vendor_id": 576,
+      "previous_url": "https://drive.google.com/uc?export=view&id=1Imiz7xqG0ZLuEY5-I8aS-CDs8sJWu4Vo",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-576-img-8366-1778482913085.jpg",
+      "size_kb": 142,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8367,
+      "vendor_id": 576,
+      "previous_url": "https://drive.google.com/uc?export=view&id=1UCfrqbCRX_Cwv3I9lzCfW5aodkdPi8Sr",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-576-img-8367-1778482913863.jpg",
+      "size_kb": 144,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8368,
+      "vendor_id": 576,
+      "previous_url": "https://drive.google.com/uc?export=view&id=1ZP9lrCAG541PwX43fWRjPFTaAmyR8CBt",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-576-img-8368-1778482914545.jpg",
+      "size_kb": 207,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8369,
+      "vendor_id": 576,
+      "previous_url": "https://drive.google.com/uc?export=view&id=1dfr5NJrZpcVTr_fTX9A6rl72jlQ0_tij",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-576-img-8369-1778482914185.jpg",
+      "size_kb": 111,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8370,
+      "vendor_id": 576,
+      "previous_url": "https://drive.google.com/uc?export=view&id=13sT5cKfrbExZHx7ECCb9fs4IERhqpIxG",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-576-img-8370-1778482913095.jpg",
+      "size_kb": 127,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8371,
+      "vendor_id": 576,
+      "previous_url": "https://drive.google.com/uc?export=view&id=1JP4dXxjTgXaGOtnsuZ-Dde6CzY13tRPm",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-576-img-8371-1778482900067.jpg",
+      "size_kb": 163,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8372,
+      "vendor_id": 576,
+      "previous_url": "https://drive.google.com/uc?export=view&id=1LpgNNcC69EAM0G9Clg2iVgFUj0BBczLa",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-576-img-8372-1778482913205.jpg",
+      "size_kb": 203,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8373,
+      "vendor_id": 576,
+      "previous_url": "https://drive.google.com/uc?export=view&id=1TNhut2SEOMMmlp3CETUEusene1P9vAmP",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-576-img-8373-1778482903457.jpg",
+      "size_kb": 196,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8374,
+      "vendor_id": 576,
+      "previous_url": "https://drive.google.com/uc?export=view&id=1i4yxeroKBbVcRRm8UCvUhsv8kQEtPCGr",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-576-img-8374-1778482913802.jpg",
+      "size_kb": 183,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8375,
+      "vendor_id": 576,
+      "previous_url": "https://drive.google.com/uc?export=view&id=1oPO4IUsTq8QbQucmF-0WrXX9LBHxK1R0",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-576-img-8375-1778482913514.jpg",
+      "size_kb": 287,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8995,
+      "vendor_id": 730,
+      "previous_url": "https://drive.google.com/file/d/1ck2CZd7AdRQn--D_FiUq0axNFaoPWwiF/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-730-img-8995-1778482899109.jpg",
+      "size_kb": 10,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8996,
+      "vendor_id": 730,
+      "previous_url": "https://drive.google.com/file/d/1YNqS32HEhPvhZnvWpckE5lJS5XPDDrTj/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-730-img-8996-1778482901915.jpg",
+      "size_kb": 8,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8997,
+      "vendor_id": 730,
+      "previous_url": "https://drive.google.com/file/d/1Z5Ya6WOfV1ks4fxQ9psYeGNNFQUSV62j/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-730-img-8997-1778482898294.jpg",
+      "size_kb": 12,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8998,
+      "vendor_id": 730,
+      "previous_url": "https://drive.google.com/file/d/10Qd0dToPa29sQwQwNkQlb8AnrNA4dDg6/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-730-img-8998-1778482898912.jpg",
+      "size_kb": 8,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 8999,
+      "vendor_id": 730,
+      "previous_url": "https://drive.google.com/file/d/17UG5p81MGJcEn2RSWCsq6JQHh5ocEk9G/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-730-img-8999-1778482900065.jpg",
+      "size_kb": 6,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 9000,
+      "vendor_id": 730,
+      "previous_url": "https://drive.google.com/file/d/1BeC9oW-0oSORGVlh-THAZI6Hyr1scuJR/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-730-img-9000-1778482898218.jpg",
+      "size_kb": 7,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 9001,
+      "vendor_id": 730,
+      "previous_url": "https://drive.google.com/file/d/1HDpgVRY7SLylrMHhFEqHo1BSoha5QPHD/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-730-img-9001-1778482899902.jpg",
+      "size_kb": 14,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 9002,
+      "vendor_id": 730,
+      "previous_url": "https://drive.google.com/file/d/1WhLrwYSJzRkq72iAesX7kfyBENIlPiCN/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-730-img-9002-1778482898654.jpg",
+      "size_kb": 9,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 9003,
+      "vendor_id": 730,
+      "previous_url": "https://drive.google.com/file/d/1ed3xrj_xrl4RhCiD38fiMez4lnTwZZwu/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-730-img-9003-1778482902023.jpg",
+      "size_kb": 543,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 9078,
+      "vendor_id": 213,
+      "previous_url": "https://drive.google.com/uc?export=view&id=1Cor6jgJtT-uckFnqlrDi4CwqrcK1Q4Jc",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-213-img-9078-1778482899172.jpg",
+      "size_kb": 128,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 9079,
+      "vendor_id": 213,
+      "previous_url": "https://drive.google.com/uc?export=view&id=1_ujALxzBRkKNIualBdzbHsdIZ104m6_k",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-213-img-9079-1778482914194.jpg",
+      "size_kb": 357,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 9080,
+      "vendor_id": 213,
+      "previous_url": "https://drive.google.com/uc?export=view&id=1fAqmhd2jRJkZxPHc_IPJdQmsJ9ZSX_ik",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-213-img-9080-1778482914546.jpg",
+      "size_kb": 183,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 9081,
+      "vendor_id": 213,
+      "previous_url": "https://drive.google.com/uc?export=view&id=1s59VfN4NE03m7z-x63xzRdLkIKxmzbdA",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-213-img-9081-1778482914504.jpg",
+      "size_kb": 292,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 9082,
+      "vendor_id": 213,
+      "previous_url": "https://drive.google.com/uc?export=view&id=1t-FrNFnY6Y5S3Nkk1N3iyq_i6gmUUFY5",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-213-img-9082-1778482914263.jpg",
+      "size_kb": 219,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 9206,
+      "vendor_id": 634,
+      "previous_url": "https://drive.google.com/uc?export=view&id=1Gzlgd-2CChSbhXQgR4FWFNEIa-80JR26",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-634-img-9206-1778482913165.jpg",
+      "size_kb": 199,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 9207,
+      "vendor_id": 634,
+      "previous_url": "https://drive.google.com/uc?export=view&id=1jMexZQHhTtAy-lxmDzZBxsdPmnqLnAal",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-634-img-9207-1778482905644.jpg",
+      "size_kb": 639,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 9208,
+      "vendor_id": 634,
+      "previous_url": "https://drive.google.com/uc?export=view&id=1jfELwIuwnU71BAchcDmi-q5Qj531PlLI",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-634-img-9208-1778482910966.jpg",
+      "size_kb": 846,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 9209,
+      "vendor_id": 634,
+      "previous_url": "https://drive.google.com/uc?export=view&id=1pte0yIb3SZLibmM8jiqXrnqK2cJUBe_9",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-634-img-9209-1778482899325.jpg",
+      "size_kb": 713,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 9210,
+      "vendor_id": 634,
+      "previous_url": "https://drive.google.com/uc?export=view&id=1uZI-PUVMDE-IwpIkqN8SENIcgp23ysH6",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-634-img-9210-1778482914088.jpg",
+      "size_kb": 309,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 9249,
+      "vendor_id": 243,
+      "previous_url": "https://drive.google.com/uc?export=view&id=11Mc1sPQuQa_AyEyFz7_ZihFduZgLkOoU",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-243-img-9249-1778482913155.jpg",
+      "size_kb": 118,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 9250,
+      "vendor_id": 243,
+      "previous_url": "https://drive.google.com/uc?export=view&id=150Z7QuuEMq6VzqZ1MkN-BYormRyFI6wm",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-243-img-9250-1778482909317.jpg",
+      "size_kb": 920,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 9251,
+      "vendor_id": 243,
+      "previous_url": "https://drive.google.com/uc?export=view&id=166nlp7C_u84XefBPWWVONp8wW8cxkMhz",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-243-img-9251-1778482914942.jpg",
+      "size_kb": 236,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 9252,
+      "vendor_id": 243,
+      "previous_url": "https://drive.google.com/uc?export=view&id=1B0YKL7O8g1KEuNFZ_HxM_n_Va9koE_Sb",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-243-img-9252-1778482909396.jpg",
+      "size_kb": 1323,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 9253,
+      "vendor_id": 243,
+      "previous_url": "https://drive.google.com/uc?export=view&id=1CwoxaspBw_30IB2HxGORj4OkMcmsLM4R",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-243-img-9253-1778482901532.jpg",
+      "size_kb": 332,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 9254,
+      "vendor_id": 243,
+      "previous_url": "https://drive.google.com/uc?export=view&id=1DxS7xizDFV94HoysG_lCOOUPWBlZl-ye",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-243-img-9254-1778482913298.jpg",
+      "size_kb": 215,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 9255,
+      "vendor_id": 243,
+      "previous_url": "https://drive.google.com/uc?export=view&id=1SbQ3_Y6T-K-Qw9wtmzU2B-V6GwmTptxT",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-243-img-9255-1778482914613.jpg",
+      "size_kb": 429,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 9256,
+      "vendor_id": 243,
+      "previous_url": "https://drive.google.com/uc?export=view&id=1UIG_NUP1lhIi2Yi9uwnUZTufE_NJvaOH",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-243-img-9256-1778482908896.jpg",
+      "size_kb": 763,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 9257,
+      "vendor_id": 243,
+      "previous_url": "https://drive.google.com/uc?export=view&id=1Zh_SddzGzur7cghhvBANsCxFJ9vc1lcE",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-243-img-9257-1778482913467.jpg",
+      "size_kb": 98,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 9258,
+      "vendor_id": 243,
+      "previous_url": "https://drive.google.com/uc?export=view&id=1a0oi6syAnJufO4h_qk2CE_OJ-hotzt6h",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-243-img-9258-1778482910087.jpg",
+      "size_kb": 1167,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 9259,
+      "vendor_id": 243,
+      "previous_url": "https://drive.google.com/uc?export=view&id=1d8NE7AD1Z0hCnTknAC-TWYRDyp_n1A3D",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-243-img-9259-1778482913249.jpg",
+      "size_kb": 123,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 9260,
+      "vendor_id": 243,
+      "previous_url": "https://drive.google.com/uc?export=view&id=1jEPqvEGvAdusz0hyj2Dw6bCF-GkuDBoN",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-243-img-9260-1778482913632.jpg",
+      "size_kb": 179,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 9261,
+      "vendor_id": 243,
+      "previous_url": "https://drive.google.com/uc?export=view&id=1pA89jhso3lA-H8r2IdTvq4pc8hKOHIFh",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-243-img-9261-1778482914068.jpg",
+      "size_kb": 177,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 9262,
+      "vendor_id": 243,
+      "previous_url": "https://drive.google.com/uc?export=view&id=1uBhH2FNxP8dsR53MK4g8IpBEJALhVRVf",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-243-img-9262-1778482928628.jpg",
+      "size_kb": 1762,
+      "retry_count": 0
+    },
+    {
+      "success": true,
+      "id": 9263,
+      "vendor_id": 243,
+      "previous_url": "https://drive.google.com/uc?export=view&id=1zMtPN8giQ4l7q1UoXWVKGoo4KD_Ts4Qj",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/gallery/vendor-243-img-9263-1778482940547.jpg",
+      "size_kb": 280,
+      "retry_count": 0
+    }
+  ]
+}

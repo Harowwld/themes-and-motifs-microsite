@@ -1,0 +1,2158 @@
+{
+  "metadata": {
+    "created_at": "2026-05-11T05:35:45.747Z",
+    "total_vendors": 358,
+    "supabase_url": "https://tedsezmxctrgghyabjjb.supabase.co",
+    "version": "1.0.0"
+  },
+  "vendors": [
+    {
+      "id": 188,
+      "business_name": "Tagaytay Highlands",
+      "logo_url": "https://drive.google.com/file/d/1AQ9n62pwsDkQP8Il6jUfztKZ4BmBPRHR/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 189,
+      "business_name": "DREAMCATCHERS PHOTOCINEMA",
+      "logo_url": "https://drive.google.com/file/d/1T1JWbfPQ_86hA4-SlA0t7aV95ZVp9gtG/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 192,
+      "business_name": "Captains plate",
+      "logo_url": "https://drive.google.com/file/d/1EzcTMUJhJ1YzYm2q7mM9t8Ilndd15gBP/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 194,
+      "business_name": "Boards by Dy",
+      "logo_url": "https://drive.google.com/file/d/14XfTzkewz2y06UGdz33VqlK515U-KVXp/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 195,
+      "business_name": "Path Production Events Management",
+      "logo_url": "https://drive.google.com/file/d/1ZPREXEeSd5OqbCzJ8SW1Bf9H8oUngzSy/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 197,
+      "business_name": "Hotel Kimberly Tagaytay ",
+      "logo_url": "https://drive.google.com/file/d/1QKK8qtzaHzMgoQWmtfaELXQwxOjm1M9k/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 199,
+      "business_name": "Bridesdream Gowns and Suits",
+      "logo_url": "https://themes-and-motifs-microsite.vercel.app/api/image-proxy?url=https%3A%2F%2Fdrive.google.com%2Fuc%3Fexport%3Dview%26id%3D1KXtBGDeTKaD5OIyTUvkIsVlS5qQ5YK5P",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 200,
+      "business_name": "Dangwa Flowers by Clint Carl",
+      "logo_url": "https://drive.google.com/file/d/1zUpXqvWx9FTHfCtP8_EdLchCRDq1v7lF/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 203,
+      "business_name": "A.Bernardo's Jewelry",
+      "logo_url": "https://drive.google.com/uc?export=view&id=1m3kDhXojDeCSDhZBLpTcIOUcICUtqFeb",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 204,
+      "business_name": "DreiSofia's",
+      "logo_url": "https://drive.google.com/file/d/1ZbAqt1rgQgtky9agoSg9EBTkcrpffExa/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 205,
+      "business_name": "Bayview Park Hotel",
+      "logo_url": "https://drive.google.com/uc?export=view&id=1Crm8bCYbdUi38wi0lshUPkoIibTBTPps",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 207,
+      "business_name": "APerfectDayWedcar Transport Services",
+      "logo_url": "https://drive.google.com/file/d/1s6nS3icAwwYqI7UdOWToxR5Bvhu8c_9T/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 208,
+      "business_name": "Bar on the Run",
+      "logo_url": "https://drive.google.com/file/d/18zLhcaZ3vQeGFP_KXgkfjL3Loxai0uBG/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 209,
+      "business_name": "CITY GARDEN GRAND HOTEL",
+      "logo_url": "https://drive.google.com/file/d/1gK6aVmPOhdVKgxT7jih3Xbtz9mAG3s0m/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 212,
+      "business_name": "Shutterbox Studio",
+      "logo_url": "https://themes-and-motifs-microsite.vercel.app/api/image-proxy?url=https%3A%2F%2Fdrive.google.com%2Fuc%3Fexport%3Dview%26id%3D1uG1WEIYlDQoOe_38h7DdiNjXFZTts7dh",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 216,
+      "business_name": "Josiah's Catering",
+      "logo_url": "https://drive.google.com/file/d/1g_qOZIAEY3-3bmtFRibVWzjurnmaEMMc/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 218,
+      "business_name": "GQ Mobile Bar",
+      "logo_url": "https://drive.google.com/file/d/1g89pvWizdIHK20epDIAoQM_gJ4s17HuD/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 222,
+      "business_name": "Caricatures by Krystina Bogus",
+      "logo_url": "https://themes-and-motifs-microsite.vercel.app/api/image-proxy?url=https%3A%2F%2Fdrive.google.com%2Fuc%3Fexport%3Dview%26id%3D1UWYdcIt4MZOW8hUkJcjKHf6JNYmC89gk",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 223,
+      "business_name": "El Jardin De Zaida Inc.",
+      "logo_url": "https://drive.google.com/file/d/1oe-OpVK6gLl7MXjnKzKTaauSlQXTLlLR/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 224,
+      "business_name": "JHOSSA EVENT MANAGEMENT",
+      "logo_url": "https://drive.google.com/file/d/1e44EBocpvmLkMsl-Sb1m-ttefbRuwwz2/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 227,
+      "business_name": "Acre Resort and Spa",
+      "logo_url": "https://drive.google.com/file/d/1TmadWwLw6O3MseAD-XV6U55vEpszBzbh/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 230,
+      "business_name": "Khristelle Tan Bridal Couture",
+      "logo_url": "https://drive.google.com/file/d/1R9_nV2ouxH28c4CsvfFN-vjkNRagE8Ik/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 232,
+      "business_name": "Helen Jewelry Shop",
+      "logo_url": "https://drive.google.com/file/d/1d37sZ7jRpyj7xeqIJwWKMxpNOgaXbTyw/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 233,
+      "business_name": "Daphney Ligsay Events and Concepts",
+      "logo_url": "https://drive.google.com/file/d/1gne4kObDScvuT0JPQc6u0Wgtmnjg4tjW/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 234,
+      "business_name": "IM Makeup Artist",
+      "logo_url": "https://drive.google.com/file/d/13q22rH60f0pRnZimkzMx2LQkCp9rL2a1/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 235,
+      "business_name": "Joel Miguel Makeup Studio",
+      "logo_url": "https://drive.google.com/file/d/1504ZOyr8zWDXnpw5otAJduOBU4ZkUb8z/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 240,
+      "business_name": "CCT Tagaytay Retreat and Training Center",
+      "logo_url": "https://drive.google.com/file/d/1_qj49I66zZqEejx6NQkPVE6rcXfbseLB/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 241,
+      "business_name": "Onesimus Suits and Barongs",
+      "logo_url": "https://themes-and-motifs-microsite.vercel.app/api/image-proxy?url=https%3A%2F%2Fdrive.google.com%2Fuc%3Fexport%3Dview%26id%3D1H9lMXgvGjOILkmr8qFRWbxuIN3AdmDLh",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 242,
+      "business_name": "Four Hills Villas and Event Place",
+      "logo_url": "https://drive.google.com/file/d/1Ne9QqNFDQ903WW-S5DUULg27asxWwLQK/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 244,
+      "business_name": "Invitation Design By Kenneth Uy and Rianna Jewelry",
+      "logo_url": "https://drive.google.com/file/d/1krw5SsfpLryFp5_WF6u8jMLNbGfZcr9s/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 248,
+      "business_name": "Halloforever",
+      "logo_url": "https://drive.google.com/file/d/1hRHv3Y67tHBtT0-0rmhoeP_VvdX9Q-iu/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 249,
+      "business_name": "Hizon's Catering",
+      "logo_url": "https://drive.google.com/file/d/1-cwmLLKDZXE4lHJrNq9G2bCIuqTHMYXQ/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 250,
+      "business_name": "Gold dragons parfum",
+      "logo_url": "https://drive.google.com/file/d/1LO6SC_LRbAKfLYME-L4g1q30fyBzTk-a/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 251,
+      "business_name": "DXJ Mobile Bar",
+      "logo_url": "https://drive.google.com/file/d/1ScaiVXVn4SO7JSFkds5iGPQNyvnRC0BJ/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 254,
+      "business_name": "Event Republic",
+      "logo_url": "https://drive.google.com/file/d/1Nl6kgohaibmmMXXvtNG03Q7wEGbwwKk1/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 255,
+      "business_name": "Alviera Country Club",
+      "logo_url": "https://drive.google.com/file/d/1l4tGp_f-ovyZzHs2298wiUHuWvLgQTqb/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 256,
+      "business_name": "Joan lao events management services",
+      "logo_url": "https://drive.google.com/file/d/1NnvypiWtHoEVuw7ZKADC3OxJVydTaXvV/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 259,
+      "business_name": "Felipe and Sons Barberdashery",
+      "logo_url": "https://drive.google.com/file/d/1ZDSfSS8QkcuGP49_V9qVPFLUKoML_IJa/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 261,
+      "business_name": "DONUT WALL BY HAZEL",
+      "logo_url": "https://drive.google.com/file/d/1oyHQj2axnOhtxk46G5K_EytI-iUgYco9/view?usp=sharinghttps://drive.google.com/file/d/1oyHQj2axnOhtxk46G5K_EytI-iUgYco9/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 262,
+      "business_name": "Mirage Jewels",
+      "logo_url": "https://drive.google.com/file/d/125zpd7cykacmBWFVMpu8g15QI5brv_I5/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 263,
+      "business_name": "The Bayleaf Cavite",
+      "logo_url": "https://drive.google.com/file/d/1itJy1ABk1_DDUuE_G95Jwkickgwl1qhQ/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 266,
+      "business_name": "BREW BUDDY CAFE",
+      "logo_url": "https://drive.google.com/file/d/1JdbSTLs7eQsNxlrbNWxBTZmx1httHGi-/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 267,
+      "business_name": "BPI credit card",
+      "logo_url": "https://drive.google.com/file/d/1JuZFkGV26fIcbkyzqh3spsKb6hzei7qh/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 270,
+      "business_name": "The Park Silang",
+      "logo_url": "https://drive.google.com/uc?export=view&id=1opx4ySDllykYZFFy-neU8FayZ-YDd3sw",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 271,
+      "business_name": "Elegant Events PH",
+      "logo_url": "https://drive.google.com/file/d/1Yb8UfGsRQzK8_mNJKGOLNK-kyLSR2OhF/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 272,
+      "business_name": "Chachago Philippines - Tobias",
+      "logo_url": "https://drive.google.com/file/d/1I_fxE4orXp83yvzZiYajVLk75Vfhj8CI/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 273,
+      "business_name": "ARKILA Studios",
+      "logo_url": "https://drive.google.com/file/d/18pNeLNKnPLdN7u0cV0xYYxxQiNdf3dOW/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 274,
+      "business_name": "JMC EMBROIDERY",
+      "logo_url": "https://themes-and-motifs-microsite.vercel.app/api/image-proxy?url=https%3A%2F%2Fdrive.google.com%2Fuc%3Fexport%3Dview%26id%3D18D6AilAkpBG5ocLCR3q_dEQuiHFqTOl8",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 275,
+      "business_name": "Bricks and Memories",
+      "logo_url": "https://drive.google.com/file/d/10DSAwMvt5LKUTbALxh1kD95MIgcrgF2L/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 277,
+      "business_name": "Estelita's Dining Room Catering Specialist",
+      "logo_url": "https://drive.google.com/file/d/1x1aJxH1mg3bNg90ggL_J8zM92I0S3hH_/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 278,
+      "business_name": "By His Graze",
+      "logo_url": "https://drive.google.com/file/d/1MXSSb_BYD6DuVPhwnjb0reD-E_bcyoj8/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 279,
+      "business_name": "ADMIRAL HOTEL MANILA - MGALLERY",
+      "logo_url": "https://drive.google.com/file/d/1Ao3IYX8jnUFQCsxFUVUljbbXoW4URmh1/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 284,
+      "business_name": "Elle Fragrance",
+      "logo_url": "https://drive.google.com/file/d/1baxVObSFS4zeWvsLTec_A16pJ2V2nIZy/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 288,
+      "business_name": "Dangwa Florist",
+      "logo_url": "https://drive.google.com/file/d/1ExfPMF6R0occoZdwgFad2YrLVbvGs3Tr/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 289,
+      "business_name": "Custom Art & Golden Moments",
+      "logo_url": "https://drive.google.com/file/d/1LR-fnabWjIpm_uJsE4duf9stbcb7S334/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 292,
+      "business_name": "lex audio events management",
+      "logo_url": "https://drive.google.com/file/d/1VApdzZtmM3NV_O4-wZFuDq26AOOBROeu/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 293,
+      "business_name": "Appetite Music Entertainment",
+      "logo_url": "https://themes-and-motifs-microsite.vercel.app/api/image-proxy?url=https%3A%2F%2Fdrive.google.com%2Fuc%3Fexport%3Dview%26id%3D1vJGBVz4U5A7ZCgD0cRkAXub5bsK2nPV4",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 294,
+      "business_name": "399 Digital Printing Services",
+      "logo_url": "https://drive.google.com/file/d/1eFUSTvBKwCu8NFEAzmFTl3-tidAau0-Z/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 295,
+      "business_name": "Godfather Shoes Metro South",
+      "logo_url": "https://drive.google.com/file/d/1g0FEHwouFx6IaG-pjpJ-cOe-hFJzL5pV/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 299,
+      "business_name": "Ginza One",
+      "logo_url": "https://drive.google.com/file/d/1XvWkZ1esid97oDlIzZf4iEHesMUc3_k7/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 302,
+      "business_name": "City of Dreams Manila",
+      "logo_url": "https://drive.google.com/file/d/1GYN9oSKifcFn1T9g83H-MNHitv2X7ZLn/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 303,
+      "business_name": "EastWest Bank",
+      "logo_url": "https://drive.google.com/file/d/16d9_1PXKwBn_oCzgBc5rTwD__F3wdRDD/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 304,
+      "business_name": "Yto Gonzaga - Pasig",
+      "logo_url": "https://drive.google.com/file/d/1Hkxnybel_J60Pv_PL8hgBSmWf9PXhhaj/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 305,
+      "business_name": "Yto Gonzaga - Rizal",
+      "logo_url": "https://drive.google.com/file/d/1Hkxnybel_J60Pv_PL8hgBSmWf9PXhhaj/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 308,
+      "business_name": "Bonaobra Couture",
+      "logo_url": "https://drive.google.com/file/d/1VP-h8ihKOKUar3mEUA2H7N49PKW2fQzD/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 309,
+      "business_name": "Flower's by edmar",
+      "logo_url": "https://drive.google.com/file/d/1cXRmRvkH6QKwINQznUbeJNuob6QVeou3/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 310,
+      "business_name": "Chachago Philippines",
+      "logo_url": "https://drive.google.com/file/d/1Z03VJSSZeKc81t-mUwJATdPGQKJEsGtU/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 315,
+      "business_name": "Eventzified",
+      "logo_url": "https://drive.google.com/file/d/1WWGvR6rkmkyGxbdFr1sHT0JCJWSTHW2r/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 316,
+      "business_name": "Batanes Weddings & Events by I.B.S",
+      "logo_url": "https://drive.google.com/file/d/1gyw962GQj7dJQgoCBapTWC8ZCLvWOBjp/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 317,
+      "business_name": "Batanes I.B.S Travel and Tours",
+      "logo_url": "https://drive.google.com/file/d/1sdZ2KLt8W_SKYVlC1d2h25QbPbygPUtX/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 318,
+      "business_name": "FAT SMOKE BBQ",
+      "logo_url": "https://drive.google.com/file/d/1YSjhLbugFw4NDDwu5Ir-0u2cmDEz3lDG/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 320,
+      "business_name": "JS MINA SOUND SYSTEM RENTAL",
+      "logo_url": "https://themes-and-motifs-microsite.vercel.app/api/image-proxy?url=https%3A%2F%2Fdrive.google.com%2Fuc%3Fexport%3Dview%26id%3D1JS-OO3mK3zlD0YV4z7qoZvixJUQGEXpH",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 321,
+      "business_name": "Dragon Fireworks",
+      "logo_url": "https://drive.google.com/file/d/1Bof0-Zy3sSYX1yWK3hrz3Hb1CXUrgMnO/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 324,
+      "business_name": "Arlene'sCatering",
+      "logo_url": "https://drive.google.com/file/d/1ZyVXUbSS4cO8rA0OkQoVWiJ-UAxyDBJq/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 326,
+      "business_name": "Hilton Manila Newport World Resorts",
+      "logo_url": "https://drive.google.com/file/d/1GM62kzstjUtCDe-Bz6kPmtk0OuXQT8XU/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 329,
+      "business_name": "CHAPTER COFFEE ROASTERY AND CAFE INC.",
+      "logo_url": "https://drive.google.com/file/d/1PxDTluA_1a9Yu1QKc46C4JypeZuogdV9/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 332,
+      "business_name": "Angelyn's Cakes",
+      "logo_url": "https://drive.google.com/file/d/1Bjvo7C0IVC3mY-3I2aXbhIrl4H66djB0/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 335,
+      "business_name": "Artic Aircon",
+      "logo_url": "https://drive.google.com/file/d/1LeMNXab3vMOdx6_-otGNXsfZbNDdZwEX/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 336,
+      "business_name": "Dimsum Pop",
+      "logo_url": "https://drive.google.com/file/d/16cYsPpT1lmcSKIbobW_x7x3CcoJ-Fczw/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 340,
+      "business_name": "JOYCE EVENT STYLING",
+      "logo_url": "https://drive.google.com/file/d/1ckNJL9JFv4kalPoPOA7IuwA3F9ubl6lN/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 341,
+      "business_name": "Bojane Beltran Makeup Artistry",
+      "logo_url": "https://drive.google.com/file/d/1mmL_kPv1YDRB0u60MIT_-dqfyY8eTpnr/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 342,
+      "business_name": "Arce Dairy",
+      "logo_url": "https://drive.google.com/file/d/1g2LmpihaCxMW2UD-ujPrrJywCW6zIK-Y/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 343,
+      "business_name": "Amenity Studio",
+      "logo_url": "https://drive.google.com/file/d/1rz-e-Re1DxilFl0YB_QrB-lKW5acoMPt/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 344,
+      "business_name": "Bloomingdales Coffee Co.",
+      "logo_url": "https://drive.google.com/file/d/1gRtVj20nCp3pSPkQTqDFLeGxf4p5LdPl/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 351,
+      "business_name": "Bacsilog Foods Inc",
+      "logo_url": "https://drive.google.com/file/d/1cJsqBhaHC62hQAycIlxPo57GRJFXZqGy/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 353,
+      "business_name": "ECR CARD MARKETING INC - RCBC BANKARD",
+      "logo_url": "https://drive.google.com/file/d/1D3uYCaRgQZRuu3YHJSwEvRZPQtDDmUnt/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 354,
+      "business_name": "Cullinan Group Inc. - Makati",
+      "logo_url": "https://drive.google.com/file/d/1alUEPxz5y2mZOabAFfijuaEStMKDS90R/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 355,
+      "business_name": "Astral Printing Services",
+      "logo_url": "https://drive.google.com/file/d/1zoOeFwjekuMY_keg4mUOqfiikliI3uGM/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 365,
+      "business_name": "DozenCrafts",
+      "logo_url": "https://drive.google.com/file/d/1NE1QgqIf4LfqX7zEKqsbclhut26bWua4/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 368,
+      "business_name": "Atlast Media",
+      "logo_url": "https://drive.google.com/file/d/1AWraKpi-9l0tq3Itjdxa1A3VEHYpbzPu/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 371,
+      "business_name": "Event Whisper PH",
+      "logo_url": "https://drive.google.com/file/d/1vRkn-GHuBB_AJCeIuapoljmLGvgA0yWR/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 377,
+      "business_name": "Jade's Temple Brewery",
+      "logo_url": "https://drive.google.com/file/d/1vVGJfq1W84R-6aNVxaT_OZHYQY5fvUqF/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 379,
+      "business_name": "Amor Laut Resort",
+      "logo_url": "https://drive.google.com/file/d/1JIW1Dwnpi7xN_k4LhoWjaiELHa0PQ0JJ/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 380,
+      "business_name": "Arc Mirror Photobooth",
+      "logo_url": "https://drive.google.com/file/d/16c5blFkO9-R4N0Fj9NcXMz4XkngEEJ61/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 381,
+      "business_name": "Catherine Gayle",
+      "logo_url": "https://drive.google.com/file/d/1zur7X3rw7jjHwzjBRMbvvFl6R_Vo8Byx/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 382,
+      "business_name": "Curated macarons PH",
+      "logo_url": "https://drive.google.com/file/d/1VD_2ZDYQyGizVm0VGmXs0uIHKlx81AU9/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 384,
+      "business_name": "LOUIS MACLEAN FAR EAST INC",
+      "logo_url": "https://drive.google.com/file/d/15rKpg2JW2kIyU1WnaZ-zy-0UeVWh8QbF/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 387,
+      "business_name": "Gemini Gallery",
+      "logo_url": "https://drive.google.com/file/d/1gTh-1fccd_T6dO8GxtwiLxsciv59CX74/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 388,
+      "business_name": "Cart.el custom cart services Co.",
+      "logo_url": "https://drive.google.com/file/d/1PYm3g9sBFu8iLqAdH0Vb_FOgaok8kmjI/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 400,
+      "business_name": "Alfonso’s Catering",
+      "logo_url": "https://drive.google.com/file/d/198xipRP6lWzcfgs04Q4MCdXbGdP44bEw/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 401,
+      "business_name": "Candy Rush by Ken",
+      "logo_url": "https://drive.google.com/file/d/1IAjOoTHlaKh9YSmMTdijj4JqbWKVzJtF/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 403,
+      "business_name": "Infinity Weddings & Events",
+      "logo_url": "https://drive.google.com/file/d/1aAMZN78G72JL8NqKA3mpDmTmR2LiXY_0/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 404,
+      "business_name": "Elaine Celestino – Makeup",
+      "logo_url": "https://drive.google.com/file/d/1BeCpR4J442e9EyUgGGcxL_ZjwUbQ3-o9/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 406,
+      "business_name": "Heartunes Band",
+      "logo_url": "https://drive.google.com/file/d/1Qr3ggvL-8Zgi0BaLosPSNNq2sbEA6KrE/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 407,
+      "business_name": "Darlene Tan‑Salazar",
+      "logo_url": "https://drive.google.com/file/d/1S9pFDfhagdYnJuV8CsJN5sCIwFZwasMJ/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 409,
+      "business_name": "Key Events",
+      "logo_url": "https://drive.google.com/file/d/1I1tphSopiaPrVQN3qcgph3W2hWpbzSI4/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 412,
+      "business_name": "Savanna Farm Tagaytay",
+      "logo_url": "https://drive.google.com/uc?export=view&id=1B8VBnbFf8_9rFJJfhtADerPvPOVrnL-G",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 414,
+      "business_name": "J's DIAMOND",
+      "logo_url": "https://drive.google.com/file/d/1CUnR5V3T0HUkieP8RcUKuI2_GaGQxW0S/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 417,
+      "business_name": "Happy Day Events",
+      "logo_url": "https://drive.google.com/file/d/15LmarG6bRMA7w5kZbffYtONYElkOphYD/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 418,
+      "business_name": "Cara Aesthetics PH",
+      "logo_url": "https://drive.google.com/file/d/1FqY8Hwp2vbsKWrI4BHXjFBvrvi6fDqPU/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 419,
+      "business_name": "Four Points by Sheraton Palawan",
+      "logo_url": "https://drive.google.com/file/d/14YUgIBSG_VGwwm-eO6Tmq9gqpAWtoJRi/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 423,
+      "business_name": "Jezelle HauteAmorado",
+      "logo_url": "https://drive.google.com/file/d/1AiOM4Wy8mhfXGYRC4hf2SpLLr487sZG4/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 424,
+      "business_name": "Les Alajeras Jewelry Shop",
+      "logo_url": "https://drive.google.com/file/d/1HTB221la0DLS0wSPhYKadwgGodwMKEK0/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 426,
+      "business_name": "Hotel Savano",
+      "logo_url": "https://drive.google.com/file/d/168sRsEq-A28yBadYCAm6m0GrVqRcHGLZ/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 429,
+      "business_name": "CLARI DEIGNE EVENT SOLUTIONS",
+      "logo_url": "https://drive.google.com/file/d/107APhCyFtbJT8Y2nhrPud0c1BvKrnD9u/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 431,
+      "business_name": "Hubóg Mobile Bar",
+      "logo_url": "https://drive.google.com/file/d/1WgLEWEkPhfL4kW12IXDUQbH7Yfr_i0nn/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 432,
+      "business_name": "Holland Tulips",
+      "logo_url": "https://drive.google.com/file/d/1Z-IpsLk35hh9RoRsJ4Tayh3XTwZE-Dph/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 435,
+      "business_name": "Balay Baler Kamote Crisps",
+      "logo_url": "https://drive.google.com/file/d/1KerjpwH9WvAgLcIK3TL1YV8nYqcaF6xc/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 437,
+      "business_name": "BrauBass Craft Beer",
+      "logo_url": "https://drive.google.com/file/d/1Fyvo4mDX22a43QGUik9vI1H4FUK5a19W/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 438,
+      "business_name": "Fedici.ph",
+      "logo_url": "https://drive.google.com/file/d/1QPLj8u6xsHd0fotVClXeomGcE_uCf8bO/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 439,
+      "business_name": "IAM MAKE-UP ARTISTRY CO",
+      "logo_url": "https://drive.google.com/file/d/136JvkaDLUC9RG0HdzgNn6FxWl1uXNC8X/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 441,
+      "business_name": "Doreen Odvina",
+      "logo_url": "https://drive.google.com/file/d/1hI6lSuYl0FzSGaHez_6SaOvfEJdTNaQM/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 444,
+      "business_name": "Cnergy Cons Lights and Sounds",
+      "logo_url": "https://drive.google.com/file/d/1FaJYj6RWRTjgRaNVbj204ti1Re2bDU2L/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 445,
+      "business_name": "GiftBox Fairy Gift Shop & WeeeParty Evet Bars",
+      "logo_url": "https://drive.google.com/file/d/1wHmuj-mZm5OukAO49o9IBwd1y6JF8NrG/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 446,
+      "business_name": "Ayala Land Premier",
+      "logo_url": "https://drive.google.com/file/d/1OmteAVTs4EH-B3waNq9bpmclhhugF29_/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 449,
+      "business_name": "Antahan Arts",
+      "logo_url": "https://drive.google.com/file/d/1dwayujeoSCksvRhMI6mmBcStDZVZpeE1/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 450,
+      "business_name": "Custom Cakes By Bam Bakery Products",
+      "logo_url": "https://drive.google.com/file/d/1kKcAaQVv2z9SRfXgzZHbhKf9VuXRgU6S/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 452,
+      "business_name": "Hacienda Solange Inc.",
+      "logo_url": "https://drive.google.com/file/d/1pGWmj2M7gdJdWD9dnaOzDBMlZXzCBTdT/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 453,
+      "business_name": "Balai Calamba Catering",
+      "logo_url": "https://drive.google.com/file/d/1mafv2Y8DeOcxMjszWQX0gjvfXEN--xrw/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 455,
+      "business_name": "Jenry Villamar Digital Photography",
+      "logo_url": "https://drive.google.com/file/d/1kmkAYCLusA3AWCMYajWXGrfZXaPY2QHy/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 457,
+      "business_name": "Beemine Photography",
+      "logo_url": "https://drive.google.com/file/d/1mYFJfm8KtJDdFn3Ddc5oLfzPPSudIPDJ/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 458,
+      "business_name": "D'Enchantress Aesthetic and Wellness Center",
+      "logo_url": "https://drive.google.com/file/d/135sDeoP7tMwMphmcOjgrly71ay4Jvpvr/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 459,
+      "business_name": "Hotel Lucky Chinatown",
+      "logo_url": "https://drive.google.com/file/d/1V-nuOKXKnZWN8kM76hjXnAzDP3qpRVOh/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 462,
+      "business_name": "FroilanErik Airbrush Makeup Artist",
+      "logo_url": "https://drive.google.com/file/d/1Vgq2WQbfVNawZTN0ENfagBv-ccuZ_6hc/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 464,
+      "business_name": "JO BARBA  Make Up Artist",
+      "logo_url": "https://drive.google.com/file/d/1d6GwZmuBzPkqI8_6gvun_7VofT4AkCbO/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 465,
+      "business_name": "JULIE EVENTS MANAGEMENT",
+      "logo_url": "https://drive.google.com/file/d/13emIyT0hx7vkwn_Wrk5o_Vs2G9J3w9rn/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 466,
+      "business_name": "JM Chanyungco Photography",
+      "logo_url": "https://drive.google.com/file/d/1Llwh7_B66EEnDjqgwsNXO4sIxL8YyhjF/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 468,
+      "business_name": "ACACIA HOTEL MANILA",
+      "logo_url": "https://drive.google.com/file/d/1LXWoHO04vxLSVmiwzp3IeXfO3YWfNoHp/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 470,
+      "business_name": "Hotel Benilde Maison De La Salle",
+      "logo_url": "https://drive.google.com/file/d/1zA1rYDwjjvp5jkKAJoVySVb40K28PFHX/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 471,
+      "business_name": "Dhana Make-up Artistry",
+      "logo_url": "https://drive.google.com/file/d/1JlNBAii--_9uj6bGxO-cNQ0gW2AL1zOL/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 472,
+      "business_name": "KLAD",
+      "logo_url": "https://drive.google.com/file/d/1xR64ec9Y6l9byNoYwa3L28Z3xtAng1Ic/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 475,
+      "business_name": "District One",
+      "logo_url": "https://drive.google.com/file/d/1oT_MT4zJn7eokkpOWS78uL1GLoGlDb-N/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 476,
+      "business_name": "MV Productions by DreiSofia's",
+      "logo_url": "https://drive.google.com/file/d/1ZbAqt1rgQgtky9agoSg9EBTkcrpffExa/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 477,
+      "business_name": "E-Memoir | Electronic Invitation",
+      "logo_url": "https://drive.google.com/file/d/18vxZ-JIKlPqmgZPi-unVaD8zAZJUxXnZ/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 478,
+      "business_name": "Artistry by Maru Rodriguez",
+      "logo_url": "https://drive.google.com/file/d/1SrN7-M3QSkE6z1ncpkPQKZO79Riwtxyo/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 479,
+      "business_name": "Cusina Estela By Cabalen Corp",
+      "logo_url": "https://drive.google.com/file/d/1YIfXJVWmWo1wnJdjNoAMSxiv61veaXK_/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 483,
+      "business_name": "Eye Candy Event Styling Co",
+      "logo_url": "https://drive.google.com/file/d/1E2w5cdjt0VZTEFLBrC1MYQ0ddr7QmO0i/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 485,
+      "business_name": "Cynco Studio Photo and Video Services",
+      "logo_url": "https://drive.google.com/file/d/1RyCC25BT7bGUxmbHcCBtZOolGtKoWO1a/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 488,
+      "business_name": "I-Tech Digital Productions",
+      "logo_url": "https://drive.google.com/file/d/107t-Oh5QgSyBJvwcgWQTfioceM6tH7tp/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 489,
+      "business_name": "GLAM PHOTO BOOTH RENTAL",
+      "logo_url": "https://drive.google.com/file/d/1yoxgPRlaQK2GVH4lrlZxJOtKy6Ccfcza/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 491,
+      "business_name": "Crissy Crafts N'Creation ",
+      "logo_url": "https://drive.google.com/file/d/1kDXa85JBqnByELVCmCoXi_-NgdrBATnL/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 493,
+      "business_name": "Anchormix Light And Sounds Rentals",
+      "logo_url": "https://drive.google.com/file/d/18ANQ798KlKX8AqJbPaRSQEpUrFjgpaSa/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 499,
+      "business_name": "Hosted by Ron Oliver Events Hosting Services",
+      "logo_url": "https://drive.google.com/file/d/17b7DjzVoxdPGTDZzBEWoypoDKsszJHBa/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 500,
+      "business_name": "House of Maharlika Inc.",
+      "logo_url": "https://drive.google.com/uc?export=view&id=1JNOjFlbFNjIEZxJQZg88JihdMprRleCC",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 503,
+      "business_name": "Dentacare Philippines",
+      "logo_url": "https://drive.google.com/file/d/1j1i42i7PbVxRRQVLo5mfY2wQ68C8YFIR/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 506,
+      "business_name": "Viktoria MNL Custom Tailoring",
+      "logo_url": "https://drive.google.com/uc?export=view&id=1ok3ukX9Q_ZTpGf6oUTvJKjZoKzesNJfc",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 512,
+      "business_name": "Best Day Ever Events",
+      "logo_url": "https://drive.google.com/file/d/15XRyq4-C5kulQQcl2lB8TxqHqBslFzUE/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 514,
+      "business_name": "AJT Events",
+      "logo_url": "https://drive.google.com/file/d/1nYZHT4VaQFbgizSc_oWRGcTsG8-hIKS0/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 515,
+      "business_name": "GlamBot PH",
+      "logo_url": "https://drive.google.com/file/d/1L1ZUgtD_WtKx969OBYwvIZ7QeB3BUHRO/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 516,
+      "business_name": "Jeramie's Bridal Boutique",
+      "logo_url": "https://drive.google.com/file/d/1UY_6vz8NWGSGDa8RYGGXZs13tyaH0S1R/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 518,
+      "business_name": "DiscoverMNL + Get Up Coffee",
+      "logo_url": "https://drive.google.com/file/d/1S3EzPNkpfoVc43JBLHa4vkAWIgPyeuov/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 522,
+      "business_name": "Damsel Events Management Services",
+      "logo_url": "https://drive.google.com/file/d/18E4RfJ7dGBxYoH5CgQvGstGygu2_z8nw/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 523,
+      "business_name": "EXPOSURE PHOTO & VIDEO",
+      "logo_url": "https://drive.google.com/file/d/1JuKKALVr5bcYxaF9SDuXBF0RbMSwRazC/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 524,
+      "business_name": "GIBSON KIDS TRADING",
+      "logo_url": "https://drive.google.com/file/d/1KfHA17jyt551xuWhyEfXpg2PtDBu70J2/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 525,
+      "business_name": "Kamiseta Bridal",
+      "logo_url": "https://drive.google.com/file/d/1bBY357YB3oQRmeHsk8hCfDnUrslRke-6/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 526,
+      "business_name": "HIMALAYAN SALT AND LIGHT",
+      "logo_url": "https://drive.google.com/file/d/1pWXziY9VfmqQ3uXrhI_QdNwtzLp4BLXT/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 530,
+      "business_name": "DUSIT THANI PHILIPPINES",
+      "logo_url": "https://drive.google.com/file/d/1kfnuVsMqiX56Ztv3hGUasS4dXxVL-Ift/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 531,
+      "business_name": "Keds",
+      "logo_url": "https://drive.google.com/file/d/1C8K-nq7zITPAYFUFiTFHaeQijQyIeZFo/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 532,
+      "business_name": "Cactus and Canvas",
+      "logo_url": "https://drive.google.com/file/d/1GOGtfB8rHp4ICNbBXBV_OGTP0EZ1EF4s/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 533,
+      "business_name": "La Pergola Verde Events Pavilion",
+      "logo_url": "https://drive.google.com/file/d/1wWrt8er5NfSSrgQ449WNnYCg-u8-_X8s/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 539,
+      "business_name": "Drunken Tales",
+      "logo_url": "https://drive.google.com/file/d/1LBETyQjDyP0JL-JHCy_29PqWXSVopAml/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 542,
+      "business_name": "HOTBOX",
+      "logo_url": "https://drive.google.com/file/d/1bJ1V-6XKMWsmps6liH-MoQo2TawZgriR/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 543,
+      "business_name": "Airbrush Make Up by Grace del Rosario",
+      "logo_url": "https://drive.google.com/file/d/1gCbkrDS_CUVxfojXmtGOTLEW5U9qwrY7/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 545,
+      "business_name": "9tenz Light and Sounds",
+      "logo_url": "https://drive.google.com/file/d/1mKFcmZ2Xq-ADS1-WMvPkryPtEyyjJuZI/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 546,
+      "business_name": "EMM Premium Fragrances by DJ Toni Tubero's Events Management",
+      "logo_url": "https://drive.google.com/file/d/1K7h7jCn6q5QrTNjvPPMohsTc-ODpyOpg/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 547,
+      "business_name": "EVENT MASTERS MNL BY DJ Toni Tubero's Events Management",
+      "logo_url": "https://drive.google.com/file/d/1QGW1sab5K8cmHjGBUpdmpwgmJUGMhNvo/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 549,
+      "business_name": "Diana Kwong Makeup Design",
+      "logo_url": "https://drive.google.com/file/d/1JcJXIyNIRaW1iACiaUQGjoh2B4r82U3L/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 551,
+      "business_name": "CONNOISSEUR CATERING",
+      "logo_url": "https://drive.google.com/file/d/1wVmqUNIA9X17l4W6U8XJ5UVT7czBkJdU/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 554,
+      "business_name": "EDWARD TENG BRIDAL COLLECTION COMPANY",
+      "logo_url": "https://drive.google.com/file/d/1-zp065e4Wg6rZZ-qnHCtT7GV5CntWVFX/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 559,
+      "business_name": "Go Green Giveaways",
+      "logo_url": "https://drive.google.com/file/d/1KIBjAU1BHX_UQ2QupdWicYe1lwmngc5j/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 560,
+      "business_name": "Chady's Events & Catering Services",
+      "logo_url": "https://drive.google.com/file/d/1805Im-Cpc86CDHzDCGmPtL-UZz5lFFhk/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 561,
+      "business_name": "KAVEN‑MPC Resort",
+      "logo_url": "https://drive.google.com/file/d/1BYIYPUJRFbQFdTrrBytc7O3zrXNI80RP/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 565,
+      "business_name": "6 Angels Cakes & Catering Services ",
+      "logo_url": "https://drive.google.com/file/d/1JIgyvRCvskmm2Pca6-QSfKiA68CFnF8Q/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 566,
+      "business_name": "Boracay Wedding Planner - Mulberry Events and Planning",
+      "logo_url": "https://drive.google.com/file/d/1c643zwMUip-6uS83dL0P6wk1NNxAZCF5/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 570,
+      "business_name": "Fleur le Jul Manila",
+      "logo_url": "https://drive.google.com/file/d/1YrPCZi-PMvGV5-Oqt1Uapkor4KFg1sWJ/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 571,
+      "business_name": "Fleur le Jul San Pablo",
+      "logo_url": "https://drive.google.com/file/d/1YrPCZi-PMvGV5-Oqt1Uapkor4KFg1sWJ/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 572,
+      "business_name": "Juan Carlo The Caterer ",
+      "logo_url": "https://drive.google.com/file/d/1m4JGilrxgwPaBzOW_WUWp4n1eoIEgYpG/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 575,
+      "business_name": "Celevents by Ecowesome Events Management",
+      "logo_url": "https://drive.google.com/file/d/1C2_SPIAf6oo_g1SjbcKrMKuL9KgpfCgL/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 576,
+      "business_name": "Makati Diamond Residences",
+      "logo_url": "https://drive.google.com/uc?export=view&id=14CbnPG0ySLqK3vgil8DPlEHghmwzoGEz",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 580,
+      "business_name": "ACUATICO BEACH RESORT AND HOTEL, INC.",
+      "logo_url": "https://drive.google.com/file/d/1aNSdMU7zo2fD4KHTem9XdhAgDZnREtfz/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 581,
+      "business_name": "ACUAVERDE BEACH RESORT AND HOTEL, INC.",
+      "logo_url": "https://drive.google.com/file/d/1QMNhNAhy6DfIMZCY52MzN9MlHb3k4zR1/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 582,
+      "business_name": "EDPS STUDIO",
+      "logo_url": "https://drive.google.com/file/d/1Hj5hb3rJbl_CwK628viSL2wVWipTrOZl/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 583,
+      "business_name": "La Vida Events and Creatives Corp.",
+      "logo_url": "https://drive.google.com/file/d/1QUIkdiC32jmHA_JMjIzOEr_maD4Ye_vI/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 585,
+      "business_name": "8 Century Events and Catering Corporation",
+      "logo_url": "https://drive.google.com/file/d/118V7GDpuC0lQaMgOAoycd7KDaMnJtgDY/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 587,
+      "business_name": "Light of Love Events Place",
+      "logo_url": "https://drive.google.com/file/d/1W504by80vqp9okf-iAnw2F9vGAjVZ5_z/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 588,
+      "business_name": "Hosts Pinas",
+      "logo_url": "https://drive.google.com/file/d/1gg9MxHNRIR45T1_Mo459_EHfiYnfnrLX/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 589,
+      "business_name": "JB Calderon Events Management Services",
+      "logo_url": "https://drive.google.com/file/d/1r1DAACWdVMDu7qlmzT8cyuZBnxO8REfP/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 590,
+      "business_name": "Events Creation & Style PH",
+      "logo_url": "https://drive.google.com/file/d/1LRX3fUtEcHQXLKz1eKbvWIeHJmNBRwHJ/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 591,
+      "business_name": "Patricia Syquiatco",
+      "logo_url": "https://themes-and-motifs-microsite.vercel.app/api/image-proxy?url=https%3A%2F%2Fdrive.google.com%2Fuc%3Fexport%3Dview%26id%3D1FOwwW7fYl9fMqqgNujygVFDmu3QM4rQa",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 592,
+      "business_name": "BIZU CATERING STUDIO",
+      "logo_url": "https://drive.google.com/uc?export=view&id=1G2O9n9Xecf3i5_iFe1pxxc6zrithY4hK",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 594,
+      "business_name": "Keepsakes & Co.",
+      "logo_url": "https://drive.google.com/file/d/1IvnFxCxXa-TbnPH8A5KdW9XaPS7QjeOg/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 598,
+      "business_name": "JCO Lights and Sounds",
+      "logo_url": "https://drive.google.com/file/d/1XX_H8TUwU54xP2v8NLMjSpsdg9oB5_0V/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 600,
+      "business_name": "Themes & Motifs Events Management",
+      "logo_url": "https://drive.google.com/file/d/1bnYLQqbHPUkD8_8zOtRCTQQGGbFQ4HQv/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 601,
+      "business_name": "The Lake Hotel Tagaytay Inc",
+      "logo_url": "https://drive.google.com/file/d/1-8Wj609Mn_k7kOOplruHptfsJDrRGRnd/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 602,
+      "business_name": "Jiggly.gemz l Jelly Cake Philippines",
+      "logo_url": "https://drive.google.com/file/d/1FB4Th6n87jzSdqHKUgIwpLyPbGg_NP_J/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 603,
+      "business_name": "Ibarras Catering and Casa Ibarra",
+      "logo_url": "https://drive.google.com/file/d/1jRQxAFhGyNQt8-3BrY9sZLYkMYQgAiab/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 604,
+      "business_name": "Beauty by Ria",
+      "logo_url": "https://drive.google.com/file/d/1gwLvnAg0LVc4R_EqvsAPcKAM-iB_H_F5/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 605,
+      "business_name": "ABAGATAN HOTELS INC.",
+      "logo_url": "https://drive.google.com/file/d/1OSl-qEKFrDKtP103sAx4-cVZB-4HZz_j/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 607,
+      "business_name": "Casa de Dios Resort",
+      "logo_url": "https://drive.google.com/file/d/1sg3vMVcA118t2KTCs2gS0tHbKc3Iq59b/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 610,
+      "business_name": "HEAVENLY DESSERTS BAKERY PRODUCTS SHOP",
+      "logo_url": "https://drive.google.com/file/d/1AKYm2PqvfwZz7YUPv6_hlOtOpMPJHfwo/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 611,
+      "business_name": "Riad kashlan couture",
+      "logo_url": "https://themes-and-motifs-microsite.vercel.app/api/image-proxy?url=https%3A%2F%2Fdrive.google.com%2Fuc%3Fexport%3Dview%26id%3D1AyQ6VWOlQvRY06VnwTBMwh3nv_VzHAah",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 614,
+      "business_name": "Golden Moments Cafe",
+      "logo_url": "https://drive.google.com/file/d/1UnbB8QwNFJwLC2hVwLIzf8IEE7KX_RGt/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 618,
+      "business_name": "JMC BRIDAL SHOES",
+      "logo_url": "https://drive.google.com/file/d/19mYwDxOs5cyvAsVSVvipr1PIcOmFNh33/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 619,
+      "business_name": "CROWNE PLAZA GALLERIA MANILA",
+      "logo_url": "https://drive.google.com/file/d/15EZYPc6KKbTMdpm5FUUXYPd0pMlWd-wo/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 620,
+      "business_name": "Maharlika Events Management OPC",
+      "logo_url": "https://drive.google.com/uc?export=view&id=1JNOjFlbFNjIEZxJQZg88JihdMprRleCC",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 621,
+      "business_name": "FLEUR STORIES FILM",
+      "logo_url": "https://drive.google.com/file/d/1afcOqwUU4IspHBq5ALOXiK3oSIE5_-tZ/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 624,
+      "business_name": "Infinite Motions Films and Photo",
+      "logo_url": "https://drive.google.com/file/d/1xlILWFwbnZxpPWtpgV2XTqnnAx-NaFPh/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 626,
+      "business_name": "CHAMDIZ SPARKLING DRINK",
+      "logo_url": "https://drive.google.com/file/d/1GxR2qLSh8hnPYYfWTq-qoEF-6iwpJsxl/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 628,
+      "business_name": "Bellamia by Mama Lou's",
+      "logo_url": "https://drive.google.com/file/d/1XMmEGyV4nZVRMjupnefC37MPOHjDdEY8/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 632,
+      "business_name": "kenneth uy photography",
+      "logo_url": "https://lh3.googleusercontent.com/p/AF1QipM2-0LXthTe88C9EE45_waIHf-3tGqSX39E8jfI=s680-w680-h510-rw",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 633,
+      "business_name": "CentralBookSupply inc",
+      "logo_url": "https://drive.google.com/file/d/1N7bKoMSjYcp9PgrYwpMCQso_HkjsM2sB/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 636,
+      "business_name": "Chelsie-Andrea's Bridal Couture",
+      "logo_url": "https://themes-and-motifs-microsite.vercel.app/api/image-proxy?url=https%3A%2F%2Fdrive.google.com%2Fuc%3Fexport%3Dview%26id%3D1ViQnuG4I4CxJZAHeaLCpqSN5JN05TzOd",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 638,
+      "business_name": "ILUSTRADO Restaurant",
+      "logo_url": "https://drive.google.com/file/d/1kPEggLeRgA8keYggnjtbcVdlu6x5Yklc/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 640,
+      "business_name": "Indira Make Up Services and Wellness Products",
+      "logo_url": "https://drive.google.com/file/d/1vvTesWDTUy7G6BpyL-AeDZyeLwqVtZon/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 642,
+      "business_name": "ESCALA TAGAYTAY",
+      "logo_url": "https://drive.google.com/file/d/1-lT1z-BWXFTF6hfMlUBitIXkx2Gzm4qI/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 643,
+      "business_name": "BA EVENTS STUDIOS",
+      "logo_url": "https://drive.google.com/file/d/1l2RhwUecpMu4Zhw8-1Wi0SJSPJIzZ2RB/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 648,
+      "business_name": "DON TAPAN PHOTOGRAPHY",
+      "logo_url": "https://drive.google.com/file/d/1Duz6PSJcTTfAfMHtjLs0iqIm5086dCgr/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 649,
+      "business_name": "Bizarre Elegant Perfume",
+      "logo_url": "https://drive.google.com/file/d/1l-ThgXsL5EmmMRc8KyYucr0A2iSTMGgk/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 650,
+      "business_name": "Banggo Niu Manila",
+      "logo_url": "https://drive.google.com/file/d/1NI1phNBx576_M9Nsz-aDpGuAKX_0Ovzo/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 651,
+      "business_name": "Kingsford Hotel Manila Inc.",
+      "logo_url": "https://drive.google.com/file/d/1Hk3GFK9yoVMTwQ6p1kK-owE3meCMeVq5/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 653,
+      "business_name": "Celebre Events Organizing",
+      "logo_url": "https://drive.google.com/file/d/18990ejsurioEzxahvoy1vLh16mS90qmR/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 654,
+      "business_name": "Golden Grove Food Corporation",
+      "logo_url": "https://drive.google.com/file/d/1ZtfGcd4AZpupxXbz0f-nb6zy1yz1d3yY/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 655,
+      "business_name": "Awesome Events Ph",
+      "logo_url": "https://drive.google.com/file/d/1Rv31qkg_BbxKLnUDs-0skFIVrqhcjUuQ/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 656,
+      "business_name": "Events & styling by jay oribiana",
+      "logo_url": "https://drive.google.com/file/d/1Gp9pID2wA4O3ZA2EDIEi0-46DBLnGW9Q/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 663,
+      "business_name": "GOT MUSIC LIGHTS & SOUNDS MANAGEMENT",
+      "logo_url": "https://drive.google.com/file/d/1tdDDIOqOjkLwPef5mnJip777gvX_E1jj/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 666,
+      "business_name": "Diamond with love jewelry shop",
+      "logo_url": "https://drive.google.com/file/d/1trGZOcW7vimGTKA-qo22suc78ZnYeSZc/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 667,
+      "business_name": "Hearts and Bells",
+      "logo_url": "https://drive.google.com/file/d/1tS-BwU9OefZHJCVWrbnWB2qUSjee63wv/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 670,
+      "business_name": "Alta Veranda de Tibig Inc",
+      "logo_url": "https://drive.google.com/file/d/1iSIOmb71NJgL_c9ndtSKu8r_rWNFTGt4/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 675,
+      "business_name": "Conrad Manila",
+      "logo_url": "https://drive.google.com/file/d/1oHd9XKOR3rm7mnqS1ruvW9jDJ2acPiq2/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 676,
+      "business_name": "Kasile Hills Resort Inc",
+      "logo_url": "https://drive.google.com/file/d/1QJo10qk70pW4kbYmTJv5aHa3o8hCs89G/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 677,
+      "business_name": "EVER ENGRAVING STATIONERY INC",
+      "logo_url": "https://drive.google.com/file/d/1HAOXFKZiAOtMjIylwb-03o2YAyokgpWF/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 679,
+      "business_name": "Crintman",
+      "logo_url": "https://drive.google.com/file/d/1l4P6HX6dTzInMOx50mZnwKCzWYaSdKj6/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 683,
+      "business_name": "Franville Prints, Supplies & Services",
+      "logo_url": "https://drive.google.com/file/d/1Hsc5J3LA8bAgDYQyZ-28IVPQlL2JaqAY/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 685,
+      "business_name": "DLPRO Photography and Video",
+      "logo_url": "https://drive.google.com/file/d/1gMMtV7GVpNNcrH7jeTut9x9sBBbDgZfO/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 692,
+      "business_name": "Hillbarn Tagaytay",
+      "logo_url": "https://drive.google.com/file/d/16b4bFQTJN7ArngTPizr2nBZkQglv99me/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 693,
+      "business_name": "Alveo Land Corp",
+      "logo_url": "https://drive.google.com/file/d/1FZ7mLyvTw7vy7Wytcs-mebF74NHfdKfu/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 703,
+      "business_name": "Kredin,The Event Engineer",
+      "logo_url": "https://drive.google.com/file/d/1PzYF59uE-CKeubhl4Pw42nz93xXQGR38/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 704,
+      "business_name": "GEO + Me Bridal",
+      "logo_url": "https://drive.google.com/file/d/1D6DpZChFKoAiTGYCdJNvclVD_DuBzzx4/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 705,
+      "business_name": "Edsa Shangri-La Hotel and Resort Inc.",
+      "logo_url": "https://drive.google.com/file/d/1cYAXpCl0vY3i_cg9orGMUcMgeHP2LQOA/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 706,
+      "business_name": "Booze On-Line Inc.",
+      "logo_url": "https://drive.google.com/file/d/1uu9Dh_1YY2-QJkWC6EAYOzj0uPS1LRAF/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 707,
+      "business_name": "Caffeined Coffee",
+      "logo_url": "https://drive.google.com/file/d/1UiYRGk46TXjMuYC5yGYfv3pJsggn5k1t/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 708,
+      "business_name": "Cafe Ysabel",
+      "logo_url": "https://drive.google.com/file/d/1NcN7nvG2bFTGsEDYtl0NHZgz8URjvdGj/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 709,
+      "business_name": "Brittany Palazzo",
+      "logo_url": "https://drive.google.com/file/d/11RRkVgX80_FwMCz_PSnlLp0t-cbk9Mk4/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 712,
+      "business_name": "Amilon Ignacio Photography",
+      "logo_url": "https://drive.google.com/file/d/1TDWkaBk7yZlzWXyHhrTnCcAfSxXeqWtu/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 716,
+      "business_name": "Fernwood Gardens - Quezon City",
+      "logo_url": "https://drive.google.com/file/d/1RgqsEqF6JmJyqD4SkC04E6_8M7kiSwOA/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 719,
+      "business_name": "FERNWOOD GARDENS TAGAYTAY",
+      "logo_url": "https://drive.google.com/file/d/1bock3ATUlwq_Mobiz0BuUDXe1ENrLGFB/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 720,
+      "business_name": "Jhoemar jack atelier",
+      "logo_url": "https://drive.google.com/file/d/1Fn5uWyff9OHhTF-FUImk5AOUA84CcOys/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 721,
+      "business_name": "GREAT WALL ARTS",
+      "logo_url": "https://drive.google.com/file/d/1vNNvopCtcVd-_pkMwDBaQhFV7xBm3Bxl/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 730,
+      "business_name": "Happy Weddings Bohol",
+      "logo_url": "https://drive.google.com/file/d/1Gar0fs-qXDRt0KnhQQiNQjFLfGwNa4TV/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 732,
+      "business_name": "Estiffi Events Management Services",
+      "logo_url": "https://drive.google.com/file/d/14C0VJdx0mPzr9oHKgT0EcObzf1KnmcPO/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 735,
+      "business_name": "Armand Ansaldo Photography",
+      "logo_url": "https://drive.google.com/file/d/12DgJ_qsqIVZegHS4VwfTIWm2r9E0TS3S/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 738,
+      "business_name": "Bellissimo Events Services",
+      "logo_url": "https://drive.google.com/file/d/1FH8NljEa_LwV3W73ExxC62_N4s5OvnDR/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 739,
+      "business_name": "Airene Kong Wedding Planner",
+      "logo_url": "https://drive.google.com/file/d/1rNhDzjz4Jxf9zY36YPIwLoGdQvk3BA4A/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 742,
+      "business_name": "Alive Co.",
+      "logo_url": "https://drive.google.com/file/d/1rnxDDqAHscE_eXkZ7YXcthoIXxfOjG2T/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 743,
+      "business_name": "Jef Albea Arts",
+      "logo_url": "https://drive.google.com/file/d/1PqzSmJrgsmYP6OAqde1k0_zMQvd6Xtun/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 744,
+      "business_name": "Jennifer Wedding and Events",
+      "logo_url": "https://drive.google.com/file/d/1xDgY8A7Vul-AhA7Y_wByliJhBPxL5aaH/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 746,
+      "business_name": "Fatima Beltran Couture",
+      "logo_url": "https://drive.google.com/file/d/1_IPQhhrtsHrvZHf1j7rFobmbj2dkYinp/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 747,
+      "business_name": "Bernie Pasamba and the Music Masters",
+      "logo_url": "https://drive.google.com/file/d/1-V9gxRIzivuXWVBFd8eAYo79P8AtqrIU/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 751,
+      "business_name": "Dandy Ona",
+      "logo_url": "https://drive.google.com/file/d/1ODRC_gVrWxI7UzGzF04V_J9Qku76ZEf9/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 752,
+      "business_name": "ChaseWell",
+      "logo_url": "https://drive.google.com/file/d/1b5sdUuzxxE7W-avtCaheetWNCY4nmMAM/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 754,
+      "business_name": "CJ Jimenez Image Artistry and Styling Team",
+      "logo_url": "https://drive.google.com/file/d/1CY0j3S355HZMTOGB6tU3j4OLxLA4o0Er/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 755,
+      "business_name": "EVENTS EMBASSY",
+      "logo_url": "https://drive.google.com/file/d/10sYVFrb_-vYVHrhaIcSIrHj86We2WGWi/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 757,
+      "business_name": "Fit in 20 by Surge",
+      "logo_url": "https://drive.google.com/file/d/1KYh4DZyWEo6WNSRCYNO65hXVYpHdYxgS/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 758,
+      "business_name": "Blue Moon Los Ilustrados Events Place",
+      "logo_url": "https://drive.google.com/file/d/1AcRkjes9GYVwYfSfMTJrhSY3iXvNB8zg/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 759,
+      "business_name": " Mr. Pluffy",
+      "logo_url": "https://drive.google.com/file/d/1DeKCvj4rz0Yhh074jCZE-0jKjM53dYCP/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 761,
+      "business_name": "Jenry Villamar Photo & Video",
+      "logo_url": "https://drive.google.com/file/d/1kmkAYCLusA3AWCMYajWXGrfZXaPY2QHy/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 763,
+      "business_name": "Forrent Chairs",
+      "logo_url": "https://drive.google.com/file/d/1KD5vnl5TuxPk5Q6t8f3SCNzRPtSWIQ7s/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 765,
+      "business_name": "HILLCREEK GARDENS TAGAYTAY INC.",
+      "logo_url": "https://drive.google.com/file/d/1KkVw1Ntg4Wsi85eMHPtnASNDJhn86Q5e/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 766,
+      "business_name": "Benitez Digital Photo Services",
+      "logo_url": "https://drive.google.com/file/d/1dAsNVictBOULpyVzSj60qnwucZLS5XCv/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 769,
+      "business_name": "Carmela’s Catering Services",
+      "logo_url": "https://drive.google.com/file/d/1Adzv3FgruwmDWsy8whV5wJBBWUSuKD6-/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 770,
+      "business_name": "Cardinal Cuisine Food Concepts",
+      "logo_url": "https://drive.google.com/file/d/1U_zbXVRvJQ4Om5qiOA0oh_tu27FUKebe/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 771,
+      "business_name": "ACEA SUBIC BEACH RESORT",
+      "logo_url": "https://drive.google.com/file/d/1AgCJY6s4fpG6D-mwQUDe1PN9CrommoCG/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 776,
+      "business_name": "HALFPRESS STUDIO PHOTOGRAPHY & VIDEOGRAPHY SERVICES",
+      "logo_url": "https://drive.google.com/file/d/16z4JPpggs99MBJzUQdLoTGnhDu66-ZYL/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 778,
+      "business_name": "Arocarria-Receptions at Alfonso",
+      "logo_url": "https://drive.google.com/file/d/11UAPw9GEOpuD1QUk7Pc4mW6uUlQ1qirM/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 779,
+      "business_name": "Kamino Megumi Japanese Cuisine Restaurant",
+      "logo_url": "https://drive.google.com/file/d/1lTy5j39uvu_nM0UAwZDQ2sjB4k0z6Dep/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 783,
+      "business_name": "Candle Craft Manila",
+      "logo_url": "https://drive.google.com/file/d/17seJpuqBRXZNLTCDHgegHxdj6MO6Hwt7/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 790,
+      "business_name": "CitySounds Pro Lights and Sounds",
+      "logo_url": "https://drive.google.com/file/d/11V3zkbcGW2ULa3wb_ljeMwsqBp-obZxh/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 791,
+      "business_name": "BREW AND BAKES CAFE",
+      "logo_url": "https://drive.google.com/file/d/14xiDeKqyFMb_MDNbzGpTuzOEeKSyS09n/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 795,
+      "business_name": "Levy Branzuela Hair and make up",
+      "logo_url": "https://drive.google.com/file/d/1-VPz-yQMQ4aZQ1hz804Vp_kRSa8Jv0Gr/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 798,
+      "business_name": "Canish Events Organizing Services",
+      "logo_url": "https://drive.google.com/file/d/1hpRWFFpgdw2xMQCc9vnev6-8S9xCcFbX/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 800,
+      "business_name": "Just Bake Coz",
+      "logo_url": "https://drive.google.com/file/d/1DJm2omWiDcKUrM1lKJI-d06tJGdTrPQn/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 803,
+      "business_name": "8 Fleur Casablanca Corporation",
+      "logo_url": "https://drive.google.com/file/d/1p47u4yVz3P8JoguhNx-sYCEmEHxAhfnd/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 804,
+      "business_name": "Cc Abille Design and Printing Co.",
+      "logo_url": "https://drive.google.com/file/d/1pUcnK6bmmigDItPzc0QIELBvcjvioI-p/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 805,
+      "business_name": "Fête Accents",
+      "logo_url": "https://drive.google.com/file/d/1olztAKHXVOgEOGUz_GtLLrhajoQ5cZbR/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 807,
+      "business_name": "Agusteau Verde Catering & Events",
+      "logo_url": "https://drive.google.com/file/d/1LH8V1-ZavEceRFeM-OE75jBDW4GxBqZN/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 808,
+      "business_name": "El Verde Catering and Event Services",
+      "logo_url": "https://drive.google.com/file/d/1zwPxYDvDtHBnZaaJePWm19g9gdjbRJa_/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 809,
+      "business_name": "Kuya Ponz Catering Services",
+      "logo_url": "https://drive.google.com/file/d/1u66HXBnLwh4nULsXBWnN7MWR4369qqAu/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 810,
+      "business_name": "I-click Photography Oslo",
+      "logo_url": "https://drive.google.com/file/d/1eoqtEzux5MVzLuGsVHmav8vcgpk7aCj7/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 813,
+      "business_name": "Erree’s Photography and Videography",
+      "logo_url": "https://drive.google.com/file/d/1KTYBX_hptu0af6GaX8UkXq5JVWhdM59f/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 815,
+      "business_name": "Geraldine's Wedding Shop, Party Needs & Catering Services",
+      "logo_url": "https://drive.google.com/file/d/1AMdQYyOpZimorYhjo62BPsvifEqNJEO9/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 816,
+      "business_name": "All Seasons",
+      "logo_url": "https://drive.google.com/file/d/1URTAClzoTt3ili9QrevzGkVbjm5H2IGH/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 817,
+      "business_name": "Bev Jewelry Shop",
+      "logo_url": "https://drive.google.com/file/d/1lf4Q86YDQk3_bIYOFat0chTLVLePZh3Y/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 818,
+      "business_name": "Fueled by Verses",
+      "logo_url": "https://drive.google.com/file/d/1mgmUHA5ozHpFS-t8tQKZ5-MTkU3Ox278/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 820,
+      "business_name": "Arabella Events Place",
+      "logo_url": "https://drive.google.com/file/d/1UVRuHZxoRotEBcRrsybCNa-TgqJatwWK/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 822,
+      "business_name": "La Feliza Bed&Breakfast",
+      "logo_url": "https://drive.google.com/file/d/1LQqPcntJoDBJ9kpQqg9OiPL-kBH1ngXR/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 824,
+      "business_name": "Amici Resort Hotel Laoag",
+      "logo_url": "https://drive.google.com/file/d/1HA_g4dG5HEl9iPLEeeFM8-WtUcU8efxJ/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 827,
+      "business_name": "Kahuna Beach Resort & Spa",
+      "logo_url": "https://drive.google.com/file/d/1xKZdVaW3FUxHtZ8f1nalJDwW0WpgfTBF/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 828,
+      "business_name": "Joel H. Garcia Photography",
+      "logo_url": "https://drive.google.com/file/d/1FHdhL-69jd_ILvwvMh99EZKKKhVJNs49/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 837,
+      "business_name": "Elaine Yap Professional Makeup",
+      "logo_url": "https://drive.google.com/file/d/1jb6ON_tAE3KpZsTrEN-YQl29AxTFYF0S/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 838,
+      "business_name": "AZURA Project",
+      "logo_url": "https://drive.google.com/file/d/1mSIBIbln3jyGlZve0SnqC3SM6JfBzZnT/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 840,
+      "business_name": "Cham Castillo Event Styling",
+      "logo_url": "https://drive.google.com/file/d/1jIUjGPnkEnx0Ml-_cPryc3-IVQ6nfLTT/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 841,
+      "business_name": "Emily’s Events Place",
+      "logo_url": "https://drive.google.com/file/d/1Yl3kMw1bZS9jqGV5vBICEbCl5aPa798L/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 844,
+      "business_name": "Energetic Host Rence",
+      "logo_url": "https://drive.google.com/file/d/1e0k_cA57rKUhb1-F4j4KbgFgNKu52MB9/view?usp=drive_linkV",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 846,
+      "business_name": "Host Sieleen",
+      "logo_url": "https://drive.google.com/file/d/1j7RfyceXJ_r1VQSCj9G3YtB4reSqIsP3/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 851,
+      "business_name": "Iviang Souvenirs",
+      "logo_url": "https://drive.google.com/file/d/1JVeySE75LWJbyYJMSG7sfHB3LNkyNwcZ/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 854,
+      "business_name": "Arvie Daquial",
+      "logo_url": "https://drive.google.com/file/d/1lgPBQdk2n-NN05pwOOR_Afx2RFBU4Iip/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 855,
+      "business_name": "Getting Hitched CDO by Lindy- Wedding Coordinator",
+      "logo_url": "https://drive.google.com/file/d/1gYcclSVXOTcnlQ1UcaDEnGr3Dc5tfIy_/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 856,
+      "business_name": "Justgotcrafty",
+      "logo_url": "https://drive.google.com/file/d/1RWryGmD4XcE24Npf85kAHMzc7WJ3ovYo/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 858,
+      "business_name": "Fundacion Pacita",
+      "logo_url": "https://drive.google.com/file/d/1i6LzCaP4iLKnJiWU-UC6stnjTNtCdqYi/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 861,
+      "business_name": "Julienne's Custom Made Jewelry",
+      "logo_url": "https://drive.google.com/file/d/1y7Eo2eKlhP09rYIkUTOZCCRCJK3weXc6/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 863,
+      "business_name": "Dream Team Events - Batanes",
+      "logo_url": "https://drive.google.com/file/d/1a8pizwtvfYjnAOGDxxWh2H0OuF7uicgt/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 865,
+      "business_name": "Dianne Alcantara - Hairstylist",
+      "logo_url": "https://drive.google.com/file/d/1_yr2xBtkIEs1MLp3BoGnySG0-STOeem2/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 866,
+      "business_name": "Joie Jewelry PH",
+      "logo_url": "https://drive.google.com/file/d/1jV7O-k6NaJsXqe7kA_dpvl0cbZMFqmba/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 867,
+      "business_name": "Event Designs By Tiffany",
+      "logo_url": "https://drive.google.com/file/d/1syL3wb875hSyykWumYkIzDLGd-yAnKtq/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 868,
+      "business_name": "JE&Co.",
+      "logo_url": "https://drive.google.com/file/d/1QBLb5hApisjw1gm4jxQyu0JPZ7rd8EQG/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 871,
+      "business_name": "Cafe Du Tukon",
+      "logo_url": "https://drive.google.com/file/d/13jx8wlGjcG2pymTiCHsT5HxeVM_ohYb_/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 872,
+      "business_name": "Glam & Style Weddings and Events",
+      "logo_url": "https://drive.google.com/file/d/1edJDvd3B8Z1nhIQR6AyNEqOB2hS9At8A/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 877,
+      "business_name": "Elizabeth Hallie Design",
+      "logo_url": "https://drive.google.com/file/d/1bAViFgVBO7XoZ5SzG0fBdapXzZS44cR-/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 878,
+      "business_name": "Arvox Tailoring",
+      "logo_url": "https://drive.google.com/file/d/16EFnD1omsnZPiGC1sZ5JyBqRLJzfJokp/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 879,
+      "business_name": "Grynne and Makeup",
+      "logo_url": "https://drive.google.com/file/d/1H4KtDnd6Wdp9-cDadABnXjvDVrCbgIcb/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 887,
+      "business_name": "Events by Miss P",
+      "logo_url": "https://drive.google.com/file/d/1MgoxiEvm55zMui7oRMnj4P3WbKIPeqNR/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 888,
+      "business_name": "Gideon Hermosa",
+      "logo_url": "https://drive.google.com/file/d/1c-6nPi7PXvBdw3CyWjVEln48RxsYqQv8/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 889,
+      "business_name": "Honey Glaze cakes",
+      "logo_url": "https://drive.google.com/file/d/10fKbIA7NKXEaPEUceBasn_uTi7W9NtVS/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 891,
+      "business_name": "Cocktails To Go Mobile Bar",
+      "logo_url": "https://drive.google.com/file/d/1gerG_mFJRLQ_FMH9krZ1ZeJ-vdCYjGah/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 892,
+      "business_name": "Frozzle Popz",
+      "logo_url": "https://drive.google.com/file/d/1glDG0CHyezlMYFb7qM6BNYdoB6q9kiAZ/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 893,
+      "business_name": "Hot links ph",
+      "logo_url": "https://drive.google.com/file/d/1-3aksWecFVyluB257M6uoIXiBeyDlD5y/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 894,
+      "business_name": "City JumpN'Slide PH",
+      "logo_url": "https://drive.google.com/file/d/1OEMoRH7gcGQPH8sz0UckuQBQEvI__m5g/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 895,
+      "business_name": "Dj Randy Pasion",
+      "logo_url": "https://drive.google.com/file/d/1mOqwkTs4-7JlMl_mKT4rTBiFwn-fXCrW/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 898,
+      "business_name": "Casa Salome",
+      "logo_url": "https://drive.google.com/file/d/1YevBLvz1Ay2vFIy1B7to3arLD29WMd0c/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 900,
+      "business_name": "Figueroa Trixie",
+      "logo_url": "https://drive.google.com/file/d/1OxNQ-64_Qp9UDfLll7hwTOXJkDEJ78-I/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 904,
+      "business_name": "Belleza Farm",
+      "logo_url": "https://drive.google.com/file/d/1V-f8MP4S9kbtGTxmg0Nyz2j8phAJbqP4/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 909,
+      "business_name": "IAN CRUZ FILMS",
+      "logo_url": "https://drive.google.com/file/d/1sTsDj5R2kIDydP0b2LqywNvcmahCA9eR/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 910,
+      "business_name": "Harbour Cafe Batanes",
+      "logo_url": "https://drive.google.com/file/d/1BRrTGGkQAGRCw5aM9-V_ZUJi2E4ZnAic/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 912,
+      "business_name": "Basco Lighthouse, Naidi Hills ",
+      "logo_url": "https://drive.google.com/file/d/1lG4rno9KZicrDWT6oeIVLhjUz0CINqt7/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 914,
+      "business_name": "Cai's Confectionery Shop",
+      "logo_url": "https://drive.google.com/file/d/1hNinQ92Rlk35nAjRXKu9orne764HHbJX/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 915,
+      "business_name": "Cherryvill events & place",
+      "logo_url": "https://drive.google.com/file/d/1Bnx-xV8aAAhdJtaPMVbG2qRWjKlalh5D/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 916,
+      "business_name": "Batanes Make-up Artist",
+      "logo_url": "https://drive.google.com/file/d/1rXqHYACr6v42pjXWQZtF7y2Ij-SLFupl/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 917,
+      "business_name": "DRN FILMS",
+      "logo_url": "https://drive.google.com/file/d/1_JjUv-PHbOMTgmmviZM6THeYsemATZMX/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 918,
+      "business_name": "Dijital Batanes",
+      "logo_url": "https://drive.google.com/file/d/1z887YyZQ-tx0z-phUcrY5g4UlWuNc9-a/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 919,
+      "business_name": "Bernardo's Hotel - Batanes",
+      "logo_url": "https://drive.google.com/file/d/1jACUj5_Ioyy7ndz29-ROK--rRAZ9Uylh/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 920,
+      "business_name": "Idiang Tour Services Batanes",
+      "logo_url": "https://drive.google.com/file/d/1QahM5imOaFr98s-Ug0TWf5Z5iOIASp40/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 922,
+      "business_name": "Goodness Graze",
+      "logo_url": "https://drive.google.com/file/d/1X2Bn2oG6jtWZxaJkoR7zvm-yAvVERvvR/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 923,
+      "business_name": "Infinity Weddings and Events",
+      "logo_url": "https://drive.google.com/file/d/1yRLsLUUY93YrHYpLT5Lj087po6iH1l4d/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 928,
+      "business_name": "Dhon Conwi Events",
+      "logo_url": "https://drive.google.com/file/d/1NQTcYKBgPYDp4141iro3CZE16JUETR3I/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 929,
+      "business_name": "Loi Villarama Events Mgt.",
+      "logo_url": "https://drive.google.com/file/d/1bLwGcIMJkl7AOvNBjDAtUAbXKtqIuaxV/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 931,
+      "business_name": "Grazing Table Manila",
+      "logo_url": "https://drive.google.com/file/d/1fqak724xUHOFm-2eeG-bnuW88Hu4tSIl/view?usp=sharing",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 932,
+      "business_name": "Gleeful Moments Photography & Filmmaking",
+      "logo_url": "https://drive.google.com/file/d/1OpZkuTA5L31WDNL3GTH1sx64aLFqQ4ag/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    },
+    {
+      "id": 936,
+      "business_name": "Blooms Petals and Ribbons",
+      "logo_url": "https://drive.google.com/file/d/1_yxh-b7JBStYaY_9_uYasQOKzTWrPkLT/view?usp=drive_link",
+      "backed_up_at": "2026-05-11T05:35:45.747Z"
+    }
+  ]
+}

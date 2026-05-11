@@ -107,9 +107,19 @@ export async function GET(req: Request) {
       redirect: "manual", // Don't automatically follow redirects for security
       signal: controller.signal,
       headers: {
-        // Helps some hosts that block non-browser UAs.
-        "user-agent": "Mozilla/5.0",
-        accept: "image/avif,image/webp,image/apng,image/*,*/*;q=0.8",
+        // More realistic browser headers to avoid blocking
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "accept": "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
+        "accept-language": "en-US,en;q=0.9",
+        "accept-encoding": "gzip, deflate, br",
+        "dnt": "1",
+        "sec-fetch-dest": "image",
+        "sec-fetch-mode": "no-cors",
+        "sec-fetch-site": "cross-site",
+        "referer": "https://themes-and-motifs.harolddelapena-11.workers.dev/",
+        "sec-ch-ua": '"Not_A Brand";v="8", "Chromium";v="120"',
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": '"Windows"',
       },
       cache: "no-store",
     });
@@ -132,8 +142,19 @@ export async function GET(req: Request) {
           redirect: "manual",
           signal: redirectController.signal,
           headers: {
-            "user-agent": "Mozilla/5.0",
-            accept: "image/avif,image/webp,image/apng,image/*,*/*;q=0.8",
+            // More realistic browser headers to avoid blocking
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "accept": "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, deflate, br",
+            "dnt": "1",
+            "sec-fetch-dest": "image",
+            "sec-fetch-mode": "no-cors",
+            "sec-fetch-site": "cross-site",
+            "referer": "https://themes-and-motifs.harolddelapena-11.workers.dev/",
+            "sec-ch-ua": '"Not_A Brand";v="8", "Chromium";v="120"',
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": '"Windows"',
           },
           cache: "no-store",
         });
@@ -145,11 +166,49 @@ export async function GET(req: Request) {
     if (error instanceof Error && error.name === "AbortError") {
       return new Response("Request timeout", { status: 504 });
     }
-    return new Response("Upstream fetch failed", { status: 502 });
+    console.error("Image proxy fetch error:", error);
+    
+    // For Cloudflare Workers, return a placeholder image response instead of 502
+    const placeholderSvg = `
+      <svg width="200" height="150" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100%" height="100%" fill="#f3f4f6"/>
+        <text x="50%" y="50%" text-anchor="middle" dy=".3em" font-family="Arial, sans-serif" font-size="14" fill="#6b7280">
+          Image unavailable
+        </text>
+      </svg>
+    `;
+    
+    return new Response(placeholderSvg.trim(), {
+      status: 200,
+      headers: {
+        "content-type": "image/svg+xml",
+        "cache-control": "public, max-age=3600",
+        "cross-origin-resource-policy": "cross-origin",
+      },
+    });
   }
 
   if (!upstream.ok) {
-    return new Response(`Upstream error: ${upstream.status}`, { status: 502 });
+    console.error("Upstream error:", upstream.status, upstream.statusText);
+    
+    // For Cloudflare Workers, return a placeholder image response instead of 502
+    const placeholderSvg = `
+      <svg width="200" height="150" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100%" height="100%" fill="#f3f4f6"/>
+        <text x="50%" y="50%" text-anchor="middle" dy=".3em" font-family="Arial, sans-serif" font-size="14" fill="#6b7280">
+          Image unavailable
+        </text>
+      </svg>
+    `;
+    
+    return new Response(placeholderSvg.trim(), {
+      status: 200,
+      headers: {
+        "content-type": "image/svg+xml",
+        "cache-control": "public, max-age=3600",
+        "cross-origin-resource-policy": "cross-origin",
+      },
+    });
   }
 
   // Check content length

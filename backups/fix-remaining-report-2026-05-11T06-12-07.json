@@ -1,0 +1,122 @@
+{
+  "timestamp": "2026-05-11T06:12:07.953Z",
+  "summary": {
+    "total": 16,
+    "successful": 16,
+    "failed": 0
+  },
+  "results": [
+    {
+      "success": true,
+      "vendor_id": 199,
+      "business_name": "Bridesdream Gowns and Suits",
+      "previous_url": "https://themes-and-motifs-microsite.vercel.app/api/image-proxy?url=https%3A%2F%2Fdrive.google.com%2Fuc%3Fexport%3Dview%26id%3D1KXtBGDeTKaD5OIyTUvkIsVlS5qQ5YK5P",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/logos/vendor-199-1778479843922.jpg"
+    },
+    {
+      "success": true,
+      "vendor_id": 212,
+      "business_name": "Shutterbox Studio",
+      "previous_url": "https://themes-and-motifs-microsite.vercel.app/api/image-proxy?url=https%3A%2F%2Fdrive.google.com%2Fuc%3Fexport%3Dview%26id%3D1uG1WEIYlDQoOe_38h7DdiNjXFZTts7dh",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/logos/vendor-212-1778479847424.jpg"
+    },
+    {
+      "success": true,
+      "vendor_id": 222,
+      "business_name": "Caricatures by Krystina Bogus",
+      "previous_url": "https://themes-and-motifs-microsite.vercel.app/api/image-proxy?url=https%3A%2F%2Fdrive.google.com%2Fuc%3Fexport%3Dview%26id%3D1UWYdcIt4MZOW8hUkJcjKHf6JNYmC89gk",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/logos/vendor-222-1778479851979.jpg"
+    },
+    {
+      "success": true,
+      "vendor_id": 241,
+      "business_name": "Onesimus Suits and Barongs",
+      "previous_url": "https://themes-and-motifs-microsite.vercel.app/api/image-proxy?url=https%3A%2F%2Fdrive.google.com%2Fuc%3Fexport%3Dview%26id%3D1H9lMXgvGjOILkmr8qFRWbxuIN3AdmDLh",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/logos/vendor-241-1778479858160.jpg"
+    },
+    {
+      "success": true,
+      "vendor_id": 274,
+      "business_name": "JMC EMBROIDERY",
+      "previous_url": "https://themes-and-motifs-microsite.vercel.app/api/image-proxy?url=https%3A%2F%2Fdrive.google.com%2Fuc%3Fexport%3Dview%26id%3D18D6AilAkpBG5ocLCR3q_dEQuiHFqTOl8",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/logos/vendor-274-1778479861316.jpg"
+    },
+    {
+      "success": true,
+      "vendor_id": 293,
+      "business_name": "Appetite Music Entertainment",
+      "previous_url": "https://themes-and-motifs-microsite.vercel.app/api/image-proxy?url=https%3A%2F%2Fdrive.google.com%2Fuc%3Fexport%3Dview%26id%3D1vJGBVz4U5A7ZCgD0cRkAXub5bsK2nPV4",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/logos/vendor-293-1778479865094.jpg"
+    },
+    {
+      "success": true,
+      "vendor_id": 320,
+      "business_name": "JS MINA SOUND SYSTEM RENTAL",
+      "previous_url": "https://themes-and-motifs-microsite.vercel.app/api/image-proxy?url=https%3A%2F%2Fdrive.google.com%2Fuc%3Fexport%3Dview%26id%3D1JS-OO3mK3zlD0YV4z7qoZvixJUQGEXpH",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/logos/vendor-320-1778479868907.jpg"
+    },
+    {
+      "success": true,
+      "vendor_id": 459,
+      "business_name": "Hotel Lucky Chinatown",
+      "previous_url": "https://drive.google.com/file/d/1V-nuOKXKnZWN8kM76hjXnAzDP3qpRVOh/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/logos/vendor-459-1778479872765.jpg"
+    },
+    {
+      "success": true,
+      "vendor_id": 546,
+      "business_name": "EMM Premium Fragrances by DJ Toni Tubero's Events Management",
+      "previous_url": "https://drive.google.com/file/d/1K7h7jCn6q5QrTNjvPPMohsTc-ODpyOpg/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/logos/vendor-546-1778479881613.jpg"
+    },
+    {
+      "success": true,
+      "vendor_id": 591,
+      "business_name": "Patricia Syquiatco",
+      "previous_url": "https://themes-and-motifs-microsite.vercel.app/api/image-proxy?url=https%3A%2F%2Fdrive.google.com%2Fuc%3Fexport%3Dview%26id%3D1FOwwW7fYl9fMqqgNujygVFDmu3QM4rQa",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/logos/vendor-591-1778479889186.jpg"
+    },
+    {
+      "success": true,
+      "vendor_id": 611,
+      "business_name": "Riad kashlan couture",
+      "previous_url": "https://themes-and-motifs-microsite.vercel.app/api/image-proxy?url=https%3A%2F%2Fdrive.google.com%2Fuc%3Fexport%3Dview%26id%3D1AyQ6VWOlQvRY06VnwTBMwh3nv_VzHAah",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/logos/vendor-611-1778479892555.jpg"
+    },
+    {
+      "success": true,
+      "vendor_id": 632,
+      "business_name": "kenneth uy photography",
+      "previous_url": "https://lh3.googleusercontent.com/p/AF1QipM2-0LXthTe88C9EE45_waIHf-3tGqSX39E8jfI=s680-w680-h510-rw",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/logos/vendor-632-1778479895746.jpg"
+    },
+    {
+      "success": true,
+      "vendor_id": 636,
+      "business_name": "Chelsie-Andrea's Bridal Couture",
+      "previous_url": "https://themes-and-motifs-microsite.vercel.app/api/image-proxy?url=https%3A%2F%2Fdrive.google.com%2Fuc%3Fexport%3Dview%26id%3D1ViQnuG4I4CxJZAHeaLCpqSN5JN05TzOd",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/logos/vendor-636-1778479898847.jpg"
+    },
+    {
+      "success": true,
+      "vendor_id": 670,
+      "business_name": "Alta Veranda de Tibig Inc",
+      "previous_url": "https://drive.google.com/file/d/1iSIOmb71NJgL_c9ndtSKu8r_rWNFTGt4/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/logos/vendor-670-1778479902980.jpg"
+    },
+    {
+      "success": true,
+      "vendor_id": 720,
+      "business_name": "Jhoemar jack atelier",
+      "previous_url": "https://drive.google.com/file/d/1Fn5uWyff9OHhTF-FUImk5AOUA84CcOys/view?usp=drive_link",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/logos/vendor-720-1778479911100.jpg"
+    },
+    {
+      "success": true,
+      "vendor_id": 855,
+      "business_name": "Getting Hitched CDO by Lindy- Wedding Coordinator",
+      "previous_url": "https://drive.google.com/file/d/1gYcclSVXOTcnlQ1UcaDEnGr3Dc5tfIy_/view?usp=sharing",
+      "new_url": "https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/logos/vendor-855-1778479923693.jpg"
+    }
+  ]
+}
