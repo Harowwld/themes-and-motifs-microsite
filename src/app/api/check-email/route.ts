@@ -2,10 +2,9 @@ import { NextResponse } from "next/server";
 
 import { createSupabaseAdminClient } from "../../../lib/supabaseAdmin";
 
-const supabaseAdmin = createSupabaseAdminClient();
-
 export async function POST(request: Request) {
   try {
+    const supabaseAdmin = createSupabaseAdminClient();
     const { email } = await request.json();
 
     if (!email) {
