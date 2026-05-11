@@ -2,6 +2,13 @@ export const dynamic = "force-dynamic";
 
 const CACHE = caches.open("image-cache");
 
+// Enhanced cache headers for Cloudflare CDN
+const CACHE_HEADERS = {
+  "cache-control": "public, max-age=31536000, immutable", // 1 year cache
+  "cross-origin-resource-policy": "cross-origin",
+  "vary": "Accept",
+};
+
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const url = searchParams.get("url");
@@ -19,9 +26,8 @@ export async function GET(req: Request) {
       return new Response(cached.body, {
         status: 200,
         headers: {
+          ...CACHE_HEADERS,
           "content-type": cached.headers.get("content-type") || "image/jpeg",
-          "cache-control": "public, max-age=86400",
-          "cross-origin-resource-policy": "cross-origin",
         },
       });
     }
@@ -30,11 +36,16 @@ export async function GET(req: Request) {
     let response: Response | null = null;
     for (let attempt = 0; attempt < 3; attempt++) {
       try {
+        // Request modern image formats with fallbacks
+        const acceptHeader = req.headers.get("accept") || 
+          "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8";
+        
         response = await fetch(url, {
           headers: {
             "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-            "accept": "image/*",
-            "referer": "https://drive.google.com/",
+            "accept": acceptHeader,
+            "accept-encoding": "gzip, deflate, br",
+            "referer": "https://themes-and-motifs.harolddelapena-11.workers.dev/",
           },
         });
         
@@ -51,12 +62,14 @@ export async function GET(req: Request) {
       throw new Error(`Failed after 3 attempts: ${response?.status}`);
     }
 
-    // Cache the response
+    // Cache the response with optimized headers
     const imageBuffer = await response.arrayBuffer();
+    const contentType = response.headers.get("content-type") || "image/jpeg";
+    
     const cacheResponse = new Response(imageBuffer, {
       headers: {
-        "content-type": response.headers.get("content-type") || "image/jpeg",
-        "cache-control": "public, max-age=86400",
+        ...CACHE_HEADERS,
+        "content-type": contentType,
       },
     });
     
@@ -65,9 +78,8 @@ export async function GET(req: Request) {
     return new Response(imageBuffer, {
       status: 200,
       headers: {
-        "content-type": response.headers.get("content-type") || "image/jpeg",
-        "cache-control": "public, max-age=86400",
-        "cross-origin-resource-policy": "cross-origin",
+        ...CACHE_HEADERS,
+        "content-type": contentType,
       },
     });
 
