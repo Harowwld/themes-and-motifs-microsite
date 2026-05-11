@@ -53,5 +53,12 @@
     "tailwindcss": "^4",
     "typescript": "^5",
     "wrangler": "^4.90.0"
+  },
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=9.0.0",
+    "npm": "please-use-pnpm",
+    "yarn": "please-use-pnpm"
   }
 }
