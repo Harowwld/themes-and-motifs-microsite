@@ -17,6 +17,7 @@ import ClaimVendorButton from "../../../features/vendors/components/ClaimVendorB
 import VendorContactCTA from "../../../features/vendors/components/VendorContactCTA";
 import SaveVendorCTA from "../../../features/vendors/components/SaveVendorCTA";
 import VendorReviewForm from "./VendorReviewForm";
+import VendorQRCode from "../../../components/VendorQRCode";
 
 export const dynamic = "force-dynamic";
 
@@ -645,6 +646,12 @@ async function VendorDetailData({ slug }: { slug: string }) {
                   </div>
                 </div>
               ) : null}
+
+              {/* QR Code */}
+              <VendorQRCode 
+                vendorSlug={vendor.slug} 
+                vendorName={vendor.business_name}
+              />
 
               {/* Themes */}
               {themes.length > 0 ? (

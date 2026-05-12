@@ -170,11 +170,19 @@ export default function InfinitePromoCarousel({ promos }: { promos: FeaturedProm
   const touchEndX = useRef(0);
   const isMobile = useIsMobile();
   const isTablet = useIsTablet();
+  
+  // Mobile-specific state (always defined, but only used on mobile)
+  const [currentPage, setCurrentPage] = useState(0);
+  const [isFading, setIsFading] = useState(false);
+  
+  const promosPerPage = 6;
+  const totalPages = Math.ceil(promos.length / promosPerPage);
 
   const duplicatedPromos = [...promos, ...promos, ...promos];
   const cardWidth = 320;
   const gap = 24;
 
+  // Desktop carousel hooks
   const goToSlide = useCallback(
     (index: number, instant = false) => {
       if (instant) {
@@ -197,6 +205,7 @@ export default function InfinitePromoCarousel({ promos }: { promos: FeaturedProm
     goToSlide(promos.length + dotIndex);
   };
 
+  // Desktop carousel auto-advance
   useEffect(() => {
     if (isPaused || promos.length === 0) return;
 
@@ -208,31 +217,82 @@ export default function InfinitePromoCarousel({ promos }: { promos: FeaturedProm
     return () => clearInterval(interval);
   }, [isPaused, promos.length]);
 
-  const handleTouchStart = (e: React.TouchEvent) => {
+  // Mobile carousel functions (defined but only used on mobile)
+  const getPagePromos = useCallback((page: number) => {
+    const startIndex = page * promosPerPage;
+    const endIndex = startIndex + promosPerPage;
+    let pagePromos = promos.slice(startIndex, endIndex);
+    
+    // If we have less than 6 promos on this page, fill from previous pages
+    if (pagePromos.length < promosPerPage && promos.length > promosPerPage) {
+      const needed = promosPerPage - pagePromos.length;
+      let fillStart = startIndex - needed;
+      if (fillStart < 0) fillStart = promos.length + fillStart; // Wrap around
+      const fillPromos = promos.slice(fillStart, fillStart + needed);
+      pagePromos = [...pagePromos, ...fillPromos];
+    }
+    
+    return pagePromos;
+  }, [promos, promosPerPage]);
+
+  const currentPromos = getPagePromos(currentPage);
+
+  // Mobile carousel auto-advance
+  useEffect(() => {
+    if (!isMobile || isPaused || totalPages <= 1) return;
+    
+    const interval = setInterval(() => {
+      setIsFading(true);
+      setTimeout(() => {
+        setCurrentPage((prev) => (prev + 1) % totalPages);
+        setIsFading(false);
+      }, 300); // Fade duration
+    }, 5000); // Time between pages
+    
+    return () => clearInterval(interval);
+  }, [isMobile, isPaused, totalPages]);
+
+  // Mobile touch handlers
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
     setIsPaused(true);
-  };
+  }, []);
 
-  const handleTouchMove = (e: React.TouchEvent) => {
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
     touchEndX.current = e.touches[0].clientX;
-  };
+  }, []);
 
-  const handleTouchEnd = () => {
+  const handleTouchEnd = useCallback(() => {
     const diff = touchStartX.current - touchEndX.current;
     const threshold = 50;
-
-    if (Math.abs(diff) > threshold) {
-      setIsTransitioning(true);
-      if (diff > 0) {
-        setCurrentIndex((prev) => prev + 1);
-      } else {
-        setCurrentIndex((prev) => prev - 1);
-      }
+    
+    if (Math.abs(diff) > threshold && totalPages > 1) {
+      setIsFading(true);
+      setTimeout(() => {
+        if (diff > 0) {
+          // Swipe left - next page
+          setCurrentPage((prev) => (prev + 1) % totalPages);
+        } else {
+          // Swipe right - previous page
+          setCurrentPage((prev) => (prev - 1 + totalPages) % totalPages);
+        }
+        setIsFading(false);
+      }, 300);
     }
-
+    
     setTimeout(() => setIsPaused(false), 1000);
-  };
+  }, [totalPages]);
 
+  const handleMobileDotClick = useCallback((pageIndex: number) => {
+    if (pageIndex === currentPage) return;
+    setIsFading(true);
+    setTimeout(() => {
+      setCurrentPage(pageIndex);
+      setIsFading(false);
+    }, 300);
+  }, [currentPage]);
+
+  
   if (promos.length === 0) {
     return (
       <div className="rounded-[3px] border border-black/10 bg-white shadow-sm p-6">
@@ -242,35 +302,63 @@ export default function InfinitePromoCarousel({ promos }: { promos: FeaturedProm
     );
   }
 
-  // Mobile: Show 2x3 grid (6 promos)
+  // Mobile: Show fade carousel with 2x3 grid (6 promos per page)
   if (isMobile) {
-    const gridPromos = promos.slice(0, 6);
+    const currentPromos = getPagePromos(currentPage);
+    
     return (
       <div className="pt-4">
-        <div className="grid grid-cols-2 gap-3">
-          {gridPromos.map((promo, i) => (
-            <PromoCard
-              key={`${promo.id}-${i}`}
-              promo={promo}
-              index={i}
-              tone={i % 2 === 0 ? "#a68b6a" : "#957a5c"}
-              isGrid={true}
-            />
-          ))}
+        <div
+          className={`transition-opacity duration-300 ${
+            isFading ? 'opacity-0' : 'opacity-100'
+          }`}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
+          <div className="grid grid-cols-2 gap-3">
+            {currentPromos.map((promo, i) => (
+              <PromoCard
+                key={`${promo.id}-${currentPage}-${i}`}
+                promo={promo}
+                index={i}
+                tone={i % 2 === 0 ? "#a68b6a" : "#957a5c"}
+                isGrid={true}
+              />
+            ))}
+          </div>
         </div>
-        {promos.length > 6 && (
+        
+        {/* Dot indicators */}
+        {totalPages > 1 && (
           <div className="flex justify-center gap-2 mt-6">
-            <a
-              href="/promos"
-              className="inline-flex items-center gap-1 text-[13px] font-semibold text-[#a68b6a] hover:text-[#957a5c] transition-colors font-[family-name:var(--font-plus-jakarta)]"
-            >
-              View All {promos.length} Promos
-              <svg width="16" height="16" viewBox="0 0 20 16" fill="none" aria-hidden className="w-4 h-4">
-                <path d="M2 8h16M12 2l6 6-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </a>
+            {Array.from({ length: totalPages }).map((_, i) => (
+              <button
+                key={i}
+                onClick={() => handleMobileDotClick(i)}
+                className={`transition-all duration-300 min-h-[6px] min-w-[6px] ${
+                  currentPage === i
+                    ? "w-4 h-1.5 bg-[#a68b6a] rounded-full"
+                    : "w-1.5 h-1.5 bg-[#a68b6a]/30 rounded-full hover:bg-[#a68b6a]/50"
+                }`}
+                aria-label={`Go to page ${i + 1}`}
+              />
+            ))}
           </div>
         )}
+        
+        {/* View All link */}
+        <div className="flex justify-center gap-2 mt-4">
+          <a
+            href="/promos"
+            className="inline-flex items-center gap-1 text-[13px] font-semibold text-[#a68b6a] hover:text-[#957a5c] transition-colors font-[family-name:var(--font-plus-jakarta)]"
+          >
+            View All {promos.length} Promos
+            <svg width="16" height="16" viewBox="0 0 20 16" fill="none" aria-hidden className="w-4 h-4">
+              <path d="M2 8h16M12 2l6 6-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </a>
+        </div>
       </div>
     );
   }
