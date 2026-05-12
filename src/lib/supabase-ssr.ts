@@ -12,6 +12,7 @@ export function createBrowserClient() {
         resetPasswordForEmail: () => Promise.resolve({ error: new Error('Server side') }),
         verifyOtp: () => Promise.resolve({ error: new Error('Server side') }),
         exchangeCodeForSession: () => Promise.resolve({ error: new Error('Server side') }),
+        onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
       }
     } as any
   }
