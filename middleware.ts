@@ -93,7 +93,7 @@ export async function middleware(req: NextRequest) {
     const { data: superadminData } = await createSupabaseAdminClient()
       .from("superadmins")
       .select("id, auth_user_id, is_active")
-      .eq("auth_user_id", user.id)
+      .eq("auth_user_id", user?.id)
       .eq("is_active", true)
       .limit(1)
       .maybeSingle<{ id: string; auth_user_id: string; is_active: boolean }>();
@@ -109,7 +109,7 @@ export async function middleware(req: NextRequest) {
       const { data: editorData } = await createSupabaseAdminClient()
         .from("editors")
         .select("id")
-        .eq("user_id", user.id)
+        .eq("user_id", user?.id)
         .limit(1)
         .maybeSingle<{ id: string }>();
       
