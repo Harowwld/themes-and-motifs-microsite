@@ -66,18 +66,6 @@ jobs:
       
     - name: Run linting
       run: pnpm lint
-      
-    - name: Build project
-      run: pnpm build
-      
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: build-files
-        path: |
-          .next/
-          public/
-        retention-days: 1
         
     - name: Deploy to Cloudflare Workers
       if: github.ref == 'refs/heads/main'
