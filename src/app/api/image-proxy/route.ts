@@ -238,8 +238,8 @@ export async function GET(req: Request) {
       "content-type": contentType,
       // Make it embeddable
       "cross-origin-resource-policy": "cross-origin",
-      // Cache lightly in browser; adjust later if needed
-      "cache-control": "public, max-age=3600",
+      // Cache in Cloudflare CDN for 1 hour, allow browser caching
+      "cache-control": "public, max-age=3600, s-maxage=3600",
     },
   });
 }
