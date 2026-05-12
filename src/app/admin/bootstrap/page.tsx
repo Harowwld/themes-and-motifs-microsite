@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
 export default function BootstrapPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");

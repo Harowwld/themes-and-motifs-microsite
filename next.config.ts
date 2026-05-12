@@ -48,6 +48,33 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   // allowedDevOrigins: ["localhost", "127.0.0.1", "192.168.1.6"],
 
+  // Image optimization configuration
+  images: {
+    // Enable remote image optimization
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**.supabase.co",
+      },
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+      },
+      {
+        protocol: "https",
+        hostname: "drive.google.com",
+      },
+    ],
+    // Image formats for automatic optimization
+    formats: ['image/avif', 'image/webp'],
+    // Device sizes for responsive images
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    // Image sizes for srcset
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    // Minimum cache TTL for optimized images (in seconds)
+    minimumCacheTTL: 60,
+  },
+
   // Router cache configuration - disabled in dev to prevent stale content
   experimental: isDev
     ? {} // No experiments in dev (no stale caching)

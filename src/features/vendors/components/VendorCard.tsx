@@ -5,7 +5,6 @@ import { createSupabaseBrowserClient } from "@/lib/supabaseBrowser";
 import { useVendorSpeculation } from "@/hooks/useVendorSpeculation";
 import { useSmartPrefetch, prefetchOnHover } from "@/hooks/useSmartPrefetch";
 import { useSavedVendors } from "./SavedVendorsProvider";
-import OptimizedImage from "@/components/OptimizedImage";
 import type { VendorCardVendor } from "../types";
 
 type Props = {
@@ -152,13 +151,13 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight, featured }: 
           )}
         </button>
         {coverUrl ? (
-          <OptimizedImage
+          <img
             src={coverUrl}
             alt=""
-            className="absolute inset-0 h-full w-full"
+            className="absolute inset-0 h-full w-full object-cover"
             style={{ objectPosition: coverObjectPosition, transformOrigin: coverObjectPosition, transform: `scale(${coverZoom})` }}
-            width={400}
-            height={featured ? 192 : 112}
+            loading="lazy"
+            referrerPolicy="no-referrer"
           />
         ) : (
           <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${tone}22, #ffffff 65%)` }} />
@@ -177,12 +176,12 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight, featured }: 
         <div className="relative -mt-10 mb-2 flex items-end justify-between">
           <div className="h-20 w-20 rounded-2xl border-4 border-white bg-[#fcfbf9] shadow-lg overflow-hidden flex items-center justify-center shrink-0 -ml-1">
             {logoUrl ? (
-              <OptimizedImage
+              <img
                 src={logoUrl}
                 alt={`${vendor.business_name} logo`}
                 className="h-full w-full object-contain"
-                width={80}
-                height={80}
+                loading="lazy"
+                referrerPolicy="no-referrer"
               />
             ) : (
               <div className="h-full w-full bg-[#fcfbf9]" />
@@ -199,13 +198,11 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight, featured }: 
               title="Verified Premium Vendor"
               aria-label="Verified Premium Vendor"
             >
-              <OptimizedImage
+              <img
                 src="/cropped-vecteezy_verification-badge-set-guaranteed-stamp-or-verified-badge_23900241.svg"
                 alt="Verified Premium Vendor"
                 className="h-full w-full"
-                width={20}
-                height={20}
-                priority={true} // Badges should load instantly
+                loading="eager"
               />
             </span>
           ) : null}

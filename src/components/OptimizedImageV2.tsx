@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { DEFAULT_SIZES } from "@/lib/imageSizes";
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -27,6 +26,9 @@ interface OptimizedImageProps {
   style?: React.CSSProperties;
 }
 
+// Responsive image sizes based on common breakpoints
+const DEFAULT_SIZES = "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw";
+
 // CSS-based animated blur placeholder
 const BlurPlaceholder = ({ className }: { className?: string }) => (
   <div
@@ -41,16 +43,7 @@ const BlurPlaceholder = ({ className }: { className?: string }) => (
   />
 );
 
-function proxiedImageUrl(url: string): string {
-  const u = (url ?? "").trim();
-  if (!u) return u;
-  if (u.includes("drive.google.com")) {
-    return `/api/image-proxy?url=${encodeURIComponent(u)}`;
-  }
-  return u;
-}
-
-export default function OptimizedImage({
+export default function OptimizedImageV2({
   src,
   alt,
   className = "",
@@ -69,8 +62,6 @@ export default function OptimizedImage({
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
   const imgRef = useRef<HTMLDivElement>(null);
-
-  const optimizedSrc = proxiedImageUrl(src);
 
   // Generate blur data URL if not provided and placeholder is blur
   const generateBlurDataURL = (w: number, h: number): string => {
@@ -126,7 +117,7 @@ export default function OptimizedImage({
       
       {/* Next.js Image with optimization */}
       <Image
-        src={optimizedSrc}
+        src={src}
         alt={alt}
         width={fill ? undefined : width}
         height={fill ? undefined : height}

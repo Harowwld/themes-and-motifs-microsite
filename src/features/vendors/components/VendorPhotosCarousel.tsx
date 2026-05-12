@@ -2,8 +2,6 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import OptimizedImage from "@/components/OptimizedImage";
-import { useVendorImagePreload } from "@/components/ImagePreloader";
 
 type VendorImage = {
   id: number;
@@ -36,13 +34,6 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
     const coverIdx = normalized.findIndex((i) => i.is_cover);
     return coverIdx >= 0 ? coverIdx : 0;
   }, [normalized]);
-
-  // Preload first few images for instant viewing
-  const { preloadVendorImages } = useVendorImagePreload("vendor", normalized[0]?.image_url);
-  useEffect(() => {
-    const imageUrls = normalized.map(img => img.image_url).filter(Boolean);
-    preloadVendorImages(imageUrls);
-  }, [normalized, preloadVendorImages]);
 
   const [activeIndex, setActiveIndex] = useState(initialIndex);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
@@ -167,13 +158,12 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
             onClick={() => openLightbox(activeIndex)}
             aria-label="Open full photo view"
           >
-            <OptimizedImage
+            <img
               src={active.image_url}
               alt={active.caption ?? "Vendor photo"}
               className="h-full w-full object-contain"
-              width={800}
-              height={600}
-              priority={activeIndex === 0} // Prioritize first image
+              loading={activeIndex === 0 ? "eager" : "lazy"}
+              referrerPolicy="no-referrer"
             />
           </button>
         </div>
@@ -207,12 +197,12 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
                   }
                   aria-label={img.caption ?? `Vendor photo ${idx + 1}`}
                 >
-                  <OptimizedImage
+                  <img
                     src={img.image_url}
                     alt={img.caption ?? `Vendor photo ${idx + 1}`}
                     className="h-16 w-24 sm:h-20 sm:w-32 object-cover"
-                    width={128}
-                    height={80}
+                    loading="lazy"
+                    referrerPolicy="no-referrer"
                   />
                   {isActive ? <div className="pointer-events-none absolute inset-0 ring-2 ring-[#a67c52]/55" /> : null}
                 </button>
@@ -269,13 +259,12 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
                   ) : null}
 
                   <div className="w-full flex flex-col items-center justify-center">
-                    <OptimizedImage
+                    <img
                       src={normalized[lightboxIndex]?.image_url}
                       alt={normalized[lightboxIndex]?.caption ?? "Vendor photo"}
                       className="max-h-[85vh] w-auto max-w-full object-contain"
-                      width={1200}
-                      height={900}
-                      priority={true}
+                      loading="eager"
+                      referrerPolicy="no-referrer"
                     />
                     <div className="mt-3 text-center text-[12px] text-white/70">
                       {lightboxIndex + 1} / {normalized.length}

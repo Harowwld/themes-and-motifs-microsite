@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 
 import { createSupabaseAdminClient } from "../../../../lib/supabaseAdmin";
 
+export const dynamic = "force-dynamic";
+
 /**
  * EMERGENCY BOOTSTRAP - One-time use to create first superadmin
  * Only works if no superadmins exist in the system
