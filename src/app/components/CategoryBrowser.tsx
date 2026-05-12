@@ -108,6 +108,17 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
     } else {
       setPendingCategory(slug.trim().toLowerCase());
       router.push(`/vendors?category=${encodeURIComponent(slug)}`, { scroll: false });
+      // Auto-collapse when expanded to show results
+      if (expanded) {
+        setExpanded(false);
+        // Scroll to selected category after collapsing
+        setTimeout(() => {
+          const categoryElement = document.querySelector(`[data-category-slug="${slug}"]`);
+          if (categoryElement && scrollerRef.current) {
+            categoryElement.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+          }
+        }, 100);
+      }
     }
   };
 
@@ -144,6 +155,7 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
                 href={`/vendors?category=${encodeURIComponent(c.slug)}`}
                 onClick={(e) => handleCategoryClick(e, c.slug, isActive)}
                 onMouseEnter={() => !isActive && prefetchCategory(c.slug)}
+                data-category-slug={c.slug}
                 className={
                   isActive
                     ? `group rounded-lg bg-[#a68b6a]/10 shadow-sm transition-all px-3 py-3 text-center min-h-24 touch-manipulation ${isPending ? "opacity-70 animate-pulse" : ""}`
@@ -193,6 +205,7 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
                   href={`/vendors?category=${encodeURIComponent(c.slug)}`}
                   onClick={(e) => handleCategoryClick(e, c.slug, isActive)}
                   onMouseEnter={() => !isActive && prefetchCategory(c.slug)}
+                  data-category-slug={c.slug}
                   className={
                     isActive
                       ? `group shrink-0 rounded-lg bg-[#a68b6a]/10 shadow-sm transition-all px-3 py-3 text-center w-[calc(45vw-1rem)] max-w-[180px] min-h-24 snap-start touch-manipulation ${isPending ? "opacity-70 animate-pulse" : ""}`
