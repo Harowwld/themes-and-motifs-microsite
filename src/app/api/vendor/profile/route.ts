@@ -14,6 +14,16 @@ type PatchBody = {
   cover_focus_x?: number | null;
   cover_focus_y?: number | null;
   cover_zoom?: number | null;
+  contact_person_1_name?: string | null;
+  contact_person_1_position?: string | null;
+  contact_person_2_name?: string | null;
+  contact_person_2_position?: string | null;
+  admin_email_1?: string | null;
+  admin_email_2?: string | null;
+  admin_email_3?: string | null;
+  admin_phone_1?: string | null;
+  admin_phone_2?: string | null;
+  admin_phone_3?: string | null;
 };
 
 export async function GET(req: Request) {
@@ -21,7 +31,7 @@ export async function GET(req: Request) {
     const { supabase, user } = await assertVendor(req);
     const vendor = await getVendorForUser(supabase, user.id);
 
-    const [socialsRes, imagesRes, themesRes, allThemesRes] = await Promise.all([
+    const [socialsRes, imagesRes, themesRes, allThemesRes, subscriptionRes] = await Promise.all([
       supabase
         .from("vendor_social_links")
         .select("id,platform,url")
@@ -43,12 +53,20 @@ export async function GET(req: Request) {
         .from("themes")
         .select("id, name, slug")
         .order("name", { ascending: true }),
+      supabase
+        .from("vendor_subscriptions")
+        .select("*")
+        .eq("vendor_id", vendor.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle(),
     ]);
 
     if (socialsRes.error) return Response.json({ error: socialsRes.error.message }, { status: 500 });
     if (imagesRes.error) return Response.json({ error: imagesRes.error.message }, { status: 500 });
     if (themesRes.error) return Response.json({ error: themesRes.error.message }, { status: 500 });
     if (allThemesRes.error) return Response.json({ error: allThemesRes.error.message }, { status: 500 });
+    if (subscriptionRes.error && subscriptionRes.error.code !== 'PGRST116') return Response.json({ error: subscriptionRes.error.message }, { status: 500 });
 
     return Response.json(
       {
@@ -57,6 +75,7 @@ export async function GET(req: Request) {
         images: imagesRes.data ?? [],
         themes: themesRes.data ?? [],
         allThemes: allThemesRes.data ?? [],
+        subscription: subscriptionRes.data ?? null,
       },
       { status: 200 }
     );
@@ -93,6 +112,17 @@ export async function PATCH(req: Request) {
     }
     if (typeof body.cover_zoom === "number" || body.cover_zoom === null) patch.cover_zoom = body.cover_zoom;
 
+    if (typeof body.contact_person_1_name === "string" || body.contact_person_1_name === null) patch.contact_person_1_name = body.contact_person_1_name;
+    if (typeof body.contact_person_1_position === "string" || body.contact_person_1_position === null) patch.contact_person_1_position = body.contact_person_1_position;
+    if (typeof body.contact_person_2_name === "string" || body.contact_person_2_name === null) patch.contact_person_2_name = body.contact_person_2_name;
+    if (typeof body.contact_person_2_position === "string" || body.contact_person_2_position === null) patch.contact_person_2_position = body.contact_person_2_position;
+    if (typeof body.admin_email_1 === "string" || body.admin_email_1 === null) patch.admin_email_1 = body.admin_email_1;
+    if (typeof body.admin_email_2 === "string" || body.admin_email_2 === null) patch.admin_email_2 = body.admin_email_2;
+    if (typeof body.admin_email_3 === "string" || body.admin_email_3 === null) patch.admin_email_3 = body.admin_email_3;
+    if (typeof body.admin_phone_1 === "string" || body.admin_phone_1 === null) patch.admin_phone_1 = body.admin_phone_1;
+    if (typeof body.admin_phone_2 === "string" || body.admin_phone_2 === null) patch.admin_phone_2 = body.admin_phone_2;
+    if (typeof body.admin_phone_3 === "string" || body.admin_phone_3 === null) patch.admin_phone_3 = body.admin_phone_3;
+
     if (!isPremium) {
       delete patch.logo_url;
       delete patch.website_url;
@@ -108,7 +138,7 @@ export async function PATCH(req: Request) {
       .update(patch)
       .eq("id", vendor.id)
       .select(
-        "id,user_id,business_name,slug,logo_url,description,location_text,region_id,city,address,contact_email,contact_phone,website_url,plan_id,is_active,verified_status,cover_focus_x,cover_focus_y,cover_zoom"
+        "id,user_id,business_name,slug,logo_url,description,location_text,region_id,city,address,contact_email,contact_phone,website_url,plan_id,is_active,verified_status,cover_focus_x,cover_focus_y,cover_zoom,contact_person_1_name,contact_person_1_position,contact_person_2_name,contact_person_2_position,admin_email_1,admin_email_2,admin_email_3,admin_phone_1,admin_phone_2,admin_phone_3"
       )
       .single();
 

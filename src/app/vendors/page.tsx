@@ -211,26 +211,16 @@ async function VendorsPageData({
 }) {
   const supabase = createSupabaseServerClient();
 
-  const [regionsList, vendorLocations, affiliationsList, categoriesList, themesList] = await Promise.all([
+  const [regionsList, vendorLocations, affiliationsList, categoriesList, themesList, { data: cityRows }] = await Promise.all([
     getCachedRegions(),
     getCachedVendorLocations(),
     getCachedAffiliations(),
     getCachedCategories(),
     getThemes(),
+    supabase.from("cities").select("id,name,region_id").order("name", { ascending: true }).limit(3000),
   ]);
 
-  // Build cities list from city field only (not location_text) to avoid duplicates
-  // Deduplicate by city name only, keeping the first region_id encountered
-  const citiesList = Array.from(
-    new Map(
-      (vendorLocations as { region_id: number | null; city: string | null }[])
-        .filter((r) => Boolean(r.city?.trim()))
-        .map((r) => {
-          const name = r.city!.trim();
-          return [name.toLowerCase(), { region_id: typeof r.region_id === "number" ? r.region_id : 0, name }] as const;
-        })
-    ).values()
-  );
+  const citiesList = (cityRows ?? []) as { id: number; name: string; region_id: number }[];
 
   // Use offset pagination for initial load
   const from = 0;
@@ -259,7 +249,7 @@ async function VendorsPageData({
         initialSort={sort}
         initialTheme={theme}
         regions={regionsList}
-        cities={Array.from(citiesList).map((c, i) => ({ id: i + 1, name: c.name, region_id: c.region_id }))}
+        cities={citiesList.map((c) => ({ id: c.id, name: c.name, region_id: c.region_id }))}
         affiliations={affiliationsList}
         categories={categoriesList}
         themes={themesList}

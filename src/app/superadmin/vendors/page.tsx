@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import ImageCropperModal from "../ImageCropper";
 import { ImageUploadDropzone } from "@/components/ImageUploadDropzone";
 import type { UploadResult } from "@/hooks/useImageUpload";
+import { toast } from "@/lib/toast";
 
 function proxiedImageUrl(url: string) {
   const u = (url ?? "").trim();
@@ -38,6 +39,16 @@ type Vendor = {
   logo_url?: string | null;
   verified_status?: boolean | null;
   document_verified?: string | null;
+  contact_person_1_name?: string | null;
+  contact_person_1_position?: string | null;
+  contact_person_2_name?: string | null;
+  contact_person_2_position?: string | null;
+  admin_email_1?: string | null;
+  admin_email_2?: string | null;
+  admin_email_3?: string | null;
+  admin_phone_1?: string | null;
+  admin_phone_2?: string | null;
+  admin_phone_3?: string | null;
 };
 
 type VendorImage = {
@@ -162,7 +173,18 @@ export default function SuperadminVendorsPage() {
     logo_url: "",
     verified_status: false,
     document_verified: "pending",
+    contact_person_1_name: "",
+    contact_person_1_position: "",
+    contact_person_2_name: "",
+    contact_person_2_position: "",
+    admin_email_1: "",
+    admin_email_2: "",
+    admin_email_3: "",
+    admin_phone_1: "",
+    admin_phone_2: "",
+    admin_phone_3: "",
   });
+  const [editSubscription, setEditSubscription] = useState<{ id: number; status: string; expiry_date: string | null; verification_doc_url: string | null } | null>(null);
   const [editImages, setEditImages] = useState<VendorImage[]>([]);
   const [editSocials, setEditSocials] = useState<VendorSocial[]>([]);
   const [editAffiliations, setEditAffiliations] = useState<Affiliation[]>([]);
@@ -262,6 +284,7 @@ export default function SuperadminVendorsPage() {
           themes: VendorTheme[];
           allThemes: Theme[];
           verificationDocuments: VerificationDocument[];
+          subscription: { id: number; status: string; expiry_date: string | null; verification_doc_url: string | null } | null;
         }>(`/api/admin/vendors/${vendor.id}`),
         apiFetch<{ promos: Promo[] }>(`/api/admin/vendors/${vendor.id}/promos`),
       ]);
@@ -280,7 +303,19 @@ export default function SuperadminVendorsPage() {
         logo_url: v.logo_url ?? "",
         verified_status: v.verified_status ?? false,
         document_verified: v.document_verified ?? "pending",
+        contact_person_1_name: v.contact_person_1_name ?? "",
+        contact_person_1_position: v.contact_person_1_position ?? "",
+        contact_person_2_name: v.contact_person_2_name ?? "",
+        contact_person_2_position: v.contact_person_2_position ?? "",
+        admin_email_1: v.admin_email_1 ?? "",
+        admin_email_2: v.admin_email_2 ?? "",
+        admin_email_3: v.admin_email_3 ?? "",
+        admin_phone_1: v.admin_phone_1 ?? "",
+        admin_phone_2: v.admin_phone_2 ?? "",
+        admin_phone_3: v.admin_phone_3 ?? "",
       });
+
+      setEditSubscription(res.subscription ?? null);
 
       const normalizedImgs = (res.images ?? []).map((img: any, idx: number) => ({
         id: img.id,
@@ -370,6 +405,16 @@ export default function SuperadminVendorsPage() {
           logo_url: editForm.logo_url || null,
           verified_status: editForm.verified_status,
           document_verified: editForm.document_verified || null,
+          contact_person_1_name: editForm.contact_person_1_name || null,
+          contact_person_1_position: editForm.contact_person_1_position || null,
+          contact_person_2_name: editForm.contact_person_2_name || null,
+          contact_person_2_position: editForm.contact_person_2_position || null,
+          admin_email_1: editForm.admin_email_1 || null,
+          admin_email_2: editForm.admin_email_2 || null,
+          admin_email_3: editForm.admin_email_3 || null,
+          admin_phone_1: editForm.admin_phone_1 || null,
+          admin_phone_2: editForm.admin_phone_2 || null,
+          admin_phone_3: editForm.admin_phone_3 || null,
         }),
       });
 
@@ -416,6 +461,20 @@ export default function SuperadminVendorsPage() {
       setEditError(e?.message ?? "Failed to save images.");
     } finally {
       setEditLoading(false);
+    }
+  }
+
+  async function saveSubscriptionDate(dateStr: string) {
+    if (!editingVendor) return;
+    try {
+      const res = await apiFetch<{ subscription: any }>(`/api/admin/vendors/${editingVendor.id}/subscription`, {
+        method: "PATCH",
+        body: JSON.stringify({ expiry_date: dateStr || null }),
+      });
+      setEditSubscription(res.subscription);
+      toast.success("Expiry date saved.");
+    } catch (e: any) {
+      toast.error(e?.message ?? "Failed to save expiry date.");
     }
   }
 
@@ -854,7 +913,7 @@ export default function SuperadminVendorsPage() {
 
                 {/* About Us - Full Width */}
                 <label className="grid gap-1.5">
-                  <span className="text-[12px] font-semibold text-black/55">About Us</span>
+                  <span className="text-[12px] font-semibold text-black/55">What Makes Us Unique</span>
                   <div className="relative">
                     <textarea
                       value={editForm.description}
@@ -869,7 +928,7 @@ export default function SuperadminVendorsPage() {
 
                 <div className="grid gap-4 sm:grid-cols-2">
                   <label className="grid gap-1.5">
-                    <span className="text-[12px] font-semibold text-black/55">Location Text</span>
+                    <span className="text-[12px] font-semibold text-black/55">Region</span>
                     <input
                       value={editForm.location_text}
                       onChange={(e) => setEditForm((f) => ({ ...f, location_text: e.target.value }))}
@@ -957,6 +1016,57 @@ export default function SuperadminVendorsPage() {
                 </div>
               </section>
 
+              {/* Admin Contact Information */}
+              <section className="grid gap-4">
+                <div className="text-[13px] font-semibold text-[#2c2c2c] border-b border-black/5 pb-2">
+                  Admin & Contact Info (Internal Use)
+                </div>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <label className="grid gap-1.5">
+                    <span className="text-[12px] font-semibold text-black/55">Contact Person 1 Name</span>
+                    <input value={editForm.contact_person_1_name} onChange={(e) => setEditForm((f) => ({ ...f, contact_person_1_name: e.target.value }))} className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]" />
+                  </label>
+                  <label className="grid gap-1.5">
+                    <span className="text-[12px] font-semibold text-black/55">Contact Person 1 Position</span>
+                    <input value={editForm.contact_person_1_position} onChange={(e) => setEditForm((f) => ({ ...f, contact_person_1_position: e.target.value }))} className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]" />
+                  </label>
+                  <label className="grid gap-1.5">
+                    <span className="text-[12px] font-semibold text-black/55">Contact Person 2 Name</span>
+                    <input value={editForm.contact_person_2_name} onChange={(e) => setEditForm((f) => ({ ...f, contact_person_2_name: e.target.value }))} className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]" />
+                  </label>
+                  <label className="grid gap-1.5">
+                    <span className="text-[12px] font-semibold text-black/55">Contact Person 2 Position</span>
+                    <input value={editForm.contact_person_2_position} onChange={(e) => setEditForm((f) => ({ ...f, contact_person_2_position: e.target.value }))} className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]" />
+                  </label>
+                </div>
+                <div className="grid gap-4 sm:grid-cols-3">
+                  <label className="grid gap-1.5">
+                    <span className="text-[12px] font-semibold text-black/55">Admin Email 1</span>
+                    <input type="email" value={editForm.admin_email_1} onChange={(e) => setEditForm((f) => ({ ...f, admin_email_1: e.target.value }))} className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]" />
+                  </label>
+                  <label className="grid gap-1.5">
+                    <span className="text-[12px] font-semibold text-black/55">Admin Email 2</span>
+                    <input type="email" value={editForm.admin_email_2} onChange={(e) => setEditForm((f) => ({ ...f, admin_email_2: e.target.value }))} className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]" />
+                  </label>
+                  <label className="grid gap-1.5">
+                    <span className="text-[12px] font-semibold text-black/55">Admin Email 3</span>
+                    <input type="email" value={editForm.admin_email_3} onChange={(e) => setEditForm((f) => ({ ...f, admin_email_3: e.target.value }))} className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]" />
+                  </label>
+                  <label className="grid gap-1.5">
+                    <span className="text-[12px] font-semibold text-black/55">Admin Phone 1</span>
+                    <input value={editForm.admin_phone_1} onChange={(e) => setEditForm((f) => ({ ...f, admin_phone_1: e.target.value }))} className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]" />
+                  </label>
+                  <label className="grid gap-1.5">
+                    <span className="text-[12px] font-semibold text-black/55">Admin Phone 2</span>
+                    <input value={editForm.admin_phone_2} onChange={(e) => setEditForm((f) => ({ ...f, admin_phone_2: e.target.value }))} className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]" />
+                  </label>
+                  <label className="grid gap-1.5">
+                    <span className="text-[12px] font-semibold text-black/55">Admin Phone 3</span>
+                    <input value={editForm.admin_phone_3} onChange={(e) => setEditForm((f) => ({ ...f, admin_phone_3: e.target.value }))} className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]" />
+                  </label>
+                </div>
+              </section>
+
               {/* Verification Status */}
               <section className="grid gap-4">
                 <div className="text-[13px] font-semibold text-[#2c2c2c] border-b border-black/5 pb-2">
@@ -974,7 +1084,30 @@ export default function SuperadminVendorsPage() {
                       <option value="true">Verified</option>
                     </select>
                   </label>
+                  <label className="grid gap-1.5">
+                    <span className="text-[12px] font-semibold text-black/55">Plan Expiry Date</span>
+                    <input
+                      type="date"
+                      value={editSubscription?.expiry_date ? new Date(editSubscription.expiry_date).toISOString().split('T')[0] : ""}
+                      onChange={(e) => saveSubscriptionDate(e.target.value)}
+                      className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]"
+                    />
+                  </label>
                 </div>
+                
+                {editSubscription?.verification_doc_url && (
+                  <div className="mt-2">
+                    <span className="text-[12px] font-semibold text-black/55 block mb-1">Verification Document</span>
+                    <a 
+                      href={proxiedImageUrl(editSubscription.verification_doc_url)} 
+                      target="_blank" 
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-2 h-9 px-3 rounded-[3px] border border-black/10 bg-white text-[12px] font-semibold text-[#6e4f33] hover:bg-black/5 transition-colors"
+                    >
+                      View Document
+                    </a>
+                  </div>
+                )}
               </section>
 
               {/* Photos Section */}

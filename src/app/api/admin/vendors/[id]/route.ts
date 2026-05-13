@@ -64,6 +64,46 @@ const FIELD_VALIDATORS: Record<string, (val: unknown) => { valid: boolean; value
     if (typeof val === "string" && !/^https?:\/\/.+/.test(val)) return { valid: false, error: "logo_url must be a valid URL" };
     return { valid: true, value: val === null ? null : val.trim() };
   },
+  contact_person_1_name: (val) => {
+    if (typeof val !== "string" && val !== null) return { valid: false, error: "Must be a string or null" };
+    return { valid: true, value: val === null ? null : val.trim() };
+  },
+  contact_person_1_position: (val) => {
+    if (typeof val !== "string" && val !== null) return { valid: false, error: "Must be a string or null" };
+    return { valid: true, value: val === null ? null : val.trim() };
+  },
+  contact_person_2_name: (val) => {
+    if (typeof val !== "string" && val !== null) return { valid: false, error: "Must be a string or null" };
+    return { valid: true, value: val === null ? null : val.trim() };
+  },
+  contact_person_2_position: (val) => {
+    if (typeof val !== "string" && val !== null) return { valid: false, error: "Must be a string or null" };
+    return { valid: true, value: val === null ? null : val.trim() };
+  },
+  admin_email_1: (val) => {
+    if (typeof val !== "string" && val !== null) return { valid: false, error: "Must be a string or null" };
+    return { valid: true, value: val === null ? null : val.trim() };
+  },
+  admin_email_2: (val) => {
+    if (typeof val !== "string" && val !== null) return { valid: false, error: "Must be a string or null" };
+    return { valid: true, value: val === null ? null : val.trim() };
+  },
+  admin_email_3: (val) => {
+    if (typeof val !== "string" && val !== null) return { valid: false, error: "Must be a string or null" };
+    return { valid: true, value: val === null ? null : val.trim() };
+  },
+  admin_phone_1: (val) => {
+    if (typeof val !== "string" && val !== null) return { valid: false, error: "Must be a string or null" };
+    return { valid: true, value: val === null ? null : val.trim() };
+  },
+  admin_phone_2: (val) => {
+    if (typeof val !== "string" && val !== null) return { valid: false, error: "Must be a string or null" };
+    return { valid: true, value: val === null ? null : val.trim() };
+  },
+  admin_phone_3: (val) => {
+    if (typeof val !== "string" && val !== null) return { valid: false, error: "Must be a string or null" };
+    return { valid: true, value: val === null ? null : val.trim() };
+  },
   is_active: (val) => {
     if (typeof val !== "boolean") return { valid: false, error: "is_active must be a boolean" };
     return { valid: true, value: val };
@@ -118,7 +158,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 
     const supabase = createSupabaseAdminClient();
 
-    const [vendorRes, imagesRes, socialsRes, affiliationsRes, allAffiliationsRes, themesRes, allThemesRes, verificationDocsRes] = await Promise.all([
+    const [vendorRes, imagesRes, socialsRes, affiliationsRes, allAffiliationsRes, themesRes, allThemesRes, verificationDocsRes, subscriptionRes] = await Promise.all([
       supabase
         .from("vendors")
         .select("*")
@@ -155,6 +195,13 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
         .select("id, doc_type, file_url, file_name, status, uploaded_at, reviewed_at, notes")
         .eq("vendor_id", vendorId)
         .order("uploaded_at", { ascending: false }),
+      supabase
+        .from("vendor_subscriptions")
+        .select("*")
+        .eq("vendor_id", vendorId)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle(),
     ]);
 
     if (vendorRes.error) {
@@ -174,6 +221,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
       themes: themesRes.data ?? [],
       allThemes: allThemesRes.data ?? [],
       verificationDocuments: verificationDocsRes.data ?? [],
+      subscription: subscriptionRes.data ?? null,
     }, { status: 200 });
   } catch (e: any) {
     const status = typeof e?.statusCode === "number" ? e.statusCode : 500;

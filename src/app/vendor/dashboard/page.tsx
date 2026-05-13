@@ -7,6 +7,8 @@ import { createSupabaseBrowserClient } from "../../../lib/supabaseBrowser";
 import { toast } from "../../../lib/toast";
 import CoverCropperModal from "./CoverCropperModal";
 import PhotoModal from "./PhotoModal";
+import { ImageUploadDropzone } from "@/components/ImageUploadDropzone";
+import PromoQRCode from "@/components/PromoQRCode";
 
 type VendorProfile = {
   id: number;
@@ -24,6 +26,16 @@ type VendorProfile = {
   cover_focus_x?: number | null;
   cover_focus_y?: number | null;
   cover_zoom?: number | null;
+  contact_person_1_name?: string | null;
+  contact_person_1_position?: string | null;
+  contact_person_2_name?: string | null;
+  contact_person_2_position?: string | null;
+  admin_email_1?: string | null;
+  admin_email_2?: string | null;
+  admin_email_3?: string | null;
+  admin_phone_1?: string | null;
+  admin_phone_2?: string | null;
+  admin_phone_3?: string | null;
   plan_id: number | null;
   is_active: boolean | null;
   verified_status: string | null;
@@ -420,6 +432,7 @@ export default function VendorDashboardPage() {
   const [saving, setSaving] = useState(false);
 
   const [vendor, setVendor] = useState<VendorProfile | null>(null);
+  const [subscription, setSubscription] = useState<{ id: number; status: string; expiry_date: string | null; verification_doc_url: string | null } | null>(null);
   const [form, setForm] = useState({
     business_name: "",
     logo_url: "",
@@ -432,6 +445,16 @@ export default function VendorDashboardPage() {
     cover_focus_x: 50,
     cover_focus_y: 50,
     cover_zoom: 1,
+    contact_person_1_name: "",
+    contact_person_1_position: "",
+    contact_person_2_name: "",
+    contact_person_2_position: "",
+    admin_email_1: "",
+    admin_email_2: "",
+    admin_email_3: "",
+    admin_phone_1: "",
+    admin_phone_2: "",
+    admin_phone_3: "",
   });
   const [socials, setSocials] = useState<Array<{ platform: string; url: string }>>([
     { platform: "facebook", url: "" },
@@ -727,6 +750,23 @@ export default function VendorDashboardPage() {
     }
   }
 
+  async function saveVerificationDoc(url: string) {
+    if (!token) return;
+    setSaving(true);
+    try {
+      const res = await apiFetch<{ subscription: any }>("/api/vendor/subscription", token, {
+        method: "PATCH",
+        body: JSON.stringify({ verification_doc_url: url }),
+      });
+      setSubscription(res.subscription);
+      toast.success("Verification document uploaded.");
+    } catch (e: any) {
+      toast.error(e?.message ?? "Failed to save verification document.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
   const planName = String((Array.isArray(vendor?.plan) ? vendor?.plan?.[0]?.name : vendor?.plan?.name) ?? "")
     .trim()
     .toLowerCase();
@@ -761,9 +801,11 @@ export default function VendorDashboardPage() {
             images: VendorImage[];
             themes: { id: number; theme: Theme | Theme[] | null }[];
             allThemes: Theme[];
+            subscription: { id: number; status: string; expiry_date: string | null; verification_doc_url: string | null } | null;
           }>("/api/vendor/profile", session.access_token);
 
           setVendor(json.vendor);
+          setSubscription(json.subscription);
           setForm({
             business_name: json.vendor.business_name ?? "",
             logo_url: (json.vendor as any).logo_url ?? "",
@@ -776,6 +818,16 @@ export default function VendorDashboardPage() {
             cover_focus_x: Number.isFinite(Number((json.vendor as any).cover_focus_x)) ? Number((json.vendor as any).cover_focus_x) : 50,
             cover_focus_y: Number.isFinite(Number((json.vendor as any).cover_focus_y)) ? Number((json.vendor as any).cover_focus_y) : 50,
             cover_zoom: Number.isFinite(Number((json.vendor as any).cover_zoom)) ? Number((json.vendor as any).cover_zoom) : 1,
+            contact_person_1_name: json.vendor.contact_person_1_name ?? "",
+            contact_person_1_position: json.vendor.contact_person_1_position ?? "",
+            contact_person_2_name: json.vendor.contact_person_2_name ?? "",
+            contact_person_2_position: json.vendor.contact_person_2_position ?? "",
+            admin_email_1: json.vendor.admin_email_1 ?? "",
+            admin_email_2: json.vendor.admin_email_2 ?? "",
+            admin_email_3: json.vendor.admin_email_3 ?? "",
+            admin_phone_1: json.vendor.admin_phone_1 ?? "",
+            admin_phone_2: json.vendor.admin_phone_2 ?? "",
+            admin_phone_3: json.vendor.admin_phone_3 ?? "",
           });
 
           const s = (json.socials ?? []).map((x) => ({ platform: x.platform, url: x.url }));
@@ -864,6 +916,16 @@ export default function VendorDashboardPage() {
           cover_focus_x: Number.isFinite(Number(form.cover_focus_x)) ? Number(form.cover_focus_x) : null,
           cover_focus_y: Number.isFinite(Number(form.cover_focus_y)) ? Number(form.cover_focus_y) : null,
           cover_zoom: Number.isFinite(Number(form.cover_zoom)) ? Number(form.cover_zoom) : null,
+          contact_person_1_name: form.contact_person_1_name || null,
+          contact_person_1_position: form.contact_person_1_position || null,
+          contact_person_2_name: form.contact_person_2_name || null,
+          contact_person_2_position: form.contact_person_2_position || null,
+          admin_email_1: form.admin_email_1 || null,
+          admin_email_2: form.admin_email_2 || null,
+          admin_email_3: form.admin_email_3 || null,
+          admin_phone_1: form.admin_phone_1 || null,
+          admin_phone_2: form.admin_phone_2 || null,
+          admin_phone_3: form.admin_phone_3 || null,
         }),
       });
       setVendor(res.vendor);
@@ -989,38 +1051,59 @@ export default function VendorDashboardPage() {
         <main className="py-12">
           <div className="mx-auto w-full max-w-4xl">
             <div className="rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden">
-              <div className="px-6 py-5 border-b border-black/5">
-                <div className="text-[18px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">Vendor dashboard</div>
-                <div className="mt-1 text-[12px] text-black/45">
-                  Signed in as <span className="font-semibold text-[#2c2c2c]">{email ?? ""}</span>
-                  {vendor?.slug ? (
-                    <>
-                      {" "}
-                      · Public page:{" "}
-                      <a
-                        className="text-[#6e4f33] hover:underline"
-                        href={`/vendors/${vendor.slug}`}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        /vendors/{vendor.slug}
-                      </a>
-                    </>
-                  ) : null}
+              <div className="px-6 py-5 border-b border-black/5 flex items-center justify-between">
+                <div>
+                  <div className="text-[18px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">Vendor dashboard</div>
+                  <div className="mt-1 text-[12px] text-black/45">
+                    Signed in as <span className="font-semibold text-[#2c2c2c]">{email ?? ""}</span>
+                  </div>
                 </div>
+                {vendor?.slug ? (
+                  <a
+                    href={`/vendors/${vendor.slug}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="h-9 px-4 inline-flex items-center justify-center rounded-[3px] border border-black/10 bg-white text-[13px] font-semibold text-black/70 hover:bg-black/5 transition-colors"
+                  >
+                    Preview Page
+                  </a>
+                ) : null}
               </div>
 
               <div className="p-6 grid gap-6">
                 {loading ? <DashboardSkeleton /> : null}
 
                 {!loading && vendor ? (
-                  <div className="rounded-[3px] border border-black/10 bg-[#fcfbf9] px-4 py-3 text-[13px] text-black/60">
-                    Plan: <span className="font-semibold text-[#2c2c2c]">{(Array.isArray(vendor.plan) ? vendor.plan?.[0]?.name : vendor.plan?.name) ?? ""}</span>
-                    {!isPremium ? (
-                      <span className="ml-2 text-black/50">
-                        (Some fields are Premium-only)
-                      </span>
-                    ) : null}
+                  <div className="rounded-[3px] border border-black/10 bg-white overflow-hidden">
+                    <div className="bg-[#fcfbf9] px-4 py-3 text-[13px] text-black/60 border-b border-black/5 flex justify-between items-center">
+                      <div>
+                        Plan: <span className="font-semibold text-[#2c2c2c]">{(Array.isArray(vendor.plan) ? vendor.plan?.[0]?.name : vendor.plan?.name) ?? ""}</span>
+                        {!isPremium ? (
+                          <span className="ml-2 text-black/50">
+                            (Some fields are Premium-only)
+                          </span>
+                        ) : null}
+                      </div>
+                      {subscription?.expiry_date && (
+                        <div>
+                          Expiry: <span className="font-semibold text-[#2c2c2c]">{new Date(subscription.expiry_date).toLocaleDateString()}</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-4 grid gap-4">
+                      <div className="text-[13px] font-semibold text-[#2c2c2c]">Plan Verification Document</div>
+                      <div className="text-[12px] text-black/45 mb-2">Upload a document (e.g. DTI Registration, ID) to verify your vendor plan.</div>
+                      <div className="max-w-md">
+                        <ImageUploadDropzone
+                          bucket="vendor-assets"
+                          folder="verifications"
+                          label=""
+                          onUploadComplete={(res) => saveVerificationDoc(res.url)}
+                          existingUrl={subscription?.verification_doc_url}
+                          onClear={() => saveVerificationDoc("")}
+                        />
+                      </div>
+                    </div>
                   </div>
                 ) : null}
 
@@ -1135,7 +1218,7 @@ export default function VendorDashboardPage() {
                       })()}
                     </div>
 
-                    <Field label="About">
+                    <Field label="What Makes Us Unique">
                       <div className="relative">
                         <textarea
                           className="min-h-24 w-full rounded-[3px] border border-black/10 px-3 py-2 text-[13px] pr-14"
@@ -1148,10 +1231,10 @@ export default function VendorDashboardPage() {
                     </Field>
 
                     <div className="grid gap-4 sm:grid-cols-3">
-                      <Field label="Location label">
+                      <Field label="Region">
                         <input className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]" value={form.location_text} onChange={(e) => setForm((p) => ({ ...p, location_text: e.target.value }))} />
                       </Field>
-                      <Field label="City">
+                      <Field label="City/Wedding Center">
                         <input className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]" value={form.city} onChange={(e) => setForm((p) => ({ ...p, city: e.target.value }))} />
                       </Field>
                       <Field label="Phone">
@@ -1166,6 +1249,54 @@ export default function VendorDashboardPage() {
                       <Field label="Website">
                         <input className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]" value={form.website_url} onChange={(e) => setForm((p) => ({ ...p, website_url: e.target.value }))} placeholder="https://..." disabled={!isPremium} />
                       </Field>
+                    </div>
+
+                    <div className="my-6 border-t border-black/10" />
+                    
+                    <div>
+                      <h3 className="text-[14px] font-semibold text-[#2c2c2c] mb-4">Admin & Contact Info (Internal Use)</h3>
+                      
+                      <div className="grid gap-4 sm:grid-cols-2 mb-4">
+                        <Field label="Contact Person 1 Name">
+                          <input className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]" value={form.contact_person_1_name} onChange={(e) => setForm((p) => ({ ...p, contact_person_1_name: e.target.value }))} />
+                        </Field>
+                        <Field label="Position 1">
+                          <input className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]" value={form.contact_person_1_position} onChange={(e) => setForm((p) => ({ ...p, contact_person_1_position: e.target.value }))} />
+                        </Field>
+                      </div>
+                      
+                      <div className="grid gap-4 sm:grid-cols-2 mb-4">
+                        <Field label="Contact Person 2 Name">
+                          <input className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]" value={form.contact_person_2_name} onChange={(e) => setForm((p) => ({ ...p, contact_person_2_name: e.target.value }))} />
+                        </Field>
+                        <Field label="Position 2">
+                          <input className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]" value={form.contact_person_2_position} onChange={(e) => setForm((p) => ({ ...p, contact_person_2_position: e.target.value }))} />
+                        </Field>
+                      </div>
+
+                      <div className="grid gap-4 sm:grid-cols-3 mb-4">
+                        <Field label="Admin Email 1">
+                          <input type="email" className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]" value={form.admin_email_1} onChange={(e) => setForm((p) => ({ ...p, admin_email_1: e.target.value }))} />
+                        </Field>
+                        <Field label="Admin Email 2">
+                          <input type="email" className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]" value={form.admin_email_2} onChange={(e) => setForm((p) => ({ ...p, admin_email_2: e.target.value }))} />
+                        </Field>
+                        <Field label="Admin Email 3">
+                          <input type="email" className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]" value={form.admin_email_3} onChange={(e) => setForm((p) => ({ ...p, admin_email_3: e.target.value }))} />
+                        </Field>
+                      </div>
+
+                      <div className="grid gap-4 sm:grid-cols-3 mb-4">
+                        <Field label="Admin Phone 1">
+                          <input className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]" value={form.admin_phone_1} onChange={(e) => setForm((p) => ({ ...p, admin_phone_1: e.target.value }))} />
+                        </Field>
+                        <Field label="Admin Phone 2">
+                          <input className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]" value={form.admin_phone_2} onChange={(e) => setForm((p) => ({ ...p, admin_phone_2: e.target.value }))} />
+                        </Field>
+                        <Field label="Admin Phone 3">
+                          <input className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]" value={form.admin_phone_3} onChange={(e) => setForm((p) => ({ ...p, admin_phone_3: e.target.value }))} />
+                        </Field>
+                      </div>
                     </div>
 
                     <div className="flex justify-end">
@@ -1204,8 +1335,14 @@ export default function VendorDashboardPage() {
                             onClick={() => {
                               if (isSelected) {
                                 setThemes((prev) => prev.filter((t) => t.id !== theme.id));
-                              } else if (themes.length < 10) {
-                                setThemes((prev) => [...prev, theme]);
+                              } else {
+                                if (!isPremium && themes.length >= 1) {
+                                  toast.error("Non-premium vendors can only select 1 category.");
+                                } else if (themes.length < 10) {
+                                  setThemes((prev) => [...prev, theme]);
+                                } else {
+                                  toast.error("Maximum of 10 categories allowed.");
+                                }
                               }
                             }}
                             className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-medium transition-colors ${
@@ -1239,7 +1376,7 @@ export default function VendorDashboardPage() {
 
                 <section className="rounded-[3px] border border-black/10 bg-white overflow-hidden">
                   <div className="px-4 py-3 border-b border-black/5">
-                    <div className="text-[13px] font-semibold text-[#2c2c2c]">Social links</div>
+                    <div className="text-[13px] font-semibold text-[#2c2c2c]">Social Media</div>
                     <div className="mt-1 text-[12px] text-black/45">Add links like Facebook, Instagram, TikTok.</div>
                   </div>
                   <div className="p-4 grid gap-3">
@@ -1533,16 +1670,19 @@ export default function VendorDashboardPage() {
                                         </span>
                                       </div>
                                     </div>
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-                                        setEditingPromoId(p.id);
-                                        setPromoModalOpen(true);
-                                      }}
-                                      className="h-7 px-2 rounded-[3px] border border-black/10 bg-white text-[11px] font-semibold text-[#6e4f33] hover:bg-black/[0.02] transition-colors shrink-0"
-                                    >
-                                      Edit
-                                    </button>
+                                    <div className="flex flex-col items-end gap-2 shrink-0">
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          setEditingPromoId(p.id);
+                                          setPromoModalOpen(true);
+                                        }}
+                                        className="h-7 px-2 rounded-[3px] border border-black/10 bg-white text-[11px] font-semibold text-[#6e4f33] hover:bg-black/[0.02] transition-colors"
+                                      >
+                                        Edit
+                                      </button>
+                                      {p.is_active && <PromoQRCode promoId={p.id} promoTitle={p.title} />}
+                                    </div>
                                   </div>
                                 </div>
                               </div>

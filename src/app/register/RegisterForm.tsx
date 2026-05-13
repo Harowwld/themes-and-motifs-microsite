@@ -266,7 +266,7 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
         </div>
       ) : null}
 
-      <div className="grid gap-5 sm:grid-cols-2">
+            <div className="grid gap-5 sm:grid-cols-2">
         <Field id="field-businessName" label="Business name" required>
           <input
             className={`h-11 w-full rounded-lg border px-3 text-[14px] font-[family-name:var(--font-plus-jakarta)] ${fieldErrors.has("businessName") ? "border-red-500 bg-red-50" : "border-black/10"}`}
@@ -367,27 +367,6 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
           )}
         </Field>
 
-        <Field id="field-planId" label="Plan">
-          <select
-            className={`h-11 w-full rounded-lg border px-3 text-[14px] bg-white font-[family-name:var(--font-plus-jakarta)] ${
-              fieldErrors.has("planId")
-                ? "border-red-500 bg-red-50"
-                : form.planId
-                  ? "text-[#2c2c2c] border-black/10"
-                  : "text-black/55 border-black/10"
-            }`}
-            value={form.planId}
-            onChange={(e) => set("planId", e.target.value)}
-          >
-            <option value="">Select a plan</option>
-            {plans.map((p) => (
-              <option key={p.id} value={String(p.id)}>
-                {p.name}
-              </option>
-            ))}
-          </select>
-        </Field>
-
         <Field id="field-contactEmail" label="Email" required>
           <input
             type="email"
@@ -405,14 +384,6 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
           />
         </Field>
 
-        <Field id="field-secDtiNumber" label="SEC/DTI #">
-          <input
-            className={`h-11 w-full rounded-lg border px-3 text-[14px] font-[family-name:var(--font-plus-jakarta)] ${fieldErrors.has("secDtiNumber") ? "border-red-500 bg-red-50" : "border-black/10"}`}
-            value={form.secDtiNumber}
-            onChange={(e) => set("secDtiNumber", e.target.value)}
-          />
-        </Field>
-
         <Field label="Website" badge="Premium">
           <input
             className="h-11 w-full rounded-lg border border-black/10 px-3 text-[14px] font-[family-name:var(--font-plus-jakarta)]"
@@ -422,16 +393,17 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
           />
         </Field>
 
-        <Field id="field-contactPerson" label="Contact person">
-          <input
-            className={`h-11 w-full rounded-lg border px-3 text-[14px] font-[family-name:var(--font-plus-jakarta)] ${fieldErrors.has("contactPerson") ? "border-red-500 bg-red-50" : "border-black/10"}`}
-            value={form.contactPerson}
-            onChange={(e) => set("contactPerson", e.target.value)}
-          />
-        </Field>
       </div>
 
       <div className="grid gap-5 sm:grid-cols-3">
+        <Field id="field-address" label="Address">
+          <input
+            className={`h-11 w-full rounded-lg border px-3 text-[14px] font-[family-name:var(--font-plus-jakarta)] ${fieldErrors.has("address") ? "border-red-500 bg-red-50" : "border-black/10"}`}
+            value={form.address}
+            onChange={(e) => set("address", e.target.value)}
+          />
+        </Field>
+
         <Field id="field-regionId" label="Region">
           <select
             className={`h-11 w-full rounded-lg border px-3 text-[14px] bg-white font-[family-name:var(--font-plus-jakarta)] ${
@@ -456,6 +428,7 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
             ))}
           </select>
         </Field>
+
         <Field id="field-city" label="City">
           <select
             className={`h-11 w-full rounded-lg border px-3 text-[14px] bg-white font-[family-name:var(--font-plus-jakarta)] ${
@@ -466,7 +439,27 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
                   : "text-black/55 border-black/10"
             }`}
             value={form.city}
-            onChange={(e) => set("city", e.target.value)}
+            onChange={(e) => {
+              const cityName = e.target.value;
+              const selectedCity = (cities ?? []).find((c) => c.name === cityName);
+              
+              setForm(prev => {
+                const next = { ...prev, city: cityName };
+                if (selectedCity?.region_id) {
+                  next.regionId = String(selectedCity.region_id);
+                }
+                return next;
+              });
+
+              setFieldErrors(prev => {
+                const next = new Set(prev);
+                next.delete("city");
+                if (selectedCity?.region_id) {
+                  next.delete("regionId");
+                }
+                return next;
+              });
+            }}
           >
             <option value="">Select</option>
             {cityOptions.map((c) => (
@@ -476,13 +469,7 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
             ))}
           </select>
         </Field>
-        <Field id="field-address" label="Address">
-          <input
-            className={`h-11 w-full rounded-lg border px-3 text-[14px] font-[family-name:var(--font-plus-jakarta)] ${fieldErrors.has("address") ? "border-red-500 bg-red-50" : "border-black/10"}`}
-            value={form.address}
-            onChange={(e) => set("address", e.target.value)}
-          />
-        </Field>
+
       </div>
 
       <Field id="field-description" label="Business description" hint={`${form.description.length}/500`}>
@@ -494,51 +481,47 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
         />
       </Field>
 
-      <div className="grid gap-2">
-        <div id="field-coverPhotoUrl" className="flex items-end justify-between gap-4">
-          <div>
-            <div className="text-[13px] font-medium text-black/55 font-[family-name:var(--font-plus-jakarta)]">
-              Cover photo <span className="text-[#b42318]">*</span>
-            </div>
-            <div className="mt-1 text-[12px] text-black/45 font-[family-name:var(--font-plus-jakarta)]">Required. Used as your cover photo during review.</div>
-          </div>
-          <button
-            type="button"
-            onClick={() => setCoverModalOpen(true)}
-            className="h-10 px-4 rounded-lg border border-black/10 bg-white text-[13px] font-medium text-[#8e6a46] hover:bg-black/5 transition-colors font-[family-name:var(--font-plus-jakarta)]"
-          >
-            {form.coverPhotoUrl.trim() ? "Change cover photo" : "Add cover photo"}
-          </button>
-        </div>
+      <Field label="Affiliations / associations" hint="Optional.">
+        <select
+          className={`h-11 w-full rounded-lg border border-black/10 px-3 text-[14px] bg-white font-[family-name:var(--font-plus-jakarta)] ${
+            form.affiliationSlug ? "text-[#2c2c2c]" : "text-black/55"
+          }`}
+          value={form.affiliationSlug}
+          onChange={(e) => set("affiliationSlug", e.target.value)}
+        >
+          <option value="">None</option>
+          {affiliationOptions.map((a) => (
+            <option key={a.id} value={a.slug}>
+              {a.name}
+            </option>
+          ))}
+        </select>
+      </Field>
 
-        <div className={`rounded-xl border-2 bg-white overflow-hidden ${fieldErrors.has("coverPhotoUrl") ? "border-red-500" : "border-black/10"}`}>
-          <div className="h-44 sm:h-52 bg-[#fcfbf9] flex items-center justify-center">
-            {form.coverPhotoUrl.trim() ? (
-              <img
-                src={form.coverPhotoUrl.trim()}
-                alt="Cover preview"
-                className="h-full w-full object-cover"
-                loading="lazy"
-                decoding="async"
-                referrerPolicy="no-referrer"
-                draggable={false}
-              />
-            ) : (
-              <div className="text-[13px] font-medium text-black/35 font-[family-name:var(--font-plus-jakarta)]">No cover photo yet</div>
-            )}
-          </div>
+      <div className="rounded-xl border border-black/6 bg-white p-5">
+        <div className="text-[14px] font-medium text-[#2c2c2c] font-[family-name:var(--font-plus-jakarta)]">Social links (optional)</div>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          <Field label="Facebook" badge="Premium">
+            <input className="h-11 w-full rounded-lg border border-black/10 px-3 text-[14px] font-[family-name:var(--font-plus-jakarta)]" value={form.facebook} onChange={(e) => set("facebook", e.target.value)} />
+          </Field>
+          <Field label="Instagram" badge="Premium">
+            <input className="h-11 w-full rounded-lg border border-black/10 px-3 text-[14px] font-[family-name:var(--font-plus-jakarta)]" value={form.instagram} onChange={(e) => set("instagram", e.target.value)} />
+          </Field>
+          <Field label="TikTok" badge="Premium">
+            <input className="h-11 w-full rounded-lg border border-black/10 px-3 text-[14px] font-[family-name:var(--font-plus-jakarta)]" value={form.tiktok} onChange={(e) => set("tiktok", e.target.value)} />
+          </Field>
+          <Field label="X" badge="Premium">
+            <input className="h-11 w-full rounded-lg border border-black/10 px-3 text-[14px] font-[family-name:var(--font-plus-jakarta)]" value={form.x} onChange={(e) => set("x", e.target.value)} />
+          </Field>
+          <Field label="Pinterest" badge="Premium">
+            <input className="h-11 w-full rounded-lg border border-black/10 px-3 text-[14px] font-[family-name:var(--font-plus-jakarta)]" value={form.pinterest} onChange={(e) => set("pinterest", e.target.value)} />
+          </Field>
+          <Field label="YouTube" badge="Premium">
+            <input className="h-11 w-full rounded-lg border border-black/10 px-3 text-[14px] font-[family-name:var(--font-plus-jakarta)]" value={form.youtube} onChange={(e) => set("youtube", e.target.value)} />
+          </Field>
         </div>
       </div>
 
-      <CoverPhotoModal
-        open={coverModalOpen}
-        url={form.coverPhotoUrl}
-        onCancel={() => setCoverModalOpen(false)}
-        onSave={(url: string) => {
-          set("coverPhotoUrl", url);
-          setCoverModalOpen(false);
-        }}
-      />
 
       <div className="grid gap-2">
         <div id="field-logoUrl" className="flex items-end justify-between gap-4">
@@ -586,6 +569,114 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
         }}
       />
 
+
+      <div className="grid gap-2">
+        <div id="field-coverPhotoUrl" className="flex items-end justify-between gap-4">
+          <div>
+            <div className="text-[13px] font-medium text-black/55 font-[family-name:var(--font-plus-jakarta)]">
+              Cover photo <span className="text-[#b42318]">*</span>
+            </div>
+            <div className="mt-1 text-[12px] text-black/45 font-[family-name:var(--font-plus-jakarta)]">Required. Used as your cover photo during review.</div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setCoverModalOpen(true)}
+            className="h-10 px-4 rounded-lg border border-black/10 bg-white text-[13px] font-medium text-[#8e6a46] hover:bg-black/5 transition-colors font-[family-name:var(--font-plus-jakarta)]"
+          >
+            {form.coverPhotoUrl.trim() ? "Change cover photo" : "Add cover photo"}
+          </button>
+        </div>
+
+        <div className={`rounded-xl border-2 bg-white overflow-hidden ${fieldErrors.has("coverPhotoUrl") ? "border-red-500" : "border-black/10"}`}>
+          <div className="h-44 sm:h-52 bg-[#fcfbf9] flex items-center justify-center">
+            {form.coverPhotoUrl.trim() ? (
+              <img
+                src={form.coverPhotoUrl.trim()}
+                alt="Cover preview"
+                className="h-full w-full object-cover"
+                loading="lazy"
+                decoding="async"
+                referrerPolicy="no-referrer"
+                draggable={false}
+              />
+            ) : (
+              <div className="text-[13px] font-medium text-black/35 font-[family-name:var(--font-plus-jakarta)]">No cover photo yet</div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <CoverPhotoModal
+        open={coverModalOpen}
+        url={form.coverPhotoUrl}
+        onCancel={() => setCoverModalOpen(false)}
+        onSave={(url: string) => {
+          set("coverPhotoUrl", url);
+          setCoverModalOpen(false);
+        }}
+      />
+
+
+      <hr className="border-black/10 my-8" />
+      <div className="text-[16px] font-medium text-[#2c2c2c] font-[family-name:var(--font-plus-jakarta)] mb-4">Registration Details & Admin Info</div>
+
+      <div className="grid gap-5 sm:grid-cols-2">
+        <Field id="field-planId" label="Plan">
+          <select
+            className={`h-11 w-full rounded-lg border px-3 text-[14px] bg-white font-[family-name:var(--font-plus-jakarta)] ${
+              fieldErrors.has("planId")
+                ? "border-red-500 bg-red-50"
+                : form.planId
+                  ? "text-[#2c2c2c] border-black/10"
+                  : "text-black/55 border-black/10"
+            }`}
+            value={form.planId}
+            onChange={(e) => set("planId", e.target.value)}
+          >
+            <option value="">Select a plan</option>
+            {plans.map((p) => (
+              <option key={p.id} value={String(p.id)}>
+                {p.name}
+              </option>
+            ))}
+          </select>
+        </Field>
+
+        <Field id="field-secDtiNumber" label="SEC/DTI #">
+          <input
+            className={`h-11 w-full rounded-lg border px-3 text-[14px] font-[family-name:var(--font-plus-jakarta)] ${fieldErrors.has("secDtiNumber") ? "border-red-500 bg-red-50" : "border-black/10"}`}
+            value={form.secDtiNumber}
+            onChange={(e) => set("secDtiNumber", e.target.value)}
+          />
+        </Field>
+
+        <Field id="field-contactPerson" label="Contact person">
+          <input
+            className={`h-11 w-full rounded-lg border px-3 text-[14px] font-[family-name:var(--font-plus-jakarta)] ${fieldErrors.has("contactPerson") ? "border-red-500 bg-red-50" : "border-black/10"}`}
+            value={form.contactPerson}
+            onChange={(e) => set("contactPerson", e.target.value)}
+          />
+        </Field>
+
+        <Field id="field-adminEmail" label="Admin email">
+          <input
+            type="email"
+            className={`h-11 w-full rounded-lg border px-3 text-[14px] font-[family-name:var(--font-plus-jakarta)] ${fieldErrors.has("adminEmail") ? "border-red-500 bg-red-50" : "border-black/10"}`}
+            value={form.adminEmail}
+            onChange={(e) => set("adminEmail", e.target.value)}
+          />
+        </Field>
+
+        <Field id="field-adminPhone" label="Admin phone">
+          <input
+            className={`h-11 w-full rounded-lg border px-3 text-[14px] font-[family-name:var(--font-plus-jakarta)] ${fieldErrors.has("adminPhone") ? "border-red-500 bg-red-50" : "border-black/10"}`}
+            value={form.adminPhone}
+            onChange={(e) => set("adminPhone", e.target.value)}
+          />
+        </Field>
+
+      </div>
+      
       <Field id="field-creditCardNumber" label="Credit/Debit card number" required>
         <div className="grid gap-1">
           <div className="relative">
@@ -625,65 +716,6 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
           )}
         </div>
       </Field>
-
-      <div className="grid gap-5 sm:grid-cols-2">
-        <Field id="field-adminEmail" label="Admin email">
-          <input
-            type="email"
-            className={`h-11 w-full rounded-lg border px-3 text-[14px] font-[family-name:var(--font-plus-jakarta)] ${fieldErrors.has("adminEmail") ? "border-red-500 bg-red-50" : "border-black/10"}`}
-            value={form.adminEmail}
-            onChange={(e) => set("adminEmail", e.target.value)}
-          />
-        </Field>
-        <Field id="field-adminPhone" label="Admin phone">
-          <input
-            className={`h-11 w-full rounded-lg border px-3 text-[14px] font-[family-name:var(--font-plus-jakarta)] ${fieldErrors.has("adminPhone") ? "border-red-500 bg-red-50" : "border-black/10"}`}
-            value={form.adminPhone}
-            onChange={(e) => set("adminPhone", e.target.value)}
-          />
-        </Field>
-      </div>
-
-      <Field label="Affiliations / associations" hint="Optional.">
-        <select
-          className={`h-11 w-full rounded-lg border border-black/10 px-3 text-[14px] bg-white font-[family-name:var(--font-plus-jakarta)] ${
-            form.affiliationSlug ? "text-[#2c2c2c]" : "text-black/55"
-          }`}
-          value={form.affiliationSlug}
-          onChange={(e) => set("affiliationSlug", e.target.value)}
-        >
-          <option value="">None</option>
-          {affiliationOptions.map((a) => (
-            <option key={a.id} value={a.slug}>
-              {a.name}
-            </option>
-          ))}
-        </select>
-      </Field>
-
-      <div className="rounded-xl border border-black/6 bg-white p-5">
-        <div className="text-[14px] font-medium text-[#2c2c2c] font-[family-name:var(--font-plus-jakarta)]">Social links (optional)</div>
-        <div className="mt-4 grid gap-4 sm:grid-cols-2">
-          <Field label="Facebook" badge="Premium">
-            <input className="h-11 w-full rounded-lg border border-black/10 px-3 text-[14px] font-[family-name:var(--font-plus-jakarta)]" value={form.facebook} onChange={(e) => set("facebook", e.target.value)} />
-          </Field>
-          <Field label="Instagram" badge="Premium">
-            <input className="h-11 w-full rounded-lg border border-black/10 px-3 text-[14px] font-[family-name:var(--font-plus-jakarta)]" value={form.instagram} onChange={(e) => set("instagram", e.target.value)} />
-          </Field>
-          <Field label="TikTok" badge="Premium">
-            <input className="h-11 w-full rounded-lg border border-black/10 px-3 text-[14px] font-[family-name:var(--font-plus-jakarta)]" value={form.tiktok} onChange={(e) => set("tiktok", e.target.value)} />
-          </Field>
-          <Field label="X" badge="Premium">
-            <input className="h-11 w-full rounded-lg border border-black/10 px-3 text-[14px] font-[family-name:var(--font-plus-jakarta)]" value={form.x} onChange={(e) => set("x", e.target.value)} />
-          </Field>
-          <Field label="Pinterest" badge="Premium">
-            <input className="h-11 w-full rounded-lg border border-black/10 px-3 text-[14px] font-[family-name:var(--font-plus-jakarta)]" value={form.pinterest} onChange={(e) => set("pinterest", e.target.value)} />
-          </Field>
-          <Field label="YouTube" badge="Premium">
-            <input className="h-11 w-full rounded-lg border border-black/10 px-3 text-[14px] font-[family-name:var(--font-plus-jakarta)]" value={form.youtube} onChange={(e) => set("youtube", e.target.value)} />
-          </Field>
-        </div>
-      </div>
 
       <div className="grid gap-1">
         <label id="field-agreeToTerms" className="flex items-start gap-3 text-[14px] text-black/70 font-[family-name:var(--font-plus-jakarta)]">

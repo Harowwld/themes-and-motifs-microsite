@@ -251,7 +251,10 @@ const [categoriesRes, affiliationsRes, imagesRes, socialsRes, reviewsRes, promos
     .flatMap((r) => (Array.isArray(r.theme) ? r.theme : r.theme ? [r.theme] : []))
     .filter(Boolean);
 
-  const location = vendor.city ?? vendor.location_text;
+  const locationParts = [];
+  if (vendor.city) locationParts.push(vendor.city);
+  if (vendor.location_text) locationParts.push(vendor.location_text);
+  const location = locationParts.join(", ") || null;
   const cover = images.find((i) => i.is_cover) ?? images[0];
   const coverUrl = cover?.image_url ? proxiedImageUrl(cover.image_url) : "";
   const logoUrl = vendor.logo_url ? proxiedImageUrl(vendor.logo_url) : null;
