@@ -13,6 +13,7 @@ const securityHeaders = [
       "img-src 'self' https: data: blob:", // Allow HTTPS images and data URIs
       "font-src 'self'",
       "connect-src 'self' https:", // Allow API calls to HTTPS
+      "frame-src 'self' https://www.youtube.com https://player.vimeo.com", // Allow YouTube and Vimeo embeds
       "frame-ancestors 'none'", // Equivalent to X-Frame-Options: DENY
       "form-action 'self'",
       "base-uri 'self'",

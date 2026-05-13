@@ -50,6 +50,7 @@ type VendorImageRow = {
   caption: string | null;
   is_cover: boolean | null;
   display_order: number | null;
+  media_type: 'image' | 'video' | null;
 };
 
 type VendorSocialLinkRow = {
@@ -177,7 +178,9 @@ async function VendorDetailData({ slug }: { slug: string }) {
 
   if (!vendor?.id) notFound();
 
-  const [categoriesRes, affiliationsRes, imagesRes, socialsRes, reviewsRes, promosRes, themesRes] = await Promise.all([
+  // Add cache-busting timestamp for images
+const cacheBuster = Date.now();
+const [categoriesRes, affiliationsRes, imagesRes, socialsRes, reviewsRes, promosRes, themesRes] = await Promise.all([
     supabase
       .from("vendor_categories")
       .select("category:categories(id,name,slug)")
@@ -190,7 +193,7 @@ async function VendorDetailData({ slug }: { slug: string }) {
       .limit(50),
     supabase
       .from("vendor_images")
-      .select("id,image_url,caption,is_cover,display_order")
+      .select("id,image_url,caption,is_cover,display_order,media_type")
       .eq("vendor_id", vendor.id)
       .order("is_cover", { ascending: false })
       .order("display_order", { ascending: true })
@@ -476,7 +479,7 @@ async function VendorDetailData({ slug }: { slug: string }) {
               {/* Photos - no label, carousel has its own */}
               {images.length > 0 ? (
                 <div className="rounded-xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)]">
-                  <VendorPhotosCarousel images={images} />
+                  <VendorPhotosCarousel images={images.map(img => ({ ...img, media_type: img.media_type || 'image' }))} />
                 </div>
               ) : null}
 
