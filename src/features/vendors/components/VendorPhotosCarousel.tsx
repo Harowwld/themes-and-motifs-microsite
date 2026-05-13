@@ -401,7 +401,7 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
                       </div>
                     ) : (
                       <img
-                        src={normalized[lightboxIndex]?.media_type === 'video' ? getVideoThumbnailUrl(normalized[lightboxIndex]?.image_url!) || normalized[lightboxIndex]?.image_url : normalized[lightboxIndex]?.image_url}
+                        src={normalized[lightboxIndex]?.image_url}
                         alt={normalized[lightboxIndex]?.caption ?? "Vendor photo"}
                         className="max-h-[85vh] w-auto max-w-full object-contain"
                         loading="eager"
