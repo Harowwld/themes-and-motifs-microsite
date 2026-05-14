@@ -94,11 +94,14 @@ function isVideoUrl(url: string): boolean {
 
 export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Props) {
   const normalized = useMemo(
-    () => images.filter((i) => Boolean(i?.image_url)).map((i) => ({ 
-      ...i, 
-      image_url: i.media_type === 'video' ? i.image_url : proxiedImageUrl(i.image_url),
-      media_type: i.media_type || 'image'
-    })),
+    () => images.filter((i) => Boolean(i?.image_url)).map((i) => {
+      const isActuallyVideo = i.media_type === 'video' || isVideoUrl(i.image_url);
+      return {
+        ...i,
+        image_url: isActuallyVideo ? i.image_url : proxiedImageUrl(i.image_url),
+        media_type: isActuallyVideo ? 'video' : 'image' as const
+      };
+    }),
     [images]
   );
   const initialIndex = useMemo(() => {
@@ -180,7 +183,7 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
   useEffect(() => {
     if (!userInitiatedRef.current) return;
     const container = stripRef.current;
-    const el = thumbRefs.current[normalized[activeIndex]?.id ?? -1];
+    const el = thumbRefs.current[normalized[activeIndex]?.id ?? activeIndex];
     if (!container || !el) return;
 
     const containerRect = container.getBoundingClientRect();
@@ -302,10 +305,10 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
 
               return (
                 <button
-                  key={img.id}
+                  key={img.id ?? idx}
                   type="button"
                   ref={(node) => {
-                    thumbRefs.current[img.id] = node;
+                    thumbRefs.current[img.id ?? idx] = node;
                   }}
                   onClick={() => {
                     userInitiatedRef.current = true;

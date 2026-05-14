@@ -9,6 +9,7 @@ import CoverCropperModal from "./CoverCropperModal";
 import PhotoModal from "./PhotoModal";
 import { ImageUploadDropzone } from "@/components/ImageUploadDropzone";
 import PromoQRCode from "@/components/PromoQRCode";
+import VendorProfileUI from "../../../features/vendors/components/VendorProfileUI";
 
 type VendorProfile = {
   id: number;
@@ -49,6 +50,7 @@ type VendorImage = {
   caption: string | null;
   is_cover: boolean | null;
   display_order: number | null;
+  media_type?: 'image' | 'video';
 };
 type Theme = { id: number; name: string; slug: string };
 
@@ -463,8 +465,8 @@ export default function VendorDashboardPage() {
   ]);
   const [socialPlatformChoices, setSocialPlatformChoices] = useState<SocialPlatformOption[]>(["facebook", "instagram", "tiktok"]);
   const [socialCustomPlatforms, setSocialCustomPlatforms] = useState<string[]>(["", "", ""]);
-  const [images, setImages] = useState<Array<{ image_url: string; caption: string; is_cover: boolean; display_order: number }>>([
-    { image_url: "", caption: "", is_cover: true, display_order: 1 },
+  const [images, setImages] = useState<Array<{ image_url: string; caption: string; is_cover: boolean; display_order: number; media_type: 'image' | 'video' }>>([
+    { image_url: "", caption: "", is_cover: true, display_order: 1, media_type: 'image' },
   ]);
 
   const [promos, setPromos] = useState<VendorPromo[]>([]);
@@ -490,6 +492,8 @@ export default function VendorDashboardPage() {
 
   const [promoModalOpen, setPromoModalOpen] = useState(false);
   const [editingPromoId, setEditingPromoId] = useState<number | null>(null);
+
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   async function saveCoverCrop(next: { focusX: number; focusY: number; zoom: number }) {
     if (!token) return;
@@ -851,6 +855,7 @@ export default function VendorDashboardPage() {
             caption: img.caption ?? "",
             is_cover: Boolean(img.is_cover),
             display_order: typeof img.display_order === "number" ? img.display_order : idx + 1,
+            media_type: img.media_type || 'image',
           }));
 
           setImages(
@@ -1017,6 +1022,7 @@ export default function VendorDashboardPage() {
         caption: i.caption || null,
         is_cover: i.is_cover,
         display_order: i.display_order || idx + 1,
+        media_type: i.media_type || 'image',
       }));
 
       const res = await apiFetch<{ images: VendorImage[] }>("/api/vendor/images", token, {
@@ -1029,6 +1035,7 @@ export default function VendorDashboardPage() {
         caption: img.caption ?? "",
         is_cover: Boolean(img.is_cover),
         display_order: typeof img.display_order === "number" ? img.display_order : idx + 1,
+        media_type: img.media_type || 'image',
       }));
 
       setImages(
@@ -1059,14 +1066,13 @@ export default function VendorDashboardPage() {
                   </div>
                 </div>
                 {vendor?.slug ? (
-                  <a
-                    href={`/vendors/${vendor.slug}`}
-                    target="_blank"
-                    rel="noreferrer"
+                  <button
+                    type="button"
+                    onClick={() => setIsPreviewOpen(true)}
                     className="h-9 px-4 inline-flex items-center justify-center rounded-[3px] border border-black/10 bg-white text-[13px] font-semibold text-black/70 hover:bg-black/5 transition-colors"
                   >
-                    Preview Page
-                  </a>
+                    Preview Edits
+                  </button>
                 ) : null}
               </div>
 
@@ -2009,6 +2015,69 @@ export default function VendorDashboardPage() {
                   </button>
                 </div>
               </div>
+            </div>
+          </div>
+        ) : null}
+
+        {/* Live Preview Modal */}
+        {isPreviewOpen && vendor ? (
+          <div className="fixed inset-0 z-[9999]">
+            {/* Fixed Dark Background */}
+            <div className="absolute inset-0 bg-black/80" onClick={() => setIsPreviewOpen(false)} />
+            
+            {/* Scrolling Container */}
+            <div className="absolute inset-0 overflow-y-auto overscroll-none">
+              <div className="min-h-full p-4 md:p-8 flex items-start justify-center">
+              <div className="w-full max-w-5xl rounded-[6px] border border-black/20 bg-white shadow-xl flex flex-col relative overflow-hidden my-auto">
+                <div className="sticky top-0 px-5 py-4 border-b border-black/10 shrink-0 flex items-center justify-between bg-white z-20 shadow-sm">
+                  <div>
+                    <div className="text-[16px] font-semibold text-[#2c2c2c]">Live Preview</div>
+                    <div className="mt-0.5 text-[12px] text-black/45">This is how your profile will look with your current unsaved edits.</div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setIsPreviewOpen(false)}
+                    className="h-8 w-8 inline-flex items-center justify-center rounded-[3px] hover:bg-black/5 text-black/60 transition-colors"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
+                      <line x1="18" y1="6" x2="6" y2="18" />
+                      <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                  </button>
+                </div>
+                <div className="bg-white">
+                  <VendorProfileUI
+                  vendor={{
+                    id: vendor.id,
+                    business_name: form.business_name || vendor.business_name,
+                    slug: vendor.slug,
+                    logo_url: form.logo_url || vendor.logo_url,
+                    description: form.description || vendor.description,
+                    location_text: form.location_text || vendor.location_text,
+                    city: form.city || vendor.city,
+                    address: form.address || vendor.address,
+                    website_url: form.website_url || vendor.website_url,
+                    contact_email: form.contact_email || vendor.contact_email,
+                    contact_phone: form.contact_phone || vendor.contact_phone,
+                    average_rating: vendor.average_rating,
+                    review_count: vendor.review_count,
+                    save_count: 0,
+                    document_verified: vendor.verified_status,
+                    user_id: vendor.user_id,
+                    updated_at: new Date().toISOString(),
+                    plan_name: String((Array.isArray(vendor.plan) ? vendor.plan?.[0]?.name : vendor.plan?.name) ?? "").trim().toLowerCase(),
+                  }}
+                  categories={[]}
+                  affiliations={[]}
+                  themes={themes}
+                  images={images as any}
+                  socials={socials.filter((s) => s.url.trim().length > 0) as any}
+                  reviews={inquiries as any}
+                  promos={promos}
+                />
+                </div>
+              </div>
+            </div>
             </div>
           </div>
         ) : null}
