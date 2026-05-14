@@ -18,82 +18,161 @@ export default function ResetPasswordPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [pkceError, setPkceError] = useState<string | null>(null);
+  const [isReadyToReset, setIsReadyToReset] = useState(false);
+  const [isCheckingLink, setIsCheckingLink] = useState(false);
 
-  // Verify the OTP/token on mount
+  // Check if user is already signed in or has a valid link
   useEffect(() => {
     let cancelled = false;
 
-    async function verifyToken() {
-      // First check if user already has a valid session (signed in)
-      const { data: sessionData } = await supabase.auth.getSession();
-      if (sessionData.session?.user) {
-        // User is signed in, they can reset password
+    async function checkInitialState() {
+      try {
+        const { data: sessionData } = await supabase.auth.getSession();
+        if (sessionData.session?.user) {
+          // User is signed in, they can reset password
+          if (!cancelled) {
+            setIsReadyToReset(true);
+            setVerifying(false);
+          }
+          return;
+        }
+
+        const code = searchParams.get("code");
+        const tokenHash = searchParams.get("token_hash");
+        const type = searchParams.get("type");
+
+        if (!code && !tokenHash) {
+          if (!cancelled) {
+            setError("No reset token found. Please request a new password reset link.");
+            setVerifying(false);
+          }
+        } else {
+          // We have a link, but we'll wait for user to click verify
+          if (!cancelled) {
+            setVerifying(false);
+          }
+        }
+      } catch (e: any) {
         if (!cancelled) {
+          setError(e?.message ?? "Failed to check session.");
           setVerifying(false);
         }
-        return;
-      }
-
-      const code = searchParams.get("code");
-      const tokenHash = searchParams.get("token_hash");
-      const type = searchParams.get("type");
-
-      // If we have a code or token_hash, try to verify it
-      if (code || tokenHash) {
-        try {
-          let verifyError: Error | null = null;
-
-          if (tokenHash && type) {
-            const result = await supabase.auth.verifyOtp({
-              token_hash: tokenHash,
-              type: type as any,
-            });
-            verifyError = result.error;
-          } else if (code) {
-            const result = await supabase.auth.exchangeCodeForSession(code);
-            verifyError = result.error;
-          }
-
-          if (verifyError) throw verifyError;
-        } catch (err: any) {
-          if (!cancelled) {
-            setError(
-              err?.message ??
-                "Invalid or expired reset link. Please request a new one."
-            );
-
-            // Check if this is a PKCE error from URL hash
-            if (typeof window !== "undefined") {
-              const hash = window.location.hash;
-              if (hash.includes("error")) {
-                const params = new URLSearchParams(hash.slice(1));
-                const errorCode = params.get("error");
-                const errorDesc = params.get("error_description");
-                if (errorCode) {
-                  setPkceError(`${errorCode}: ${errorDesc || "An error occurred"}`);
-                }
-              }
-            }
-          }
-        }
-      } else {
-        // No code/token and no session - user needs to request a reset link
-        if (!cancelled) {
-          setError("No reset token found. Please request a new password reset link.");
-        }
-      }
-
-      if (!cancelled) {
-        setVerifying(false);
       }
     }
 
-    verifyToken();
+    void checkInitialState();
 
     return () => {
       cancelled = true;
     };
   }, [searchParams, supabase]);
+
+  async function handleVerifyLink() {
+    setError(null);
+    setPkceError(null);
+    setIsCheckingLink(true);
+
+    const code = searchParams.get("code");
+    const tokenHash = searchParams.get("token_hash");
+    const type = searchParams.get("type");
+
+    try {
+      if (tokenHash && type) {
+        const { error: verifyErr } = await supabase.auth.verifyOtp({
+          token_hash: tokenHash,
+          type: type as any,
+        });
+        if (verifyErr) throw verifyErr;
+      } else if (code) {
+        const { error: exchErr } = await supabase.auth.exchangeCodeForSession(code);
+        if (exchErr) throw exchErr;
+      }
+
+      // Check if we now have a session
+      const { data: sessData } = await supabase.auth.getSession();
+      if (!sessData.session?.user) {
+        throw new Error("Failed to establish session. The link may be invalid or expired.");
+      }
+
+      setIsReadyToReset(true);
+    } catch (err: any) {
+      setError(err?.message ?? "Invalid or expired reset link. Please request a new one.");
+
+      if (
+        typeof err?.message === "string" &&
+        err.message.toLowerCase().includes("pkce")
+      ) {
+        setPkceError(err.message);
+      }
+    } finally {
+      setIsCheckingLink(false);
+    }
+  }
+
+  if (verifying) {
+    return (
+      <div className="min-h-screen bg-[#fafafa]">
+        <div className="mx-auto w-full max-w-3xl px-5 sm:px-8 py-12">
+          <div className="rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden">
+            <div className="p-7">
+              <div className="text-[18px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">Reset password</div>
+              <div className="mt-4 text-[13px] text-black/60">Checking session…</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isReadyToReset && !success) {
+    return (
+      <div className="min-h-screen bg-[#fafafa]">
+        <div className="mx-auto w-full max-w-3xl px-5 sm:px-8 py-12">
+          <div className="rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden">
+            <div className="p-7">
+              <div className="text-[18px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">Reset password</div>
+              <div className="mt-2 text-[13px] text-black/60">Click the button below to verify your reset link.</div>
+
+              {error ? (
+                <div className="mt-4 rounded-[3px] border border-[#c17a4e]/30 bg-[#fff7ed] px-4 py-3 text-[13px] text-[#6e4f33]">
+                  <p className="font-medium">{error}</p>
+                  {pkceError ? (
+                    <div className="mt-2 pt-2 border-t border-[#c17a4e]/20">
+                      <p className="text-[12px] text-[#b42318]">PKCE Error detected.</p>
+                      <p className="mt-1 text-[12px]">
+                        This can happen if you open the link in a different browser than where you requested it. Please request a new link and open it in the same browser.
+                      </p>
+                    </div>
+                  ) : null}
+                  <div className="mt-4">
+                    <Link href="/forgot-password" className="text-[12px] font-semibold text-[#6e4f33] hover:underline">
+                      Request new reset link
+                    </Link>
+                  </div>
+                </div>
+              ) : null}
+
+              <div className="mt-8">
+                <button
+                  onClick={handleVerifyLink}
+                  disabled={isCheckingLink}
+                  className="h-10 inline-flex items-center justify-center px-6 rounded-[3px] bg-[#a67c52] text-white text-[13px] font-semibold hover:bg-[#8e6a46] transition-colors disabled:opacity-60"
+                >
+                  {isCheckingLink ? "Verifying..." : "Verify Reset Link"}
+                </button>
+              </div>
+
+              <div className="mt-4">
+                <Link href="/signin" className="text-[12px] font-semibold text-[#6e4f33] hover:underline">
+                  Back to sign in
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -135,26 +214,6 @@ export default function ResetPasswordPage() {
     } finally {
       setSubmitting(false);
     }
-  }
-
-
-  if (verifying) {
-    return (
-      <div className="min-h-screen bg-[#fafafa]">
-        <div className="mx-auto w-full max-w-3xl px-5 sm:px-8 py-12">
-          <div className="rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden">
-            <div className="p-7">
-              <div className="text-[18px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">
-                Reset password
-              </div>
-              <div className="mt-4 text-[13px] text-black/60">
-                Verifying your reset link…
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
   }
 
   return (
