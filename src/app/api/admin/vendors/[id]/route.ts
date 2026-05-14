@@ -122,7 +122,9 @@ const FIELD_VALIDATORS: Record<string, (val: unknown) => { valid: boolean; value
   },
   document_verified: (val) => {
     if (val !== null && typeof val !== "string") return { valid: false, error: "document_verified must be a string or null" };
-    if (typeof val === "string" && !["pending", "verified", "approved", "rejected"].includes(val)) return { valid: false, error: "document_verified must be pending, verified, approved, or rejected" };
+    if (typeof val === "string" && !["verified", "verification_in_progress", "community_recognized", "established_professional"].includes(val)) {
+      return { valid: false, error: "document_verified must be verified, verification_in_progress, community_recognized, or established_professional" };
+    }
     return { valid: true, value: val };
   },
 };

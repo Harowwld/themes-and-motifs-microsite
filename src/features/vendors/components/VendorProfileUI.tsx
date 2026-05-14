@@ -42,7 +42,7 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
   if (vendor.city) locationParts.push(vendor.city);
   if (vendor.location_text) locationParts.push(vendor.location_text);
   const location = locationParts.join(", ") || null;
-  
+
   const cover = images.find((i: any) => i.is_cover) ?? images[0];
   const coverUrl = cover?.image_url ? proxiedImageUrl(cover.image_url) : "";
   const logoUrl = vendor.logo_url ? proxiedImageUrl(vendor.logo_url) : null;
@@ -99,19 +99,37 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
             <h1 className="font-serif text-[26px] sm:text-[34px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">
               <span className="inline-flex items-center gap-2">
                 <span>{vendor.business_name}</span>
-                {isPremium ? (
-                  <span
-                    className="inline-flex items-center justify-center h-6 w-6"
-                    title="Verified Premium Vendor"
-                    aria-label="Verified Premium Vendor"
-                  >
+                {vendor.document_verified === "verified" ? (
+                  <div className="relative h-6 w-6 shrink-0 text-[#60a5fa]" title="Verified Professional">
+                    <svg viewBox="0 0 24 24" fill="currentColor" className="h-full w-full">
+                      <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" />
+                    </svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="absolute inset-0 h-full w-full p-1.5">
+                      <path d="m9 12 2 2 4-4" />
+                    </svg>
+                  </div>
+                ) : vendor.document_verified === "community_recognized" ? (
+                  <div className="relative h-6 w-6 shrink-0 text-[#ffc9d7]" title="Community Recognized">
+                    <svg viewBox="0 0 24 24" fill="currentColor" className="h-full w-full">
+                      <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" />
+                    </svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="absolute inset-0 h-full w-full p-1.5">
+                      <path d="m9 12 2 2 4-4" />
+                    </svg>
+                  </div>
+                ) : vendor.document_verified === "established_professional" ? (
+                  <div className="relative h-6 w-6 shrink-0 text-[#4ade80]" title="Established Professional">
+                    <svg viewBox="0 0 24 24" fill="currentColor" className="h-full w-full">
+                      <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" />
+                    </svg>
+                    <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-white">10</span>
+                  </div>
+                ) : isPremium ? (
+                  <span className="inline-flex items-center justify-center h-6 w-6" title="Verified Premium Vendor">
                     <img
                       src="/cropped-vecteezy_verification-badge-set-guaranteed-stamp-or-verified-badge_23900241.svg"
                       alt="Verified Premium Vendor"
                       className="h-full w-full"
-                      loading="lazy"
-                      decoding="async"
-                      draggable={false}
                     />
                   </span>
                 ) : null}
@@ -153,7 +171,7 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
                   <span className="text-black/40">·</span>
                   <span className="inline-flex items-center gap-1 text-[#a68b6a]">
                     <svg className="h-4 w-4" viewBox="0 0 256 256" fill="currentColor">
-                      <path d="M254.3,107.91,228.78,56.85a16,16,0,0,0-21.47-7.15L182.44,62.13,130.05,48.27a8.14,8.14,0,0,0-4.1,0L73.56,62.13,48.69,49.7a16,16,0,0,0-21.47,7.15L1.7,107.9a16,16,0,0,0,7.15,21.47l27,13.51,55.49,39.63a8.06,8.06,0,0,0,2.71,1.25l64,16a8,8,0,0,0,7.6-2.1l55.07-55.08,26.42-13.21a16,16,0,0,0,7.15-21.46Zm-54.89,33.37L165,113.72a8,8,0,0,0-10.68.61C136.51,132.27,116.66,130,104,122L147.24,80h31.81l27.21,54.41ZM41.53,64,62,74.22,36.43,125.27,16,115.06Zm116,119.13L99.42,168.61l-49.2-35.14,28-56L128,64.28l9.8,2.59-45,43.68-.08.09a16,16,0,0,0,2.72,24.81c20.56,13.13,45.37,11,64.91-5L188,152.66Zm62-57.87-25.52-51L214.47,64,240,115.06Zm-87.75,92.67a8,8,0,0,1-7.75,6.06,8.13,8.13,0,0,1-1.95-.24L80.41,213.33a7.89,7.89,0,0,1-2.71-1.25L51.35,193.26a8,8,0,0,1,9.3-13l25.11,17.94L126,208.24A8,8,0,0,1,131.82,217.94Z"/>
+                      <path d="M254.3,107.91,228.78,56.85a16,16,0,0,0-21.47-7.15L182.44,62.13,130.05,48.27a8.14,8.14,0,0,0-4.1,0L73.56,62.13,48.69,49.7a16,16,0,0,0-21.47,7.15L1.7,107.9a16,16,0,0,0,7.15,21.47l27,13.51,55.49,39.63a8.06,8.06,0,0,0,2.71,1.25l64,16a8,8,0,0,0,7.6-2.1l55.07-55.08,26.42-13.21a16,16,0,0,0,7.15-21.46Zm-54.89,33.37L165,113.72a8,8,0,0,0-10.68.61C136.51,132.27,116.66,130,104,122L147.24,80h31.81l27.21,54.41ZM41.53,64,62,74.22,36.43,125.27,16,115.06Zm116,119.13L99.42,168.61l-49.2-35.14,28-56L128,64.28l9.8,2.59-45,43.68-.08.09a16,16,0,0,0,2.72,24.81c20.56,13.13,45.37,11,64.91-5L188,152.66Zm62-57.87-25.52-51L214.47,64,240,115.06Zm-87.75,92.67a8,8,0,0,1-7.75,6.06,8.13,8.13,0,0,1-1.95-.24L80.41,213.33a7.89,7.89,0,0,1-2.71-1.25L51.35,193.26a8,8,0,0,1,9.3-13l25.11,17.94L126,208.24A8,8,0,0,1,131.82,217.94Z" />
                     </svg>
                   </span>
                   <span className="text-black/55">{affiliations.map((a: any) => a.name).join(" · ")}</span>
@@ -316,44 +334,55 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
 
           {/* Sidebar */}
           <div className="grid gap-4 content-start">
-            {/* Document Verification */}
+            {/* Professional Status */}
             <div className="rounded-xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)]">
               <h3 className="text-[14px] font-semibold text-[#2c2c2c]">Document Verification</h3>
-              <div className="mt-3 flex items-center gap-2">
-                {vendor.document_verified === "verified" || vendor.document_verified === "approved" ? (
-                  <>
-                    <span className="inline-flex items-center justify-center h-5 w-5">
-                      <img
-                        src="/cropped-vecteezy_verification-badge-set-guaranteed-stamp-or-verified-badge_23900241.svg"
-                        alt="Verified"
-                        className="h-full w-full"
-                        loading="lazy"
-                      />
-                    </span>
-                    <span className="text-[13px] font-semibold text-blue-500">Documents Verified</span>
-                  </>
-                ) : vendor.document_verified === "rejected" ? (
-                  <>
-                    <span className="inline-flex h-5 w-5 items-center justify-center text-[#b42318]">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
-                        <circle cx="12" cy="12" r="10" />
-                        <line x1="15" y1="9" x2="9" y2="15" />
-                        <line x1="9" y1="9" x2="15" y2="15" />
+              <div className="mt-3">
+                {vendor.document_verified === "verified" ? (
+                  <div className="flex items-center gap-2" title="VERIFIED (With DTI / SEC / BIR docs submitted)">
+                    <div className="relative h-6 w-6 shrink-0" style={{ color: '#60a5fa' }}>
+                      <svg viewBox="0 0 24 24" fill="currentColor" className="h-full w-full">
+                        <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" />
                       </svg>
-                    </span>
-                    <span className="text-[13px] font-semibold text-[#b42318]">Documents Rejected</span>
-                  </>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="absolute inset-0 h-full w-full p-1.5">
+                        <path d="m9 12 2 2 4-4" />
+                      </svg>
+                    </div>
+                    <span className="text-[13px] font-semibold" style={{ color: '#60a5fa' }}>Verified Professional</span>
+                  </div>
+                ) : vendor.document_verified === "community_recognized" ? (
+                  <div className="flex items-center gap-2" title="Community Recognized (Known in the community as legit/trustworthy)">
+                    <div className="relative h-6 w-6 shrink-0" style={{ color: '#ffc9d7' }}>
+                      <svg viewBox="0 0 24 24" fill="currentColor" className="h-full w-full">
+                        <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" />
+                      </svg>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="absolute inset-0 h-full w-full p-1.5">
+                        <path d="m9 12 2 2 4-4" />
+                      </svg>
+                    </div>
+                    <span className="text-[13px] font-semibold" style={{ color: '#ffc9d7' }}>Community Recognized</span>
+                  </div>
+                ) : vendor.document_verified === "established_professional" ? (
+                  <div className="flex items-center gap-2" title="Established Professional (At least 10 years in business)">
+                    <div className="relative h-6 w-6 shrink-0" style={{ color: '#4ade80' }}>
+                      <svg viewBox="0 0 24 24" fill="currentColor" className="h-full w-full">
+                        <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" />
+                      </svg>
+                      <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-white">10</span>
+                    </div>
+                    <span className="text-[13px] font-semibold" style={{ color: '#4ade80' }}>Established Professional</span>
+                  </div>
                 ) : (
-                  <>
-                    <span className="inline-flex h-5 w-5 items-center justify-center text-[#b54708]">
+                  <div className="flex items-center gap-2" title="Verification In Progress (Awaiting submission of docs)">
+                    <div className="h-6 w-6 shrink-0 flex items-center justify-center" style={{ color: '#ffc067' }}>
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
                         <circle cx="12" cy="12" r="10" />
                         <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
                         <line x1="12" y1="17" x2="12.01" y2="17" />
                       </svg>
-                    </span>
-                    <span className="text-[13px] font-semibold text-[#b54708]">Documents Pending</span>
-                  </>
+                    </div>
+                    <span className="text-[13px] font-semibold" style={{ color: '#ffc067' }}>Verification In Progress</span>
+                  </div>
                 )}
               </div>
             </div>
@@ -429,8 +458,8 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
             ) : null}
 
             {/* QR Code */}
-            <VendorQRCode 
-              vendorSlug={vendor.slug} 
+            <VendorQRCode
+              vendorSlug={vendor.slug}
               vendorName={vendor.business_name}
             />
 
@@ -512,9 +541,9 @@ function maskEmail(email: string) {
 function GlobeIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10"/>
-      <line x1="2" y1="12" x2="22" y2="12"/>
-      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+      <circle cx="12" cy="12" r="10" />
+      <line x1="2" y1="12" x2="22" y2="12" />
+      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
     </svg>
   );
 }
@@ -522,8 +551,8 @@ function GlobeIcon({ className }: { className?: string }) {
 function MapPinIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-      <circle cx="12" cy="10" r="3"/>
+      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+      <circle cx="12" cy="10" r="3" />
     </svg>
   );
 }
@@ -531,7 +560,7 @@ function MapPinIcon({ className }: { className?: string }) {
 function StarIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="currentColor" stroke="none">
-      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
     </svg>
   );
 }
@@ -539,8 +568,8 @@ function StarIcon({ className }: { className?: string }) {
 function UserIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-      <circle cx="12" cy="7" r="4"/>
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+      <circle cx="12" cy="7" r="4" />
     </svg>
   );
 }
@@ -548,11 +577,11 @@ function UserIcon({ className }: { className?: string }) {
 function SparklesIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
-      <path d="M5 3v4"/>
-      <path d="M9 5H5"/>
-      <path d="M19 15v4"/>
-      <path d="M21 19h-4"/>
+      <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+      <path d="M5 3v4" />
+      <path d="M9 5H5" />
+      <path d="M19 15v4" />
+      <path d="M21 19h-4" />
     </svg>
   );
 }
