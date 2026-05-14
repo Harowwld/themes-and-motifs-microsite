@@ -5,6 +5,8 @@ import { createServerClient } from '@supabase/ssr'
 import { createSupabaseAdminClient } from "../../lib/supabaseAdmin";
 import { AdminNav } from "../../components/AdminNav";
 
+export const dynamic = "force-dynamic";
+
 async function getCurrentUser(): Promise<{ isSuperadmin: boolean; isEditor: boolean; email: string | null }> {
   const cookieStore = await cookies();
   

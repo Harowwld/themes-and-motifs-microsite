@@ -1,4 +1,7 @@
 import { unstable_cache } from "next/cache";
+ 
+export const dynamic = "force-dynamic";
+ 
 import { createSupabaseServerClient } from "../lib/supabaseServer";
 import CategoryBrowser from "./components/CategoryBrowser";
 import HeroSection from "./sections/HeroSection";

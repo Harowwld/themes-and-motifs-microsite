@@ -1,4 +1,7 @@
 import { Suspense } from "react";
+ 
+export const dynamic = "force-dynamic";
+ 
 import { createSupabaseServerClient } from "../../lib/supabaseServer";
 import FadeInOnView from "../components/FadeInOnView";
 
