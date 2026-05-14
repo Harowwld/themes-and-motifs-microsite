@@ -2057,7 +2057,7 @@ export default function VendorDashboardPage() {
                     city: form.city || vendor.city,
                     address: form.address || vendor.address,
                     website_url: form.website_url || vendor.website_url,
-                    contact_email: form.contact_email || vendor.contact_email,
+                    contact_email: vendor.contact_email,
                     contact_phone: form.contact_phone || vendor.contact_phone,
                     average_rating: vendor.average_rating,
                     review_count: vendor.review_count,
