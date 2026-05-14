@@ -48,9 +48,7 @@ export default function EditorSignInPage() {
     setSubmitting(true);
 
     try {
-      const origin = typeof window !== "undefined" ? window.location.origin : process.env.NEXT_PUBLIC_SITE_URL;
-      const redirectTo = `${origin}/editor/verify`;
-      
+      const redirectTo = `${window.location.origin}/editor/verify`;
       const { error: signInErr } = await supabase.auth.signInWithOtp({
         email: e1,
         options: {
