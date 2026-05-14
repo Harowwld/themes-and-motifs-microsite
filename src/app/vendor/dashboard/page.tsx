@@ -861,7 +861,7 @@ export default function VendorDashboardPage() {
           setImages(
             normalizedImgs.length > 0
               ? ensureSingleCover(normalizedImgs)
-              : [{ image_url: "", caption: "", is_cover: true, display_order: 1 }]
+              : [{ image_url: "", caption: "", is_cover: true, display_order: 1, media_type: 'image' }]
           );
 
           // Normalize themes
@@ -1041,7 +1041,7 @@ export default function VendorDashboardPage() {
       setImages(
         normalizedImgs.length > 0
           ? ensureSingleCover(normalizedImgs)
-          : [{ image_url: "", caption: "", is_cover: true, display_order: 1 }]
+          : [{ image_url: "", caption: "", is_cover: true, display_order: 1, media_type: 'image' }]
       );
     } catch (e: any) {
       toast.error(e?.message ?? "Failed to save photos.");
