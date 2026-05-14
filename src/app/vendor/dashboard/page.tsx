@@ -40,6 +40,8 @@ type VendorProfile = {
   plan_id: number | null;
   is_active: boolean | null;
   verified_status: string | null;
+  average_rating?: number | null;
+  review_count?: number | null;
   plan?: { id: number; name: string } | { id: number; name: string }[] | null;
 };
 
