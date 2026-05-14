@@ -1,17 +1,21 @@
 import { createBrowserClient as createSBBrowserClient } from '@supabase/ssr'
 
 export function createBrowserClient() {
-  // During build time, return a mock client to prevent errors
+  // During build time or if env vars are missing, return a mock client to prevent errors
   if (typeof window === 'undefined' || !process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    if (typeof window !== 'undefined') {
+      console.warn('Supabase client initialized with mock client because environment variables are missing.');
+    }
     return {
       auth: {
         getUser: () => Promise.resolve({ data: { user: null }, error: null }),
         getSession: () => Promise.resolve({ data: { session: null }, error: null }),
-        signInWithPassword: () => Promise.resolve({ data: { user: null, session: null }, error: new Error('Server side') }),
-        signOut: () => Promise.resolve({ error: new Error('Server side') }),
-        resetPasswordForEmail: () => Promise.resolve({ error: new Error('Server side') }),
-        verifyOtp: () => Promise.resolve({ error: new Error('Server side') }),
-        exchangeCodeForSession: () => Promise.resolve({ error: new Error('Server side') }),
+        signInWithPassword: () => Promise.resolve({ data: { user: null, session: null }, error: new Error('Supabase URL or Anon Key is missing') }),
+        setSession: () => Promise.resolve({ data: { user: null, session: null }, error: new Error('Supabase URL or Anon Key is missing') }),
+        signOut: () => Promise.resolve({ error: new Error('Supabase URL or Anon Key is missing') }),
+        resetPasswordForEmail: () => Promise.resolve({ error: new Error('Supabase URL or Anon Key is missing') }),
+        verifyOtp: () => Promise.resolve({ error: new Error('Supabase URL or Anon Key is missing') }),
+        exchangeCodeForSession: () => Promise.resolve({ error: new Error('Supabase URL or Anon Key is missing') }),
         onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
       }
     } as any

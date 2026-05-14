@@ -7,15 +7,21 @@ export async function GET(req: Request) {
 
     const { searchParams } = new URL(req.url);
     const limitRaw = searchParams.get("limit");
+    const role = searchParams.get("role");
     const limit = Math.max(1, Math.min(500, Number(limitRaw ?? 200) || 200));
 
     const supabase = createSupabaseAdminClient();
 
-    const { data, error } = await supabase
+    let query = supabase
       .from("users")
       .select("*")
-      .order("created_at", { ascending: false })
-      .limit(limit);
+      .order("created_at", { ascending: false });
+
+    if (role) {
+      query = query.eq("role", role);
+    }
+
+    const { data, error } = await query.limit(limit);
 
     if (error) {
       return Response.json({ error: error.message }, { status: 500 });

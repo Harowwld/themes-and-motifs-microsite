@@ -11,12 +11,23 @@
 		"directory": ".open-next/assets",
 		"binding": "ASSETS"
 	},
+	"vars": {
+		"NEXT_PUBLIC_SUPABASE_URL": "https://tedsezmxctrgghyabjjb.supabase.co",
+		"NEXT_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRlZHNlem14Y3RyZ2doeWFiampiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEyNzY2NTcsImV4cCI6MjA4Njg1MjY1N30.fmf7gZgasAG7IQTIPAw3vCC6Ql8JlvFLzIpe1152_UI",
+		"SUPABASE_REST_URL": "https://tedsezmxctrgghyabjjb.supabase.co/rest/v1/",
+		"SMTP_HOST": "smtp.gmail.com",
+		"SMTP_PORT": "465",
+		"SMTP_USER": "harolddelapena.11@gmail.com",
+		"SMTP_FROM": "harolddelapena.11@gmail.com",
+		"NEXT_PUBLIC_SITE_URL": "https://themes-and-motifs.harolddelapena-11.workers.dev"
+	},
 	"services": [
 		{
 			// Self-reference service binding, the service name must match the worker name
 			// see https://opennext.js.org/cloudflare/caching
 			"binding": "WORKER_SELF_REFERENCE",
-			"service": "themes-and-motifs"
+			"service": "themes-and-motifs",
+			"environment": "production"
 		}
 	],
 	"images": {

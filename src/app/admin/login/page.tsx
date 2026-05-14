@@ -89,7 +89,8 @@ export default function AdminLoginPage() {
     setError(null);
 
     const u = username.trim();
-    if (!u || !password) {
+    const p = password; // Keep a copy of the password
+    if (!u || !p) {
       setError("Username and password are required.");
       return;
     }
@@ -117,15 +118,29 @@ export default function AdminLoginPage() {
 
       setPassword("");
 
-      // Use client-side signIn to properly set cookies (setSession doesn't set cookies in browser)
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: u,
-        password,
-      });
+      // If the API returned a session, use it directly. This is more reliable 
+      // than re-authenticating on the client which might fail due to env var issues or rate limits.
+      if (json.session) {
+        const { error: sessionError } = await supabase.auth.setSession({
+          access_token: json.session.access_token,
+          refresh_token: json.session.refresh_token,
+        });
+        
+        if (sessionError) {
+          console.error("Failed to set session:", sessionError);
+          throw new Error(sessionError.message || "Failed to establish session.");
+        }
+      } else {
+        // Fallback to signInWithPassword if no session was returned (should not happen for modern users)
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email: u,
+          password: p,
+        });
 
-      if (signInError) {
-        console.error("Failed to sign in:", signInError);
-        throw new Error("Failed to establish session. Please try again.");
+        if (signInError) {
+          console.error("Failed to sign in:", signInError);
+          throw new Error(signInError.message || "Failed to establish session. Please try again.");
+        }
       }
 
       // Navigate to redirect path

@@ -347,18 +347,7 @@ export default function InfinitePromoCarousel({ promos }: { promos: FeaturedProm
           </div>
         )}
         
-        {/* View All link */}
-        <div className="flex justify-center gap-2 mt-4">
-          <a
-            href="/promos"
-            className="inline-flex items-center gap-1 text-[13px] font-semibold text-[#a68b6a] hover:text-[#957a5c] transition-colors font-[family-name:var(--font-plus-jakarta)]"
-          >
-            View All {promos.length} Promos
-            <svg width="16" height="16" viewBox="0 0 20 16" fill="none" aria-hidden className="w-4 h-4">
-              <path d="M2 8h16M12 2l6 6-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </a>
-        </div>
+
       </div>
     );
   }

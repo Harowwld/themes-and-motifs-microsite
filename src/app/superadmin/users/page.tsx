@@ -32,7 +32,7 @@ export default function SuperadminUsersPage() {
   async function refresh() {
     setLoading(true);
     try {
-      const res = await apiFetch<{ users: UserRow[] }>("/api/admin/users?limit=500");
+      const res = await apiFetch<{ users: UserRow[] }>("/api/admin/users?limit=500&role=soon_to_wed");
       setItems(res.users ?? []);
     } catch (e: any) {
       toast.error(e?.message ?? "Failed to load users.");
