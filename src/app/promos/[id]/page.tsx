@@ -3,6 +3,7 @@ import { createSupabaseServerClient } from "../../../lib/supabaseServer";
 import FadeInOnView from "../../components/FadeInOnView";
 import ShareDeal from "./ShareDeal";
 import PromoCTACard from "./PromoCTACard";
+import PromoQRCode from "../../../components/PromoQRCode";
 
 type Vendor = {
   id: number;
@@ -294,6 +295,13 @@ export default async function PromoDetailPage({ params }: Props) {
                   <h4 className="text-[13px] font-semibold text-black/50 uppercase tracking-wide mb-3">Share this deal</h4>
                   <ShareDeal />
                 </div>
+
+                {/* QR Code */}
+                <PromoQRCode 
+                  promoId={promo.id} 
+                  promoTitle={promo.title} 
+                  variant="card"
+                />
               </div>
             </div>
 
