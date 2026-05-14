@@ -7,9 +7,9 @@
     "dev": "next dev",
     "start": "next start",
     "lint": "eslint",
-    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
-    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
-    "upload": "opennextjs-cloudflare build && opennextjs-cloudflare upload",
+    "preview": "mv .dev.vars .dev.vars.bak 2>/dev/null || true && opennextjs-cloudflare build && opennextjs-cloudflare preview; mv .dev.vars.bak .dev.vars 2>/dev/null || true",
+    "deploy": "mv .dev.vars .dev.vars.bak 2>/dev/null || true && opennextjs-cloudflare build && opennextjs-cloudflare deploy; mv .dev.vars.bak .dev.vars 2>/dev/null || true",
+    "upload": "mv .dev.vars .dev.vars.bak 2>/dev/null || true && opennextjs-cloudflare build && opennextjs-cloudflare upload; mv .dev.vars.bak .dev.vars 2>/dev/null || true",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
   },
   "dependencies": {
