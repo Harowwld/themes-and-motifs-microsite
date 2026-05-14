@@ -72,7 +72,7 @@ export default async function SuperadminPage() {
 
       {/* Main Grid for Cards */}
       <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden h-fit">
+        <div className="rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden h-fit self-start">
           <div className="px-5 py-4 border-b border-black/5 bg-gray-50/50">
             <div className="text-[14px] font-semibold text-[#2c2c2c]">Recent Inquiries</div>
           </div>
@@ -103,7 +103,7 @@ export default async function SuperadminPage() {
           </div>
         </div>
 
-        <div className="rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden h-fit">
+        <div className="rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden h-fit self-start">
           <div className="px-5 py-4 border-b border-black/5 bg-gray-50/50">
             <div className="text-[14px] font-semibold text-[#2c2c2c]">Newest Vendors</div>
           </div>
@@ -135,7 +135,7 @@ export default async function SuperadminPage() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden h-fit">
+        <div className="rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden h-fit self-start">
           <div className="px-5 py-4 border-b border-black/5 bg-gray-50/50">
             <div className="text-[14px] font-semibold text-[#2c2c2c]">System Health</div>
           </div>
@@ -146,7 +146,7 @@ export default async function SuperadminPage() {
           </div>
         </div>
 
-        <div className="rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden h-fit">
+        <div className="rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden h-fit self-start">
           <div className="px-5 py-4 border-b border-black/5 bg-gray-50/50">
             <div className="text-[14px] font-semibold text-[#2c2c2c]">Quick Management</div>
           </div>

@@ -31,7 +31,7 @@ export function AdminNav({ isSuperadmin, isEditor, email, accountType }: AdminNa
   };
 
   return (
-    <aside className="rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden h-fit">
+    <aside className="rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden h-fit self-start sticky top-10">
       <div className="px-5 py-4 border-b border-black/5">
         <div className="text-[14px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">
           {isEditor ? "Editor" : "Superadmin"}
