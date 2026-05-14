@@ -1,9 +1,16 @@
 import { createBrowserClient as createSBBrowserClient } from '@supabase/ssr'
 
+// Build-time placeholders: during static page generation (e.g. /_not-found),
+// env vars may not be available. These placeholders satisfy the @supabase/ssr
+// constructor and are never used at runtime (client components hydrate with
+// real env vars in the browser).
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co'
+const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key'
+
 export function createBrowserClient() {
   return createSBBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY,
     {
       cookies: {
         get(key) {
