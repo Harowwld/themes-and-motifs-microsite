@@ -1,0 +1,789 @@
+import { useEffect, useState } from "react";
+import { toast } from "@/lib/toast";
+
+export type Plan = { id: number; name: string };
+
+export type Vendor = {
+  id: number;
+  business_name: string;
+  slug: string;
+  is_active: boolean | null;
+  is_featured: boolean | null;
+  average_rating: number | null;
+  review_count: number | null;
+  updated_at: string;
+  plan_id: number | null;
+  plan?: { id: number; name: string } | { id: number; name: string }[] | null;
+  user_id?: string;
+  description?: string | null;
+  location_text?: string | null;
+  city?: string | null;
+  address?: string | null;
+  contact_email?: string | null;
+  contact_phone?: string | null;
+  website_url?: string | null;
+  logo_url?: string | null;
+  verified_status?: boolean | null;
+  document_verified?: string | null;
+  contact_person_1_name?: string | null;
+  contact_person_1_position?: string | null;
+  contact_person_2_name?: string | null;
+  contact_person_2_position?: string | null;
+  admin_email_1?: string | null;
+  admin_email_2?: string | null;
+  admin_email_3?: string | null;
+  admin_phone_1?: string | null;
+  admin_phone_2?: string | null;
+  admin_phone_3?: string | null;
+};
+
+export type VendorImage = {
+  id?: number;
+  image_url: string;
+  caption: string;
+  is_cover: boolean;
+  display_order: number;
+  focus_x?: number | null;
+  focus_y?: number | null;
+  zoom?: number | null;
+};
+
+export type VendorVideo = {
+  id?: number;
+  video_url: string;
+  title: string | null;
+  display_order: number;
+};
+
+export type VendorSocial = {
+  id?: number;
+  platform: string;
+  url: string;
+};
+
+export type Affiliation = {
+  id: number;
+  name: string;
+  slug: string;
+};
+
+export type VendorAffiliation = {
+  vendor_id: number;
+  affiliation_id: number;
+  affiliation: Affiliation | Affiliation[] | null;
+};
+
+export type Theme = {
+  id: number;
+  name: string;
+  slug: string;
+};
+
+export type VendorTheme = {
+  id: number;
+  theme: Theme | Theme[] | null;
+};
+
+export type Promo = {
+  id: number;
+  vendor_id: number;
+  title: string;
+  summary: string | null;
+  terms: string | null;
+  valid_from: string | null;
+  valid_to: string | null;
+  is_active: boolean | null;
+  is_featured: boolean | null;
+  image_url: string | null;
+  discount_percentage: number | null;
+  image_focus_x: number | null;
+  image_focus_y: number | null;
+  image_zoom: number | null;
+  updated_at: string;
+};
+
+export type VerificationDocument = {
+  id: number;
+  doc_type: string;
+  file_url: string;
+  file_name: string | null;
+  status: string;
+  uploaded_at: string;
+  reviewed_at: string | null;
+  notes: string | null;
+};
+
+async function apiFetch<T>(url: string, init?: RequestInit): Promise<T> {
+  const res = await fetch(url, {
+    ...init,
+    credentials: "include",
+    headers: {
+      ...(init?.headers ?? {}),
+      "content-type": "application/json",
+    },
+  });
+  const json = await res.json().catch(() => null);
+  if (!res.ok) {
+    throw new Error((json as any)?.error ?? "Request failed");
+  }
+  return json as T;
+}
+
+export function useSuperadminVendors() {
+  const [loading, setLoading] = useState(true);
+  const [savingId, setSavingId] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const [vendors, setVendors] = useState<Vendor[]>([]);
+  const [plans, setPlans] = useState<Plan[]>([]);
+  const [query, setQuery] = useState("");
+
+  // Edit modal state
+  const [editingVendor, setEditingVendor] = useState<Vendor | null>(null);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editLoading, setEditLoading] = useState(false);
+  const [editError, setEditError] = useState<string | null>(null);
+
+  // Edit form state
+  const [editForm, setEditForm] = useState({
+    business_name: "",
+    slug: "",
+    description: "",
+    location_text: "",
+    city: "",
+    address: "",
+    contact_email: "",
+    contact_phone: "",
+    website_url: "",
+    logo_url: "",
+    verified_status: false,
+    document_verified: "verification_in_progress" as "verified" | "verification_in_progress" | "community_recognized" | "established_professional",
+    contact_person_1_name: "",
+    contact_person_1_position: "",
+    contact_person_2_name: "",
+    contact_person_2_position: "",
+    admin_email_1: "",
+    admin_email_2: "",
+    admin_email_3: "",
+    admin_phone_1: "",
+    admin_phone_2: "",
+    admin_phone_3: "",
+  });
+  const [editSubscription, setEditSubscription] = useState<{ id: number; status: string; expiry_date: string | null; verification_doc_url: string | null } | null>(null);
+  const [editImages, setEditImages] = useState<VendorImage[]>([]);
+  const [editVideos, setEditVideos] = useState<VendorVideo[]>([]);
+  const [editSocials, setEditSocials] = useState<VendorSocial[]>([]);
+  const [editAffiliations, setEditAffiliations] = useState<Affiliation[]>([]);
+  const [allAffiliations, setAllAffiliations] = useState<Affiliation[]>([]);
+  const [affiliationInput, setAffiliationInput] = useState("");
+  const [editThemes, setEditThemes] = useState<Theme[]>([]);
+  const [allThemes, setAllThemes] = useState<Theme[]>([]);
+  const [verificationDocuments, setVerificationDocuments] = useState<VerificationDocument[]>([]);
+  const [editPromos, setEditPromos] = useState<Promo[]>([]);
+  const [promoForm, setPromoForm] = useState<Partial<Promo>>({
+    title: "",
+    summary: "",
+    terms: "",
+    valid_from: "",
+    valid_to: "",
+    discount_percentage: null,
+    image_url: "",
+    is_active: true,
+  });
+  const [editingPromoId, setEditingPromoId] = useState<number | null>(null);
+  const [showPromoForm, setShowPromoForm] = useState(false);
+  const [promoToDelete, setPromoToDelete] = useState<number | null>(null);
+  const [cropModalOpen, setCropModalOpen] = useState(false);
+  const [croppingImageIdx, setCroppingImageIdx] = useState<number | null>(null);
+  const [logoModalOpen, setLogoModalOpen] = useState(false);
+  const [logoUrlInput, setLogoUrlInput] = useState("");
+  const [photoModalOpen, setPhotoModalOpen] = useState(false);
+  const [editingPhotoIndex, setEditingPhotoIndex] = useState<number | null>(null);
+
+  async function refresh(searchQuery?: string) {
+    setError(null);
+    setLoading(true);
+    try {
+      const q = searchQuery?.trim() || "";
+      const url = q ? `/api/admin/vendors?limit=1000&q=${encodeURIComponent(q)}` : "/api/admin/vendors?limit=1000";
+      const res = await apiFetch<{ vendors: Vendor[]; plans: Plan[] }>(url);
+      setVendors(res.vendors ?? []);
+      setPlans(res.plans ?? []);
+    } catch (e: any) {
+      setError(e?.message ?? "Failed to load vendors.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    refresh();
+  }, []);
+
+  useEffect(() => {
+    const debounce = setTimeout(() => {
+      refresh(query);
+    }, 300);
+    return () => clearTimeout(debounce);
+  }, [query]);
+
+  async function patchVendor(id: number, patch: Partial<Pick<Vendor, "is_active" | "is_featured" | "plan_id">>) {
+    setError(null);
+    setSavingId(id);
+    try {
+      const res = await apiFetch<{ vendor: Vendor }>("/api/admin/vendors", {
+        method: "PATCH",
+        body: JSON.stringify({ id, ...patch }),
+      });
+      const next = res.vendor;
+      setVendors((prev) => prev.map((v) => (v.id === id ? { ...v, ...next } : v)));
+    } catch (e: any) {
+      setError(e?.message ?? "Failed to update vendor.");
+    } finally {
+      setSavingId(null);
+    }
+  }
+
+  async function openEditModal(vendor: Vendor) {
+    setEditingVendor(vendor);
+    setEditError(null);
+    setEditLoading(true);
+    setEditModalOpen(true);
+
+    try {
+      const [res, promosRes] = await Promise.all([
+        apiFetch<{
+          vendor: Vendor;
+          images: VendorImage[];
+          videos: VendorVideo[];
+          socials: VendorSocial[];
+          affiliations: VendorAffiliation[];
+          allAffiliations: Affiliation[];
+          themes: VendorTheme[];
+          allThemes: Theme[];
+          verificationDocuments: VerificationDocument[];
+          subscription: { id: number; status: string; expiry_date: string | null; verification_doc_url: string | null } | null;
+        }>(`/api/admin/vendors/${vendor.id}`),
+        apiFetch<{ promos: Promo[] }>(`/api/admin/vendors/${vendor.id}/promos`),
+      ]);
+
+      const v = res.vendor;
+      setEditForm({
+        business_name: v.business_name ?? "",
+        slug: v.slug ?? "",
+        description: v.description ?? "",
+        location_text: v.location_text ?? "",
+        city: v.city ?? "",
+        address: v.address ?? "",
+        contact_email: v.contact_email ?? "",
+        contact_phone: v.contact_phone ?? "",
+        website_url: v.website_url ?? "",
+        logo_url: v.logo_url ?? "",
+        verified_status: v.verified_status ?? false,
+        document_verified: (v.document_verified === "approved" || v.document_verified === "verified") 
+          ? "verified" 
+          : (v.document_verified === "pending" || !v.document_verified) 
+            ? "verification_in_progress" 
+            : v.document_verified as any,
+        contact_person_1_name: v.contact_person_1_name ?? "",
+        contact_person_1_position: v.contact_person_1_position ?? "",
+        contact_person_2_name: v.contact_person_2_name ?? "",
+        contact_person_2_position: v.contact_person_2_position ?? "",
+        admin_email_1: v.admin_email_1 ?? "",
+        admin_email_2: v.admin_email_2 ?? "",
+        admin_email_3: v.admin_email_3 ?? "",
+        admin_phone_1: v.admin_phone_1 ?? "",
+        admin_phone_2: v.admin_phone_2 ?? "",
+        admin_phone_3: v.admin_phone_3 ?? "",
+      });
+
+      setEditSubscription(res.subscription ?? null);
+
+      const normalizedImgs = (res.images ?? []).map((img: any, idx: number) => ({
+        id: img.id,
+        image_url: img.image_url,
+        caption: img.caption ?? "",
+        is_cover: Boolean(img.is_cover),
+        display_order: img.display_order ?? idx + 1,
+        focus_x: img.focus_x ?? 50,
+        focus_y: img.focus_y ?? 50,
+        zoom: img.zoom ?? 1,
+      }));
+      setEditImages(
+        normalizedImgs.length > 0
+          ? normalizedImgs
+          : [{ image_url: "", caption: "", is_cover: true, display_order: 1, focus_x: 50, focus_y: 50, zoom: 1 }]
+      );
+
+      const normalizedVideos = (res.videos ?? []).map((v, idx) => ({
+        id: v.id,
+        video_url: v.video_url,
+        title: v.title ?? "",
+        display_order: v.display_order ?? idx + 1,
+      }));
+      setEditVideos(
+        normalizedVideos.length > 0
+          ? normalizedVideos
+          : [{ video_url: "", title: "", display_order: 1 }]
+      );
+
+      const normalizedSocials = (res.socials ?? []).map((s) => ({
+        id: s.id,
+        platform: s.platform,
+        url: s.url,
+      }));
+      setEditSocials(
+        normalizedSocials.length > 0
+          ? normalizedSocials
+          : [{ platform: "facebook", url: "" }]
+      );
+
+      const normalizedAffiliations = (res.affiliations ?? [])
+        .map((va) => {
+          const aff = Array.isArray(va.affiliation) ? va.affiliation[0] : va.affiliation;
+          return aff ? { id: aff.id, name: aff.name, slug: aff.slug } : null;
+        })
+        .filter((a): a is Affiliation => a !== null);
+      setEditAffiliations(normalizedAffiliations);
+      setAllAffiliations(res.allAffiliations ?? []);
+      setAffiliationInput("");
+
+      const normalizedThemes = (res.themes ?? [])
+        .map((vt) => {
+          const t = Array.isArray(vt.theme) ? vt.theme[0] : vt.theme;
+          return t ? { id: t.id, name: t.name, slug: t.slug } : null;
+        })
+        .filter((t): t is Theme => t !== null);
+      setEditThemes(normalizedThemes);
+      setAllThemes(res.allThemes ?? []);
+
+      setVerificationDocuments(res.verificationDocuments ?? []);
+      setEditPromos(promosRes.promos ?? []);
+      resetPromoForm();
+    } catch (e: any) {
+      setEditError(e?.message ?? "Failed to load vendor details.");
+    } finally {
+      setEditLoading(false);
+    }
+  }
+
+  function closeEditModal() {
+    setEditModalOpen(false);
+    setEditingVendor(null);
+    setEditError(null);
+  }
+
+  async function saveVendorProfile() {
+    if (!editingVendor) return;
+    setEditLoading(true);
+    setEditError(null);
+
+    try {
+      const res = await apiFetch<{ vendor: Vendor }>(`/api/admin/vendors/${editingVendor.id}`, {
+        method: "PATCH",
+        body: JSON.stringify({
+          business_name: editForm.business_name,
+          slug: editForm.slug,
+          description: editForm.description,
+          location_text: editForm.location_text || null,
+          city: editForm.city || null,
+          address: editForm.address || null,
+          contact_email: editForm.contact_email || null,
+          contact_phone: editForm.contact_phone || null,
+          website_url: editForm.website_url || null,
+          logo_url: editForm.logo_url || null,
+          verified_status: editForm.verified_status,
+          document_verified: editForm.document_verified || null,
+          contact_person_1_name: editForm.contact_person_1_name || null,
+          contact_person_1_position: editForm.contact_person_1_position || null,
+          contact_person_2_name: editForm.contact_person_2_name || null,
+          contact_person_2_position: editForm.contact_person_2_position || null,
+          admin_email_1: editForm.admin_email_1 || null,
+          admin_email_2: editForm.admin_email_2 || null,
+          admin_email_3: editForm.admin_email_3 || null,
+          admin_phone_1: editForm.admin_phone_1 || null,
+          admin_phone_2: editForm.admin_phone_2 || null,
+          admin_phone_3: editForm.admin_phone_3 || null,
+        }),
+      });
+
+      setVendors((prev) =>
+        prev.map((v) => (v.id === editingVendor.id ? { ...v, ...res.vendor } : v))
+      );
+    } catch (e: any) {
+      setEditError(e?.message ?? "Failed to save vendor profile.");
+    } finally {
+      setEditLoading(false);
+    }
+  }
+
+  async function saveVendorImages() {
+    if (!editingVendor) return;
+    setEditLoading(true);
+    setEditError(null);
+
+    try {
+      const cleaned = editImages
+        .filter((i) => i.image_url.trim())
+        .map((i, idx) => ({
+          image_url: i.image_url.trim(),
+          caption: i.caption?.trim() || null,
+          is_cover: i.is_cover,
+          display_order: i.display_order || idx + 1,
+          focus_x: i.focus_x ?? 50,
+          focus_y: i.focus_y ?? 50,
+          zoom: i.zoom ?? 1,
+        }));
+
+      const hasCover = cleaned.some((i) => i.is_cover);
+      if (cleaned.length > 0 && !hasCover) {
+        cleaned[0].is_cover = true;
+      }
+
+      await apiFetch<{ images: VendorImage[] }>(`/api/admin/vendors/${editingVendor.id}/images`, {
+        method: "PUT",
+        body: JSON.stringify({ images: cleaned }),
+      });
+    } finally {
+      setEditLoading(false);
+    }
+  }
+
+  async function saveVendorVideos() {
+    if (!editingVendor) return;
+    setEditLoading(true);
+    setEditError(null);
+
+    try {
+      const cleaned = editVideos
+        .filter((v) => v.video_url.trim())
+        .map((v, idx) => ({
+          video_url: v.video_url.trim(),
+          title: v.title?.trim() || null,
+          display_order: idx + 1,
+        }));
+
+      await apiFetch<{ videos: VendorVideo[] }>(`/api/admin/vendors/${editingVendor.id}/videos`, {
+        method: "PUT",
+        body: JSON.stringify({ videos: cleaned }),
+      });
+    } catch (e: any) {
+      setEditError(e?.message ?? "Failed to save videos.");
+    } finally {
+      setEditLoading(false);
+    }
+  }
+
+  async function saveSubscriptionDate(dateStr: string) {
+    if (!editingVendor) return;
+    try {
+      const res = await apiFetch<{ subscription: any }>(`/api/admin/vendors/${editingVendor.id}/subscription`, {
+        method: "PATCH",
+        body: JSON.stringify({ expiry_date: dateStr || null }),
+      });
+      setEditSubscription(res.subscription);
+      toast.success("Expiry date saved.");
+    } catch (e: any) {
+      toast.error(e?.message ?? "Failed to save expiry date.");
+    }
+  }
+
+  async function saveVendorSocials() {
+    if (!editingVendor) return;
+    setEditLoading(true);
+    setEditError(null);
+
+    try {
+      const cleaned = editSocials.filter((s) => s.platform.trim() && s.url.trim());
+
+      await apiFetch<{ socials: VendorSocial[] }>(`/api/admin/vendors/${editingVendor.id}/socials`, {
+        method: "PUT",
+        body: JSON.stringify({ socials: cleaned }),
+      });
+    } catch (e: any) {
+      setEditError(e?.message ?? "Failed to save social links.");
+    } finally {
+      setEditLoading(false);
+    }
+  }
+
+  async function saveVendorAffiliations() {
+    if (!editingVendor) return;
+    setEditLoading(true);
+    setEditError(null);
+
+    try {
+      const res = await apiFetch<{
+        affiliations: VendorAffiliation[];
+        allAffiliations: Affiliation[];
+        created: Affiliation[];
+      }>(`/api/admin/vendors/${editingVendor.id}/affiliations`, {
+        method: "PUT",
+        body: JSON.stringify({ affiliations: editAffiliations }),
+      });
+
+      const normalizedAffiliations = (res.affiliations ?? [])
+        .map((va) => {
+          const aff = Array.isArray(va.affiliation) ? va.affiliation[0] : va.affiliation;
+          return aff ? { id: aff.id, name: aff.name, slug: aff.slug } : null;
+        })
+        .filter((a): a is Affiliation => a !== null);
+      setEditAffiliations(normalizedAffiliations);
+      setAllAffiliations(res.allAffiliations ?? []);
+    } catch (e: any) {
+      setEditError(e?.message ?? "Failed to save affiliations.");
+    } finally {
+      setEditLoading(false);
+    }
+  }
+
+  async function saveVendorThemes() {
+    if (!editingVendor) return;
+    setEditLoading(true);
+    setEditError(null);
+
+    try {
+      const res = await apiFetch<{
+        themes: VendorTheme[];
+        allThemes: Theme[];
+        created: Theme[];
+      }>(`/api/admin/vendors/${editingVendor.id}/themes`, {
+        method: "PUT",
+        body: JSON.stringify({ themes: editThemes.map((t) => ({ id: t.id, name: t.name, slug: t.slug })) }),
+      });
+
+      const normalizedThemes = (res.themes ?? [])
+        .map((vt) => {
+          const t = Array.isArray(vt.theme) ? vt.theme[0] : vt.theme;
+          return t ? { id: t.id, name: t.name, slug: t.slug } : null;
+        })
+        .filter((t): t is Theme => t !== null);
+      setEditThemes(normalizedThemes);
+      setAllThemes(res.allThemes ?? []);
+    } catch (e: any) {
+      setEditError(e?.message ?? "Failed to save themes.");
+    } finally {
+      setEditLoading(false);
+    }
+  }
+
+  async function saveAllAndClose() {
+    await saveVendorProfile();
+    await saveVendorImages();
+    await saveVendorVideos();
+    await saveVendorSocials();
+    await saveVendorAffiliations();
+    await saveVendorThemes();
+    closeEditModal();
+  }
+
+  function resetPromoForm() {
+    setPromoForm({
+      title: "",
+      summary: "",
+      terms: "",
+      valid_from: "",
+      valid_to: "",
+      discount_percentage: null,
+      image_url: "",
+      is_active: true,
+    });
+    setEditingPromoId(null);
+    setShowPromoForm(false);
+  }
+
+  function startEditPromo(promo: Promo) {
+    setEditingPromoId(promo.id);
+    setPromoForm({
+      title: promo.title,
+      summary: promo.summary ?? "",
+      terms: promo.terms ?? "",
+      valid_from: promo.valid_from ?? "",
+      valid_to: promo.valid_to ?? "",
+      discount_percentage: promo.discount_percentage,
+      image_url: promo.image_url ?? "",
+      is_active: promo.is_active ?? true,
+    });
+    setShowPromoForm(true);
+  }
+
+  async function savePromo() {
+    if (!editingVendor) return;
+    if (!promoForm.title?.trim()) {
+      setEditError("Promo title is required.");
+      return;
+    }
+
+    setEditLoading(true);
+    setEditError(null);
+
+    try {
+      if (editingPromoId) {
+        const res = await apiFetch<{ promo: Promo }>(`/api/admin/vendors/${editingVendor.id}/promos`, {
+          method: "PATCH",
+          body: JSON.stringify({
+            promo_id: editingPromoId,
+            title: promoForm.title.trim(),
+            summary: promoForm.summary?.trim() || null,
+            terms: promoForm.terms?.trim() || null,
+            valid_from: promoForm.valid_from || null,
+            valid_to: promoForm.valid_to || null,
+            discount_percentage: promoForm.discount_percentage,
+            image_url: promoForm.image_url?.trim() || null,
+            is_active: promoForm.is_active,
+          }),
+        });
+        setEditPromos((prev) => prev.map((p) => (p.id === editingPromoId ? res.promo : p)));
+      } else {
+        const res = await apiFetch<{ promo: Promo }>(`/api/admin/vendors/${editingVendor.id}/promos`, {
+          method: "POST",
+          body: JSON.stringify({
+            title: promoForm.title.trim(),
+            summary: promoForm.summary?.trim() || null,
+            terms: promoForm.terms?.trim() || null,
+            valid_from: promoForm.valid_from || null,
+            valid_to: promoForm.valid_to || null,
+            discount_percentage: promoForm.discount_percentage,
+            image_url: promoForm.image_url?.trim() || null,
+            is_active: promoForm.is_active,
+          }),
+        });
+        setEditPromos((prev) => [res.promo, ...prev]);
+      }
+      resetPromoForm();
+    } catch (e: any) {
+      setEditError(e?.message ?? "Failed to save promo.");
+    } finally {
+      setEditLoading(false);
+    }
+  }
+
+  async function confirmDeletePromo() {
+    if (!editingVendor || !promoToDelete) return;
+
+    setEditLoading(true);
+    setEditError(null);
+
+    try {
+      await apiFetch<{ ok: boolean }>(`/api/admin/vendors/${editingVendor.id}/promos?promo_id=${promoToDelete}`, {
+        method: "DELETE",
+      });
+      setEditPromos((prev) => prev.filter((p) => p.id !== promoToDelete));
+      if (editingPromoId === promoToDelete) {
+        resetPromoForm();
+      }
+      setPromoToDelete(null);
+    } catch (e: any) {
+      setEditError(e?.message ?? "Failed to delete promo.");
+    } finally {
+      setEditLoading(false);
+    }
+  }
+
+  async function togglePromoFeatured(promo: Promo) {
+    if (!editingVendor) return;
+    setEditLoading(true);
+    setEditError(null);
+
+    try {
+      const res = await apiFetch<{ promo: Promo }>(`/api/admin/vendors/${editingVendor.id}/promos`, {
+        method: "PATCH",
+        body: JSON.stringify({
+          promo_id: promo.id,
+          is_featured: !promo.is_featured,
+        }),
+      });
+      setEditPromos((prev) => prev.map((p) => (p.id === promo.id ? res.promo : p)));
+    } catch (e: any) {
+      setEditError(e?.message ?? "Failed to update promo.");
+    } finally {
+      setEditLoading(false);
+    }
+  }
+
+  function handleCropSave(crop: { focusX: number; focusY: number; zoom: number }) {
+    if (croppingImageIdx !== null) {
+      const newImages = [...editImages];
+      newImages[croppingImageIdx] = {
+        ...newImages[croppingImageIdx],
+        focus_x: crop.focusX,
+        focus_y: crop.focusY,
+        zoom: crop.zoom,
+      };
+      setEditImages(newImages);
+    }
+    setCropModalOpen(false);
+    setCroppingImageIdx(null);
+  }
+
+  return {
+    loading,
+    savingId,
+    error,
+    vendors,
+    plans,
+    query,
+    setQuery,
+    refresh,
+    patchVendor,
+    editingVendor,
+    editModalOpen,
+    editLoading,
+    editError,
+    editForm,
+    setEditForm,
+    editSubscription,
+    editImages,
+    setEditImages,
+    editVideos,
+    setEditVideos,
+    editSocials,
+    setEditSocials,
+    editAffiliations,
+    setEditAffiliations,
+    allAffiliations,
+    affiliationInput,
+    setAffiliationInput,
+    editThemes,
+    setEditThemes,
+    allThemes,
+    verificationDocuments,
+    editPromos,
+    promoForm,
+    setPromoForm,
+    editingPromoId,
+    showPromoForm,
+    setShowPromoForm,
+    promoToDelete,
+    setPromoToDelete,
+    cropModalOpen,
+    setCropModalOpen,
+    croppingImageIdx,
+    setCroppingImageIdx,
+    logoModalOpen,
+    setLogoModalOpen,
+    logoUrlInput,
+    setLogoUrlInput,
+    photoModalOpen,
+    setPhotoModalOpen,
+    editingPhotoIndex,
+    setEditingPhotoIndex,
+
+    openEditModal,
+    closeEditModal,
+    saveVendorProfile,
+    saveVendorImages,
+    saveVendorVideos,
+    saveSubscriptionDate,
+    saveVendorSocials,
+    saveVendorAffiliations,
+    saveVendorThemes,
+    saveAllAndClose,
+    resetPromoForm,
+    startEditPromo,
+    savePromo,
+    confirmDeletePromo,
+    togglePromoFeatured,
+    handleCropSave,
+  };
+}

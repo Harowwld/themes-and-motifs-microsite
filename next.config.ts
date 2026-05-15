@@ -14,7 +14,7 @@ const securityHeaders = [
       "font-src 'self'",
       "connect-src 'self' https:", // Allow API calls to HTTPS
       "frame-src 'self' https://www.youtube.com https://player.vimeo.com", // Allow YouTube and Vimeo embeds
-      "frame-ancestors 'none'", // Equivalent to X-Frame-Options: DENY
+      "frame-ancestors 'self'", // Allow framing on same origin
       "form-action 'self'",
       "base-uri 'self'",
       "upgrade-insecure-requests",
@@ -26,7 +26,7 @@ const securityHeaders = [
   },
   {
     key: "X-Frame-Options",
-    value: "DENY",
+    value: "SAMEORIGIN",
   },
   {
     key: "X-Content-Type-Options",

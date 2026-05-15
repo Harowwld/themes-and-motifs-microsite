@@ -1,1974 +1,152 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import React from "react";
 import ImageCropperModal from "../ImageCropper";
-import { ImageUploadDropzone } from "@/components/ImageUploadDropzone";
 import PhotoModal from "@/components/PhotoModal";
-import type { UploadResult } from "@/hooks/useImageUpload";
-import { toast } from "@/lib/toast";
+import { ImageUploadDropzone } from "@/components/ImageUploadDropzone";
 import { proxiedImageUrl } from "@/lib/imageSizes";
 
-
-type Plan = { id: number; name: string };
-
-type Vendor = {
-  id: number;
-  business_name: string;
-  slug: string;
-  is_active: boolean | null;
-  is_featured: boolean | null;
-  average_rating: number | null;
-  review_count: number | null;
-  updated_at: string;
-  plan_id: number | null;
-  plan?: { id: number; name: string } | { id: number; name: string }[] | null;
-  user_id?: string;
-  description?: string | null;
-  location_text?: string | null;
-  city?: string | null;
-  address?: string | null;
-  contact_email?: string | null;
-  contact_phone?: string | null;
-  website_url?: string | null;
-  logo_url?: string | null;
-  verified_status?: boolean | null;
-  document_verified?: string | null;
-  contact_person_1_name?: string | null;
-  contact_person_1_position?: string | null;
-  contact_person_2_name?: string | null;
-  contact_person_2_position?: string | null;
-  admin_email_1?: string | null;
-  admin_email_2?: string | null;
-  admin_email_3?: string | null;
-  admin_phone_1?: string | null;
-  admin_phone_2?: string | null;
-  admin_phone_3?: string | null;
-};
-
-type VendorImage = {
-  id?: number;
-  image_url: string;
-  caption: string;
-  is_cover: boolean;
-  display_order: number;
-  focus_x?: number | null;
-  focus_y?: number | null;
-  zoom?: number | null;
-};
-
-type VendorVideo = {
-  id?: number;
-  video_url: string;
-  title: string | null;
-  display_order: number;
-};
-
-type VendorSocial = {
-  id?: number;
-  platform: string;
-  url: string;
-};
-
-type Affiliation = {
-  id: number;
-  name: string;
-  slug: string;
-};
-
-type VendorAffiliation = {
-  vendor_id: number;
-  affiliation_id: number;
-  affiliation: Affiliation | Affiliation[] | null;
-};
-
-type Theme = {
-  id: number;
-  name: string;
-  slug: string;
-};
-
-type VendorTheme = {
-  id: number;
-  theme: Theme | Theme[] | null;
-};
-
-type Promo = {
-  id: number;
-  vendor_id: number;
-  title: string;
-  summary: string | null;
-  terms: string | null;
-  valid_from: string | null;
-  valid_to: string | null;
-  is_active: boolean | null;
-  is_featured: boolean | null;
-  image_url: string | null;
-  discount_percentage: number | null;
-  image_focus_x: number | null;
-  image_focus_y: number | null;
-  image_zoom: number | null;
-  updated_at: string;
-};
-
-type VerificationDocument = {
-  id: number;
-  doc_type: string;
-  file_url: string;
-  file_name: string | null;
-  status: string;
-  uploaded_at: string;
-  reviewed_at: string | null;
-  notes: string | null;
-};
-
-async function apiFetch<T>(url: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(url, {
-    ...init,
-    credentials: "include",
-    headers: {
-      ...(init?.headers ?? {}),
-      "content-type": "application/json",
-    },
-  });
-  const json = await res.json().catch(() => null);
-  if (!res.ok) {
-    throw new Error((json as any)?.error ?? "Request failed");
-  }
-  return json as T;
-}
-
-function Badge({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="inline-flex items-center rounded-[3px] border border-black/10 bg-white px-2 py-0.5 text-[11px] font-semibold text-black/60">
-      {children}
-    </span>
-  );
-}
+import { useSuperadminVendors } from "./hooks/useSuperadminVendors";
+import { VendorList } from "./components/VendorList";
+import { VendorEditModal } from "./components/VendorEditModal";
 
 export default function SuperadminVendorsPage() {
-  const [loading, setLoading] = useState(true);
-  const [savingId, setSavingId] = useState<number | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    loading,
+    savingId,
+    error,
+    vendors,
+    plans,
+    query,
+    setQuery,
+    refresh,
+    patchVendor,
+    editingVendor,
+    editModalOpen,
+    editLoading,
+    editError,
+    editForm,
+    setEditForm,
+    editSubscription,
+    editImages,
+    setEditImages,
+    editVideos,
+    setEditVideos,
+    editSocials,
+    setEditSocials,
+    editAffiliations,
+    setEditAffiliations,
+    allAffiliations,
+    affiliationInput,
+    setAffiliationInput,
+    editThemes,
+    setEditThemes,
+    allThemes,
+    verificationDocuments,
+    editPromos,
+    promoForm,
+    setPromoForm,
+    editingPromoId,
+    showPromoForm,
+    setShowPromoForm,
+    promoToDelete,
+    setPromoToDelete,
+    cropModalOpen,
+    setCropModalOpen,
+    croppingImageIdx,
+    setCroppingImageIdx,
+    logoModalOpen,
+    setLogoModalOpen,
+    logoUrlInput,
+    setLogoUrlInput,
+    photoModalOpen,
+    setPhotoModalOpen,
+    editingPhotoIndex,
+    setEditingPhotoIndex,
 
-  const [vendors, setVendors] = useState<Vendor[]>([]);
-  const [plans, setPlans] = useState<Plan[]>([]);
-  const [query, setQuery] = useState("");
-
-  // Edit modal state
-  const [editingVendor, setEditingVendor] = useState<Vendor | null>(null);
-  const [editModalOpen, setEditModalOpen] = useState(false);
-  const [editLoading, setEditLoading] = useState(false);
-  const [editError, setEditError] = useState<string | null>(null);
-
-  // Edit form state
-  const [editForm, setEditForm] = useState({
-    business_name: "",
-    slug: "",
-    description: "",
-    location_text: "",
-    city: "",
-    address: "",
-    contact_email: "",
-    contact_phone: "",
-    website_url: "",
-    logo_url: "",
-    verified_status: false,
-    document_verified: "verification_in_progress",
-    contact_person_1_name: "",
-    contact_person_1_position: "",
-    contact_person_2_name: "",
-    contact_person_2_position: "",
-    admin_email_1: "",
-    admin_email_2: "",
-    admin_email_3: "",
-    admin_phone_1: "",
-    admin_phone_2: "",
-    admin_phone_3: "",
-  });
-  const [editSubscription, setEditSubscription] = useState<{ id: number; status: string; expiry_date: string | null; verification_doc_url: string | null } | null>(null);
-  const [editImages, setEditImages] = useState<VendorImage[]>([]);
-  const [editVideos, setEditVideos] = useState<VendorVideo[]>([]);
-  const [editSocials, setEditSocials] = useState<VendorSocial[]>([]);
-  const [editAffiliations, setEditAffiliations] = useState<Affiliation[]>([]);
-  const [allAffiliations, setAllAffiliations] = useState<Affiliation[]>([]);
-  const [affiliationInput, setAffiliationInput] = useState("");
-  const [showAffiliationDropdown, setShowAffiliationDropdown] = useState(false);
-  const [editThemes, setEditThemes] = useState<Theme[]>([]);
-  const [allThemes, setAllThemes] = useState<Theme[]>([]);
-
-  // Verification documents state
-  const [verificationDocuments, setVerificationDocuments] = useState<VerificationDocument[]>([]);
-
-  // Promos state
-  const [editPromos, setEditPromos] = useState<Promo[]>([]);
-  const [promoForm, setPromoForm] = useState<Partial<Promo>>({
-    title: "",
-    summary: "",
-    terms: "",
-    valid_from: "",
-    valid_to: "",
-    discount_percentage: null,
-    image_url: "",
-    is_active: true,
-  });
-  const [editingPromoId, setEditingPromoId] = useState<number | null>(null);
-  const [showPromoForm, setShowPromoForm] = useState(false);
-
-  // Delete confirmation modal state
-  const [promoToDelete, setPromoToDelete] = useState<number | null>(null);
-
-  // Crop modal state
-  const [cropModalOpen, setCropModalOpen] = useState(false);
-  const [croppingImageIdx, setCroppingImageIdx] = useState<number | null>(null);
-
-  // Logo modal state
-  const [logoModalOpen, setLogoModalOpen] = useState(false);
-  const [logoUrlInput, setLogoUrlInput] = useState("");
-
-  // Photo modal state
-  const [photoModalOpen, setPhotoModalOpen] = useState(false);
-  const [editingPhotoIndex, setEditingPhotoIndex] = useState<number | null>(null);
-
-  async function refresh(searchQuery?: string) {
-    setError(null);
-    setLoading(true);
-    try {
-      const q = searchQuery?.trim() || "";
-      const url = q ? `/api/admin/vendors?limit=1000&q=${encodeURIComponent(q)}` : "/api/admin/vendors?limit=1000";
-      const res = await apiFetch<{ vendors: Vendor[]; plans: Plan[] }>(url);
-      setVendors(res.vendors ?? []);
-      setPlans(res.plans ?? []);
-    } catch (e: any) {
-      setError(e?.message ?? "Failed to load vendors.");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    refresh();
-  }, []);
-
-  useEffect(() => {
-    const debounce = setTimeout(() => {
-      refresh(query);
-    }, 300);
-    return () => clearTimeout(debounce);
-  }, [query]);
-
-  async function patchVendor(id: number, patch: Partial<Pick<Vendor, "is_active" | "is_featured" | "plan_id">>) {
-    setError(null);
-    setSavingId(id);
-    try {
-      const res = await apiFetch<{ vendor: Vendor }>("/api/admin/vendors", {
-        method: "PATCH",
-        body: JSON.stringify({ id, ...patch }),
-      });
-      const next = res.vendor;
-      setVendors((prev) => prev.map((v) => (v.id === id ? { ...v, ...next } : v)));
-    } catch (e: any) {
-      setError(e?.message ?? "Failed to update vendor.");
-    } finally {
-      setSavingId(null);
-    }
-  }
-
-  async function openEditModal(vendor: Vendor) {
-    setEditingVendor(vendor);
-    setEditError(null);
-    setEditLoading(true);
-    setEditModalOpen(true);
-
-    try {
-      const [res, promosRes] = await Promise.all([
-        apiFetch<{
-          vendor: Vendor;
-          images: VendorImage[];
-          videos: VendorVideo[];
-          socials: VendorSocial[];
-          affiliations: VendorAffiliation[];
-          allAffiliations: Affiliation[];
-          themes: VendorTheme[];
-          allThemes: Theme[];
-          verificationDocuments: VerificationDocument[];
-          subscription: { id: number; status: string; expiry_date: string | null; verification_doc_url: string | null } | null;
-        }>(`/api/admin/vendors/${vendor.id}`),
-        apiFetch<{ promos: Promo[] }>(`/api/admin/vendors/${vendor.id}/promos`),
-      ]);
-
-      const v = res.vendor;
-      setEditForm({
-        business_name: v.business_name ?? "",
-        slug: v.slug ?? "",
-        description: v.description ?? "",
-        location_text: v.location_text ?? "",
-        city: v.city ?? "",
-        address: v.address ?? "",
-        contact_email: v.contact_email ?? "",
-        contact_phone: v.contact_phone ?? "",
-        website_url: v.website_url ?? "",
-        logo_url: v.logo_url ?? "",
-        verified_status: v.verified_status ?? false,
-        document_verified: (v.document_verified === "approved" || v.document_verified === "verified") 
-          ? "verified" 
-          : (v.document_verified === "pending" || !v.document_verified) 
-            ? "verification_in_progress" 
-            : v.document_verified as any,
-        contact_person_1_name: v.contact_person_1_name ?? "",
-        contact_person_1_position: v.contact_person_1_position ?? "",
-        contact_person_2_name: v.contact_person_2_name ?? "",
-        contact_person_2_position: v.contact_person_2_position ?? "",
-        admin_email_1: v.admin_email_1 ?? "",
-        admin_email_2: v.admin_email_2 ?? "",
-        admin_email_3: v.admin_email_3 ?? "",
-        admin_phone_1: v.admin_phone_1 ?? "",
-        admin_phone_2: v.admin_phone_2 ?? "",
-        admin_phone_3: v.admin_phone_3 ?? "",
-      });
-
-      setEditSubscription(res.subscription ?? null);
-
-      const normalizedImgs = (res.images ?? []).map((img: any, idx: number) => ({
-        id: img.id,
-        image_url: img.image_url,
-        caption: img.caption ?? "",
-        is_cover: Boolean(img.is_cover),
-        display_order: img.display_order ?? idx + 1,
-        focus_x: img.focus_x ?? 50,
-        focus_y: img.focus_y ?? 50,
-        zoom: img.zoom ?? 1,
-      }));
-      setEditImages(
-        normalizedImgs.length > 0
-          ? normalizedImgs
-          : [{ image_url: "", caption: "", is_cover: true, display_order: 1, focus_x: 50, focus_y: 50, zoom: 1 }]
-      );
-
-      const normalizedVideos = (res.videos ?? []).map((v, idx) => ({
-        id: v.id,
-        video_url: v.video_url,
-        title: v.title ?? "",
-        display_order: v.display_order ?? idx + 1,
-      }));
-      setEditVideos(
-        normalizedVideos.length > 0
-          ? normalizedVideos
-          : [{ video_url: "", title: "", display_order: 1 }]
-      );
-
-      const normalizedSocials = (res.socials ?? []).map((s) => ({
-        id: s.id,
-        platform: s.platform,
-        url: s.url,
-      }));
-      setEditSocials(
-        normalizedSocials.length > 0
-          ? normalizedSocials
-          : [{ platform: "facebook", url: "" }]
-      );
-
-      // Normalize affiliations
-      const normalizedAffiliations = (res.affiliations ?? [])
-        .map((va) => {
-          const aff = Array.isArray(va.affiliation) ? va.affiliation[0] : va.affiliation;
-          return aff ? { id: aff.id, name: aff.name, slug: aff.slug } : null;
-        })
-        .filter((a): a is Affiliation => a !== null);
-      setEditAffiliations(normalizedAffiliations);
-      setAllAffiliations(res.allAffiliations ?? []);
-      setAffiliationInput("");
-
-      // Normalize themes
-      const normalizedThemes = (res.themes ?? [])
-        .map((vt) => {
-          const t = Array.isArray(vt.theme) ? vt.theme[0] : vt.theme;
-          return t ? { id: t.id, name: t.name, slug: t.slug } : null;
-        })
-        .filter((t): t is Theme => t !== null);
-      setEditThemes(normalizedThemes);
-      setAllThemes(res.allThemes ?? []);
-
-      // Set verification documents
-      setVerificationDocuments(res.verificationDocuments ?? []);
-
-      // Set promos
-      setEditPromos(promosRes.promos ?? []);
-      resetPromoForm();
-    } catch (e: any) {
-      setEditError(e?.message ?? "Failed to load vendor details.");
-    } finally {
-      setEditLoading(false);
-    }
-  }
-
-  function closeEditModal() {
-    setEditModalOpen(false);
-    setEditingVendor(null);
-    setEditError(null);
-  }
-
-  async function saveVendorProfile() {
-    if (!editingVendor) return;
-    setEditLoading(true);
-    setEditError(null);
-
-    try {
-      const res = await apiFetch<{ vendor: Vendor }>(`/api/admin/vendors/${editingVendor.id}`, {
-        method: "PATCH",
-        body: JSON.stringify({
-          business_name: editForm.business_name,
-          slug: editForm.slug,
-          description: editForm.description,
-          location_text: editForm.location_text || null,
-          city: editForm.city || null,
-          address: editForm.address || null,
-          contact_email: editForm.contact_email || null,
-          contact_phone: editForm.contact_phone || null,
-          website_url: editForm.website_url || null,
-          logo_url: editForm.logo_url || null,
-          verified_status: editForm.verified_status,
-          document_verified: editForm.document_verified || null,
-          contact_person_1_name: editForm.contact_person_1_name || null,
-          contact_person_1_position: editForm.contact_person_1_position || null,
-          contact_person_2_name: editForm.contact_person_2_name || null,
-          contact_person_2_position: editForm.contact_person_2_position || null,
-          admin_email_1: editForm.admin_email_1 || null,
-          admin_email_2: editForm.admin_email_2 || null,
-          admin_email_3: editForm.admin_email_3 || null,
-          admin_phone_1: editForm.admin_phone_1 || null,
-          admin_phone_2: editForm.admin_phone_2 || null,
-          admin_phone_3: editForm.admin_phone_3 || null,
-        }),
-      });
-
-      // Update local vendors list
-      setVendors((prev) =>
-        prev.map((v) => (v.id === editingVendor.id ? { ...v, ...res.vendor } : v))
-      );
-    } catch (e: any) {
-      setEditError(e?.message ?? "Failed to save vendor profile.");
-    } finally {
-      setEditLoading(false);
-    }
-  }
-
-  async function saveVendorImages() {
-    if (!editingVendor) return;
-    setEditLoading(true);
-    setEditError(null);
-
-    try {
-      const cleaned = editImages
-        .filter((i) => i.image_url.trim())
-        .map((i, idx) => ({
-          image_url: i.image_url.trim(),
-          caption: i.caption?.trim() || null,
-          is_cover: i.is_cover,
-          display_order: i.display_order || idx + 1,
-          focus_x: i.focus_x ?? 50,
-          focus_y: i.focus_y ?? 50,
-          zoom: i.zoom ?? 1,
-        }));
-
-      // Ensure at least one cover
-      const hasCover = cleaned.some((i) => i.is_cover);
-      if (cleaned.length > 0 && !hasCover) {
-        cleaned[0].is_cover = true;
-      }
-
-      await apiFetch<{ images: VendorImage[] }>(`/api/admin/vendors/${editingVendor.id}/images`, {
-        method: "PUT",
-        body: JSON.stringify({ images: cleaned }),
-      });
-    } finally {
-      setEditLoading(false);
-    }
-  }
-
-  async function saveVendorVideos() {
-    if (!editingVendor) return;
-    setEditLoading(true);
-    setEditError(null);
-
-    try {
-      const cleaned = editVideos
-        .filter((v) => v.video_url.trim())
-        .map((v, idx) => ({
-          video_url: v.video_url.trim(),
-          title: v.title?.trim() || null,
-          display_order: idx + 1,
-        }));
-
-      await apiFetch<{ videos: VendorVideo[] }>(`/api/admin/vendors/${editingVendor.id}/videos`, {
-        method: "PUT",
-        body: JSON.stringify({ videos: cleaned }),
-      });
-    } catch (e: any) {
-      setEditError(e?.message ?? "Failed to save videos.");
-    } finally {
-      setEditLoading(false);
-    }
-  }
-
-  async function saveSubscriptionDate(dateStr: string) {
-    if (!editingVendor) return;
-    try {
-      const res = await apiFetch<{ subscription: any }>(`/api/admin/vendors/${editingVendor.id}/subscription`, {
-        method: "PATCH",
-        body: JSON.stringify({ expiry_date: dateStr || null }),
-      });
-      setEditSubscription(res.subscription);
-      toast.success("Expiry date saved.");
-    } catch (e: any) {
-      toast.error(e?.message ?? "Failed to save expiry date.");
-    }
-  }
-
-  async function saveVendorSocials() {
-    if (!editingVendor) return;
-    setEditLoading(true);
-    setEditError(null);
-
-    try {
-      const cleaned = editSocials.filter((s) => s.platform.trim() && s.url.trim());
-
-      await apiFetch<{ socials: VendorSocial[] }>(`/api/admin/vendors/${editingVendor.id}/socials`, {
-        method: "PUT",
-        body: JSON.stringify({ socials: cleaned }),
-      });
-    } catch (e: any) {
-      setEditError(e?.message ?? "Failed to save social links.");
-    } finally {
-      setEditLoading(false);
-    }
-  }
-
-  async function saveVendorAffiliations() {
-    if (!editingVendor) return;
-    setEditLoading(true);
-    setEditError(null);
-
-    try {
-      const res = await apiFetch<{
-        affiliations: VendorAffiliation[];
-        allAffiliations: Affiliation[];
-        created: Affiliation[];
-      }>(`/api/admin/vendors/${editingVendor.id}/affiliations`, {
-        method: "PUT",
-        body: JSON.stringify({ affiliations: editAffiliations }),
-      });
-
-      // Update local state with new affiliations and allAffiliations (in case new ones were created)
-      const normalizedAffiliations = (res.affiliations ?? [])
-        .map((va) => {
-          const aff = Array.isArray(va.affiliation) ? va.affiliation[0] : va.affiliation;
-          return aff ? { id: aff.id, name: aff.name, slug: aff.slug } : null;
-        })
-        .filter((a): a is Affiliation => a !== null);
-      setEditAffiliations(normalizedAffiliations);
-      setAllAffiliations(res.allAffiliations ?? []);
-    } catch (e: any) {
-      setEditError(e?.message ?? "Failed to save affiliations.");
-    } finally {
-      setEditLoading(false);
-    }
-  }
-
-  async function saveVendorThemes() {
-    if (!editingVendor) return;
-    setEditLoading(true);
-    setEditError(null);
-
-    try {
-      const res = await apiFetch<{
-        themes: VendorTheme[];
-        allThemes: Theme[];
-        created: Theme[];
-      }>(`/api/admin/vendors/${editingVendor.id}/themes`, {
-        method: "PUT",
-        body: JSON.stringify({ themes: editThemes.map((t) => ({ id: t.id, name: t.name, slug: t.slug })) }),
-      });
-
-      // Update local state with new themes
-      const normalizedThemes = (res.themes ?? [])
-        .map((vt) => {
-          const t = Array.isArray(vt.theme) ? vt.theme[0] : vt.theme;
-          return t ? { id: t.id, name: t.name, slug: t.slug } : null;
-        })
-        .filter((t): t is Theme => t !== null);
-      setEditThemes(normalizedThemes);
-      setAllThemes(res.allThemes ?? []);
-    } catch (e: any) {
-      setEditError(e?.message ?? "Failed to save themes.");
-    } finally {
-      setEditLoading(false);
-    }
-  }
-
-  async function saveAllAndClose() {
-    await saveVendorProfile();
-    await saveVendorImages();
-    await saveVendorVideos();
-    await saveVendorSocials();
-    await saveVendorAffiliations();
-    await saveVendorThemes();
-    closeEditModal();
-  }
-
-  function openCropModal(idx: number) {
-    setCroppingImageIdx(idx);
-    setCropModalOpen(true);
-  }
-
-  function handleCropSave(crop: { focusX: number; focusY: number; zoom: number }) {
-    if (croppingImageIdx !== null) {
-      const newImages = [...editImages];
-      newImages[croppingImageIdx] = {
-        ...newImages[croppingImageIdx],
-        focus_x: crop.focusX,
-        focus_y: crop.focusY,
-        zoom: crop.zoom,
-      };
-      setEditImages(newImages);
-    }
-    setCropModalOpen(false);
-    setCroppingImageIdx(null);
-  }
-
-  // Promo helper functions
-  function resetPromoForm() {
-    setPromoForm({
-      title: "",
-      summary: "",
-      terms: "",
-      valid_from: "",
-      valid_to: "",
-      discount_percentage: null,
-      image_url: "",
-      is_active: true,
-    });
-    setEditingPromoId(null);
-    setShowPromoForm(false);
-  }
-
-  function startEditPromo(promo: Promo) {
-    setEditingPromoId(promo.id);
-    setPromoForm({
-      title: promo.title,
-      summary: promo.summary ?? "",
-      terms: promo.terms ?? "",
-      valid_from: promo.valid_from ?? "",
-      valid_to: promo.valid_to ?? "",
-      discount_percentage: promo.discount_percentage,
-      image_url: promo.image_url ?? "",
-      is_active: promo.is_active ?? true,
-    });
-    setShowPromoForm(true);
-  }
-
-  async function savePromo() {
-    if (!editingVendor) return;
-    if (!promoForm.title?.trim()) {
-      setEditError("Promo title is required.");
-      return;
-    }
-
-    setEditLoading(true);
-    setEditError(null);
-
-    try {
-      if (editingPromoId) {
-        // Update existing promo
-        const res = await apiFetch<{ promo: Promo }>(`/api/admin/vendors/${editingVendor.id}/promos`, {
-          method: "PATCH",
-          body: JSON.stringify({
-            promo_id: editingPromoId,
-            title: promoForm.title.trim(),
-            summary: promoForm.summary?.trim() || null,
-            terms: promoForm.terms?.trim() || null,
-            valid_from: promoForm.valid_from || null,
-            valid_to: promoForm.valid_to || null,
-            discount_percentage: promoForm.discount_percentage,
-            image_url: promoForm.image_url?.trim() || null,
-            is_active: promoForm.is_active,
-          }),
-        });
-        setEditPromos((prev) => prev.map((p) => (p.id === editingPromoId ? res.promo : p)));
-      } else {
-        // Create new promo
-        const res = await apiFetch<{ promo: Promo }>(`/api/admin/vendors/${editingVendor.id}/promos`, {
-          method: "POST",
-          body: JSON.stringify({
-            title: promoForm.title.trim(),
-            summary: promoForm.summary?.trim() || null,
-            terms: promoForm.terms?.trim() || null,
-            valid_from: promoForm.valid_from || null,
-            valid_to: promoForm.valid_to || null,
-            discount_percentage: promoForm.discount_percentage,
-            image_url: promoForm.image_url?.trim() || null,
-            is_active: promoForm.is_active,
-          }),
-        });
-        setEditPromos((prev) => [res.promo, ...prev]);
-      }
-      resetPromoForm();
-    } catch (e: any) {
-      setEditError(e?.message ?? "Failed to save promo.");
-    } finally {
-      setEditLoading(false);
-    }
-  }
-
-  async function confirmDeletePromo() {
-    if (!editingVendor || !promoToDelete) return;
-
-    setEditLoading(true);
-    setEditError(null);
-
-    try {
-      await apiFetch<{ ok: boolean }>(`/api/admin/vendors/${editingVendor.id}/promos?promo_id=${promoToDelete}`, {
-        method: "DELETE",
-      });
-      setEditPromos((prev) => prev.filter((p) => p.id !== promoToDelete));
-      if (editingPromoId === promoToDelete) {
-        resetPromoForm();
-      }
-      setPromoToDelete(null);
-    } catch (e: any) {
-      setEditError(e?.message ?? "Failed to delete promo.");
-    } finally {
-      setEditLoading(false);
-    }
-  }
-
-  async function togglePromoFeatured(promo: Promo) {
-    if (!editingVendor) return;
-    setEditLoading(true);
-    setEditError(null);
-
-    try {
-      const res = await apiFetch<{ promo: Promo }>(`/api/admin/vendors/${editingVendor.id}/promos`, {
-        method: "PATCH",
-        body: JSON.stringify({
-          promo_id: promo.id,
-          is_featured: !promo.is_featured,
-        }),
-      });
-      setEditPromos((prev) => prev.map((p) => (p.id === promo.id ? res.promo : p)));
-    } catch (e: any) {
-      setEditError(e?.message ?? "Failed to update promo.");
-    } finally {
-      setEditLoading(false);
-    }
-  }
+    openEditModal,
+    closeEditModal,
+    saveVendorProfile,
+    saveVendorImages,
+    saveVendorVideos,
+    saveSubscriptionDate,
+    saveVendorSocials,
+    saveVendorAffiliations,
+    saveVendorThemes,
+    saveAllAndClose,
+    resetPromoForm,
+    startEditPromo,
+    savePromo,
+    confirmDeletePromo,
+    togglePromoFeatured,
+    handleCropSave,
+  } = useSuperadminVendors();
 
   return (
     <div className="grid gap-6">
-      <div className="rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden">
-        <div className="px-6 py-5 border-b border-black/5">
-          <div className="text-[18px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">Vendors</div>
-          <div className="mt-1 text-[12px] text-black/45">Activate, feature, and assign plans.</div>
-        </div>
+      <VendorList
+        vendors={vendors}
+        plans={plans}
+        loading={loading}
+        query={query}
+        setQuery={setQuery}
+        refresh={() => refresh()}
+        patchVendor={patchVendor}
+        savingId={savingId}
+        openEditModal={openEditModal}
+        error={error}
+      />
 
-        <div className="p-6 grid gap-4">
-          {error ? (
-            <div className="rounded-[3px] border border-[#c17a4e]/30 bg-[#fff7ed] px-4 py-3 text-[13px] text-[#6e4f33]">
-              {error}
-            </div>
-          ) : null}
+      <VendorEditModal
+        isOpen={editModalOpen}
+        onClose={closeEditModal}
+        editingVendor={editingVendor}
+        editLoading={editLoading}
+        editError={editError}
+        editForm={editForm}
+        setEditForm={setEditForm}
+        editSubscription={editSubscription}
+        saveSubscriptionDate={saveSubscriptionDate}
+        verificationDocuments={verificationDocuments}
+        editImages={editImages}
+        setEditImages={setEditImages}
+        setEditingPhotoIndex={setEditingPhotoIndex}
+        setPhotoModalOpen={setPhotoModalOpen}
+        editVideos={editVideos}
+        setEditVideos={setEditVideos}
+        editSocials={editSocials}
+        setEditSocials={setEditSocials}
+        editAffiliations={editAffiliations}
+        setEditAffiliations={setEditAffiliations}
+        allAffiliations={allAffiliations}
+        affiliationInput={affiliationInput}
+        setAffiliationInput={setAffiliationInput}
+        editThemes={editThemes}
+        setEditThemes={setEditThemes}
+        allThemes={allThemes}
+        editPromos={editPromos}
+        showPromoForm={showPromoForm}
+        setShowPromoForm={setShowPromoForm}
+        promoForm={promoForm}
+        setPromoForm={setPromoForm}
+        editingPromoId={editingPromoId}
+        resetPromoForm={resetPromoForm}
+        savePromo={savePromo}
+        togglePromoFeatured={togglePromoFeatured}
+        startEditPromo={startEditPromo}
+        setPromoToDelete={setPromoToDelete}
+        setLogoUrlInput={setLogoUrlInput}
+        setLogoModalOpen={setLogoModalOpen}
+        saveVendorProfile={saveVendorProfile}
+        saveVendorImages={saveVendorImages}
+        saveVendorVideos={saveVendorVideos}
+        saveVendorSocials={saveVendorSocials}
+        saveVendorAffiliations={saveVendorAffiliations}
+        saveVendorThemes={saveVendorThemes}
+        saveAllAndClose={saveAllAndClose}
+      />
 
-          <div className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
-            <label className="grid gap-1.5">
-              <span className="text-[12px] font-semibold text-black/55">Search</span>
-              <input
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                className="h-10 rounded-[3px] border border-black/10 bg-white px-3 text-[13px] outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15"
-                placeholder="Search by name, slug, or id"
-              />
-            </label>
-            <button
-              type="button"
-              onClick={() => refresh()}
-              className="h-10 px-4 rounded-[3px] border border-black/10 bg-white text-[13px] font-semibold text-black/70 hover:bg-black/5 transition-colors"
-            >
-              Refresh
-            </button>
-          </div>
-
-          <div className="rounded-[3px] border border-black/10 overflow-hidden">
-            <div className="grid grid-cols-[70px_1.6fr_1.1fr_120px_120px_1fr] gap-0 bg-[#fcfbf9] text-[11px] font-semibold text-black/55 border-b border-black/5">
-              <div className="px-3 py-2">ID</div>
-              <div className="px-3 py-2">Vendor</div>
-              <div className="px-3 py-2">Slug</div>
-              <div className="px-3 py-2">Active</div>
-              <div className="px-3 py-2">Featured</div>
-              <div className="px-3 py-2">Plan</div>
-            </div>
-
-            {loading ? (
-              <div className="p-4 text-[13px] text-black/50">Loading…</div>
-            ) : vendors.length === 0 ? (
-              <div className="p-4 text-[13px] text-black/50">No vendors found.</div>
-            ) : (
-              <div className="divide-y divide-black/5">
-                {vendors.map((v) => {
-                  const planName = String(
-                    (Array.isArray(v.plan) ? v.plan?.[0]?.name : v.plan?.name) ??
-                      plans.find((p) => p.id === v.plan_id)?.name ??
-                      ""
-                  );
-
-                  const isSaving = savingId === v.id;
-
-                  return (
-                    <div key={v.id} className="grid grid-cols-[70px_1.6fr_1.1fr_120px_120px_1fr]">
-                      <div className="px-3 py-3 text-[13px] text-black/60">{v.id}</div>
-                      <div className="px-3 py-3">
-                        <div className="text-[13px] font-semibold text-[#2c2c2c]">{v.business_name}</div>
-                        <div className="mt-1 flex items-center gap-2">
-                          <Badge>{(v.review_count ?? 0).toString()} reviews</Badge>
-                          <Badge>{(v.average_rating ?? 0).toFixed(1)} rating</Badge>
-                        </div>
-                        <div className="mt-2">
-                          <button
-                            type="button"
-                            onClick={() => openEditModal(v)}
-                            className="text-[12px] text-[#6e4f33] hover:underline font-medium"
-                          >
-                            Edit details →
-                          </button>
-                        </div>
-                      </div>
-                      <div className="px-3 py-3">
-                        <a
-                          href={`/vendors/${v.slug}`}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-[13px] text-[#6e4f33] hover:underline"
-                        >
-                          {v.slug}
-                        </a>
-                      </div>
-                      <div className="px-3 py-3">
-                        <button
-                          type="button"
-                          disabled={isSaving}
-                          onClick={() => patchVendor(v.id, { is_active: !Boolean(v.is_active) })}
-                          className={`h-8 w-full rounded-[3px] border text-[12px] font-semibold transition-colors disabled:opacity-60 ${
-                            v.is_active
-                              ? "border-[#027a48]/20 bg-[#ecfdf3] text-[#027a48] hover:bg-[#d1fadf]"
-                              : "border-black/10 bg-white text-black/60 hover:bg-black/5"
-                          }`}
-                        >
-                          {v.is_active ? "Active" : "Inactive"}
-                        </button>
-                      </div>
-                      <div className="px-3 py-3">
-                        <button
-                          type="button"
-                          disabled={isSaving}
-                          onClick={() => patchVendor(v.id, { is_featured: !Boolean(v.is_featured) })}
-                          className={`h-8 w-full rounded-[3px] border text-[12px] font-semibold transition-colors disabled:opacity-60 ${
-                            v.is_featured
-                              ? "border-[#b54708]/20 bg-[#fff7ed] text-[#b54708] hover:bg-[#ffead5]"
-                              : "border-black/10 bg-white text-black/60 hover:bg-black/5"
-                          }`}
-                        >
-                          {v.is_featured ? "Featured" : "Not featured"}
-                        </button>
-                      </div>
-                      <div className="px-3 py-3">
-                        <select
-                          value={v.plan_id ?? ""}
-                          disabled={isSaving}
-                          onChange={(e) => {
-                            const raw = e.target.value;
-                            patchVendor(v.id, { plan_id: raw === "" ? null : Number(raw) });
-                          }}
-                          className="h-8 w-full rounded-[3px] border border-black/10 bg-white px-2 text-[12px] text-black/70 outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15 disabled:opacity-60"
-                        >
-                          <option value="">(No plan)</option>
-                          {plans.map((p) => (
-                            <option key={p.id} value={p.id}>
-                              {p.name}
-                            </option>
-                          ))}
-                        </select>
-                        {planName ? (
-                          <div className="mt-1 text-[11px] text-black/45">Current: {planName}</div>
-                        ) : null}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Edit Vendor Modal */}
-      {editModalOpen && editingVendor && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-          <div className="w-full max-w-4xl max-h-[90vh] rounded-[3px] border border-black/10 bg-white shadow-lg my-8 flex flex-col overflow-hidden">
-            <div className="px-4 py-3 border-b border-black/5 flex items-center justify-between">
-              <div>
-                <div className="text-[14px] font-semibold text-[#2c2c2c]">Edit Vendor</div>
-                <div className="text-[12px] text-black/45">{editingVendor.business_name}</div>
-              </div>
-              <button
-                type="button"
-                onClick={closeEditModal}
-                className="h-8 w-8 rounded-[3px] bg-white/90 text-black/60 hover:text-[#b42318] flex items-center justify-center text-[18px] shadow-sm"
-              >
-                ×
-              </button>
-            </div>
-
-            <div className="p-4 grid gap-6 flex-1 overflow-y-auto overflow-x-hidden">
-              {editLoading && <div className="text-[13px] text-black/60">Loading…</div>}
-              {editError && (
-                <div className="rounded-[3px] border border-[#b42318]/20 bg-[#fff1f3] px-4 py-3 text-[13px] text-[#7a271a]">
-                  {editError}
-                </div>
-              )}
-
-              {/* Profile Section */}
-              <section className="grid gap-4">
-                <div className="text-[13px] font-semibold text-[#2c2c2c] border-b border-black/5 pb-2">
-                  Profile Information
-                </div>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <label className="grid gap-1.5">
-                    <span className="text-[12px] font-semibold text-black/55">Business Name</span>
-                    <input
-                      value={editForm.business_name}
-                      onChange={(e) => setEditForm((f) => ({ ...f, business_name: e.target.value }))}
-                      className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]"
-                    />
-                  </label>
-                  <label className="grid gap-1.5">
-                    <span className="text-[12px] font-semibold text-black/55">Slug</span>
-                    <input
-                      value={editForm.slug}
-                      onChange={(e) => setEditForm((f) => ({ ...f, slug: e.target.value }))}
-                      className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]"
-                    />
-                  </label>
-                </div>
-
-                {/* About Us - Full Width */}
-                <label className="grid gap-1.5">
-                  <span className="text-[12px] font-semibold text-black/55">What Makes Us Unique</span>
-                  <div className="relative">
-                    <textarea
-                      value={editForm.description}
-                      onChange={(e) => setEditForm((f) => ({ ...f, description: e.target.value.slice(0, 300) }))}
-                      rows={3}
-                      maxLength={300}
-                      className="rounded-[3px] border border-black/10 px-3 py-2 text-[13px] pr-14 break-words w-full"
-                    />
-                    <span className="absolute bottom-2 right-3 text-[11px] text-black/40">{(editForm.description?.length ?? 0)}/300</span>
-                  </div>
-                </label>
-
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <label className="grid gap-1.5">
-                    <span className="text-[12px] font-semibold text-black/55">Region</span>
-                    <input
-                      value={editForm.location_text}
-                      onChange={(e) => setEditForm((f) => ({ ...f, location_text: e.target.value }))}
-                      className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]"
-                      placeholder="e.g., Makati, Metro Manila"
-                    />
-                  </label>
-                  <label className="grid gap-1.5">
-                    <span className="text-[12px] font-semibold text-black/55">City</span>
-                    <input
-                      value={editForm.city}
-                      onChange={(e) => setEditForm((f) => ({ ...f, city: e.target.value }))}
-                      className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]"
-                    />
-                  </label>
-                  <label className="grid gap-1.5 sm:col-span-2">
-                    <span className="text-[12px] font-semibold text-black/55">Address</span>
-                    <input
-                      value={editForm.address}
-                      onChange={(e) => setEditForm((f) => ({ ...f, address: e.target.value }))}
-                      className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]"
-                    />
-                  </label>
-                </div>
-              </section>
-
-              {/* Contact Section */}
-              <section className="grid gap-4">
-                <div className="text-[13px] font-semibold text-[#2c2c2c] border-b border-black/5 pb-2">
-                  Contact Information
-                </div>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <label className="grid gap-1.5">
-                    <span className="text-[12px] font-semibold text-black/55">Contact Email</span>
-                    <input
-                      type="email"
-                      value={editForm.contact_email}
-                      onChange={(e) => setEditForm((f) => ({ ...f, contact_email: e.target.value }))}
-                      className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]"
-                    />
-                  </label>
-                  <label className="grid gap-1.5">
-                    <span className="text-[12px] font-semibold text-black/55">Contact Phone</span>
-                    <input
-                      value={editForm.contact_phone}
-                      onChange={(e) => setEditForm((f) => ({ ...f, contact_phone: e.target.value }))}
-                      className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]"
-                    />
-                  </label>
-                  <label className="grid gap-1.5">
-                    <span className="text-[12px] font-semibold text-black/55">Website URL</span>
-                    <input
-                      type="url"
-                      value={editForm.website_url}
-                      onChange={(e) => setEditForm((f) => ({ ...f, website_url: e.target.value }))}
-                      className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]"
-                    />
-                  </label>
-                  <label className="grid gap-1.5">
-                    <span className="text-[12px] font-semibold text-black/55">Logo</span>
-                    <div className="flex items-center gap-3">
-                      <div className="w-[80px] h-[80px] rounded-[3px] border border-black/10 overflow-hidden bg-black/5 flex items-center justify-center">
-                        {editForm.logo_url ? (
-                          <img
-                            src={proxiedImageUrl(editForm.logo_url) ?? editForm.logo_url}
-                            alt="Logo"
-                            className="w-full h-full object-contain"
-                          />
-                        ) : (
-                          <span className="text-[10px] text-black/40">No logo</span>
-                        )}
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setLogoUrlInput(editForm.logo_url);
-                          setLogoModalOpen(true);
-                        }}
-                        className="h-9 px-4 rounded-[3px] border border-black/10 bg-white text-[12px] font-semibold text-black/70 hover:bg-black/5 transition-colors"
-                      >
-                        Edit Logo
-                      </button>
-                    </div>
-                  </label>
-                </div>
-              </section>
-
-              {/* Admin Contact Information */}
-              <section className="grid gap-4">
-                <div className="text-[13px] font-semibold text-[#2c2c2c] border-b border-black/5 pb-2">
-                  Admin & Contact Info (Internal Use)
-                </div>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <label className="grid gap-1.5">
-                    <span className="text-[12px] font-semibold text-black/55">Contact Person 1 Name</span>
-                    <input value={editForm.contact_person_1_name} onChange={(e) => setEditForm((f) => ({ ...f, contact_person_1_name: e.target.value }))} className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]" />
-                  </label>
-                  <label className="grid gap-1.5">
-                    <span className="text-[12px] font-semibold text-black/55">Contact Person 1 Position</span>
-                    <input value={editForm.contact_person_1_position} onChange={(e) => setEditForm((f) => ({ ...f, contact_person_1_position: e.target.value }))} className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]" />
-                  </label>
-                  <label className="grid gap-1.5">
-                    <span className="text-[12px] font-semibold text-black/55">Contact Person 2 Name</span>
-                    <input value={editForm.contact_person_2_name} onChange={(e) => setEditForm((f) => ({ ...f, contact_person_2_name: e.target.value }))} className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]" />
-                  </label>
-                  <label className="grid gap-1.5">
-                    <span className="text-[12px] font-semibold text-black/55">Contact Person 2 Position</span>
-                    <input value={editForm.contact_person_2_position} onChange={(e) => setEditForm((f) => ({ ...f, contact_person_2_position: e.target.value }))} className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]" />
-                  </label>
-                </div>
-                <div className="grid gap-4 sm:grid-cols-3">
-                  <label className="grid gap-1.5">
-                    <span className="text-[12px] font-semibold text-black/55">Admin Email 1</span>
-                    <input type="email" value={editForm.admin_email_1} onChange={(e) => setEditForm((f) => ({ ...f, admin_email_1: e.target.value }))} className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]" />
-                  </label>
-                  <label className="grid gap-1.5">
-                    <span className="text-[12px] font-semibold text-black/55">Admin Email 2</span>
-                    <input type="email" value={editForm.admin_email_2} onChange={(e) => setEditForm((f) => ({ ...f, admin_email_2: e.target.value }))} className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]" />
-                  </label>
-                  <label className="grid gap-1.5">
-                    <span className="text-[12px] font-semibold text-black/55">Admin Email 3</span>
-                    <input type="email" value={editForm.admin_email_3} onChange={(e) => setEditForm((f) => ({ ...f, admin_email_3: e.target.value }))} className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]" />
-                  </label>
-                  <label className="grid gap-1.5">
-                    <span className="text-[12px] font-semibold text-black/55">Admin Phone 1</span>
-                    <input value={editForm.admin_phone_1} onChange={(e) => setEditForm((f) => ({ ...f, admin_phone_1: e.target.value }))} className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]" />
-                  </label>
-                  <label className="grid gap-1.5">
-                    <span className="text-[12px] font-semibold text-black/55">Admin Phone 2</span>
-                    <input value={editForm.admin_phone_2} onChange={(e) => setEditForm((f) => ({ ...f, admin_phone_2: e.target.value }))} className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]" />
-                  </label>
-                  <label className="grid gap-1.5">
-                    <span className="text-[12px] font-semibold text-black/55">Admin Phone 3</span>
-                    <input value={editForm.admin_phone_3} onChange={(e) => setEditForm((f) => ({ ...f, admin_phone_3: e.target.value }))} className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]" />
-                  </label>
-                </div>
-              </section>
-
-              {/* Verification Status */}
-              <section className="grid gap-4">
-                <div className="text-[13px] font-semibold text-[#2c2c2c] border-b border-black/5 pb-2">
-                  Verification
-                </div>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <label className="grid gap-1.5">
-                    <span className="text-[12px] font-semibold text-black/55">Verified Status</span>
-                    <select
-                      value={String(editForm.verified_status)}
-                      onChange={(e) => setEditForm((f) => ({ ...f, verified_status: e.target.value === "true" }))}
-                      className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]"
-                    >
-                      <option value="false">Not Verified</option>
-                      <option value="true">Verified</option>
-                    </select>
-                  </label>
-                  <label className="grid gap-1.5">
-                    <span className="text-[12px] font-semibold text-black/55">Plan Expiry Date</span>
-                    <input
-                      type="date"
-                      value={editSubscription?.expiry_date ? new Date(editSubscription.expiry_date).toISOString().split('T')[0] : ""}
-                      onChange={(e) => saveSubscriptionDate(e.target.value)}
-                      className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]"
-                    />
-                  </label>
-                </div>
-                
-                {editSubscription?.verification_doc_url && (
-                  <div className="mt-2">
-                    <span className="text-[12px] font-semibold text-black/55 block mb-1">Verification Document</span>
-                    <a 
-                      href={proxiedImageUrl(editSubscription.verification_doc_url) ?? editSubscription.verification_doc_url}
-                      target="_blank" 
-                      rel="noreferrer"
-                      className="inline-flex items-center gap-2 h-9 px-3 rounded-[3px] border border-black/10 bg-white text-[12px] font-semibold text-[#6e4f33] hover:bg-black/5 transition-colors"
-                    >
-                      View Document
-                    </a>
-                  </div>
-                )}
-              </section>
-
-              {/* Photos Section */}
-              <section className="grid gap-4">
-                <div className="text-[13px] font-semibold text-[#2c2c2c] border-b border-black/5 pb-2">
-                  Photos
-                </div>
-                <div className="flex flex-wrap gap-3">
-                  {editImages.map((img, idx) => (
-                    <div key={idx} className="relative group">
-                      {/* Image card */}
-                      <div className="w-[140px] h-[93px] rounded-[3px] border border-black/10 overflow-hidden bg-black/5 relative">
-                        {img.image_url ? (
-                          <img
-                            src={proxiedImageUrl(img.image_url) ?? img.image_url}
-                            alt=""
-                            className="w-full h-full object-cover cursor-pointer"
-                            style={{
-                              objectPosition: `${img.focus_x ?? 50}% ${img.focus_y ?? 50}%`,
-                              transform: `scale(${img.zoom ?? 1})`,
-                            }}
-                            onClick={() => {
-                              setEditingPhotoIndex(idx);
-                              setPhotoModalOpen(true);
-                            }}
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-[10px] text-black/40">
-                            No image
-                          </div>
-                        )}
-                        {/* Cover indicator on top of image */}
-                        {img.is_cover && (
-                          <div className="absolute top-1 left-1">
-                            <span className="text-[9px] font-semibold bg-[#027a48] text-white px-1.5 py-0.5 rounded">Cover</span>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Delete button (top right) */}
-                      <button
-                        type="button"
-                        onClick={() => setEditImages((imgs) => imgs.filter((_, i) => i !== idx))}
-                        className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-white/90 text-black/60 hover:text-[#b42318] flex items-center justify-center text-[14px] shadow-sm opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        ×
-                      </button>
-
-                      {/* Cover toggle button (top left) */}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const newImages = editImages.map((i, iidx) => ({
-                            ...i,
-                            is_cover: iidx === idx ? !i.is_cover : false,
-                          }));
-                          setEditImages(newImages);
-                        }}
-                        className={`absolute -top-2 -left-2 w-6 h-6 rounded-full text-[12px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity ${
-                          img.is_cover
-                            ? "bg-[#ecfdf3] text-[#027a48] border border-[#027a48]/20"
-                            : "bg-white/90 text-black/60 hover:text-[#027a48] border border-black/10"
-                        }`}
-                        title={img.is_cover ? "Remove from cover" : "Set as cover"}
-                      >
-                        {img.is_cover ? "C" : "C"}
-                      </button>
-
-                      {/* Caption below */}
-                      <div className="mt-1">
-                        <input
-                          value={img.caption}
-                          onChange={(e) => {
-                            const newImages = [...editImages];
-                            newImages[idx].caption = e.target.value;
-                            setEditImages(newImages);
-                          }}
-                          className="w-full h-6 rounded-[3px] border border-black/10 px-1.5 text-[10px]"
-                          placeholder="Caption"
-                        />
-                      </div>
-                    </div>
-                  ))}
-
-                  {/* Add photo card */}
-                  <div
-                    className="w-[140px] h-[93px] rounded-[3px] border border-black/10 border-dashed bg-black/[0.02] flex flex-col items-center justify-center cursor-pointer hover:bg-black/[0.05] transition-colors"
-                    onClick={() => {
-                      setEditingPhotoIndex(null);
-                      setPhotoModalOpen(true);
-                    }}
-                  >
-                    <div className="text-[24px] text-black/40">+</div>
-                    <div className="text-[10px] text-black/40 mt-1">Add photos</div>
-                  </div>
-                </div>
-
-
-
-              </section>
-
-              {/* Videos Section */}
-              <section className="grid gap-4">
-                <div className="text-[13px] font-semibold text-[#2c2c2c] border-b border-black/5 pb-2 flex items-center justify-between">
-                  <span>Videos</span>
-                  <button
-                    type="button"
-                    onClick={() => setEditVideos((v) => [...v, { video_url: "", title: "", display_order: v.length + 1 }])}
-                    className="text-[12px] text-[#6e4f33] hover:underline"
-                  >
-                    + Add video
-                  </button>
-                </div>
-                <div className="grid gap-3">
-                  {editVideos.map((vid, idx) => (
-                    <div key={idx} className="grid gap-2 sm:grid-cols-[1fr_1fr_auto] items-end">
-                      <label className="grid gap-1">
-                        <span className="text-[11px] text-black/40">Video URL (YouTube/Vimeo)</span>
-                        <input
-                          value={vid.video_url}
-                          onChange={(e) => {
-                            const newVideos = [...editVideos];
-                            newVideos[idx].video_url = e.target.value;
-                            setEditVideos(newVideos);
-                          }}
-                          className="h-9 rounded-[3px] border border-black/10 px-2 text-[12px]"
-                          placeholder="https://..."
-                        />
-                      </label>
-                      <label className="grid gap-1">
-                        <span className="text-[11px] text-black/40">Title (optional)</span>
-                        <input
-                          value={vid.title || ""}
-                          onChange={(e) => {
-                            const newVideos = [...editVideos];
-                            newVideos[idx].title = e.target.value;
-                            setEditVideos(newVideos);
-                          }}
-                          className="h-9 rounded-[3px] border border-black/10 px-2 text-[12px]"
-                          placeholder="Video title"
-                        />
-                      </label>
-                      <button
-                        type="button"
-                        onClick={() => setEditVideos((v) => v.filter((_, i) => i !== idx))}
-                        className="h-9 px-2 rounded-[3px] border border-[#b42318]/20 text-[12px] text-[#b42318] hover:bg-[#b42318]/5"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ))}
-                  {editVideos.length === 0 && (
-                    <div className="text-[12px] text-black/50 italic">No videos added yet.</div>
-                  )}
-                </div>
-              </section>
-
-              {/* Social Links Section */}
-              <section className="grid gap-4">
-                <div className="text-[13px] font-semibold text-[#2c2c2c] border-b border-black/5 pb-2 flex items-center justify-between">
-                  <span>Social Links</span>
-                  <button
-                    type="button"
-                    onClick={() => setEditSocials((s) => [...s, { platform: "", url: "" }])}
-                    className="text-[12px] text-[#6e4f33] hover:underline"
-                  >
-                    + Add link
-                  </button>
-                </div>
-                <div className="grid gap-3">
-                  {editSocials.map((s, idx) => (
-                    <div key={idx} className="grid gap-2 sm:grid-cols-[140px_1fr_auto] items-end">
-                      <select
-                        value={s.platform}
-                        onChange={(e) => {
-                          const newSocials = [...editSocials];
-                          newSocials[idx].platform = e.target.value;
-                          setEditSocials(newSocials);
-                        }}
-                        className="h-9 rounded-[3px] border border-black/10 px-2 text-[12px]"
-                      >
-                        <option value="">Platform</option>
-                        <option value="facebook">Facebook</option>
-                        <option value="instagram">Instagram</option>
-                        <option value="tiktok">TikTok</option>
-                        <option value="x">X (Twitter)</option>
-                        <option value="pinterest">Pinterest</option>
-                        <option value="youtube">YouTube</option>
-                        <option value="website">Website</option>
-                        <option value="other">Other</option>
-                      </select>
-                      <input
-                        value={s.url}
-                        onChange={(e) => {
-                          const newSocials = [...editSocials];
-                          newSocials[idx].url = e.target.value;
-                          setEditSocials(newSocials);
-                        }}
-                        className="h-9 rounded-[3px] border border-black/10 px-2 text-[12px]"
-                        placeholder="https://..."
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setEditSocials((soc) => soc.filter((_, i) => i !== idx))}
-                        className="h-9 px-2 rounded-[3px] border border-[#b42318]/20 text-[12px] text-[#b42318] hover:bg-[#b42318]/5"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ))}
-                  {editSocials.length === 0 && (
-                    <div className="text-[12px] text-black/50 italic">No social links added yet.</div>
-                  )}
-                </div>
-              </section>
-
-              {/* Affiliations Section */}
-              <section className="grid gap-4">
-                <div className="text-[13px] font-semibold text-[#2c2c2c] border-b border-black/5 pb-2">
-                  Affiliations
-                </div>
-
-                {/* Current affiliations */}
-                <div className="flex flex-wrap gap-2">
-                  {editAffiliations.map((aff) => (
-                    <span
-                      key={aff.id}
-                      className="inline-flex items-center gap-1 rounded-[3px] border border-black/10 bg-[#fcfbf9] px-2.5 py-1 text-[12px] text-black/70"
-                    >
-                      {aff.name}
-                      <button
-                        type="button"
-                        onClick={() => setEditAffiliations((prev) => prev.filter((a) => a.id !== aff.id))}
-                        className="ml-1 text-black/40 hover:text-[#b42318]"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
-                  {editAffiliations.length === 0 && (
-                    <span className="text-[12px] text-black/50 italic">No affiliations added.</span>
-                  )}
-                </div>
-
-                {/* Add affiliation dropdown + custom input */}
-                <div className="grid gap-2">
-                  <div className="relative">
-                    <select
-                      value=""
-                      onChange={(e) => {
-                        const selectedId = Number(e.target.value);
-                        if (!selectedId) return;
-                        const selected = allAffiliations.find((a) => a.id === selectedId);
-                        if (selected && !editAffiliations.some((a) => a.id === selected.id)) {
-                          setEditAffiliations((prev) => [...prev, selected]);
-                        }
-                        e.target.value = "";
-                      }}
-                      className="h-10 w-full rounded-[3px] border border-black/10 bg-white px-3 text-[13px] outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15"
-                    >
-                      <option value="">Select existing affiliation...</option>
-                      {allAffiliations
-                        .filter((a) => !editAffiliations.some((ea) => ea.id === a.id))
-                        .map((a) => (
-                          <option key={a.id} value={a.id}>
-                            {a.name}
-                          </option>
-                        ))}
-                    </select>
-                  </div>
-
-                  <div className="flex gap-2">
-                    <input
-                      value={affiliationInput}
-                      onChange={(e) => setAffiliationInput(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          e.preventDefault();
-                          const name = affiliationInput.trim();
-                          if (!name) return;
-                          // Check if already exists in current affiliations
-                          if (editAffiliations.some((a) => a.name.toLowerCase() === name.toLowerCase())) {
-                            setAffiliationInput("");
-                            return;
-                          }
-                          // Check if exists in all affiliations
-                          const existing = allAffiliations.find(
-                            (a) => a.name.toLowerCase() === name.toLowerCase()
-                          );
-                          if (existing) {
-                            setEditAffiliations((prev) => [...prev, existing]);
-                          } else {
-                            // Add as new (will be created on save)
-                            const newAff: Affiliation = {
-                              id: -Date.now(), // Temporary negative ID
-                              name,
-                              slug: "", // Will be generated on server
-                            };
-                            setEditAffiliations((prev) => [...prev, newAff]);
-                          }
-                          setAffiliationInput("");
-                        }
-                      }}
-                      className="h-10 flex-1 rounded-[3px] border border-black/10 bg-white px-3 text-[13px] outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15"
-                      placeholder="Or type custom affiliation and press Enter..."
-                    />
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const name = affiliationInput.trim();
-                        if (!name) return;
-                        if (editAffiliations.some((a) => a.name.toLowerCase() === name.toLowerCase())) {
-                          setAffiliationInput("");
-                          return;
-                        }
-                        const existing = allAffiliations.find(
-                          (a) => a.name.toLowerCase() === name.toLowerCase()
-                        );
-                        if (existing) {
-                          setEditAffiliations((prev) => [...prev, existing]);
-                        } else {
-                          const newAff: Affiliation = {
-                            id: -Date.now(),
-                            name,
-                            slug: "",
-                          };
-                          setEditAffiliations((prev) => [...prev, newAff]);
-                        }
-                        setAffiliationInput("");
-                      }}
-                      className="h-10 px-4 rounded-[3px] bg-[#a67c52] text-white text-[13px] font-semibold hover:bg-[#8e6a46] transition-colors"
-                    >
-                      Add
-                    </button>
-                  </div>
-                </div>
-              </section>
-
-              {/* Themes Section */}
-              <section className="grid gap-4">
-                <div className="text-[13px] font-semibold text-[#2c2c2c] border-b border-black/5 pb-2">
-                  Themes
-                </div>
-
-                {/* All themes as pills */}
-                <div className="flex flex-wrap gap-2">
-                  {/* Predefined themes */}
-                  {allThemes.map((theme) => {
-                    const isSelected = editThemes.some((t) => t.id === theme.id);
-                    return (
-                      <button
-                        key={theme.id}
-                        type="button"
-                        onClick={() => {
-                          if (isSelected) {
-                            setEditThemes((prev) => prev.filter((t) => t.id !== theme.id));
-                          } else {
-                            setEditThemes((prev) => [...prev, theme]);
-                          }
-                        }}
-                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-medium transition-colors ${
-                          isSelected
-                            ? "bg-purple-100 text-purple-700 border border-purple-200"
-                            : "bg-[#fcfbf9] text-black/60 border border-black/10 hover:bg-black/5"
-                        }`}
-                      >
-                        {isSelected && (
-                          <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M20 6L9 17l-5-5" />
-                          </svg>
-                        )}
-                        {theme.name}
-                      </button>
-                    );
-                  })}
-                </div>
-
-              </section>
-
-              {/* Professional Status Section */}
-              <section className="grid gap-4">
-                <div className="text-[13px] font-semibold text-[#2c2c2c] border-b border-black/5 pb-2">
-                  Professional Status
-                </div>
-                <div className="grid gap-3">
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    {/* VERIFIED */}
-                    <label className="flex items-start gap-3 p-3 rounded-[3px] border border-black/10 bg-[#fafafa] cursor-pointer hover:border-[#a67c52]/30 transition-colors group">
-                      <input
-                        type="radio"
-                        name="professional_status"
-                        checked={editForm.document_verified === "verified"}
-                        onChange={() => setEditForm((f) => ({ ...f, document_verified: "verified" }))}
-                        className="mt-1 h-4 w-4 accent-[#a67c52]"
-                      />
-                      <div className="flex-1">
-                        <div className="text-[13px] font-semibold text-[#2c2c2c]">VERIFIED</div>
-                        <div className="text-[11px] text-black/50 mt-0.5">With DTI / SEC / BIR docs submitted</div>
-                        <div className="mt-2 opacity-0 group-hover:opacity-100 transition-opacity text-[10px] font-medium flex items-center gap-1" style={{ color: '#60a5fa' }}>
-                          <div className="relative h-3.5 w-3.5" style={{ color: '#60a5fa' }}>
-                            <svg viewBox="0 0 24 24" fill="currentColor" className="h-full w-full">
-                              <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" />
-                            </svg>
-                            <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="absolute inset-0 h-full w-full p-0.5">
-                              <path d="m9 12 2 2 4-4" />
-                            </svg>
-                          </div>
-                          Note: Shows Blue check badge
-                        </div>
-                      </div>
-                    </label>
-
-                    {/* Verification In Progress */}
-                    <label className="flex items-start gap-3 p-3 rounded-[3px] border border-black/10 bg-[#fafafa] cursor-pointer hover:border-[#a67c52]/30 transition-colors group">
-                      <input
-                        type="radio"
-                        name="professional_status"
-                        checked={editForm.document_verified === "verification_in_progress"}
-                        onChange={() => setEditForm((f) => ({ ...f, document_verified: "verification_in_progress" }))}
-                        className="mt-1 h-4 w-4 accent-[#a67c52]"
-                      />
-                      <div className="flex-1">
-                        <div className="text-[13px] font-semibold text-[#2c2c2c]">Verification In Progress</div>
-                        <div className="text-[11px] text-black/50 mt-0.5">Awaiting docs (up to 1 month from registration)</div>
-                        <div className="mt-2 opacity-0 group-hover:opacity-100 transition-opacity text-[10px] font-medium flex items-center gap-1" style={{ color: '#ffc067' }}>
-                          <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                            <circle cx="12" cy="12" r="10" />
-                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-                            <line x1="12" y1="17" x2="12.01" y2="17" />
-                          </svg>
-                          Note: Shows Pastel Orange text status
-                        </div>
-                      </div>
-                    </label>
-
-                    {/* Community Recognized */}
-                    <label className="flex items-start gap-3 p-3 rounded-[3px] border border-black/10 bg-[#fafafa] cursor-pointer hover:border-[#a67c52]/30 transition-colors group">
-                      <input
-                        type="radio"
-                        name="professional_status"
-                        checked={editForm.document_verified === "community_recognized"}
-                        onChange={() => setEditForm((f) => ({ ...f, document_verified: "community_recognized" }))}
-                        className="mt-1 h-4 w-4 accent-[#a67c52]"
-                      />
-                      <div className="flex-1">
-                        <div className="text-[13px] font-semibold text-[#2c2c2c]">Community Recognized</div>
-                        <div className="text-[11px] text-black/50 mt-0.5">Known in the community as legit/trustworthy</div>
-                        <div className="mt-2 opacity-0 group-hover:opacity-100 transition-opacity text-[10px] font-medium flex items-center gap-1" style={{ color: '#ffc9d7' }}>
-                          <div className="relative h-3.5 w-3.5" style={{ color: '#ffc9d7' }}>
-                            <svg viewBox="0 0 24 24" fill="currentColor" className="h-full w-full">
-                              <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" />
-                            </svg>
-                            <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="absolute inset-0 h-full w-full p-0.5">
-                              <path d="m9 12 2 2 4-4" />
-                            </svg>
-                          </div>
-                          Note: Shows Pink check badge
-                        </div>
-                      </div>
-                    </label>
-
-                    {/* Established Professional */}
-                    <label className="flex items-start gap-3 p-3 rounded-[3px] border border-black/10 bg-[#fafafa] cursor-pointer hover:border-[#a67c52]/30 transition-colors group">
-                      <input
-                        type="radio"
-                        name="professional_status"
-                        checked={editForm.document_verified === "established_professional"}
-                        onChange={() => setEditForm((f) => ({ ...f, document_verified: "established_professional" }))}
-                        className="mt-1 h-4 w-4 accent-[#a67c52]"
-                      />
-                      <div className="flex-1">
-                        <div className="text-[13px] font-semibold text-[#2c2c2c]">Established Professional</div>
-                        <div className="text-[11px] text-black/50 mt-0.5">At least 10 years in business</div>
-                        <div className="mt-2 opacity-0 group-hover:opacity-100 transition-opacity text-[10px] font-medium flex items-center gap-1" style={{ color: '#4ade80' }}>
-                          <div className="relative h-3.5 w-3.5" style={{ color: '#4ade80' }}>
-                            <svg viewBox="0 0 24 24" fill="currentColor" className="h-full w-full">
-                              <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" />
-                            </svg>
-                            <span className="absolute inset-0 flex items-center justify-center text-[7px] font-bold text-white">10</span>
-                          </div>
-                          Note: Shows Green "10" badge
-                        </div>
-                      </div>
-                    </label>
-                  </div>
-                </div>
-              </section>
-
-              {/* Document Verification Section */}
-              <section className="grid gap-4">
-
-                {/* Submitted Documents Preview */}
-                {verificationDocuments.length > 0 && (
-                  <div className="grid gap-3">
-                    <span className="text-[12px] font-semibold text-black/55">Submitted Documents</span>
-                    <div className="grid gap-2">
-                      {verificationDocuments.map((doc) => (
-                        <div
-                          key={doc.id}
-                          className="flex items-center gap-3 p-3 rounded-[3px] border border-black/10 bg-[#fafafa]"
-                        >
-                          {/* Document Icon */}
-                          <div className="w-10 h-10 rounded-[3px] bg-white border border-black/10 flex items-center justify-center flex-shrink-0">
-                            <svg className="w-5 h-5 text-black/40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                              <polyline points="14 2 14 8 20 8" />
-                              <line x1="16" y1="13" x2="8" y2="13" />
-                              <line x1="16" y1="17" x2="8" y2="17" />
-                              <polyline points="10 9 9 9 8 9" />
-                            </svg>
-                          </div>
-
-                          {/* Document Info */}
-                          <div className="flex-1 min-w-0">
-                            <div className="text-[12px] font-semibold text-[#2c2c2c] capitalize">
-                              {doc.doc_type.replace(/_/g, " ")}
-                            </div>
-                            <div className="text-[11px] text-black/50 truncate">
-                              {doc.file_name || "Document"}
-                            </div>
-                            <div className="text-[10px] text-black/40">
-                              Uploaded {new Date(doc.uploaded_at).toLocaleDateString()}
-                            </div>
-                          </div>
-
-                          {/* Status Badge */}
-                          <span
-                            className={`px-2 py-0.5 rounded-[3px] text-[10px] font-semibold ${
-                              doc.status === "approved"
-                                ? "bg-[#ecfdf3] text-[#027a48]"
-                                : doc.status === "rejected"
-                                ? "bg-[#fff1f3] text-[#b42318]"
-                                : "bg-[#fff7ed] text-[#b54708]"
-                            }`}
-                          >
-                            {doc.status}
-                          </span>
-
-                          {/* View Button */}
-                          <a
-                            href={doc.file_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="h-8 px-3 rounded-[3px] border border-black/10 bg-white text-[11px] font-semibold text-black/70 hover:bg-black/5 transition-colors"
-                          >
-                            View
-                          </a>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {verificationDocuments.length === 0 && (
-                  <div className="text-[12px] text-black/50 italic">No verification documents submitted.</div>
-                )}
-              </section>
-
-              {/* Promos Section */}
-              <section className="grid gap-4">
-                <div className="text-[13px] font-semibold text-[#2c2c2c] border-b border-black/5 pb-2 flex items-center justify-between">
-                  <span>Promos</span>
-                  <button
-                    type="button"
-                    onClick={() => setShowPromoForm(true)}
-                    className="text-[12px] text-[#6e4f33] hover:underline"
-                  >
-                    + Add promo
-                  </button>
-                </div>
-
-                {/* Promo Form */}
-                {showPromoForm && (
-                  <div className="rounded-[3px] border border-black/10 bg-[#fafafa] p-4 grid gap-3 overflow-hidden">
-                    <div className="grid gap-3 sm:grid-cols-2">
-                      <label className="grid gap-1.5 sm:col-span-2">
-                        <span className="text-[12px] font-semibold text-black/55">Title *</span>
-                        <input
-                          value={promoForm.title}
-                          onChange={(e) => setPromoForm((f) => ({ ...f, title: e.target.value }))}
-                          className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px] break-words"
-                          placeholder="e.g., Summer Sale - 20% Off"
-                        />
-                      </label>
-                      <label className="grid gap-1.5 sm:col-span-2">
-                        <span className="text-[12px] font-semibold text-black/55">Summary</span>
-                        <textarea
-                          value={promoForm.summary ?? ""}
-                          onChange={(e) => setPromoForm((f) => ({ ...f, summary: e.target.value }))}
-                          rows={2}
-                          className="rounded-[3px] border border-black/10 px-3 py-2 text-[13px] break-words"
-                          placeholder="Brief description of the promo..."
-                        />
-                      </label>
-                      <label className="grid gap-1.5 sm:col-span-2">
-                        <span className="text-[12px] font-semibold text-black/55">Terms & Conditions</span>
-                        <textarea
-                          value={promoForm.terms ?? ""}
-                          onChange={(e) => setPromoForm((f) => ({ ...f, terms: e.target.value }))}
-                          rows={2}
-                          className="rounded-[3px] border border-black/10 px-3 py-2 text-[13px] break-words"
-                          placeholder="Terms and conditions..."
-                        />
-                      </label>
-                      <label className="grid gap-1.5">
-                        <span className="text-[12px] font-semibold text-black/55">Valid From</span>
-                        <input
-                          type="date"
-                          value={promoForm.valid_from ?? ""}
-                          onChange={(e) => setPromoForm((f) => ({ ...f, valid_from: e.target.value }))}
-                          className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]"
-                        />
-                      </label>
-                      <label className="grid gap-1.5">
-                        <span className="text-[12px] font-semibold text-black/55">Valid To</span>
-                        <input
-                          type="date"
-                          value={promoForm.valid_to ?? ""}
-                          onChange={(e) => setPromoForm((f) => ({ ...f, valid_to: e.target.value }))}
-                          className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]"
-                        />
-                      </label>
-                      <label className="grid gap-1.5">
-                        <span className="text-[12px] font-semibold text-black/55">Discount %</span>
-                        <input
-                          type="number"
-                          min={0}
-                          max={100}
-                          value={promoForm.discount_percentage ?? ""}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setPromoForm((f) => ({
-                              ...f,
-                              discount_percentage: val ? Math.min(100, Math.max(0, Number(val))) : null,
-                            }));
-                          }}
-                          className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]"
-                          placeholder="e.g., 20"
-                        />
-                      </label>
-                      <label className="grid gap-1.5">
-                        <span className="text-[12px] font-semibold text-black/55">Status</span>
-                        <select
-                          value={promoForm.is_active ? "true" : "false"}
-                          onChange={(e) => setPromoForm((f) => ({ ...f, is_active: e.target.value === "true" }))}
-                          className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]"
-                        >
-                          <option value="true">Active</option>
-                          <option value="false">Inactive</option>
-                        </select>
-                      </label>
-                      <div className="sm:col-span-2">
-                        <span className="text-[12px] font-semibold text-black/55">Promo Image</span>
-
-                        {/* Upload Dropzone */}
-                        {editingVendor && (
-                          <div className="mt-1.5">
-                            <ImageUploadDropzone
-                              bucket="vendor-assets"
-                              folder="promos"
-                              entityId={String(editingVendor.id)}
-                              label="Upload Photo"
-                              description="JPG, PNG, WebP up to 2MB. Will be compressed if needed."
-                              onUploadComplete={(result: UploadResult) => {
-                                setPromoForm((f) => ({ ...f, image_url: result.url }));
-                              }}
-                              onClear={() => {
-                                setPromoForm((f) => ({ ...f, image_url: "" }));
-                              }}
-                              existingUrl={promoForm.image_url ?? ""}
-                            />
-                          </div>
-                        )}
-
-
-                      </div>
-                    </div>
-                    <div className="flex gap-2 justify-end pt-2">
-                      <button
-                        type="button"
-                        onClick={resetPromoForm}
-                        className="h-9 px-4 rounded-[3px] border border-black/10 text-[12px] font-semibold text-black/70 hover:bg-black/5 transition-colors"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        type="button"
-                        onClick={savePromo}
-                        disabled={editLoading}
-                        className="h-9 px-4 rounded-[3px] bg-[#a67c52] text-white text-[12px] font-semibold hover:bg-[#8e6a46] transition-colors disabled:opacity-60"
-                      >
-                        {editLoading ? "Saving..." : editingPromoId ? "Update Promo" : "Add Promo"}
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {/* Promos List */}
-                <div className="grid gap-2 overflow-hidden">
-                  {editPromos.length === 0 ? (
-                    <div className="text-[12px] text-black/50 italic">No promos added yet.</div>
-                  ) : (
-                    editPromos.map((promo) => (
-                      <div
-                        key={promo.id}
-                        className="flex items-center justify-between p-3 rounded-[3px] border border-black/10 bg-white overflow-hidden"
-                      >
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <span className="text-[13px] font-semibold text-[#2c2c2c] truncate">{promo.title}</span>
-                            {promo.is_featured && (
-                              <span className="text-[10px] font-semibold bg-[#fff7ed] text-[#b54708] px-1.5 py-0.5 rounded">Featured</span>
-                            )}
-                            <span
-                              className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
-                                promo.is_active
-                                  ? "bg-[#ecfdf3] text-[#027a48]"
-                                  : "bg-black/5 text-black/50"
-                              }`}
-                            >
-                              {promo.is_active ? "Active" : "Inactive"}
-                            </span>
-                          </div>
-                          {(promo.summary || promo.discount_percentage !== null) && (
-                            <div className="mt-1 text-[11px] text-black/55 truncate break-words">
-                              {promo.discount_percentage !== null && `${promo.discount_percentage}% off`}
-                              {promo.discount_percentage !== null && promo.summary && " • "}
-                              {promo.summary}
-                            </div>
-                          )}
-                          {(promo.valid_from || promo.valid_to) && (
-                            <div className="mt-0.5 text-[11px] text-black/40 break-words">
-                              Valid: {promo.valid_from ? new Date(promo.valid_from).toLocaleDateString() : "Anytime"}
-                              {promo.valid_from && promo.valid_to ? " - " : ""}
-                              {promo.valid_to ? new Date(promo.valid_to).toLocaleDateString() : ""}
-                            </div>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-1 ml-2">
-                          <button
-                            type="button"
-                            onClick={() => togglePromoFeatured(promo)}
-                            disabled={editLoading}
-                            className={`h-8 px-2 rounded-[3px] text-[11px] font-semibold transition-colors disabled:opacity-60 ${
-                              promo.is_featured
-                                ? "bg-[#fff7ed] text-[#b54708] border border-[#b54708]/20"
-                                : "border border-black/10 text-black/60 hover:bg-black/5"
-                            }`}
-                            title={promo.is_featured ? "Unfeature" : "Feature"}
-                          >
-                            {promo.is_featured ? "★" : "☆"}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => startEditPromo(promo)}
-                            className="h-8 px-3 rounded-[3px] border border-black/10 text-[12px] font-semibold text-black/70 hover:bg-black/5 transition-colors"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setPromoToDelete(promo.id)}
-                            disabled={editLoading}
-                            className="h-8 px-2 rounded-[3px] border border-[#b42318]/20 text-[12px] text-[#b42318] hover:bg-[#b42318]/5 transition-colors disabled:opacity-60"
-                          >
-                            ×
-                          </button>
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </section>
-            </div>
-
-            <div className="px-4 py-3 border-t border-black/5 flex items-center justify-between">
-              <button
-                type="button"
-                onClick={closeEditModal}
-                className="h-10 px-4 rounded-[3px] border border-black/10 text-[13px] font-semibold text-black/70 hover:bg-black/5 transition-colors"
-              >
-                Cancel
-              </button>
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={async () => {
-                    await saveVendorProfile();
-                    await saveVendorImages();
-                    await saveVendorVideos();
-                    await saveVendorSocials();
-                    await saveVendorAffiliations();
-                    await saveVendorThemes();
-                  }}
-                  disabled={editLoading}
-                  className="h-10 px-4 rounded-[3px] border border-[#a67c52] text-[13px] font-semibold text-[#a67c52] hover:bg-[#a67c52]/5 transition-colors disabled:opacity-60"
-                >
-                  {editLoading ? "Saving…" : "Save"}
-                </button>
-                <button
-                  type="button"
-                  onClick={saveAllAndClose}
-                  disabled={editLoading}
-                  className="h-10 px-4 rounded-[3px] bg-[#a67c52] text-white text-[13px] font-semibold hover:bg-[#8e6a46] transition-colors disabled:opacity-60"
-                >
-                  {editLoading ? "Saving…" : "Save & Close"}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Image Cropper Modal */}
+      {/* Supporting Modals */}
       {cropModalOpen && croppingImageIdx !== null && editImages[croppingImageIdx] && (
         <ImageCropperModal
           open={cropModalOpen}
@@ -1984,7 +162,6 @@ export default function SuperadminVendorsPage() {
         />
       )}
 
-      {/* Logo Modal */}
       {logoModalOpen && editingVendor && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40">
           <div className="w-full max-w-md rounded-[3px] border border-black/20 bg-white shadow-xl overflow-hidden">
@@ -2015,13 +192,12 @@ export default function SuperadminVendorsPage() {
                 entityId={String(editingVendor.id)}
                 label="Upload Logo"
                 description="JPG, PNG, WebP up to 2MB. Will be compressed if needed."
-                onUploadComplete={(result: UploadResult) => {
+                onUploadComplete={(result) => {
                   setLogoUrlInput(result.url);
                 }}
                 onClear={() => setLogoUrlInput("")}
                 existingUrl={logoUrlInput}
               />
-
 
               <div className="mt-5 flex gap-2">
                 <button
@@ -2034,7 +210,7 @@ export default function SuperadminVendorsPage() {
                 <button
                   type="button"
                   onClick={() => {
-                    setEditForm((f) => ({ ...f, logo_url: logoUrlInput }));
+                    setEditForm((f: any) => ({ ...f, logo_url: logoUrlInput }));
                     setLogoModalOpen(false);
                   }}
                   className="flex-1 h-10 rounded-[3px] bg-[#a67c52] text-white text-[13px] font-semibold hover:bg-[#8e6a46]"
@@ -2047,7 +223,6 @@ export default function SuperadminVendorsPage() {
         </div>
       )}
 
-      {/* Delete Promo Confirmation Modal */}
       {promoToDelete ? (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40">
           <div className="w-full max-w-sm rounded-[6px] border border-black/20 bg-white shadow-xl overflow-hidden">
@@ -2085,7 +260,7 @@ export default function SuperadminVendorsPage() {
           </div>
         </div>
       ) : null}
-      {/* Photo Modal */}
+
       <PhotoModal
         open={photoModalOpen}
         photo={editingPhotoIndex !== null ? editImages[editingPhotoIndex] : null}
@@ -2097,19 +272,19 @@ export default function SuperadminVendorsPage() {
         onSave={(photos) => {
           if (editingPhotoIndex !== null) {
             const photo = photos[0];
-            setEditImages(rows => rows.map((r, i) => (i === editingPhotoIndex ? photo : r)));
+            setEditImages((rows: any) => rows.map((r: any, i: number) => (i === editingPhotoIndex ? photo : r)));
           } else {
             const newPhotosWithOrder = photos.map((p, idx) => ({
               ...p,
               display_order: editImages.length + idx + 1
             }));
-            setEditImages(rows => ensureSingleCover([...rows, ...newPhotosWithOrder]));
+            setEditImages((rows: any) => ensureSingleCover([...rows, ...newPhotosWithOrder]));
           }
           setPhotoModalOpen(false);
           setEditingPhotoIndex(null);
         }}
         onDelete={editingPhotoIndex !== null ? () => {
-          setEditImages(rows => rows.filter((_, i) => i !== editingPhotoIndex));
+          setEditImages((rows: any) => rows.filter((_: any, i: number) => i !== editingPhotoIndex));
           setPhotoModalOpen(false);
           setEditingPhotoIndex(null);
         } : undefined}
@@ -2130,4 +305,3 @@ function ensureSingleCover<T extends { is_cover: boolean }>(rows: T[]) {
   }
   return normalized;
 }
-
