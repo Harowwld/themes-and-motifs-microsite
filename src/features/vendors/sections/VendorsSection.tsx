@@ -2,20 +2,23 @@
 
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import VendorCard from "../components/VendorCard";
 import type { VendorListItem } from "../types";
 
+const EASE_OUT = [0.23, 1, 0.32, 1] as [number, number, number, number];
+
 function VendorCardSkeleton() {
   return (
-    <div className="h-[240px] rounded-xl border border-black/5 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] overflow-hidden flex flex-col">
-      <div className="h-28 w-full bg-black/5 animate-pulse" />
+    <div className="h-[240px] rounded-2xl border border-gray-100 bg-white shadow-sm overflow-hidden flex flex-col">
+      <div className="h-28 w-full bg-gray-50 animate-pulse" />
       <div className="relative px-4 pt-0 pb-4">
-        <div className="relative -mt-10 mb-2 flex items-end justify-between">
-          <div className="h-20 w-20 rounded-2xl border-4 border-white bg-[#fcfbf9] shadow-lg animate-pulse -ml-1" />
-          <div className="h-3.5 w-14 bg-black/5 animate-pulse rounded" />
+        <div className="relative -mt-10 mb-3 flex items-end justify-between">
+          <div className="h-20 w-20 rounded-2xl border-4 border-white bg-gray-50 shadow-lg animate-pulse -ml-1" />
+          <div className="h-3 w-12 bg-gray-50 animate-pulse rounded-full" />
         </div>
-        <div className="h-5 w-3/4 rounded bg-black/5 animate-pulse mb-2" />
-        <div className="h-3.5 w-1/2 rounded bg-black/5 animate-pulse" />
+        <div className="h-4 w-3/4 rounded bg-gray-50 animate-pulse mb-2" />
+        <div className="h-3 w-1/2 rounded bg-gray-50 animate-pulse" />
       </div>
     </div>
   );
@@ -77,68 +80,119 @@ export default function VendorsSection({
     });
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.05,
+      },
+    },
+  };
+
   return (
     <section className="mt-12 sm:mt-16">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h2 className="text-[18px] sm:text-[20px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">
+          <motion.h2 
+            initial={{ opacity: 0, x: -10 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className="text-[18px] sm:text-[20px] font-semibold tracking-[-0.01em] text-[#2c2c2c]"
+          >
             Vendors
-          </h2>
-          <p className="mt-1 text-[13px] text-black/55 max-w-xl font-[family-name:var(--font-plus-jakarta)]">
+          </motion.h2>
+          <motion.p 
+            initial={{ opacity: 0, x: -10 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="mt-1 text-[13px] text-black/55 max-w-xl font-[family-name:var(--font-plus-jakarta)]"
+          >
             Browse suppliers—sort by name or ratings, then page through the list.
-          </p>
+          </motion.p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-1.5 p-1.5 bg-white rounded-xl border border-black/10 shadow-sm w-full sm:w-auto">
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.2 }}
+          className="flex flex-wrap items-center gap-1.5 p-1.5 bg-white rounded-2xl border border-gray-100 shadow-sm w-full sm:w-auto"
+        >
           {([
             { value: "rating", label: "Top rated" },
             { value: "alpha", label: "A-Z" },
             { value: "photos", label: "With photos" },
             { value: "newest", label: "Newest" },
           ] as const).map((option) => (
-            <button
+            <motion.button
+              whileTap={{ scale: 0.96 }}
               key={option.value}
               type="button"
               onClick={() => navigate(makeHref({ page: 1, sort: option.value as SortKey, basePath, extraParams }))}
-              className={`flex-1 sm:flex-none px-3 py-2 rounded-lg text-[13px] font-semibold transition-all font-[family-name:var(--font-plus-jakarta)] whitespace-nowrap ${
+              className={`flex-1 sm:flex-none px-4 py-2 rounded-xl text-[13px] font-bold transition-all font-[family-name:var(--font-plus-jakarta)] whitespace-nowrap ${
                 sort === option.value
-                  ? "bg-[#a68b6a] text-white shadow-sm"
-                  : "text-black/60 hover:text-black/80 hover:bg-black/[0.02]"
+                  ? "bg-[#a68b6a] text-white shadow-md shadow-[#a68b6a]/20"
+                  : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
               }`}
             >
               {option.label}
-            </button>
+            </motion.button>
           ))}
-        </div>
+        </motion.div>
       </div>
 
-      <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
-        {isPending ? (
-          Array.from({ length: pageSize }).map((_, i) => (
-            <VendorCardSkeleton key={`skeleton-${i}`} />
-          ))
-        ) : vendors.length === 0 ? (
-          <div className="sm:col-span-2 lg:col-span-3 rounded-[3px] border border-black/10 bg-white shadow-sm p-6">
-            <div className="text-[13px] font-semibold text-[#2c2c2c] font-[family-name:var(--font-plus-jakarta)]">No vendors found</div>
-            <div className="mt-1 text-[13px] text-black/55 font-[family-name:var(--font-plus-jakarta)]">Try another sort or check back later.</div>
-          </div>
-        ) : (
-          vendors.map((vendor, i) => {
-            return <VendorCard key={vendor.id} vendor={vendor} toneSeed={i} fixedHeight />;
-          })
-        )}
+      <div className="mt-8">
+        <AnimatePresence mode="wait">
+          <motion.div 
+            key={`${sort}-${page}-${isPending}`}
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            exit={{ opacity: 0, transition: { duration: 0.2 } }}
+            className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto"
+          >
+            {isPending ? (
+              Array.from({ length: pageSize }).map((_, i) => (
+                <VendorCardSkeleton key={`skeleton-${i}`} />
+              ))
+            ) : vendors.length === 0 ? (
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="sm:col-span-2 lg:col-span-3 rounded-2xl border border-gray-100 bg-white shadow-sm p-8 text-center"
+              >
+                <div className="text-[14px] font-semibold text-gray-900 font-[family-name:var(--font-plus-jakarta)]">No vendors found</div>
+                <div className="mt-1 text-[13px] text-gray-500 font-[family-name:var(--font-plus-jakarta)]">Try another sort or check back later.</div>
+              </motion.div>
+            ) : (
+              vendors.map((vendor, i) => (
+                <VendorCard key={vendor.id} vendor={vendor} toneSeed={i} fixedHeight />
+              ))
+            )}
+          </motion.div>
+        </AnimatePresence>
       </div>
 
-      <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="text-[12px] font-semibold text-black/45 text-center sm:text-left font-[family-name:var(--font-plus-jakarta)]">
-          Page {page} of {totalPages}
+      <motion.div 
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ delay: 0.3 }}
+        className="mt-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+      >
+        <div className="text-[12px] font-bold text-gray-400 text-center sm:text-left font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wider">
+          Page {page} <span className="mx-1 opacity-50">/</span> {totalPages}
         </div>
-        <div className="flex items-center justify-center sm:justify-start gap-2">
-          <a
-            className={`h-10 sm:h-9 inline-flex items-center justify-center px-4 sm:px-3 rounded-[3px] border text-[14px] sm:text-[13px] font-semibold transition-colors min-w-[80px] touch-manipulation font-[family-name:var(--font-plus-jakarta)] ${
+        <div className="flex items-center justify-center sm:justify-start gap-3">
+          <motion.a
+            whileHover={hasPrev ? { x: -4 } : {}}
+            whileTap={hasPrev ? { scale: 0.95 } : {}}
+            className={`h-11 sm:h-10 inline-flex items-center justify-center px-6 sm:px-5 rounded-xl border text-[14px] sm:text-[13px] font-bold transition-all min-w-[100px] touch-manipulation font-[family-name:var(--font-plus-jakarta)] ${
               hasPrev
-                ? "border-black/10 bg-white text-black/70 hover:bg-black/[0.02]"
-                : "border-black/10 bg-white/50 text-black/30 pointer-events-none"
+                ? "border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:shadow-sm"
+                : "border-gray-100 bg-gray-50 text-gray-300 pointer-events-none"
             }`}
             href={makeHref({ page: Math.max(1, page - 1), sort, basePath, extraParams })}
             onClick={(e) => {
@@ -148,13 +202,15 @@ export default function VendorsSection({
             }}
             aria-disabled={!hasPrev}
           >
-            Prev
-          </a>
-          <a
-            className={`h-10 sm:h-9 inline-flex items-center justify-center px-4 sm:px-3 rounded-[3px] border text-[14px] sm:text-[13px] font-semibold transition-colors min-w-[80px] touch-manipulation ${
+            Previous
+          </motion.a>
+          <motion.a
+            whileHover={hasNext ? { x: 4 } : {}}
+            whileTap={hasNext ? { scale: 0.95 } : {}}
+            className={`h-11 sm:h-10 inline-flex items-center justify-center px-6 sm:px-5 rounded-xl border text-[14px] sm:text-[13px] font-bold transition-all min-w-[100px] touch-manipulation font-[family-name:var(--font-plus-jakarta)] ${
               hasNext
-                ? "border-black/10 bg-white text-black/70 hover:bg-black/[0.02]"
-                : "border-black/10 bg-white/50 text-black/30 pointer-events-none"
+                ? "border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:shadow-sm"
+                : "border-gray-100 bg-gray-50 text-gray-300 pointer-events-none"
             }`}
             href={makeHref({ page: Math.min(totalPages, page + 1), sort, basePath, extraParams })}
             onClick={(e) => {
@@ -165,9 +221,9 @@ export default function VendorsSection({
             aria-disabled={!hasNext}
           >
             Next
-          </a>
+          </motion.a>
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }

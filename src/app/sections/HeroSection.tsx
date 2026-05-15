@@ -4,12 +4,16 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { createPortal } from "react-dom";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 
 type Category = {
   id: number;
   name: string;
   slug: string;
 };
+
+// Custom easings from emil-design-eng skill
+const EASE_OUT = [0.23, 1, 0.32, 1] as [number, number, number, number];
 
 function SelectMenu({
   label,
@@ -101,57 +105,69 @@ function SelectMenu({
   return (
     <div ref={rootRef} className="grid gap-1 min-w-0 relative">
       <span className="text-[12px] font-medium text-white/70 font-[family-name:var(--font-plus-jakarta)]">{label}</span>
-      <button
+      <motion.button
+        whileTap={{ scale: 0.97 }}
         ref={buttonRef}
         type="button"
         aria-haspopup="listbox"
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
-        className={`h-10 w-full rounded-md border border-white/20 bg-white/15 backdrop-blur-sm px-3 text-left text-[14px] outline-none focus:border-white/50 focus:ring-1 focus:ring-white/30 ${hasValue ? "text-white" : "text-white/50"
+        className={`h-10 w-full rounded-md border border-white/20 bg-white/15 backdrop-blur-sm px-3 text-left text-[14px] outline-none transition-colors focus:border-white/50 focus:ring-1 focus:ring-white/30 ${hasValue ? "text-white" : "text-white/50"
           }`}
       >
         <span className="block truncate font-[family-name:var(--font-plus-jakarta)]">{currentLabel || placeholder}</span>
-      </button>
+      </motion.button>
 
-      {open && menuRect && typeof document !== "undefined"
-        ? createPortal(
-          <div
-            ref={menuRef}
-            role="listbox"
-            className="fixed z-1000 rounded-lg border border-white/20 bg-white/90 backdrop-blur-lg shadow-xl overflow-hidden"
-            style={{ top: menuRect.top, left: menuRect.left, width: menuRect.width }}
-          >
-            <div className="overflow-auto py-1" style={{ maxHeight: menuRect.maxHeight }}>
-              <button
-                type="button"
-                className={`w-full px-3 py-2 text-left text-[14px] leading-5 whitespace-normal wrap-break-word text-gray-700 hover:bg-gray-100 font-[family-name:var(--font-plus-jakarta)] ${value === "" ? "bg-gray-100" : ""
-                  }`}
-                onClick={() => {
-                  onChange("");
-                  setOpen(false);
-                }}
-              >
-                {placeholder}
-              </button>
-              {options.map((opt) => (
+      <AnimatePresence>
+        {open && menuRect && typeof document !== "undefined" && (
+          createPortal(
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: -10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: -10 }}
+              transition={{ duration: 0.2, ease: EASE_OUT }}
+              ref={menuRef}
+              role="listbox"
+              className="fixed z-1000 rounded-lg border border-white/20 bg-white/90 backdrop-blur-lg shadow-xl overflow-hidden"
+              style={{
+                top: menuRect.top,
+                left: menuRect.left,
+                width: menuRect.width,
+                transformOrigin: "top", // Simplified origin for better reliability with portals
+              }}
+            >
+              <div className="overflow-auto py-1" style={{ maxHeight: menuRect.maxHeight }}>
                 <button
-                  key={opt.value}
                   type="button"
-                  className={`w-full px-3 py-2 text-left text-[14px] leading-5 whitespace-normal wrap-break-word text-gray-700 hover:bg-gray-100 font-[family-name:var(--font-plus-jakarta)] ${opt.value === value ? "bg-gray-100" : ""
+                  className={`w-full px-3 py-2 text-left text-[14px] leading-5 whitespace-normal wrap-break-word text-gray-700 hover:bg-gray-100 transition-colors font-[family-name:var(--font-plus-jakarta)] ${value === "" ? "bg-gray-100" : ""
                     }`}
                   onClick={() => {
-                    onChange(opt.value);
+                    onChange("");
                     setOpen(false);
                   }}
                 >
-                  {opt.label}
+                  {placeholder}
                 </button>
-              ))}
-            </div>
-          </div>,
-          document.body
-        )
-        : null}
+                {options.map((opt) => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    className={`w-full px-3 py-2 text-left text-[14px] leading-5 whitespace-normal wrap-break-word text-gray-700 hover:bg-gray-100 transition-colors font-[family-name:var(--font-plus-jakarta)] ${opt.value === value ? "bg-gray-100" : ""
+                      }`}
+                    onClick={() => {
+                      onChange(opt.value);
+                      setOpen(false);
+                    }}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </motion.div>,
+            document.body
+          )
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -192,8 +208,28 @@ export default function HeroSection({
     router.push(`/vendors${qs ? `?${qs}` : ""}`);
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: EASE_OUT },
+    },
+  };
+
   return (
-    <section className="relative overflow-hidden rounded-xl p-4 sm:p-5 lg:p-8 grid gap-6 sm:gap-8 lg:grid-cols-[1.2fr_0.8fr] items-start">
+    <section className="relative overflow-hidden rounded-xl p-4 sm:p-5 lg:p-8 grid gap-6 sm:gap-8 lg:grid-cols-[1.2fr_0.8fr] items-start shadow-2xl">
       <div aria-hidden className="absolute inset-0 hidden md:block">
         <Image
           src="https://thepennyslo.com/wp-content/uploads/2024/03/5-The-Penny-San-Luis-Obispo.webp"
@@ -201,7 +237,7 @@ export default function HeroSection({
           fill
           priority
           quality={85}
-          className="object-cover object-center"
+          className="object-cover object-center scale-105"
         />
       </div>
       <div aria-hidden className="absolute inset-0 md:hidden">
@@ -211,69 +247,102 @@ export default function HeroSection({
           fill
           priority
           quality={85}
-          className="object-cover object-center"
+          className="object-cover object-center scale-105"
         />
       </div>
       <div
         aria-hidden
         className="absolute inset-0"
         style={{
-          background: "linear-gradient(180deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.35) 50%, rgba(0,0,0,0.25) 100%)",
+          background: "linear-gradient(180deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.3) 100%)",
         }}
       />
-      <div className="relative z-10 pt-1 sm:pt-2">
-        <div className="inline-flex items-center gap-2 rounded-[999px] border border-white/20 bg-white/10 backdrop-blur-sm px-3 py-1 text-[11px] sm:text-[12px] font-medium text-white shadow-sm font-[family-name:var(--font-plus-jakarta)]">
-          <span className="h-1.5 w-1.5 rounded-full bg-white/60" aria-hidden />
+      
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="relative z-10 pt-1 sm:pt-2"
+      >
+        <motion.div
+          variants={itemVariants}
+          className="inline-flex items-center gap-2 rounded-[999px] border border-white/20 bg-white/10 backdrop-blur-sm px-3 py-1 text-[11px] sm:text-[12px] font-medium text-white shadow-sm font-[family-name:var(--font-plus-jakarta)]"
+        >
+          <span className="h-1.5 w-1.5 rounded-full bg-white/60 animate-pulse" aria-hidden />
           Enjoy browsing. Start booking.
-        </div>
+        </motion.div>
 
-        <h1 className="mt-4 sm:mt-5 text-[32px] leading-[1.08] sm:text-[38px] sm:leading-[1.06] lg:text-[52px] font-medium tracking-[-0.02em] text-white">
+        <motion.h1
+          variants={itemVariants}
+          className="mt-4 sm:mt-5 text-[32px] leading-[1.08] sm:text-[38px] sm:leading-[1.06] lg:text-[52px] font-medium tracking-[-0.02em] text-white"
+        >
           Build your Wedding Dream Team.
-          {/* <span className="block text-white/80 italic">From the Philippines’ most trusted wedding platform.</span> */}
-        </h1>
-        <p className="text-2xl block text-white/80 italic">
+        </motion.h1>
+        
+        <motion.p
+          variants={itemVariants}
+          className="text-2xl block text-white/80 italic"
+        >
           From the Philippines’ most trusted wedding platform.
-        </p>
+        </motion.p>
 
-        <p className="mt-3 sm:mt-4 max-w-xl text-[14px] sm:text-[15px] lg:text-[16px] leading-6 sm:leading-7 text-white/75 font-[family-name:var(--font-plus-jakarta)]">
+        <motion.p
+          variants={itemVariants}
+          className="mt-3 sm:mt-4 max-w-xl text-[14px] sm:text-[15px] lg:text-[16px] leading-6 sm:leading-7 text-white/75 font-[family-name:var(--font-plus-jakarta)]"
+        >
           Plan with confidence—connect with verified vendors across the Philippines, with real couple reviews and exclusive offers.
-        </p>
+        </motion.p>
 
-        <div className="mt-5 sm:mt-6 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
-          <a
-            className="h-11 inline-flex items-center justify-center px-5 rounded-md text-white text-[14px] font-medium transition-colors touch-manipulation"
+        <motion.div
+          variants={itemVariants}
+          className="mt-5 sm:mt-6 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center"
+        >
+          <motion.a
+            whileTap={{ scale: 0.97 }}
+            className="h-11 inline-flex items-center justify-center px-5 rounded-md text-white text-[14px] font-medium transition-colors shadow-lg"
             style={{ backgroundColor: 'var(--muted-brown)' }}
             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--muted-brown-hover)'}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--muted-brown)'}
             href="/vendors"
           >
             Discover vendors
-          </a>
-          <a
-            className="h-11 inline-flex items-center justify-center px-5 rounded-md border border-white/30 bg-white/10 backdrop-blur-sm text-white text-[14px] font-medium hover:bg-white/20 transition-colors touch-manipulation"
+          </motion.a>
+          <motion.a
+            whileTap={{ scale: 0.97 }}
+            className="h-11 inline-flex items-center justify-center px-5 rounded-md border border-white/30 bg-white/10 backdrop-blur-sm text-white text-[14px] font-medium hover:bg-white/20 transition-colors shadow-lg"
             href="/vendors/plans"
           >
             Be a verified vendor
-          </a>
-        </div>
+          </motion.a>
+        </motion.div>
 
-        <div className="mt-5 sm:mt-7 grid grid-cols-3 gap-2 sm:gap-3 max-w-xl">
-          <div className="rounded-lg border border-white/20 bg-white/10 backdrop-blur-md px-2 sm:px-3 py-2 sm:py-3">
-            <div className="text-[11px] sm:text-[12px] font-medium text-white/60 font-[family-name:var(--font-plus-jakarta)]">Browse</div>
-            <div className="mt-1 text-[13px] sm:text-[14px] font-medium text-white font-[family-name:var(--font-plus-jakarta)]">Categories</div>
-          </div>
-          <div className="rounded-lg border border-white/20 bg-white/10 backdrop-blur-md px-2 sm:px-3 py-2 sm:py-3">
-            <div className="text-[11px] sm:text-[12px] font-medium text-white/60 font-[family-name:var(--font-plus-jakarta)]">Compare</div>
-            <div className="mt-1 text-[13px] sm:text-[14px] font-medium text-white font-[family-name:var(--font-plus-jakarta)]">Ratings</div>
-          </div>
-          <div className="rounded-lg border border-white/20 bg-white/10 backdrop-blur-md px-2 sm:px-3 py-2 sm:py-3">
-            <div className="text-[11px] sm:text-[12px] font-medium text-white/60 font-[family-name:var(--font-plus-jakarta)]">Unlock</div>
-            <div className="mt-1 text-[13px] sm:text-[14px] font-medium text-white font-[family-name:var(--font-plus-jakarta)]">Promos</div>
-          </div>
-        </div>
-      </div>
+        <motion.div
+          variants={itemVariants}
+          className="mt-5 sm:mt-7 grid grid-cols-3 gap-2 sm:gap-3 max-w-xl"
+        >
+          {[
+            { label: "Browse", value: "Categories" },
+            { label: "Compare", value: "Ratings" },
+            { label: "Unlock", value: "Promos" },
+          ].map((stat, i) => (
+            <motion.div
+              key={i}
+              whileHover={{ y: -2, backgroundColor: "rgba(255, 255, 255, 0.15)" }}
+              className="rounded-lg border border-white/20 bg-white/10 backdrop-blur-md px-2 sm:px-3 py-2 sm:py-3 transition-colors"
+            >
+              <div className="text-[11px] sm:text-[12px] font-medium text-white/60 font-[family-name:var(--font-plus-jakarta)]">{stat.label}</div>
+              <div className="mt-1 text-[13px] sm:text-[14px] font-medium text-white font-[family-name:var(--font-plus-jakarta)]">{stat.value}</div>
+            </motion.div>
+          ))}
+        </motion.div>
+      </motion.div>
 
-      <div className="relative z-10 rounded-lg border border-white/20 bg-white/10 backdrop-blur-md overflow-visible">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.98, x: 20 }}
+        animate={{ opacity: 1, scale: 1, x: 0 }}
+        transition={{ delay: 0.4, duration: 0.6, ease: EASE_OUT }}
+        className="relative z-10 rounded-lg border border-white/20 bg-white/10 backdrop-blur-md overflow-visible shadow-2xl"
+      >
         <div className="px-4 sm:px-5 py-3 sm:py-4 border-b border-white/10">
           <div className="text-[13px] font-medium text-white font-[family-name:var(--font-plus-jakarta)]">Quick search</div>
           <div className="mt-1 text-[11px] sm:text-[12px] text-white/60 font-[family-name:var(--font-plus-jakarta)]">
@@ -282,7 +351,12 @@ export default function HeroSection({
         </div>
 
         <div className="p-4 sm:p-5 grid gap-3 relative">
-          <label className="grid gap-1">
+          <motion.label
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6, duration: 0.4 }}
+            className="grid gap-1"
+          >
             <span className="text-[12px] font-medium text-white/70">Keyword</span>
             <input
               placeholder="Search vendor name (e.g. Nice Print)"
@@ -294,11 +368,16 @@ export default function HeroSection({
                   onSearch();
                 }
               }}
-              className="h-10 rounded-md border border-white/20 bg-white/15 px-3 text-[14px] text-white placeholder:text-white/40 outline-none focus:border-white/50 focus:ring-1 focus:ring-white/30 touch-manipulation font-[family-name:var(--font-plus-jakarta)]"
+              className="h-10 rounded-md border border-white/20 bg-white/15 px-3 text-[14px] text-white placeholder:text-white/40 outline-none transition-colors focus:border-white/50 focus:ring-1 focus:ring-white/30 touch-manipulation font-[family-name:var(--font-plus-jakarta)]"
             />
-          </label>
+          </motion.label>
 
-          <div className="grid gap-3 sm:grid-cols-2 sm:items-start min-w-0">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7, duration: 0.4 }}
+            className="grid gap-3 sm:grid-cols-2 sm:items-start min-w-0"
+          >
             <SelectMenu
               label="Category"
               value={category}
@@ -313,28 +392,37 @@ export default function HeroSection({
               options={locationMenuOptions}
               onChange={setLocation}
             />
-          </div>
+          </motion.div>
 
-          <button
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8, duration: 0.4 }}
             type="button"
-            className="mt-1 h-10 inline-flex items-center justify-center rounded-md text-white text-[14px] font-medium transition-colors touch-manipulation"
+            className="mt-1 h-10 inline-flex items-center justify-center rounded-md text-white text-[14px] font-medium transition-colors touch-manipulation shadow-lg"
             style={{ backgroundColor: 'var(--muted-brown)' }}
             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--muted-brown-hover)'}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--muted-brown)'}
             onClick={() => onSearch()}
           >
             Search
-          </button>
+          </motion.button>
 
-          <div className="flex items-center justify-between text-[11px] sm:text-[12px] text-white/50 font-[family-name:var(--font-plus-jakarta)]">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.9, duration: 0.4 }}
+            className="flex items-center justify-between text-[11px] sm:text-[12px] text-white/50 font-[family-name:var(--font-plus-jakarta)]"
+          >
             <span className="inline-flex items-center gap-2">
               <span className="h-1.5 w-1.5 rounded-full bg-white/40" aria-hidden />
               Tip: start with a category
             </span>
-            <span className="font-medium">Preview UI</span>
-          </div>
+            <span className="font-medium opacity-50">T&M Platform</span>
+          </motion.div>
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }

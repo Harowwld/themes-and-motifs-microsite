@@ -288,7 +288,7 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
 
             {/* Photos & Videos */}
             {images.length > 0 ? (
-              <div className="rounded-xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)]">
+              <div className="rounded-xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] min-w-0">
                 <VendorPhotosCarousel images={images} />
               </div>
             ) : null}

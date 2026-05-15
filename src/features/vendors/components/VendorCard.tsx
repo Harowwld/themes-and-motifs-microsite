@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
 import { createSupabaseBrowserClient } from "@/lib/supabaseBrowser";
 import { useVendorSpeculation } from "@/hooks/useVendorSpeculation";
 import { useSmartPrefetch, prefetchOnHover } from "@/hooks/useSmartPrefetch";
@@ -16,6 +17,7 @@ type Props = {
   featured?: boolean;
 };
 
+const EASE_OUT = [0.23, 1, 0.32, 1] as [number, number, number, number];
 
 export default function VendorCard({ vendor, toneSeed, fixedHeight, featured }: Props) {
   const [isHovered, setIsHovered] = useState(false);
@@ -25,10 +27,9 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight, featured }: 
   const { onMouseEnter: onSpeculationEnter } = useVendorSpeculation(vendor.slug);
   const { prefetchVendor } = useSmartPrefetch();
   
-  // Combine speculation rules with data prefetching
   const { onMouseEnter: onPrefetchEnter, onMouseLeave: onPrefetchLeave } = prefetchOnHover(
     () => prefetchVendor(vendor.slug),
-    150 // 150ms delay to avoid prefetching on quick mouse passes
+    150
   );
   
   const seed = toneSeed ?? vendor.id;
@@ -51,10 +52,6 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight, featured }: 
   const zoomRaw = Number.isFinite(Number(vendor.cover_zoom)) ? Number(vendor.cover_zoom) : 1;
   const coverZoom = Math.max(1, Math.min(3, zoomRaw));
 
-  const rootClassName = fixedHeight
-    ? "h-[240px] rounded-xl border border-black/5 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] overflow-hidden flex flex-col hover:shadow-[0_10px_25px_rgba(0,0,0,0.08),0_4px_10px_rgba(0,0,0,0.04)] hover:scale-[1.01] transition-all duration-300"
-    : "block rounded-xl border border-black/5 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] overflow-hidden hover:shadow-[0_10px_25px_rgba(0,0,0,0.08),0_4px_10px_rgba(0,0,0,0.04)] hover:scale-[1.01] transition-all duration-300 cursor-pointer";
-
   const handleSaveClick = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -69,8 +66,6 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight, featured }: 
     }
     
     setIsLoading(true);
-
-    // Optimistic update
     toggleSavedVendor(vendor.id, !isSaved);
 
     try {
@@ -91,7 +86,6 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight, featured }: 
       }
     } catch (error) {
       console.error("Error saving vendor:", error);
-      // Revert optimistic update on error
       toggleSavedVendor(vendor.id, isSaved);
     } finally {
       setIsLoading(false);
@@ -99,9 +93,15 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight, featured }: 
   };
 
   return (
-    <a
+    <motion.a
+      whileHover={{ y: -6, scale: 1.01 }}
+      whileTap={{ scale: 0.98 }}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.4, ease: EASE_OUT }}
       href={`/vendors/${encodeURIComponent(vendor.slug)}`}
-      className={rootClassName}
+      className={`group relative overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-shadow hover:shadow-2xl ${fixedHeight ? 'h-[240px] flex flex-col' : 'block'}`}
       aria-label={`View ${vendor.business_name}`}
       onMouseEnter={() => {
         setIsHovered(true);
@@ -114,61 +114,70 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight, featured }: 
       }}
     >
       <div className={`relative ${featured ? 'h-48' : 'h-28'} overflow-hidden`}>
-        <button
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
           type="button"
           onClick={handleSaveClick}
           disabled={isLoading}
-          className={`absolute top-2 right-2 z-10 h-8 w-8 rounded-full flex items-center justify-center transition-all duration-200 ${
+          className={`absolute top-2.5 right-2.5 z-10 h-8 w-8 rounded-full flex items-center justify-center transition-colors shadow-md ${
             isSaved 
               ? "bg-[#a68b6a] text-white" 
-              : isHovered 
-                ? "bg-white/90 text-[#a68b6a]" 
-                : "bg-white/70 text-[#a68b6a]/60"
-          } hover:bg-white shadow-md`}
+              : "bg-white/80 backdrop-blur-md text-[#a68b6a] hover:bg-white"
+          }`}
           aria-label={isSaved ? "Remove from saved" : "Save vendor"}
         >
-          {isLoading ? (
-            <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-            </svg>
-          ) : (
-            <svg 
-              className="h-4 w-4" 
-              fill={isSaved ? "currentColor" : "none"} 
-              stroke="currentColor" 
-              strokeWidth="2" 
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-            </svg>
-          )}
-        </button>
+          <AnimatePresence mode="wait">
+            {isLoading ? (
+              <motion.svg
+                key="loading"
+                initial={{ opacity: 0, rotate: 0 }}
+                animate={{ opacity: 1, rotate: 360 }}
+                exit={{ opacity: 0 }}
+                transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+                className="h-4 w-4"
+                viewBox="0 0 24 24"
+                fill="none"
+              >
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </motion.svg>
+            ) : (
+              <motion.svg 
+                key={isSaved ? "saved" : "unsaved"}
+                initial={{ scale: 0.5, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.5, opacity: 0 }}
+                className="h-4 w-4" 
+                fill={isSaved ? "currentColor" : "none"} 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+              </motion.svg>
+            )}
+          </AnimatePresence>
+        </motion.button>
+
         {coverUrl ? (
           <Image
             src={coverUrl}
             alt=""
             fill
-            sizes="(max-width: 640px) 100vw, 300px"
-            className="absolute inset-0 object-cover"
+            sizes="(max-width: 640px) 100vw, 400px"
+            className="absolute inset-0 object-cover transition-transform duration-700 group-hover:scale-110"
             style={{ objectPosition: coverObjectPosition, transformOrigin: coverObjectPosition, transform: `scale(${coverZoom})` }}
           />
         ) : (
-          <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${tone}22, #ffffff 65%)` }} />
+          <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${tone}11, #ffffff 80%)` }} />
         )}
-        {!coverUrl ? (
-          <div
-            className="absolute inset-0"
-            style={{
-              background: "linear-gradient(135deg, rgba(166,124,82,0.22), rgba(255,255,255,0.88))",
-            }}
-          />
-        ) : null}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-40" />
       </div>
 
       <div className="relative px-4 pt-0 pb-4">
-        <div className="relative -mt-10 mb-2 flex items-end justify-between">
-          <div className="h-20 w-20 rounded-2xl border-4 border-white bg-[#fcfbf9] shadow-lg overflow-hidden flex items-center justify-center shrink-0 -ml-1">
+        <div className="relative -mt-10 mb-3 flex items-end justify-between">
+          <div className="h-20 w-20 rounded-2xl border-4 border-white bg-white shadow-xl overflow-hidden flex items-center justify-center shrink-0 -ml-1 transition-transform group-hover:-translate-y-1">
             {logoUrl ? (
               <div className="relative h-full w-full">
                 <Image
@@ -176,49 +185,57 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight, featured }: 
                   alt={`${vendor.business_name} logo`}
                   fill
                   sizes="80px"
-                  className="object-contain"
+                  className="object-contain p-1"
                 />
               </div>
             ) : (
-              <div className="h-full w-full bg-[#fcfbf9]" />
+              <div className="h-full w-full bg-gray-50 flex items-center justify-center text-gray-300">
+                <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
             )}
           </div>
-          <span className="text-[12px] font-semibold text-[#a68b6a] hover:text-[#957a5c] transition-colors font-[family-name:var(--font-plus-jakarta)]">Explore</span>
+          <motion.span 
+            initial={{ opacity: 0, x: 10 }}
+            animate={{ opacity: isHovered ? 1 : 0, x: isHovered ? 0 : 10 }}
+            className="text-[11px] font-bold text-[#a68b6a] uppercase tracking-wider font-[family-name:var(--font-plus-jakarta)] bg-[#a68b6a]/5 px-2 py-1 rounded-full"
+          >
+            Explore
+          </motion.span>
         </div>
 
-        <div className="flex items-center gap-1 text-[14px] sm:text-[15px] font-semibold text-neutral-800 leading-5 line-clamp-1 mb-1 font-[family-name:var(--font-plus-jakarta)]">
-          <span className="truncate">{vendor.business_name}</span>
-          {isPremium ? (
-            <span
-              className="inline-flex items-center justify-center h-5 w-5 shrink-0"
-              title="Verified Premium Vendor"
-              aria-label="Verified Premium Vendor"
-            >
-              <div className="relative h-full w-full">
-                <Image
-                  src="/cropped-vecteezy_verification-badge-set-guaranteed-stamp-or-verified-badge_23900241.svg"
-                  alt="Verified Premium Vendor"
-                  fill
-                  sizes="20px"
-                  className="object-contain"
-                />
-              </div>
+        <div className="flex items-center gap-1.5 mb-1.5">
+          <h3 className="text-[15px] font-bold text-gray-900 tracking-tight line-clamp-1 font-[family-name:var(--font-plus-jakarta)]">
+            {vendor.business_name}
+          </h3>
+          {isPremium && (
+            <span className="shrink-0" title="Verified Premium Vendor">
+              <Image
+                src="/cropped-vecteezy_verification-badge-set-guaranteed-stamp-or-verified-badge_23900241.svg"
+                alt="Verified"
+                width={18}
+                height={18}
+                className="object-contain"
+              />
             </span>
-          ) : null}
+          )}
         </div>
 
-        <div className="flex items-center gap-1 text-[11px] sm:text-[12px] text-neutral-500 font-[family-name:var(--font-plus-jakarta)]">
-          <span className="font-semibold text-[#a68b6a]">{rating.toFixed(1)}</span>
-          <span className="text-neutral-300">•</span>
-          <span className="truncate">{reviews} reviews</span>
-          {location ? (
+        <div className="flex items-center gap-2 text-[12px] text-gray-500 font-[family-name:var(--font-plus-jakarta)]">
+          <div className="flex items-center gap-1">
+            <span className="font-bold text-[#a68b6a]">{rating.toFixed(1)}</span>
+            <span className="text-gray-200">·</span>
+            <span className="truncate">{reviews} reviews</span>
+          </div>
+          {location && (
             <>
-              <span className="text-neutral-300">•</span>
+              <span className="text-gray-200">·</span>
               <span className="truncate">{location}</span>
             </>
-          ) : null}
+          )}
         </div>
       </div>
-    </a>
+    </motion.a>
   );
 }

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { createPortal } from "react-dom";
+import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { proxiedImageUrl } from "@/lib/imageSizes";
 
 // Type declarations for video APIs
@@ -192,7 +193,7 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
   const active = normalized[activeIndex];
   if (!active) return null;
 
-  
+
   const activeRatio = 4 / 6;
 
   const openLightbox = useCallback(
@@ -237,13 +238,13 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
   }, [closeLightbox, goNext, goPrev, isLightboxOpen]);
 
   return (
-    <section className="w-full min-w-0 overflow-hidden">
-      <h2 className="text-[16px] font-semibold text-[#2c2c2c]">Photos & Videos (Constrained)</h2>
+    <section className="flex flex-col w-full max-w-full min-w-0 overflow-hidden">
+      <h2 className="text-[16px] font-semibold text-[#2c2c2c]">Photos & Videos</h2>
 
       <div ref={mainMediaRef} className="mt-3 rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden">
         <div className="w-full bg-[#fcfbf9]" style={{ aspectRatio: String(activeRatio) }}>
           {active.media_type === 'video' ? (
-            <div 
+            <div
               ref={videoContainerRef}
               className="relative h-full w-full"
               onClick={() => setUserInteractedWithVideo(true)}
@@ -289,11 +290,11 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
         {active.caption ? <div className="px-4 py-3 text-[12px] text-black/55">{active.caption}</div> : null}
       </div>
 
-      {normalized.length > 1 ? (
-        <div className="mt-3 w-full" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)' }}>
+      {normalized.length > 1 && (
+        <div className="mt-3 w-full min-w-0">
           <div
             ref={stripRef}
-            className="flex gap-2 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            className="flex gap-2 overflow-x-auto pb-3 sleek-scrollbar snap-x snap-mandatory scroll-smooth"
           >
             {normalized.map((img, idx) => {
               const isActive = idx === activeIndex;
@@ -311,7 +312,7 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
                     restartAutoplay();
                   }}
                   className={
-                    "relative shrink-0 rounded-[3px] border transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]/60 " +
+                    "relative shrink-0 rounded-[3px] border transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]/60 snap-start " +
                     (isActive ? "border-[#a67c52]" : "border-black/10 hover:border-black/20")
                   }
                   aria-label={img.caption ?? `Vendor photo ${idx + 1}`}
@@ -357,12 +358,12 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
           </div>
           <div className="mt-1 text-[12px] text-black/45">{activeIndex + 1} / {normalized.length}</div>
         </div>
-      ) : null}
+      )}
 
       {isLightboxOpen && typeof document !== "undefined"
         ? createPortal(
             <div
-              className="fixed inset-0 z-9999"
+              className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black/90 backdrop-blur-md"
               role="dialog"
               aria-modal="true"
               aria-label="Full photo view"
@@ -370,77 +371,91 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
                 if (e.target === e.currentTarget) closeLightbox();
               }}
             >
-              <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+              {/* Close Button - Top Right */}
+              <button
+                type="button"
+                onClick={closeLightbox}
+                className="absolute top-6 right-6 z-50 flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 hover:scale-110 transition-all duration-200 focus:outline-none"
+                aria-label="Close lightbox"
+              >
+                <X className="h-6 w-6" />
+              </button>
 
-              <div className="absolute inset-0 flex items-center justify-center p-4">
-                <div className="relative w-full max-w-6xl flex items-center justify-center">
+              <div className="relative flex h-full w-full max-w-[95vw] items-center justify-center overflow-hidden px-4 sm:px-12">
+                {/* Navigation - Left */}
+                {normalized.length > 1 && (
                   <button
                     type="button"
-                    onClick={closeLightbox}
-                    aria-label="Close"
-                    className="absolute right-0 top-0 inline-flex h-9 w-9 items-center justify-center rounded-[3px] bg-white/10 text-white hover:bg-white/20 transition-colors"
+                    onClick={goPrev}
+                    className="absolute left-4 sm:left-8 z-50 flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-white/5 text-white/80 hover:bg-white/15 hover:text-white hover:scale-105 transition-all duration-300 backdrop-blur-sm focus:outline-none"
+                    aria-label="Previous photo"
                   >
-                    <span className="text-[22px] leading-none">×</span>
+                    <ChevronLeft className="h-8 w-8" />
                   </button>
+                )}
 
-                  {normalized.length > 1 ? (
-                    <>
-                      <button
-                        type="button"
-                        onClick={goPrev}
-                        aria-label="Previous photo"
-                        className="absolute left-0 top-1/2 -translate-y-1/2 inline-flex h-11 w-11 items-center justify-center rounded-[3px] bg-white/10 text-white hover:bg-white/20 transition-colors"
-                      >
-                        <span className="text-[26px] leading-none">‹</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={goNext}
-                        aria-label="Next photo"
-                        className="absolute right-0 top-1/2 -translate-y-1/2 inline-flex h-11 w-11 items-center justify-center rounded-[3px] bg-white/10 text-white hover:bg-white/20 transition-colors"
-                      >
-                        <span className="text-[26px] leading-none">›</span>
-                      </button>
-                    </>
-                  ) : null}
-
-                  <div className="w-full flex flex-col items-center justify-center">
+                {/* Main Media Content */}
+                <div className="flex h-full w-full max-w-6xl flex-col items-center justify-center py-20">
+                  <div className="relative h-full w-full">
                     {normalized[lightboxIndex]?.media_type === 'video' ? (
-                      <div className="w-full max-w-4xl aspect-video">
-                        {getVideoEmbedUrl(normalized[lightboxIndex]?.image_url!) ? (
-                          <iframe
-                            src={getVideoEmbedUrl(normalized[lightboxIndex]?.image_url!)!}
-                            className="h-full w-full border-0 rounded-[3px]"
-                            allowFullScreen
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            title={normalized[lightboxIndex]?.caption ?? "Vendor video"}
-                          />
-                        ) : (
-                          <div className="h-full w-full flex items-center justify-center bg-black/10 rounded-[3px]">
-                            <div className="text-center">
-                              <div className="text-[48px] mb-2">🎥</div>
-                              <div className="text-[16px] text-black/60">Unsupported video format</div>
+                      <div className="flex h-full w-full items-center justify-center">
+                        <div className="w-full max-w-4xl aspect-video shadow-2xl">
+                          {getVideoEmbedUrl(normalized[lightboxIndex]?.image_url!) ? (
+                            <iframe
+                              src={getVideoEmbedUrl(normalized[lightboxIndex]?.image_url!)!}
+                              className="h-full w-full border-0 rounded-[3px]"
+                              allowFullScreen
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              title={normalized[lightboxIndex]?.caption ?? "Vendor video"}
+                            />
+                          ) : (
+                            <div className="h-full w-full flex items-center justify-center bg-white/5 rounded-[3px]">
+                              <div className="text-center text-white/60">
+                                <div className="text-[48px] mb-2">🎥</div>
+                                <div className="text-[16px]">Unsupported video format</div>
+                              </div>
                             </div>
-                          </div>
-                        )}
+                          )}
+                        </div>
                       </div>
                     ) : (
-                      <div className="relative w-full h-[85vh]">
+                      <div className="relative h-full w-full flex items-center justify-center">
                         <Image
                           src={normalized[lightboxIndex]?.image_url}
                           alt={normalized[lightboxIndex]?.caption ?? "Vendor photo"}
                           fill
-                          sizes="100vw"
-                          className="object-contain"
+                          sizes="95vw"
+                          className="object-contain drop-shadow-2xl"
                           priority
                         />
                       </div>
                     )}
-                    <div className="mt-3 text-center text-[12px] text-white/70">
+                  </div>
+
+                  {/* Caption & Counter */}
+                  <div className="mt-6 flex flex-col items-center gap-2">
+                    {normalized[lightboxIndex]?.caption && (
+                      <p className="max-w-2xl px-6 text-center text-[15px] font-medium text-white/90">
+                        {normalized[lightboxIndex].caption}
+                      </p>
+                    )}
+                    <span className="rounded-full bg-white/10 px-4 py-1.5 text-[13px] font-semibold text-white/80 backdrop-blur-md">
                       {lightboxIndex + 1} / {normalized.length}
-                    </div>
+                    </span>
                   </div>
                 </div>
+
+                {/* Navigation - Right */}
+                {normalized.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={goNext}
+                    className="absolute right-4 sm:right-8 z-50 flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-white/5 text-white/80 hover:bg-white/15 hover:text-white hover:scale-105 transition-all duration-300 backdrop-blur-sm focus:outline-none"
+                    aria-label="Next photo"
+                  >
+                    <ChevronRight className="h-8 w-8" />
+                  </button>
+                )}
               </div>
             </div>,
             document.body

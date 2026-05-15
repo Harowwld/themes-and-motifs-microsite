@@ -3,9 +3,14 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 
 import { createSupabaseBrowserClient } from "../../lib/supabaseBrowser";
 import { authCache } from "../../lib/cache";
+
+// Custom easings from emil-design-eng skill
+const EASE_OUT = [0.23, 1, 0.32, 1] as [number, number, number, number];
+const EASE_DRAWER = [0.32, 0.72, 0, 1] as [number, number, number, number];
 
 function MenuIcon({ open }: { open: boolean }) {
   return (
@@ -18,23 +23,77 @@ function MenuIcon({ open }: { open: boolean }) {
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className="transition-transform duration-200"
     >
-      {open ? (
-        <>
-          <line x1="18" y1="6" x2="6" y2="18" />
-          <line x1="6" y1="6" x2="18" y2="18" />
-        </>
-      ) : (
-        <>
-          <line x1="3" y1="6" x2="21" y2="6" />
-          <line x1="3" y1="12" x2="21" y2="12" />
-          <line x1="3" y1="18" x2="21" y2="18" />
-        </>
-      )}
+      <motion.line
+        x1="3"
+        y1="6"
+        x2="21"
+        y2="6"
+        animate={open ? { x1: 18, y1: 6, x2: 6, y2: 18 } : { x1: 3, y1: 6, x2: 21, y2: 6 }}
+        transition={{ duration: 0.2, ease: EASE_OUT }}
+      />
+      <motion.line
+        x1="3"
+        y1="12"
+        x2="21"
+        y2="12"
+        animate={open ? { opacity: 0, x: 10 } : { opacity: 1, x: 0 }}
+        transition={{ duration: 0.15 }}
+      />
+      <motion.line
+        x1="3"
+        y1="18"
+        x2="21"
+        y2="18"
+        animate={open ? { x1: 6, y1: 6, x2: 18, y2: 18 } : { x1: 3, y1: 18, x2: 21, y2: 18 }}
+        transition={{ duration: 0.2, ease: EASE_OUT }}
+      />
     </svg>
   );
 }
+
+const NavLink = ({
+  href,
+  children,
+  onClick,
+  className = "",
+  prefetch = true,
+}: {
+  href: string;
+  children: React.ReactNode;
+  onClick?: (e: React.MouseEvent) => void;
+  className?: string;
+  prefetch?: boolean;
+}) => (
+  <motion.div whileTap={{ scale: 0.97 }} transition={{ duration: 0.15, ease: EASE_OUT }}>
+    <Link href={href} onClick={onClick} prefetch={prefetch} className={className}>
+      {children}
+    </Link>
+  </motion.div>
+);
+
+const NavButton = ({
+  children,
+  onClick,
+  className = "",
+  disabled = false,
+}: {
+  children: React.ReactNode;
+  onClick: () => void;
+  className?: string;
+  disabled?: boolean;
+}) => (
+  <motion.button
+    whileTap={{ scale: 0.97 }}
+    transition={{ duration: 0.15, ease: EASE_OUT }}
+    type="button"
+    onClick={onClick}
+    disabled={disabled}
+    className={className}
+  >
+    {children}
+  </motion.button>
+);
 
 export default function SiteHeader() {
   const router = useRouter();
@@ -189,125 +248,144 @@ export default function SiteHeader() {
     setMobileMenuOpen(false);
   }, [pathname]);
 
-  return (
-    <header className="sticky top-0 z-50 inset-x-0 backdrop-blur-md bg-white/90 supports-backdrop-filter:bg-white/90">
-      <div className="mx-auto h-16 flex items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link
-          className="flex items-center"
-          href="/"
-          aria-label="Themes & Motifs"
-          prefetch={true}
-        >
-          <img
-            src="https://themesnmotifs.com/wp-content/uploads/elementor/thumbs/T_M-Logo-1-qzxx62xvcaywvxz23bwwe4nm1tu4exw9i42ghzw8g6.png"
-            alt="Themes & Motifs"
-            className="h-7 sm:h-8 w-auto"
-            loading="eager"
-            referrerPolicy="no-referrer"
-          />
-        </Link>
+  const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.05,
+      },
+    },
+  };
 
-        <nav className="hidden sm:flex items-center gap-8 text-[13px] font-medium text-gray-500 font-[family-name:var(--font-plus-jakarta)]">
+  const itemVariants: Variants = {
+    hidden: { opacity: 0, y: -4 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.3, ease: EASE_OUT } },
+  };
+
+  return (
+    <header className="sticky top-0 z-50 inset-x-0 backdrop-blur-md bg-white/90 supports-backdrop-filter:bg-white/90 border-b border-gray-100">
+      <div className="mx-auto h-16 flex items-center justify-between px-4 sm:px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.4, ease: EASE_OUT }}
+        >
           <Link
-            className="hover:text-[#a68b6a] transition-colors"
-            href="/vendors"
+            className="flex items-center"
+            href="/"
+            aria-label="Themes & Motifs"
             prefetch={true}
           >
-            Discover
+            <img
+              src="https://themesnmotifs.com/wp-content/uploads/elementor/thumbs/T_M-Logo-1-qzxx62xvcaywvxz23bwwe4nm1tu4exw9i42ghzw8g6.png"
+              alt="Themes & Motifs"
+              className="h-7 sm:h-8 w-auto"
+              loading="eager"
+              referrerPolicy="no-referrer"
+            />
           </Link>
-          <Link
-            className="hover:text-[#a68b6a] transition-colors"
-            href="/#featured"
-            onClick={(e) => {
-              e.preventDefault();
-              goToHomeSection("featured");
-            }}
-            prefetch={true}
-          >
-            Featured
-          </Link>
-          <Link
-            className="hover:text-[#a68b6a] transition-colors"
-            href="/vendors/plans"
-            prefetch={true}
-          >
-            For vendors
-          </Link>
-          
+        </motion.div>
+
+        <motion.nav
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="hidden sm:flex items-center gap-8 text-[13px] font-medium text-gray-500 font-[family-name:var(--font-plus-jakarta)]"
+        >
+          <motion.div variants={itemVariants}>
+            <NavLink className="hover:text-[#a68b6a] transition-colors" href="/vendors">
+              Discover
+            </NavLink>
+          </motion.div>
+          <motion.div variants={itemVariants}>
+            <NavLink
+              className="hover:text-[#a68b6a] transition-colors"
+              href="/#featured"
+              onClick={(e) => {
+                e.preventDefault();
+                goToHomeSection("featured");
+              }}
+            >
+              Featured
+            </NavLink>
+          </motion.div>
+          <motion.div variants={itemVariants}>
+            <NavLink className="hover:text-[#a68b6a] transition-colors" href="/vendors/plans">
+              For vendors
+            </NavLink>
+          </motion.div>
+
           {/* Dashboard and Moments for couples */}
           {mounted && signedIn && isSoonToWed && !isVendor && (
             <>
-              <Link
-                className="hover:text-[#a68b6a] transition-colors"
-                href="/dashboard"
-                scroll={false}
-                prefetch={true}
-              >
-                My Wedding
-              </Link>
-              <Link
-                className="hover:text-[#a68b6a] transition-colors"
-                href="/moments"
-                scroll={false}
-                prefetch={true}
-              >
-                Moments
-              </Link>
+              <motion.div variants={itemVariants}>
+                <NavLink className="hover:text-[#a68b6a] transition-colors" href="/dashboard">
+                  My Wedding
+                </NavLink>
+              </motion.div>
+              <motion.div variants={itemVariants}>
+                <NavLink className="hover:text-[#a68b6a] transition-colors" href="/moments">
+                  Moments
+                </NavLink>
+              </motion.div>
             </>
           )}
-          
+
           {/* Dashboard for vendors */}
           {mounted && isVendor && (
-            <Link
-              className="hover:text-[#a68b6a] transition-colors"
-              href="/vendor/dashboard"
-              scroll={false}
-              prefetch={true}
-            >
-              Dashboard
-            </Link>
+            <motion.div variants={itemVariants}>
+              <NavLink className="hover:text-[#a68b6a] transition-colors" href="/vendor/dashboard">
+                Dashboard
+              </NavLink>
+            </motion.div>
           )}
-          
+
           {/* Public Moments for non-couples */}
           {mounted && (!signedIn || isVendor) ? (
-            <Link
-              className="hover:text-[#a68b6a] transition-colors"
-              href="/moments"
-              scroll={false}
-              prefetch={true}
-            >
-              Wedding Moments
-            </Link>
+            <motion.div variants={itemVariants}>
+              <NavLink className="hover:text-[#a68b6a] transition-colors" href="/moments">
+                Wedding Moments
+              </NavLink>
+            </motion.div>
           ) : null}
-        </nav>
+        </motion.nav>
 
-        <div className="flex items-center gap-2">
+        <motion.div
+          initial={{ opacity: 0, x: 10 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.4, ease: EASE_OUT }}
+          className="flex items-center gap-2"
+        >
           {/* Desktop nav items - Left side for Sign in */}
           {mounted && !signedIn && (
-            <Link
+            <NavLink
               className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-md text-[13px] font-medium text-gray-600 hover:text-gray-900 transition-colors font-[family-name:var(--font-plus-jakarta)]"
               href="/soon-to-wed/signin"
               prefetch={false}
             >
               Sign in
-            </Link>
+            </NavLink>
           )}
 
           {/* Desktop nav items - Right side */}
           {mounted && signedIn && (
-            <button
-              type="button"
+            <NavButton
               disabled={signingOut}
               onClick={() => void signOut()}
               className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-md text-[13px] font-medium text-gray-600 hover:text-gray-900 transition-colors disabled:opacity-60 font-[family-name:var(--font-plus-jakarta)]"
             >
               {signingOut ? "Signing out.." : "Sign out"}
-            </button>
+            </NavButton>
           )}
 
           {/* Account info for signed in users */}
           {mounted && signedIn && email && (
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-md bg-gray-50 border border-gray-200">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-md bg-gray-50 border border-gray-200"
+            >
               <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
@@ -329,19 +407,22 @@ export default function SiteHeader() {
                   {accountType === "soon_to_wed" ? "Couple" : accountType.charAt(0).toUpperCase() + accountType.slice(1)}
                 </span>
               )}
-            </div>
+            </motion.div>
           )}
 
-          <Link
-            href="/vendors"
-            className="hidden sm:inline-flex h-9 items-center justify-center px-4 rounded-md bg-[#a68b6a] text-white text-[13px] font-medium hover:bg-[#957a5c] transition-colors font-[family-name:var(--font-plus-jakarta)]"
-            prefetch={true}
-          >
-            Start Searching
-          </Link>
+          <motion.div whileTap={{ scale: 0.97 }}>
+            <Link
+              href="/vendors"
+              className="hidden sm:inline-flex h-9 items-center justify-center px-4 rounded-md bg-[#a68b6a] text-white text-[13px] font-medium hover:bg-[#957a5c] transition-colors font-[family-name:var(--font-plus-jakarta)]"
+              prefetch={true}
+            >
+              Start Searching
+            </Link>
+          </motion.div>
 
           {/* Mobile menu button */}
-          <button
+          <motion.button
+            whileTap={{ scale: 0.9 }}
             type="button"
             onClick={(e) => {
               e.stopPropagation();
@@ -352,158 +433,227 @@ export default function SiteHeader() {
             aria-expanded={mobileMenuOpen}
           >
             <MenuIcon open={mobileMenuOpen} />
-          </button>
-
-                  </div>
+          </motion.button>
+        </motion.div>
       </div>
 
       {/* Mobile Menu */}
-      {mobileMenuOpen && (
-        <div
-          ref={mobileMenuRef}
-          className="sm:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-100 shadow-lg animate-fade-in"
-        >
-          <nav className="px-4 py-4 space-y-1">
-            <Link
-              className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
-              href="/vendors"
-              prefetch={true}
-            >
-              Discover
-            </Link>
-            <a
-              className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
-              href="/#featured"
-              onClick={(e) => {
-                e.preventDefault();
-                goToHomeSection("featured");
-              }}
-            >
-              Featured
-            </a>
-            <Link
-              className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
-              href="/vendors/plans"
-              prefetch={true}
-            >
-              For vendors
-            </Link>
-            
-            {/* Dashboard and Moments for couples */}
-            {mounted && signedIn && isSoonToWed && !isVendor && (
-              <>
-                <Link
-                  className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
-                  href="/dashboard"
-                  scroll={false}
-                  prefetch={true}
-                >
-                  My Wedding
-                </Link>
-                <Link
-                  className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
-                  href="/moments"
-                  scroll={false}
-                  prefetch={true}
-                >
-                  Moments
-                </Link>
-              </>
-            )}
-            
-            {/* Dashboard for vendors */}
-            {mounted && isVendor && (
-              <Link
-                className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
-                href="/vendor/dashboard"
-                scroll={false}
-                prefetch={true}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            ref={mobileMenuRef}
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.4, ease: EASE_DRAWER }}
+            className="sm:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-100 shadow-lg overflow-hidden"
+          >
+            <nav className="px-4 py-4 space-y-1">
+              <motion.div
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.1, duration: 0.3, ease: EASE_OUT }}
               >
-                Dashboard
-              </Link>
-            )}
-            
-            {/* Public Moments for non-couples */}
-            {mounted && (!signedIn || isVendor) ? (
-              <Link
-                className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
-                href="/moments"
-                scroll={false}
-                prefetch={true}
+                <NavLink
+                  className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
+                  href="/vendors"
+                >
+                  Discover
+                </NavLink>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.15, duration: 0.3, ease: EASE_OUT }}
               >
-                Wedding Moments
-              </Link>
-            ) : null}
+                <NavLink
+                  className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
+                  href="/#featured"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    goToHomeSection("featured");
+                  }}
+                >
+                  Featured
+                </NavLink>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2, duration: 0.3, ease: EASE_OUT }}
+              >
+                <NavLink
+                  className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
+                  href="/vendors/plans"
+                >
+                  For vendors
+                </NavLink>
+              </motion.div>
 
-            <div className="border-t border-gray-100 my-2" />
+              {/* Dashboard and Moments for couples */}
+              {mounted && signedIn && isSoonToWed && !isVendor && (
+                <>
+                  <motion.div
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.25, duration: 0.3, ease: EASE_OUT }}
+                  >
+                    <NavLink
+                      className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
+                      href="/dashboard"
+                    >
+                      My Wedding
+                    </NavLink>
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.3, duration: 0.3, ease: EASE_OUT }}
+                  >
+                    <NavLink
+                      className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
+                      href="/moments"
+                    >
+                      Moments
+                    </NavLink>
+                  </motion.div>
+                </>
+              )}
 
-            {/* Account info in mobile menu */}
-            {mounted && signedIn && email && (
-              <div className="flex items-center gap-2 px-3 py-3 rounded-md bg-gray-50 border border-gray-200">
-                <svg className="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-                <span className="text-[13px] text-gray-600 font-medium truncate flex-1" title={email}>
-                  {email}
-                </span>
-                {accountType && (
-                  <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full flex-shrink-0 ${
-                    accountType === "vendor"
-                      ? "bg-blue-50 text-blue-600 border border-blue-200"
-                      : accountType === "couple"
-                      ? "bg-[#a68b6a]/10 text-[#a68b6a] border border-[#a68b6a]/20"
-                      : accountType === "editor"
-                      ? "bg-purple-50 text-purple-600 border border-purple-200"
-                      : accountType === "superadmin"
-                      ? "bg-[#fff1f3] text-[#b42318] border border-[#b42318]/20"
-                      : "bg-gray-100 text-gray-600 border border-gray-200"
-                  }`}>
-                    {accountType === "soon_to_wed" ? "Couple" : accountType.charAt(0).toUpperCase() + accountType.slice(1)}
+              {/* Dashboard for vendors */}
+              {mounted && isVendor && (
+                <motion.div
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.25, duration: 0.3, ease: EASE_OUT }}
+                >
+                  <NavLink
+                    className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
+                    href="/vendor/dashboard"
+                  >
+                    Dashboard
+                  </NavLink>
+                </motion.div>
+              )}
+
+              {/* Public Moments for non-couples */}
+              {mounted && (!signedIn || isVendor) ? (
+                <motion.div
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.25, duration: 0.3, ease: EASE_OUT }}
+                >
+                  <NavLink
+                    className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
+                    href="/moments"
+                  >
+                    Wedding Moments
+                  </NavLink>
+                </motion.div>
+              ) : null}
+
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.35 }}
+                className="border-t border-gray-100 my-2"
+              />
+
+              {/* Account info in mobile menu */}
+              {mounted && signedIn && email && (
+                <motion.div
+                  initial={{ opacity: 0, y: 5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4, duration: 0.3, ease: EASE_OUT }}
+                  className="flex items-center gap-2 px-3 py-3 rounded-md bg-gray-50 border border-gray-200"
+                >
+                  <svg className="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                  <span className="text-[13px] text-gray-600 font-medium truncate flex-1" title={email}>
+                    {email}
                   </span>
-                )}
-              </div>
-            )}
+                  {accountType && (
+                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full flex-shrink-0 ${
+                      accountType === "vendor"
+                        ? "bg-blue-50 text-blue-600 border border-blue-200"
+                        : accountType === "couple"
+                        ? "bg-[#a68b6a]/10 text-[#a68b6a] border border-[#a68b6a]/20"
+                        : accountType === "editor"
+                        ? "bg-purple-50 text-purple-600 border border-purple-200"
+                        : accountType === "superadmin"
+                        ? "bg-[#fff1f3] text-[#b42318] border border-[#b42318]/20"
+                        : "bg-gray-100 text-gray-600 border border-gray-200"
+                    }`}>
+                      {accountType === "soon_to_wed" ? "Couple" : accountType.charAt(0).toUpperCase() + accountType.slice(1)}
+                    </span>
+                  )}
+                </motion.div>
+              )}
 
-            {/* Sign out or Start Searching */}
-            {mounted && signedIn ? (
-              <button
-                type="button"
-                disabled={signingOut}
-                onClick={() => void signOut()}
-                className="w-full flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors disabled:opacity-60 text-left"
-              >
-                {signingOut ? "Signing out…" : "Sign out"}
-              </button>
-            ) : (
-              <Link
-                className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-[#a68b6a] hover:text-[#957a5c] hover:bg-gray-50 transition-colors"
-                href="/vendors"
-                prefetch={true}
-              >
-                Start Searching
-              </Link>
-            )}
+              {/* Sign out or Start Searching */}
+              {mounted && signedIn ? (
+                <motion.div
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.45, duration: 0.3, ease: EASE_OUT }}
+                >
+                  <NavButton
+                    disabled={signingOut}
+                    onClick={() => void signOut()}
+                    className="w-full flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors disabled:opacity-60 text-left"
+                  >
+                    {signingOut ? "Signing out…" : "Sign out"}
+                  </NavButton>
+                </motion.div>
+              ) : (
+                <motion.div
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.45, duration: 0.3, ease: EASE_OUT }}
+                >
+                  <NavLink
+                    className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-[#a68b6a] hover:text-[#957a5c] hover:bg-gray-50 transition-colors"
+                    href="/vendors"
+                  >
+                    Start Searching
+                  </NavLink>
+                </motion.div>
+              )}
 
-            {mounted && !signedIn ? (
-              <Link
-                className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
-                href="/soon-to-wed/signin"
-                prefetch={false}
-              >
-                Sign in
-              </Link>
-            ) : null}
+              {mounted && !signedIn ? (
+                <motion.div
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.5, duration: 0.3, ease: EASE_OUT }}
+                >
+                  <NavLink
+                    className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
+                    href="/soon-to-wed/signin"
+                    prefetch={false}
+                  >
+                    Sign in
+                  </NavLink>
+                </motion.div>
+              ) : null}
 
-            <Link
-              className="flex items-center justify-center mt-3 px-3 py-3 rounded-md bg-[#a68b6a] text-white text-[14px] font-medium hover:bg-[#957a5c] transition-colors"
-              href="/vendors"
-              prefetch={true}
-            >
-              Start searching
-            </Link>
-          </nav>
-        </div>
-      )}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.55, duration: 0.4, ease: EASE_DRAWER }}
+              >
+                <Link
+                  className="flex items-center justify-center mt-3 px-3 py-3 rounded-md bg-[#a68b6a] text-white text-[14px] font-medium hover:bg-[#957a5c] transition-colors shadow-sm"
+                  href="/vendors"
+                  prefetch={true}
+                >
+                  Start searching
+                </Link>
+              </motion.div>
+            </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 }

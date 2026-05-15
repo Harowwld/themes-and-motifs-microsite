@@ -167,6 +167,9 @@ const nextConfig: NextConfig = {
     minimumCacheTTL: 86400,
     // Allowed image qualities
     qualities: [75, 85],
+    // Disable image optimization for compatibility with Cloudflare Workers
+    // (Cloudflare Image Resizing is a paid feature).
+    unoptimized: true,
   },
 
   // Router cache configuration - keep pages cached in both dev and prod.

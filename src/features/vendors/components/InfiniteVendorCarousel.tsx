@@ -1,9 +1,12 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import Image from "next/image";
+import { motion, useAnimationControls } from "framer-motion";
 import type { FeaturedVendor } from "../types";
 import { proxiedImageUrl } from "@/lib/imageSizes";
+
+const SPRING = { type: "spring" as const, stiffness: 300, damping: 30 };
 
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(false);
@@ -26,7 +29,6 @@ function clampZoom(v: number) {
   return Math.max(1, Math.min(3, v));
 }
 
-
 function VendorCard({
   vendor,
   index,
@@ -46,26 +48,22 @@ function VendorCard({
   const location = vendor.city ?? vendor.location_text;
   const affiliations = vendor.affiliations ?? [];
 
-  const planName = String((Array.isArray(vendor.plan) ? vendor.plan?.[0]?.name : vendor.plan?.name) ?? "")
-    .trim()
-    .toLowerCase();
-  const isPremium = planName.includes("premium");
-
   return (
-    <a
+    <motion.a
+      whileHover={{ y: -4, scale: 1.01 }}
+      whileTap={{ scale: 0.98 }}
       key={`${vendor.id}-${index}`}
       href={`/vendors/${encodeURIComponent(vendor.slug)}`}
-      className="group block rounded-[12px] relative aspect-[3/4] shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] hover:shadow-[0_10px_25px_rgba(0,0,0,0.08),0_4px_10px_rgba(0,0,0,0.04)] hover:-translate-y-3 transition-all duration-500 flex-shrink-0 w-[280px] sm:w-[320px]"
+      className="group block rounded-2xl relative aspect-[3/4] shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-xl transition-shadow duration-500 flex-shrink-0 w-full sm:w-[calc((100%-48px)/3)] bg-white border border-gray-50 overflow-hidden"
     >
-      {/* Inner clip wrapper - handles border-radius clipping without breaking backdrop-filter */}
-      <div className="absolute inset-0 rounded-[12px] overflow-hidden">
+      <div className="absolute inset-0">
         {coverUrl ? (
           <Image
             src={coverUrl}
             alt=""
             fill
             sizes="(max-width: 640px) 280px, 320px"
-            className="object-cover"
+            className="object-cover transition-transform duration-1000 group-hover:scale-110"
             style={{ transformOrigin: `${fx}% ${fy}%`, transform: `scale(${z})` }}
             draggable={false}
           />
@@ -79,29 +77,26 @@ function VendorCard({
         )}
       </div>
 
-      <div className="absolute inset-x-0 bottom-0 z-20 h-[35%] sm:h-[32%]">
-        {/* Glass blur - clip-path + webkit prefix for Safari */}
+      <div className="absolute inset-x-0 bottom-0 z-20 h-[38%]">
         <div
-          className="absolute inset-0 bg-white/70 border-t border-white/40 rounded-b-[12px]"
+          className="absolute inset-0 bg-white/80 border-t border-white/40"
           style={{
-            clipPath: "polygon(0 12%, 100% 0, 100% 100%, 0 100%)",
-            backdropFilter: "blur(12px)",
-            WebkitBackdropFilter: "blur(12px)",
+            clipPath: "polygon(0 15%, 100% 0, 100% 100%, 0 100%)",
+            backdropFilter: "blur(16px)",
+            WebkitBackdropFilter: "blur(16px)",
           }}
         />
-        {/* Content layer */}
-        <div className="absolute inset-x-0 bottom-0 px-3 sm:px-4 pb-3 sm:pb-4 pt-2">
-          {/* Top row: Logo aligned with Name + Rating */}
-          <div className="flex items-center gap-2 sm:gap-3">
+        <div className="absolute inset-x-0 bottom-0 px-4 pb-4 pt-4 sm:px-5 sm:pb-5">
+          <div className="flex items-center gap-3">
             {logoUrl && (
-              <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-md overflow-hidden bg-white shrink-0 shadow-sm">
+              <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl overflow-hidden bg-white shrink-0 shadow-sm border border-gray-100">
                 <div className="relative h-full w-full">
                   <Image
                     src={logoUrl}
                     alt={`${vendor.business_name} logo`}
                     fill
                     sizes="(max-width: 640px) 48px, 56px"
-                    className="object-contain"
+                    className="object-contain p-1"
                     draggable={false}
                   />
                 </div>
@@ -109,7 +104,7 @@ function VendorCard({
             )}
             <div className="min-w-0">
               <div className="flex items-center gap-1.5 min-w-0">
-                <div className="text-[14px] sm:text-[16px] font-semibold text-[#a68b6a] uppercase tracking-wide truncate font-[family-name:var(--font-plus-jakarta)] flex-1 min-w-0">
+                <div className="text-[14px] sm:text-[16px] font-bold text-gray-900 uppercase tracking-tight truncate font-[family-name:var(--font-plus-jakarta)] flex-1 min-w-0">
                   {vendor.business_name}
                 </div>
                 {vendor.verified_status === true && (
@@ -125,20 +120,19 @@ function VendorCard({
                   </span>
                 )}
               </div>
-              <div className="flex items-center gap-1 text-[13px] sm:text-[15px] text-neutral-600 font-[family-name:var(--font-plus-jakarta)]">
-                <span className="font-semibold text-[#a68b6a]">{rating.toFixed(1)}</span>
-                <span className="text-neutral-300">·</span>
+              <div className="flex items-center gap-1.5 text-[12px] sm:text-[14px] text-gray-500 font-[family-name:var(--font-plus-jakarta)]">
+                <span className="font-bold text-[#a68b6a]">{rating.toFixed(1)}</span>
+                <span className="text-gray-300">·</span>
                 <span className="truncate">{reviews} reviews</span>
               </div>
             </div>
           </div>
 
-          {/* Second row: Location and Affiliations (full width, below logo) */}
           {(location || affiliations.length > 0) && (
-            <div className="mt-2 flex items-center gap-1.5 text-[12px] sm:text-[13px] text-neutral-500 font-[family-name:var(--font-plus-jakarta)]">
+            <div className="mt-3 flex items-center gap-2 text-[11px] sm:text-[12px] text-gray-400 font-[family-name:var(--font-plus-jakarta)]">
               {location && (
                 <span className="inline-flex items-center gap-1">
-                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
                   </svg>
@@ -146,10 +140,10 @@ function VendorCard({
                 </span>
               )}
               {location && affiliations.length > 0 && (
-                <span className="text-neutral-300">·</span>
+                <span className="text-gray-200">·</span>
               )}
               {affiliations.length > 0 && (
-                <span className="truncate">
+                <span className="truncate uppercase tracking-wider font-semibold text-[10px]">
                   {affiliations.map(a => a.name).join(" · ")}
                 </span>
               )}
@@ -157,132 +151,113 @@ function VendorCard({
           )}
         </div>
       </div>
-    </a>
+    </motion.a>
   );
 }
 
 export default function InfiniteVendorCarousel({ vendors }: { vendors: FeaturedVendor[] }) {
   const [currentIndex, setCurrentIndex] = useState(vendors.length);
-  const [isTransitioning, setIsTransitioning] = useState(true);
   const [isPaused, setIsPaused] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const touchStartX = useRef(0);
-  const touchEndX = useRef(0);
   const isMobile = useIsMobile();
+  const controls = useAnimationControls();
 
-  const duplicatedVendors = [...vendors, ...vendors, ...vendors];
-  const cardWidth = isMobile ? 280 : 320;
+  const duplicatedVendors = useMemo(() => [...vendors, ...vendors, ...vendors], [vendors]);
   const gap = isMobile ? 16 : 24;
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState(0);
 
-  const goToSlide = useCallback(
-    (index: number, instant = false) => {
-      if (instant) {
-        setIsTransitioning(false);
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setContainerWidth(entry.contentRect.width);
       }
-      setCurrentIndex(index);
-    },
-    []
-  );
+    });
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  const cardWidth = isMobile 
+    ? containerWidth 
+    : (containerWidth - (gap * 2)) / 3;
 
   const handleTransitionEnd = useCallback(() => {
     if (currentIndex >= vendors.length * 2) {
-      goToSlide(vendors.length, true);
+      setCurrentIndex(vendors.length);
     } else if (currentIndex < vendors.length) {
-      goToSlide(vendors.length + currentIndex % vendors.length, true);
+      setCurrentIndex(vendors.length + currentIndex % vendors.length);
     }
-  }, [currentIndex, vendors.length, goToSlide]);
+  }, [currentIndex, vendors.length]);
 
-  const handleDotClick = (dotIndex: number) => {
-    goToSlide(vendors.length + dotIndex);
-  };
+  useEffect(() => {
+    controls.start({
+      transform: `translateX(${-currentIndex * (cardWidth + gap)}px)`,
+      transition: SPRING
+    });
+  }, [currentIndex, controls, cardWidth, gap]);
 
   useEffect(() => {
     if (isPaused || vendors.length === 0) return;
 
     const interval = setInterval(() => {
-      setIsTransitioning(true);
       setCurrentIndex((prev) => prev + 1);
-    }, 5000);
+    }, 6000);
 
     return () => clearInterval(interval);
   }, [isPaused, vendors.length]);
 
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
-    setIsPaused(true);
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    touchEndX.current = e.touches[0].clientX;
-  };
-
-  const handleTouchEnd = () => {
-    const diff = touchStartX.current - touchEndX.current;
-    const threshold = 50;
-
-    if (Math.abs(diff) > threshold) {
-      setIsTransitioning(true);
-      if (diff > 0) {
-        setCurrentIndex((prev) => prev + 1);
-      } else {
-        setCurrentIndex((prev) => prev - 1);
-      }
-    }
-
-    setTimeout(() => setIsPaused(false), 1000);
-  };
-
   if (vendors.length === 0) {
     return (
-      <div className="rounded-[3px] border border-black/10 bg-white shadow-sm p-6">
-        <div className="text-[13px] font-semibold text-[#2c2c2c]">No featured vendors yet</div>
-        <div className="mt-1 text-[13px] text-black/55">Mark vendors as featured to have them appear here.</div>
+      <div className="rounded-2xl border border-gray-100 bg-white shadow-sm p-8 text-center">
+        <div className="text-[14px] font-semibold text-gray-900">No featured vendors yet</div>
+        <div className="mt-1 text-[13px] text-gray-500">Mark vendors as featured to have them appear here.</div>
       </div>
     );
   }
 
   return (
     <div
-      className="relative overflow-x-hidden overflow-y-visible pt-4"
+      ref={containerRef}
+      className="relative overflow-visible pt-4"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      <div
-        ref={containerRef}
-        className="flex gap-4 sm:gap-6 cursor-grab active:cursor-grabbing overflow-visible pl-4 sm:pl-0"
-        style={{
-          transform: `translateX(-${currentIndex * (cardWidth + gap)}px)`,
-          transition: isTransitioning ? "transform 500ms cubic-bezier(0.4, 0, 0.2, 1)" : "none",
-        }}
-        onTransitionEnd={handleTransitionEnd}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-      >
-        {duplicatedVendors.map((vendor, i) => (
-          <VendorCard
-            key={`${vendor.id}-${i}`}
-            vendor={vendor}
-            index={i}
-            tone={i % 2 === 0 ? "#a68b6a" : "#957a5c"}
-          />
-        ))}
+      <div className="overflow-hidden -mx-12 px-12 py-12 -my-12">
+        <motion.div
+          animate={controls}
+          className="flex gap-4 sm:gap-6 cursor-grab active:cursor-grabbing"
+          onTransitionEnd={handleTransitionEnd}
+        >
+          {duplicatedVendors.map((vendor, i) => (
+            <VendorCard
+              key={`${vendor.id}-${i}`}
+              vendor={vendor}
+              index={i}
+              tone={i % 2 === 0 ? "#a68b6a" : "#957a5c"}
+            />
+          ))}
+        </motion.div>
       </div>
 
-      <div className="flex justify-center gap-2 mt-6 sm:mt-8">
+      <div className="flex justify-center gap-2 mt-10">
         {vendors.map((_, i) => {
           const actualIndex = currentIndex % vendors.length;
           const isActive = actualIndex === i;
           return (
             <button
               key={i}
-              onClick={() => handleDotClick(i)}
-              className={`transition-all duration-300 min-h-[8px] min-w-[8px] ${isActive
-                  ? "w-6 h-2 bg-[#a68b6a] rounded-full"
-                  : "w-2 h-2 bg-[#a68b6a]/30 rounded-full hover:bg-[#a68b6a]/50"
-                }`}
+              onClick={() => setCurrentIndex(vendors.length + i)}
+              className="group p-2"
               aria-label={`Go to slide ${i + 1}`}
-            />
+            >
+              <motion.div 
+                animate={{
+                  width: isActive ? 32 : 8,
+                  backgroundColor: isActive ? "#a68b6a" : "rgba(166, 139, 106, 0.2)"
+                }}
+                className="h-1.5 rounded-full transition-colors group-hover:bg-[#a68b6a]/50"
+              />
+            </button>
           );
         })}
       </div>

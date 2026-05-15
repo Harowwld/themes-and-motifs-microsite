@@ -2,12 +2,16 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 
 type Category = {
   id: number;
   name: string;
   slug: string;
 };
+
+// Custom easings from emil-design-eng skill
+const EASE_OUT = [0.23, 1, 0.32, 1] as [number, number, number, number];
 
 function getCategoryIconSrc(categoryName: string, categorySlug: string) {
   const v = `${categoryName} ${categorySlug}`.toLowerCase();
@@ -88,9 +92,8 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
   };
 
   const items = useMemo(() => {
-    const safe = categories ?? [];
-    return expanded ? safe : safe;
-  }, [categories, expanded]);
+    return categories ?? [];
+  }, [categories]);
 
   const isCategoryActive = (slug: string) => {
     const normalizedSlug = slug.trim().toLowerCase();
@@ -122,124 +125,186 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
     }
   };
 
+  const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.03,
+      },
+    },
+  };
+
+  const itemVariants: Variants = {
+    hidden: { opacity: 0, scale: 0.95, y: 10 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      y: 0,
+      transition: { duration: 0.3, ease: EASE_OUT },
+    },
+  };
+
   return (
     <section className="mt-8 sm:mt-10 lg:mt-14">
       <div className="flex items-end justify-between gap-4 sm:gap-6">
         <div>
-          <div className="text-[11px] sm:text-[12px] font-medium text-gray-400 uppercase tracking-wider font-[family-name:var(--font-plus-jakarta)]">Browse</div>
-          <h2 className="mt-1 text-[15px] sm:text-[16px] lg:text-[18px] font-medium tracking-[-0.01em] text-gray-900">
+          <motion.div
+            initial={{ opacity: 0, x: -10 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className="text-[11px] sm:text-[12px] font-medium text-gray-400 uppercase tracking-wider font-[family-name:var(--font-plus-jakarta)]"
+          >
+            Browse
+          </motion.div>
+          <motion.h2
+            initial={{ opacity: 0, x: -10 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="mt-1 text-[15px] sm:text-[16px] lg:text-[18px] font-medium tracking-[-0.01em] text-gray-900"
+          >
             Categories
-          </h2>
+          </motion.h2>
         </div>
-        <button
+        <motion.button
+          whileTap={{ scale: 0.95 }}
           type="button"
           onClick={() => setExpanded((v) => !v)}
           className="text-[13px] font-medium text-gray-500 hover:text-gray-900 transition-colors touch-manipulation font-[family-name:var(--font-plus-jakarta)]"
         >
           {expanded ? "Collapse" : "See all"}
-        </button>
+        </motion.button>
       </div>
 
-      <div className="mt-6">
-        {items.length === 0 ? (
-          <div className="text-[13px] text-gray-500">No categories loaded.</div>
-        ) : expanded ? (
-          <div className="grid gap-3 sm:gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
-            {items.map((c) => (
-              (() => {
+      <div className="mt-6 overflow-hidden">
+        <AnimatePresence mode="wait">
+          {items.length === 0 ? (
+            <motion.div
+              key="empty"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="text-[13px] text-gray-500"
+            >
+              No categories loaded.
+            </motion.div>
+          ) : expanded ? (
+            <motion.div
+              key="grid"
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              exit={{ opacity: 0, transition: { duration: 0.2 } }}
+              className="grid gap-3 sm:gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4"
+            >
+              {items.map((c) => {
                 const isActive = isCategoryActive(c.slug);
                 const isPending = pendingCategory === (c.slug ?? "").trim().toLowerCase();
                 return (
-              <a
-                key={c.id}
-                href={`/vendors?category=${encodeURIComponent(c.slug)}`}
-                onClick={(e) => handleCategoryClick(e, c.slug, isActive)}
-                onMouseEnter={() => !isActive && prefetchCategory(c.slug)}
-                data-category-slug={c.slug}
-                className={
-                  isActive
-                    ? `group rounded-lg bg-[#a68b6a]/10 shadow-sm transition-all px-3 py-3 text-center min-h-24 touch-manipulation ${isPending ? "opacity-70 animate-pulse" : ""}`
-                    : "group rounded-lg bg-white shadow-sm hover:shadow-md transition-all px-3 py-3 text-center min-h-24 touch-manipulation"
-                }
-                aria-label={`Browse ${c.name}`}
-              >
-                <div className="mx-auto inline-flex h-10 w-10 items-center justify-center">
-                  <img
-                    src={getCategoryIconSrc(c.name, c.slug)}
-                    alt=""
-                    aria-hidden
-                    className="h-10 w-10 object-contain"
-                    loading="lazy"
-                  />
-                </div>
-                <div
-                  className={
-                    isActive
-                      ? "mt-1 text-[12px] font-medium text-gray-900 whitespace-nowrap overflow-hidden text-ellipsis font-[family-name:var(--font-plus-jakarta)]"
-                      : "mt-1 text-[12px] font-medium text-gray-600 group-hover:text-gray-900 whitespace-nowrap overflow-hidden text-ellipsis font-[family-name:var(--font-plus-jakarta)]"
-                  }
-                >
-                  {c.name}
-                </div>
-              </a>
+                  <motion.a
+                    key={c.id}
+                    variants={itemVariants}
+                    whileHover={{ y: -2, scale: 1.02 }}
+                    whileTap={{ scale: 0.97 }}
+                    href={`/vendors?category=${encodeURIComponent(c.slug)}`}
+                    onClick={(e) => handleCategoryClick(e, c.slug, isActive)}
+                    onMouseEnter={() => !isActive && prefetchCategory(c.slug)}
+                    data-category-slug={c.slug}
+                    className={
+                      isActive
+                        ? `group rounded-lg bg-[#a68b6a]/10 shadow-sm transition-colors px-3 py-3 text-center min-h-24 touch-manipulation ${isPending ? "opacity-70 animate-pulse" : ""}`
+                        : "group rounded-lg bg-white shadow-sm hover:shadow-md transition-colors px-3 py-3 text-center min-h-24 touch-manipulation border border-gray-50"
+                    }
+                    aria-label={`Browse ${c.name}`}
+                  >
+                    <div className="mx-auto inline-flex h-10 w-10 items-center justify-center">
+                      <img
+                        src={getCategoryIconSrc(c.name, c.slug)}
+                        alt=""
+                        aria-hidden
+                        className="h-10 w-10 object-contain"
+                        loading="lazy"
+                      />
+                    </div>
+                    <div
+                      className={
+                        isActive
+                          ? "mt-1 text-[12px] font-medium text-gray-900 whitespace-nowrap overflow-hidden text-ellipsis font-[family-name:var(--font-plus-jakarta)]"
+                          : "mt-1 text-[12px] font-medium text-gray-600 group-hover:text-gray-900 whitespace-nowrap overflow-hidden text-ellipsis font-[family-name:var(--font-plus-jakarta)]"
+                      }
+                    >
+                      {c.name}
+                    </div>
+                  </motion.a>
                 );
-              })()
-            ))}
-          </div>
-        ) : (
-          <div className="relative -mx-4 px-4 sm:-mx-0 sm:px-0">
-            <div className="pointer-events-none absolute top-0 bottom-3 left-0 w-8 bg-linear-to-r from-[#fcfbf9] to-transparent z-10" />
-            <div className="pointer-events-none absolute top-0 bottom-3 right-0 w-8 bg-linear-to-l from-[#fcfbf9] to-transparent z-10" />
-
-            <div
-              ref={scrollerRef}
-              className="flex gap-3 overflow-x-auto scroll-smooth pb-3 sleek-scrollbar snap-x snap-mandatory"
+              })}
+            </motion.div>
+          ) : (
+            <motion.div
+              key="scroller"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="relative -mx-4 px-4 sm:-mx-0 sm:px-0"
             >
-              {items.map((c) => (
-                (() => {
+              <div className="pointer-events-none absolute top-0 bottom-3 left-0 w-8 bg-linear-to-r from-[#fcfbf9] to-transparent z-10" />
+              <div className="pointer-events-none absolute top-0 bottom-3 right-0 w-8 bg-linear-to-l from-[#fcfbf9] to-transparent z-10" />
+
+              <motion.div
+                ref={scrollerRef}
+                variants={containerVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                className="flex gap-3 overflow-x-auto scroll-smooth pb-3 sleek-scrollbar snap-x snap-mandatory"
+              >
+                {items.map((c) => {
                   const isActive = isCategoryActive(c.slug);
                   const isPending = pendingCategory === (c.slug ?? "").trim().toLowerCase();
                   return (
-                <a
-                  key={c.id}
-                  href={`/vendors?category=${encodeURIComponent(c.slug)}`}
-                  onClick={(e) => handleCategoryClick(e, c.slug, isActive)}
-                  onMouseEnter={() => !isActive && prefetchCategory(c.slug)}
-                  data-category-slug={c.slug}
-                  className={
-                    isActive
-                      ? `group shrink-0 rounded-lg bg-[#a68b6a]/10 shadow-sm transition-all px-3 py-3 text-center w-[calc(45vw-1rem)] max-w-[180px] min-h-24 snap-start touch-manipulation ${isPending ? "opacity-70 animate-pulse" : ""}`
-                      : "group shrink-0 rounded-lg bg-white shadow-sm hover:shadow-md transition-all px-3 py-3 text-center w-[calc(45vw-1rem)] max-w-[180px] min-h-24 snap-start touch-manipulation"
-                  }
-                  aria-label={`Browse ${c.name}`}
-                  title={c.name}
-                >
-                  <div className="mx-auto inline-flex h-10 w-10 items-center justify-center">
-                    <img
-                      src={getCategoryIconSrc(c.name, c.slug)}
-                      alt=""
-                      aria-hidden
-                      className="h-10 w-10 object-contain"
-                      loading="lazy"
-                    />
-                  </div>
-                  <div
-                    className={
-                      isActive
-                        ? "mt-1 text-[12px] font-medium text-gray-900 whitespace-nowrap overflow-hidden text-ellipsis font-[family-name:var(--font-plus-jakarta)]"
-                        : "mt-1 text-[12px] font-medium text-gray-600 group-hover:text-gray-900 whitespace-nowrap overflow-hidden text-ellipsis font-[family-name:var(--font-plus-jakarta)]"
-                    }
-                  >
-                    {c.name}
-                  </div>
-                </a>
+                    <motion.a
+                      key={c.id}
+                      variants={itemVariants}
+                      whileHover={{ y: -2, scale: 1.02 }}
+                      whileTap={{ scale: 0.97 }}
+                      href={`/vendors?category=${encodeURIComponent(c.slug)}`}
+                      onClick={(e) => handleCategoryClick(e, c.slug, isActive)}
+                      onMouseEnter={() => !isActive && prefetchCategory(c.slug)}
+                      data-category-slug={c.slug}
+                      className={
+                        isActive
+                          ? `group shrink-0 rounded-lg bg-[#a68b6a]/10 shadow-sm transition-colors px-3 py-3 text-center w-[calc(45vw-1rem)] max-w-[180px] min-h-24 snap-start touch-manipulation ${isPending ? "opacity-70 animate-pulse" : ""}`
+                          : "group shrink-0 rounded-lg bg-white shadow-sm hover:shadow-md transition-colors px-3 py-3 text-center w-[calc(45vw-1rem)] max-w-[180px] min-h-24 snap-start touch-manipulation border border-gray-50"
+                      }
+                      aria-label={`Browse ${c.name}`}
+                      title={c.name}
+                    >
+                      <div className="mx-auto inline-flex h-10 w-10 items-center justify-center">
+                        <img
+                          src={getCategoryIconSrc(c.name, c.slug)}
+                          alt=""
+                          aria-hidden
+                          className="h-10 w-10 object-contain"
+                          loading="lazy"
+                        />
+                      </div>
+                      <div
+                        className={
+                          isActive
+                            ? "mt-1 text-[12px] font-medium text-gray-900 whitespace-nowrap overflow-hidden text-ellipsis font-[family-name:var(--font-plus-jakarta)]"
+                            : "mt-1 text-[12px] font-medium text-gray-600 group-hover:text-gray-900 whitespace-nowrap overflow-hidden text-ellipsis font-[family-name:var(--font-plus-jakarta)]"
+                        }
+                      >
+                        {c.name}
+                      </div>
+                    </motion.a>
                   );
-                })()
-              ))}
-            </div>
-          </div>
-        )}
-
+                })}
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </section>
   );
