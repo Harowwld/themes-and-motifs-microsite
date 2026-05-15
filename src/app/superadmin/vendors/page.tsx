@@ -2118,3 +2118,16 @@ export default function SuperadminVendorsPage() {
   );
 }
 
+function ensureSingleCover<T extends { is_cover: boolean }>(rows: T[]) {
+  let used = false;
+  const normalized = rows.map((r) => {
+    const v = Boolean((r as any).is_cover) && !used;
+    if (v) used = true;
+    return { ...r, is_cover: v };
+  });
+  if (!used && normalized.length > 0) {
+    (normalized[0] as any).is_cover = true;
+  }
+  return normalized;
+}
+
