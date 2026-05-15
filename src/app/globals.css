@@ -56,6 +56,7 @@ html {
   overflow: hidden;
   scroll-behavior: smooth;
   background: var(--background);
+  overscroll-behavior: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
