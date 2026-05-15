@@ -43,6 +43,34 @@ const getCachedCategories = unstable_cache(
   { revalidate: 3600 }
 );
 
+// Cache cities for 1 hour (rarely change)
+const getCachedCities = unstable_cache(
+  async () => {
+    const supabase = createSupabaseServerClient();
+    const { data } = await supabase.from("cities").select("id,name,region_id").order("name", { ascending: true }).limit(3000);
+    return (data ?? []) as { id: number; name: string; region_id: number }[];
+  },
+  ["cities"],
+  { revalidate: 3600 }
+);
+
+// Cache default vendor list (no filters, rating sort) for 5 minutes
+const getCachedDefaultVendors = unstable_cache(
+  async (limit: number) => {
+    const supabase = createSupabaseServerClient();
+    const { vendors, total } = await buildVendorsQuery({
+      supabase,
+      filters: {},
+      sort: "rating",
+      from: 0,
+      to: limit - 1,
+    });
+    return { vendors, total };
+  },
+  ["default-vendors"],
+  { revalidate: 300 } // 5 minutes
+);
+
 // Don't cache themes - they can be added dynamically by vendors
 async function getThemes() {
   const supabase = createSupabaseServerClient();
@@ -211,27 +239,30 @@ async function VendorsPageData({
 }) {
   const supabase = createSupabaseServerClient();
 
-  const [regionsList, vendorLocations, affiliationsList, categoriesList, themesList, { data: cityRows }] = await Promise.all([
+  const [regionsList, vendorLocations, affiliationsList, categoriesList, themesList, citiesList] = await Promise.all([
     getCachedRegions(),
     getCachedVendorLocations(),
     getCachedAffiliations(),
     getCachedCategories(),
     getThemes(),
-    supabase.from("cities").select("id,name,region_id").order("name", { ascending: true }).limit(3000),
+    getCachedCities(),
   ]);
-
-  const citiesList = (cityRows ?? []) as { id: number; name: string; region_id: number }[];
 
   // Use offset pagination for initial load
   const from = 0;
   const to = limit - 1;
-  const { vendors, total: vendorTotal } = await buildVendorsQuery({
-    supabase,
-    filters: { q, category, location, region, affiliation, theme },
-    sort,
-    from,
-    to,
-  });
+
+  // Use the cached default fetch when no filters are active, otherwise query live
+  const isDefaultQuery = !q && !category && !location && !region && !affiliation && !theme && sort === "rating";
+  const { vendors, total: vendorTotal } = isDefaultQuery
+    ? await getCachedDefaultVendors(limit)
+    : await buildVendorsQuery({
+        supabase,
+        filters: { q, category, location, region, affiliation, theme },
+        sort,
+        from,
+        to,
+      });
   const loadedCount = (vendors ?? []).length;
   const hasMore = loadedCount > 0 && from + loadedCount < (vendorTotal ?? 0);
 

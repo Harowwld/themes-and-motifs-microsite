@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 type VideoModalProps = {
   open: boolean;
-  video: { video_url: string; title: string; display_order: number } | null;
+  video: { video_url: string; title: string | null; display_order: number } | null;
   isNew: boolean;
   onCancel: () => void;
   onSave: (video: { video_url: string; title: string; display_order: number }) => void;

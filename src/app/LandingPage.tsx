@@ -23,6 +23,43 @@ const getCachedCategories = unstable_cache(
   { revalidate: 3600 }
 );
 
+// Cache featured vendors + promos for 5 minutes (300 seconds)
+// These two queries + attachCoverImages + attachAffiliations previously ran
+// fresh on every SSR render. Now served from the cache between revalidations.
+const getCachedFeaturedData = unstable_cache(
+  async () => {
+    const supabase = createSupabaseServerClient();
+    const [{ data: featuredVendors }, { data: featuredPromos }] = await Promise.all([
+      supabase
+        .from("vendors")
+        .select(
+          "id,business_name,slug,logo_url,average_rating,review_count,location_text,city,verified_status,cover_focus_x,cover_focus_y,cover_zoom,plan:plans(id,name)"
+        )
+        .eq("is_active", true)
+        .eq("is_featured", true)
+        .limit(20),
+      supabase
+        .from("promos")
+        .select(
+          "id,title,summary,valid_from,valid_to,image_url,discount_percentage,image_focus_x,image_focus_y,image_zoom,vendors(id,business_name,slug,logo_url)"
+        )
+        .eq("is_active", true)
+        .eq("is_featured", true)
+        .limit(20),
+    ]);
+
+    const vendors = (featuredVendors ?? []) as FeaturedVendor[];
+    const promos = (featuredPromos ?? []) as FeaturedPromo[];
+
+    const vendorsWithCovers = await attachCoverImages(supabase, vendors);
+    const vendorsWithAffiliations = await attachAffiliations(supabase, vendorsWithCovers);
+
+    return { vendors: vendorsWithAffiliations, promos };
+  },
+  ["featured-data-v2"],
+  { revalidate: 300 }
+);
+
 
 function sortWithImagesFirst<T extends { cover_image_url?: string | null; logo_url?: string | null }>(vendors: T[]) {
   return [...vendors].sort((a, b) => {
@@ -134,44 +171,26 @@ export default async function LandingPage({
   );
 }
 
-// Direct data fetching component for featured section
-async function LandingFeaturedDirect() {
-  const supabase = createSupabaseServerClient();
-
-  const [{ data: featuredVendors }, { data: featuredPromos }] = await Promise.all([
-    supabase
-      .from("vendors")
-      .select(
-        "id,business_name,slug,logo_url,average_rating,review_count,location_text,city,verified_status,cover_focus_x,cover_focus_y,cover_zoom,plan:plans(id,name)"
-      )
-      .eq("is_active", true)
-      .eq("is_featured", true)
-      .limit(20),
-    supabase
-      .from("promos")
-      .select(
-        "id,title,summary,valid_from,valid_to,image_url,discount_percentage,image_focus_x,image_focus_y,image_zoom,vendors(id,business_name,slug,logo_url)"
-      )
-      .eq("is_active", true)
-      .eq("is_featured", true)
-      .limit(20),
-  ]);
-
-  function shuffle<T>(arr: T[]): T[] {
-    const a = [...arr];
-    for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
-    }
-    return a;
+// Shuffle utility (pure — no side effects)
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
   }
+  return a;
+}
 
-  const vendors = shuffle((featuredVendors ?? []) as FeaturedVendor[]).slice(0, 6);
-  const promos = shuffle((featuredPromos ?? []) as FeaturedPromo[]).filter(isPromoCurrentlyValid);
+// Direct data fetching component for featured section
+// Data is served from getCachedFeaturedData() — zero DB round-trips for 5 min.
+async function LandingFeaturedDirect() {
+  const { vendors: cachedVendors, promos: cachedPromos } = await getCachedFeaturedData();
 
-  const featuredWithCovers = await attachCoverImages(supabase, vendors);
-  const featuredWithAffiliations = await attachAffiliations(supabase, featuredWithCovers);
-  const featuredSorted = sortWithImagesFirst(featuredWithAffiliations as any);
+  // Shuffle after reading from cache (so display order rotates on each render
+  // without invalidating the cache).
+  const vendors = shuffle(cachedVendors as FeaturedVendor[]).slice(0, 6);
+  const promos = shuffle(cachedPromos).filter(isPromoCurrentlyValid);
+  const featuredSorted = sortWithImagesFirst(vendors as any);
 
   return (
     <>

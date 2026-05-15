@@ -35,21 +35,20 @@ function convertGoogleDriveUrl(url: string): string {
   return url;
 }
 
-async function getUrlParam(req: Request, props: { params: Promise<{ url: string[] }> }) {
-  const { url: segments } = await props.params;
-  if (!segments || segments.length < 2) return "";
-  
-  // Reconstruct: ["https", "example.com", "path"] -> "https://example.com/path"
-  // Note: segments[0] might be "https:" or "https"
-  const protocol = segments[0].replace(":", "");
-  const rest = segments.slice(1).join("/");
-  const { search } = new URL(req.url);
-  const raw = `${protocol}://${rest}${search}`;
-  
-  if (raw.includes("drive.google.com/file/d/")) {
-    return convertGoogleDriveUrl(raw);
+async function getUrlParam(req: Request, props: { params: Promise<{ slug: string }> }) {
+  const { slug } = await props.params;
+  if (!slug) return "";
+
+  // The slug is a URL-encoded string: decode and validate
+  try {
+    const decoded = decodeURIComponent(slug);
+    if (decoded.includes("drive.google.com/file/d/")) {
+      return convertGoogleDriveUrl(decoded);
+    }
+    return decoded;
+  } catch {
+    return slug;
   }
-  return raw;
 }
 
 function isPrivateIp(hostname: string): boolean {
@@ -93,7 +92,7 @@ function isAllowedUrl(raw: string): { allowed: boolean; error?: string } {
   }
 }
 
-export async function GET(req: Request, props: { params: Promise<{ url: string[] }> }) {
+export async function GET(req: Request, props: { params: Promise<{ slug: string }> }) {
   const raw = await getUrlParam(req, props);
 
   if (!raw) {
@@ -247,7 +246,7 @@ export async function GET(req: Request, props: { params: Promise<{ url: string[]
       // Make it embeddable
       "cross-origin-resource-policy": "cross-origin",
       // Cache in Cloudflare CDN for 1 hour, allow browser caching
-      "cache-control": "public, max-age=3600, s-maxage=3600",
+      "cache-control": "public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800",
     },
   });
 }

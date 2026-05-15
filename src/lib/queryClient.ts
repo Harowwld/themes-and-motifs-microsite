@@ -23,13 +23,15 @@ export const queryClient = new QueryClient({
   }),
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes - data considered fresh
-      gcTime: 1000 * 60 * 30, // 30 minutes - keep in memory cache
+      // 10 minutes — most data is stable enough to avoid unnecessary refetches
+      staleTime: 1000 * 60 * 10,
+      // 60 minutes — keep inactive queries in memory across tab switches
+      gcTime: 1000 * 60 * 60,
       refetchOnWindowFocus: false, // Don't refetch when user returns to tab
-      refetchOnReconnect: true, // Refetch when network reconnects
-      refetchOnMount: false, // Use cached data on component mount if available
-      retry: 2, // Retry failed requests twice
-      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
+      refetchOnReconnect: true,    // Refetch when network reconnects
+      refetchOnMount: false,       // Use cached data on component mount if available
+      retry: 2,
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
     },
     mutations: {
       retry: 1,
@@ -49,7 +51,7 @@ export async function prefetchVendorData(vendorSlug: string) {
       if (!res.ok) throw new Error("Failed to fetch vendor");
       return res.json();
     },
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 10,
   });
 }
 
@@ -62,6 +64,39 @@ export async function prefetchVendorsList() {
     queryFn: async () => {
       const res = await fetch("/api/vendors");
       if (!res.ok) throw new Error("Failed to fetch vendors");
+      return res.json();
+    },
+    staleTime: 1000 * 60 * 10,
+  });
+}
+
+/**
+ * Preload categories for instant filter/hero rendering
+ * Call this on app mount or before navigating to search
+ */
+export async function prefetchCategories() {
+  await queryClient.prefetchQuery({
+    queryKey: ["categories"],
+    queryFn: async () => {
+      const res = await fetch("/api/vendors?limit=1"); // categories come from SSR, but keep client copy fresh
+      if (!res.ok) throw new Error("Failed to fetch categories");
+      return res.json();
+    },
+    // Categories are very stable — 30 minute staleTime
+    staleTime: 1000 * 60 * 30,
+  });
+}
+
+/**
+ * Preload featured vendors for instant landing page display
+ * Call on hover of the home nav link to warm the cache before navigation
+ */
+export async function prefetchFeaturedVendors() {
+  await queryClient.prefetchQuery({
+    queryKey: ["vendors", "featured"],
+    queryFn: async () => {
+      const res = await fetch("/api/vendors?limit=6");
+      if (!res.ok) throw new Error("Failed to fetch featured vendors");
       return res.json();
     },
     staleTime: 1000 * 60 * 5,

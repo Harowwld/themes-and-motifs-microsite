@@ -7,6 +7,14 @@ import type { VendorWithSortFields, SortKey } from "../../../lib/vendorUtils";
 
 export const dynamic = "force-dynamic";
 
+// Cache-control helpers
+// We keep force-dynamic because the vendors list can reflect saved-vendor state,
+// but we still add Vary: Cookie so CDN layers correctly segment cached responses
+// by session. Anonymous users (no cookie) will get full CDN cache hits.
+const LIST_CACHE = "public, s-maxage=30, stale-while-revalidate=300, must-revalidate";
+const SINGLE_CACHE = "public, s-maxage=120, stale-while-revalidate=600, must-revalidate";
+const VARY = "Cookie, Accept-Encoding";
+
 type VendorWithCoverImage = VendorWithSortFields & { cover_image_url: string | null };
 
 export async function GET(req: Request) {
@@ -50,7 +58,9 @@ export async function GET(req: Request) {
       }
 
       const [vendorWithCover] = await attachCoverImages(supabase, [vendor as any]);
-      return NextResponse.json(vendorWithCover);
+      return NextResponse.json(vendorWithCover, {
+        headers: { "Cache-Control": SINGLE_CACHE, "Vary": VARY },
+      });
     }
 
     const from = (page - 1) * limit;
@@ -67,12 +77,10 @@ export async function GET(req: Request) {
     const vendorAllItems = (vendors ?? []) as VendorWithCoverImage[];
     const hasMore = from + vendorAllItems.length < total;
 
-    return NextResponse.json({
-      vendors: vendorAllItems,
-      nextPage: hasMore ? page + 1 : null,
-      hasMore,
-      total,
-    });
+    return NextResponse.json(
+      { vendors: vendorAllItems, nextPage: hasMore ? page + 1 : null, hasMore, total },
+      { headers: { "Cache-Control": LIST_CACHE, "Vary": VARY } }
+    );
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Failed to fetch vendors" },

@@ -316,14 +316,39 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
                   }
                   aria-label={img.caption ?? `Vendor photo ${idx + 1}`}
                 >
-                  <div className="relative h-16 w-24 sm:h-20 sm:w-32 shrink-0">
-                    <Image
-                      src={img.media_type === 'video' ? getVideoThumbnailUrl(img.image_url) || img.image_url : img.image_url}
-                      alt={img.caption ?? `Vendor photo ${idx + 1}`}
-                      fill
-                      sizes="(max-width: 640px) 96px, 128px"
-                      className="object-cover"
-                    />
+                  <div className="relative h-16 w-24 sm:h-20 sm:w-32 shrink-0 overflow-hidden bg-black/5">
+                    {img.media_type === 'video' ? (
+                      (() => {
+                        const thumb = getVideoThumbnailUrl(img.image_url);
+                        return thumb ? (
+                          <>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={thumb}
+                              alt={img.caption ?? `Vendor video ${idx + 1}`}
+                              className="absolute inset-0 h-full w-full object-cover"
+                            />
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white/80 shadow">
+                                <svg className="h-3.5 w-3.5 text-black/70 translate-x-[1px]" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3" /></svg>
+                              </div>
+                            </div>
+                          </>
+                        ) : (
+                          <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 bg-black/10">
+                            <svg className="h-5 w-5 text-black/40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="23 7 16 12 23 17 23 7" /><rect x="1" y="5" width="15" height="14" rx="2" ry="2" /></svg>
+                          </div>
+                        );
+                      })()
+                    ) : (
+                      <Image
+                        src={img.image_url}
+                        alt={img.caption ?? `Vendor photo ${idx + 1}`}
+                        fill
+                        sizes="(max-width: 640px) 96px, 128px"
+                        className="object-cover"
+                      />
+                    )}
                   </div>
                   {isActive ? <div className="pointer-events-none absolute inset-0 ring-2 ring-[#a67c52]/55" /> : null}
                 </button>

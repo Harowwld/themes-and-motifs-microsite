@@ -162,21 +162,21 @@ const nextConfig: NextConfig = {
     // Image sizes for srcset
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     // Minimum cache TTL for optimized images (in seconds)
-    minimumCacheTTL: 60,
+    // 24 hours — vendor images are stable assets that don't change frequently.
+    // Previously 60s caused constant re-validation churn.
+    minimumCacheTTL: 86400,
     // Allowed image qualities
     qualities: [75, 85],
   },
 
-  // Router cache configuration - disabled in dev to prevent stale content
-  experimental: isDev
-    ? {} // No experiments in dev (no stale caching)
-    : {
-      // Production: keep pages in router cache for performance
-      staleTimes: {
-        dynamic: 300,   // 5 minutes
-        static: 3600,   // 1 hour
-      },
+  // Router cache configuration - keep pages cached in both dev and prod.
+  // Without staleTimes, every navigation back to a page triggers a full server re-render.
+  experimental: {
+    staleTimes: {
+      dynamic: 300,   // 5 minutes for dynamic pages
+      static: 3600,   // 1 hour for static pages
     },
+  },
 
   // Headers for HTTP caching and security
   async headers() {
@@ -203,6 +203,21 @@ const nextConfig: NextConfig = {
           {
             key: "Cache-Control",
             value: "public, max-age=86400, stale-while-revalidate=604800",
+          },
+        ],
+      },
+      {
+        // Vendor list API — anonymous users get edge-cached results;
+        // Vary: Cookie ensures logged-in users see their own data.
+        source: "/api/vendors",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, s-maxage=30, stale-while-revalidate=300",
+          },
+          {
+            key: "Vary",
+            value: "Cookie, Accept-Encoding",
           },
         ],
       },
