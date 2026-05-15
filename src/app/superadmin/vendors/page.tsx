@@ -1267,24 +1267,7 @@ export default function SuperadminVendorsPage() {
                       }}
                       existingUrl=""
                     />
-                    <div className="relative my-3">
-                      <div className="absolute inset-0 flex items-center">
-                        <div className="w-full border-t border-black/10"></div>
-                      </div>
-                      <div className="relative flex justify-center">
-                        <span className="px-2 bg-white text-[11px] text-black/40">or enter URL</span>
-                      </div>
-                    </div>
-                    <input
-                      value={editImages[editImages.length - 1]?.image_url ?? ""}
-                      onChange={(e) => {
-                        const newImages = [...editImages];
-                        newImages[newImages.length - 1].image_url = e.target.value;
-                        setEditImages(newImages);
-                      }}
-                      className="h-9 rounded-[3px] border border-black/10 px-3 text-[12px] w-full"
-                      placeholder="Paste image URL here..."
-                    />
+
                   </div>
                 )}
               </section>
@@ -1862,23 +1845,7 @@ export default function SuperadminVendorsPage() {
                           </div>
                         )}
 
-                        {/* Divider */}
-                        <div className="relative my-3">
-                          <div className="absolute inset-0 flex items-center">
-                            <div className="w-full border-t border-black/10"></div>
-                          </div>
-                          <div className="relative flex justify-center">
-                            <span className="px-2 bg-[#fafafa] text-[11px] text-black/40">or enter URL</span>
-                          </div>
-                        </div>
 
-                        {/* URL Input */}
-                        <input
-                          value={promoForm.image_url ?? ""}
-                          onChange={(e) => setPromoForm((f) => ({ ...f, image_url: e.target.value }))}
-                          className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]"
-                          placeholder="https://..."
-                        />
                       </div>
                     </div>
                     <div className="flex gap-2 justify-end pt-2">
@@ -2071,25 +2038,7 @@ export default function SuperadminVendorsPage() {
                 existingUrl={logoUrlInput}
               />
 
-              <div className="relative my-4">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-black/10"></div>
-                </div>
-                <div className="relative flex justify-center">
-                  <span className="px-2 bg-white text-[11px] text-black/40">or enter URL</span>
-                </div>
-              </div>
 
-              <label className="grid gap-1.5">
-                <span className="text-[12px] font-semibold text-black/55">Logo URL</span>
-                <input
-                  type="url"
-                  value={logoUrlInput}
-                  onChange={(e) => setLogoUrlInput(e.target.value)}
-                  className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]"
-                  placeholder="https://..."
-                />
-              </label>
               <div className="mt-5 flex gap-2">
                 <button
                   type="button"

@@ -176,24 +176,7 @@ export default function PromoModal({
             existingUrl={imageUrl}
           />
 
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-black/10"></div>
-            </div>
-            <div className="relative flex justify-center">
-              <span className="px-2 bg-white text-[11px] text-black/40">or enter URL</span>
-            </div>
-          </div>
 
-          <label className="grid gap-1.5">
-            <span className="text-[12px] font-semibold text-black/55">Image URL (optional)</span>
-            <input
-              className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]"
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-              placeholder="https://..."
-            />
-          </label>
 
           {imageUrl.trim() ? (
             <CoverCropperModal

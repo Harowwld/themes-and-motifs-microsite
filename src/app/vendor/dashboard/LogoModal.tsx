@@ -54,24 +54,7 @@ export default function LogoModal({ open, logoUrl, onCancel, onSave }: LogoModal
             existingUrl={url}
           />
 
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-black/10"></div>
-            </div>
-            <div className="relative flex justify-center">
-              <span className="px-2 bg-white text-[11px] text-black/40">or enter URL</span>
-            </div>
-          </div>
 
-          <label className="grid gap-1.5">
-            <span className="text-[12px] font-semibold text-black/55">Logo URL</span>
-            <input
-              className="h-10 w-full rounded-[3px] border border-black/10 px-3 text-[13px]"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              placeholder="https://..."
-            />
-          </label>
           <div className="flex justify-end gap-2 pt-2">
             <button
               type="button"
