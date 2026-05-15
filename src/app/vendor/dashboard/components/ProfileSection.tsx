@@ -3,8 +3,7 @@ import { Field, Spinner } from "./DashboardSections";
 import { VendorProfile, VendorImage } from "../types";
 import { ImageUploadDropzone } from "../../../../components/ImageUploadDropzone";
 import { ensureSingleCover, clampPct, clampZoom } from "../utils";
-import CoverCropperModal from "../CoverCropperModal";
-import { LogoModal } from "./DashboardModals";
+import { LogoModal, CoverCropperModal } from "./DashboardModals";
 
 export function ProfileSection({
   vendor,
