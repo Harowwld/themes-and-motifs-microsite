@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import ImageCropperModal from "../ImageCropper";
 import { ImageUploadDropzone } from "@/components/ImageUploadDropzone";
+import PhotoModal from "@/components/PhotoModal";
 import type { UploadResult } from "@/hooks/useImageUpload";
 import { toast } from "@/lib/toast";
 import { proxiedImageUrl } from "@/lib/imageSizes";
@@ -223,6 +224,10 @@ export default function SuperadminVendorsPage() {
   // Logo modal state
   const [logoModalOpen, setLogoModalOpen] = useState(false);
   const [logoUrlInput, setLogoUrlInput] = useState("");
+
+  // Photo modal state
+  const [photoModalOpen, setPhotoModalOpen] = useState(false);
+  const [editingPhotoIndex, setEditingPhotoIndex] = useState<number | null>(null);
 
   async function refresh(searchQuery?: string) {
     setError(null);
@@ -1171,7 +1176,10 @@ export default function SuperadminVendorsPage() {
                               objectPosition: `${img.focus_x ?? 50}% ${img.focus_y ?? 50}%`,
                               transform: `scale(${img.zoom ?? 1})`,
                             }}
-                            onClick={() => openCropModal(idx)}
+                            onClick={() => {
+                              setEditingPhotoIndex(idx);
+                              setPhotoModalOpen(true);
+                            }}
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-[10px] text-black/40">
@@ -1235,41 +1243,17 @@ export default function SuperadminVendorsPage() {
                   <div
                     className="w-[140px] h-[93px] rounded-[3px] border border-black/10 border-dashed bg-black/[0.02] flex flex-col items-center justify-center cursor-pointer hover:bg-black/[0.05] transition-colors"
                     onClick={() => {
-                      setEditImages((imgs) => [
-                        ...imgs,
-                        { image_url: "", caption: "", is_cover: editImages.length === 0, display_order: imgs.length + 1, focus_x: 50, focus_y: 50, zoom: 1 },
-                      ]);
+                      setEditingPhotoIndex(null);
+                      setPhotoModalOpen(true);
                     }}
                   >
                     <div className="text-[24px] text-black/40">+</div>
-                    <div className="text-[10px] text-black/40 mt-1">Add photo</div>
+                    <div className="text-[10px] text-black/40 mt-1">Add photos</div>
                   </div>
                 </div>
 
-                {/* Upload dropzone for latest added image (if empty) */}
-                {editImages.length > 0 && editImages[editImages.length - 1]?.image_url === "" && editingVendor && (
-                  <div className="mt-2">
-                    <ImageUploadDropzone
-                      bucket="vendor-assets"
-                      folder="gallery"
-                      entityId={String(editingVendor.id)}
-                      label="Upload Photo"
-                      description="JPG, PNG, WebP up to 2MB. Will be compressed if needed."
-                      onUploadComplete={(result: UploadResult) => {
-                        const newImages = [...editImages];
-                        newImages[newImages.length - 1].image_url = result.url;
-                        setEditImages(newImages);
-                      }}
-                      onClear={() => {
-                        const newImages = [...editImages];
-                        newImages[newImages.length - 1].image_url = "";
-                        setEditImages(newImages);
-                      }}
-                      existingUrl=""
-                    />
 
-                  </div>
-                )}
+
               </section>
 
               {/* Videos Section */}
@@ -2101,6 +2085,36 @@ export default function SuperadminVendorsPage() {
           </div>
         </div>
       ) : null}
+      {/* Photo Modal */}
+      <PhotoModal
+        open={photoModalOpen}
+        photo={editingPhotoIndex !== null ? editImages[editingPhotoIndex] : null}
+        isNew={editingPhotoIndex === null}
+        onCancel={() => {
+          setPhotoModalOpen(false);
+          setEditingPhotoIndex(null);
+        }}
+        onSave={(photos) => {
+          if (editingPhotoIndex !== null) {
+            const photo = photos[0];
+            setEditImages(rows => rows.map((r, i) => (i === editingPhotoIndex ? photo : r)));
+          } else {
+            const newPhotosWithOrder = photos.map((p, idx) => ({
+              ...p,
+              display_order: editImages.length + idx + 1
+            }));
+            setEditImages(rows => ensureSingleCover([...rows, ...newPhotosWithOrder]));
+          }
+          setPhotoModalOpen(false);
+          setEditingPhotoIndex(null);
+        }}
+        onDelete={editingPhotoIndex !== null ? () => {
+          setEditImages(rows => rows.filter((_, i) => i !== editingPhotoIndex));
+          setPhotoModalOpen(false);
+          setEditingPhotoIndex(null);
+        } : undefined}
+      />
     </div>
   );
 }
+

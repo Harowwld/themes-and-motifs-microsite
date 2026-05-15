@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "../../../lib/supabaseBrowser";
 import { toast } from "../../../lib/toast";
 import CoverCropperModal from "./CoverCropperModal";
-import PhotoModal from "./PhotoModal";
+import PhotoModal from "@/components/PhotoModal";
 import VideoModal from "./VideoModal";
 import { ImageUploadDropzone } from "@/components/ImageUploadDropzone";
 import PromoQRCode from "@/components/PromoQRCode";
@@ -1534,7 +1534,7 @@ export default function VendorDashboardPage() {
                         className="aspect-square rounded-[3px] border border-dashed border-black/20 bg-[#fcfbf9] hover:bg-black/5 transition-colors flex flex-col items-center justify-center gap-1"
                       >
                         <span className="text-[20px] text-black/40">+</span>
-                        <span className="text-[11px] font-semibold text-black/50">Add photo</span>
+                        <span className="text-[11px] font-semibold text-black/50">Add photos</span>
                       </button>
                     </div>
 
@@ -1555,11 +1555,16 @@ export default function VendorDashboardPage() {
                         setPhotoModalOpen(false);
                         setEditingPhotoIndex(null);
                       }}
-                      onSave={(photo) => {
+                      onSave={(photos) => {
                         if (editingPhotoIndex !== null) {
+                          const photo = photos[0];
                           setImages(rows => rows.map((r, i) => (i === editingPhotoIndex ? photo : r)));
                         } else {
-                          setImages(rows => ensureSingleCover([...rows, { ...photo, display_order: rows.length + 1 }]));
+                          const newPhotosWithOrder = photos.map((p, idx) => ({
+                            ...p,
+                            display_order: images.length + idx + 1
+                          }));
+                          setImages(rows => ensureSingleCover([...rows, ...newPhotosWithOrder]));
                         }
                         setPhotoModalOpen(false);
                         setEditingPhotoIndex(null);
