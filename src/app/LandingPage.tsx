@@ -1,7 +1,5 @@
+import { Suspense } from "react";
 import { unstable_cache } from "next/cache";
- 
-export const dynamic = "force-dynamic";
- 
 import { createSupabaseServerClient } from "../lib/supabaseServer";
 import CategoryBrowser from "./components/CategoryBrowser";
 import HeroSection from "./sections/HeroSection";
@@ -118,13 +116,17 @@ export default async function LandingPage({
 
           <div className="my-12 h-px bg-gradient-to-r from-transparent via-black/15 to-transparent" />
 
-          {/* Featured section - cached, no Suspense */}
-          <LandingFeaturedDirect />
+          {/* Featured section - now with Suspense for streaming */}
+          <Suspense fallback={<div className="h-64 animate-pulse bg-gray-200 rounded-lg" />}>
+            <LandingFeaturedDirect />
+          </Suspense>
 
           <div className="my-12 h-px bg-gradient-to-r from-transparent via-black/15 to-transparent" />
 
-          {/* Vendors section - cached, no Suspense */}
-          <LandingVendorsDirect page={page} pageSize={pageSize} sort={sort} />
+          {/* Vendors section - now with Suspense for streaming */}
+          <Suspense fallback={<div className="h-96 animate-pulse bg-gray-200 rounded-lg" />}>
+            <LandingVendorsDirect page={page} pageSize={pageSize} sort={sort} />
+          </Suspense>
 
         </main>
       </div>

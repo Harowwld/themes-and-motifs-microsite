@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { createSupabaseBrowserClient } from "../../lib/supabaseBrowser";
@@ -13,7 +13,7 @@ function normalizeReturnTo(v: string | null) {
   return raw;
 }
 
-export default function SignInPage() {
+function SignInPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);
@@ -148,5 +148,13 @@ export default function SignInPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function SignInPage() {
+  return (
+    <React.Suspense fallback={<div className="min-h-screen bg-[#fafafa] flex items-center justify-center"><div className="w-8 h-8 rounded-full border-4 border-[#a67c52] border-t-transparent animate-spin"></div></div>}>
+      <SignInPageContent />
+    </React.Suspense>
   );
 }

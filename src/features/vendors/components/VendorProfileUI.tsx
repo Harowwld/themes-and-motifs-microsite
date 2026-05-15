@@ -10,6 +10,8 @@ import {
   FaGlobe,
   FaLink,
 } from "react-icons/fa6";
+import Image from "next/image";
+import { proxiedImageUrl } from "@/lib/imageSizes";
 
 import VendorPhotosCarousel from "./VendorPhotosCarousel";
 import ClaimVendorButton from "./ClaimVendorButton";
@@ -18,14 +20,6 @@ import SaveVendorCTA from "./SaveVendorCTA";
 import VendorReviewForm from "../../../app/vendors/[slug]/VendorReviewForm";
 import VendorQRCode from "../../../components/VendorQRCode";
 
-function proxiedImageUrl(url: string) {
-  const u = (url ?? "").trim();
-  if (!u) return u;
-  if (u.includes("drive.google.com")) {
-    return `/api/image-proxy?url=${encodeURIComponent(u)}`;
-  }
-  return u;
-}
 
 function clampPct(v: number) {
   if (!Number.isFinite(v)) return 50;
@@ -44,7 +38,7 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
   const location = locationParts.join(", ") || null;
 
   const cover = images.find((i: any) => i.is_cover) ?? images[0];
-  const coverUrl = cover?.image_url ? proxiedImageUrl(cover.image_url) : "";
+  const coverUrl = cover?.image_url ? proxiedImageUrl(cover.image_url) ?? "" : "";
   const logoUrl = vendor.logo_url ? proxiedImageUrl(vendor.logo_url) : null;
 
   const isPremium = (vendor.plan_name ?? "").toLowerCase().includes("premium");
@@ -60,13 +54,22 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
       {/* Hero Section with Cover */}
       <section className="relative">
         <div
-          className="h-56 sm:h-72 w-full shadow-[0_4px_12px_rgba(0,0,0,0.08)]"
+          className="h-56 sm:h-72 w-full shadow-[0_4px_12px_rgba(0,0,0,0.08)] relative overflow-hidden"
           style={{
-            background: cover
-              ? `url(${coverUrl}) center/cover no-repeat`
-              : "linear-gradient(135deg, rgba(166,139,106,0.2), rgba(166,139,106,0.05))",
+            background: "linear-gradient(135deg, rgba(166,139,106,0.2), rgba(166,139,106,0.05))",
           }}
-        />
+        >
+          {coverUrl && (
+            <Image
+              src={coverUrl}
+              alt="Cover photo"
+              fill
+              sizes="100vw"
+              priority
+              className="object-cover object-center"
+            />
+          )}
+        </div>
       </section>
 
       {/* Profile Header */}
@@ -76,13 +79,15 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
             {/* Logo */}
             <div className="h-28 w-28 sm:h-36 sm:w-36 rounded-2xl border-4 border-white bg-white shadow-[0_4px_12px_rgba(0,0,0,0.1)] overflow-hidden flex items-center justify-center shrink-0 -mb-2">
               {logoUrl ? (
-                <img
-                  src={logoUrl}
-                  alt={`${vendor.business_name} logo`}
-                  className="h-full w-full object-contain"
-                  loading="lazy"
-                  referrerPolicy="no-referrer"
-                />
+                <div className="relative h-full w-full">
+                  <Image
+                    src={logoUrl}
+                    alt={`${vendor.business_name} logo`}
+                    fill
+                    sizes="(max-width: 640px) 112px, 144px"
+                    className="object-contain"
+                  />
+                </div>
               ) : (
                 <div className="h-full w-full bg-[#fcfbf9] flex items-center justify-center text-[28px] font-bold text-[#a68b6a]">
                   {vendor.business_name.charAt(0).toUpperCase()}
@@ -125,11 +130,13 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
                     <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-white">10</span>
                   </div>
                 ) : isPremium ? (
-                  <span className="inline-flex items-center justify-center h-6 w-6" title="Verified Premium Vendor">
-                    <img
+                  <span className="inline-flex items-center justify-center h-6 w-6 relative" title="Verified Premium Vendor">
+                    <Image
                       src="/cropped-vecteezy_verification-badge-set-guaranteed-stamp-or-verified-badge_23900241.svg"
                       alt="Verified Premium Vendor"
-                      className="h-full w-full"
+                      fill
+                      sizes="24px"
+                      className="object-contain"
                     />
                   </span>
                 ) : null}
@@ -216,18 +223,17 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
                         {/* Left: Image */}
                         {p.image_url ? (
                           <div className="w-20 sm:w-24 md:w-28 shrink-0 relative overflow-hidden">
-                            <div className="h-full min-h-20 sm:min-h-24">
-                              <img
-                                src={proxiedImageUrl(p.image_url)}
+                            <div className="h-full min-h-20 sm:min-h-24 relative">
+                              <Image
+                                src={proxiedImageUrl(p.image_url) ?? p.image_url}
                                 alt=""
-                                className="h-full w-full object-cover"
+                                fill
+                                sizes="(max-width: 640px) 80px, (max-width: 768px) 96px, 112px"
+                                className="object-cover"
                                 style={{
-                                  transformOrigin: `${clampPct(Number(p.image_focus_x ?? 50))}% ${clampPct(Number(p.image_focus_y ?? 50))}%`,
+                                  objectPosition: `${clampPct(Number(p.image_focus_x ?? 50))}% ${clampPct(Number(p.image_focus_y ?? 50))}%`,
                                   transform: `scale(${clampZoom(Number(p.image_zoom ?? 1))})`,
                                 }}
-                                loading="lazy"
-                                decoding="async"
-                                referrerPolicy="no-referrer"
                                 draggable={false}
                               />
                             </div>

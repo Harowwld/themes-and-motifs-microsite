@@ -138,3 +138,28 @@ export const IMAGE_PRIORITY = {
   promo: false,
   thumbnail: false,
 };
+
+// ---------------------------------------------------------------------------
+// Proxy helper
+// ---------------------------------------------------------------------------
+
+/**
+ * Routes external image URLs through the internal `/api/image-proxy` endpoint
+ * so that `next/image` never needs per-domain `remotePatterns` entries.
+ *
+ * Pass-through cases (returned as-is):
+ *  - empty / nullish values  → returns `null`
+ *  - relative paths (`/…`)   → already on-origin, no proxy needed
+ *  - data URIs               → inline, no proxy needed
+ *  - Supabase Storage URLs   → already whitelisted in next.config.ts
+ *
+ * Everything else (http/https external URLs) is proxied.
+ */
+export function proxiedImageUrl(url: string | null | undefined): string | null {
+  const u = (url ?? "").trim();
+  if (!u) return null;
+  if (u.startsWith("/") || u.startsWith("data:")) return u;
+  if (u.includes(".supabase.co")) return u;
+  // All other absolute URLs → route through proxy
+  return `/api/image-proxy?url=${encodeURIComponent(u)}`;
+}

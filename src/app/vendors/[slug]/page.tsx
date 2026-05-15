@@ -43,6 +43,13 @@ type VendorSocialLinkRow = {
   url: string;
 };
 
+type VendorVideoRow = {
+  id: number;
+  video_url: string;
+  title: string | null;
+  display_order: number;
+};
+
 type PromoRow = {
   id: number;
   title: string;
@@ -147,7 +154,7 @@ async function VendorDetailData({ slug }: { slug: string }) {
 
   // Add cache-busting timestamp for images
 const cacheBuster = Date.now();
-const [categoriesRes, affiliationsRes, imagesRes, socialsRes, reviewsRes, promosRes, themesRes] = await Promise.all([
+const [categoriesRes, affiliationsRes, imagesRes, socialsRes, reviewsRes, promosRes, themesRes, videosRes] = await Promise.all([
     supabase
       .from("vendor_categories")
       .select("category:categories(id,name,slug)")
@@ -190,6 +197,12 @@ const [categoriesRes, affiliationsRes, imagesRes, socialsRes, reviewsRes, promos
       .select("theme:themes(id,name,slug)")
       .eq("vendor_id", vendor.id)
       .limit(20),
+    supabase
+      .from("vendor_videos")
+      .select("id,video_url,title,display_order")
+      .eq("vendor_id", vendor.id)
+      .order("display_order", { ascending: true })
+      .limit(20),
   ]);
 
   const categoryLinks = (categoriesRes.data ?? []) as unknown as {
@@ -205,6 +218,7 @@ const [categoriesRes, affiliationsRes, imagesRes, socialsRes, reviewsRes, promos
   const themeLinks = (themesRes.data ?? []) as unknown as {
     theme: { id: number; name: string; slug: string } | { id: number; name: string; slug: string }[] | null;
   }[];
+  const videos = (videosRes.data ?? []) as VendorVideoRow[];
 
   const categories = categoryLinks
     .flatMap((r) => (Array.isArray(r.category) ? r.category : r.category ? [r.category] : []))
@@ -247,7 +261,21 @@ const [categoriesRes, affiliationsRes, imagesRes, socialsRes, reviewsRes, promos
       categories={categories as any}
       affiliations={affiliations as any}
       themes={themes as any}
-      images={images as any}
+      images={[
+        ...images.map(img => ({ ...img, media_type: 'image' })),
+        ...videos.map(vid => ({
+          id: vid.id,
+          image_url: vid.video_url,
+          caption: vid.title,
+          is_cover: false,
+          display_order: vid.display_order,
+          media_type: 'video'
+        }))
+      ].sort((a, b) => {
+        if (a.is_cover) return -1;
+        if (b.is_cover) return 1;
+        return (a.display_order ?? 0) - (b.display_order ?? 0);
+      }) as any}
       socials={socials}
       reviews={reviews as any}
       promos={promos}

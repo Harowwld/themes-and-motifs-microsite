@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import Image from "next/image";
+import { proxiedImageUrl } from "@/lib/imageSizes";
 
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(false);
@@ -56,14 +58,6 @@ function clampZoom(v: number) {
   return Math.max(1, Math.min(3, v));
 }
 
-function proxiedImageUrl(url: string) {
-  const u = (url ?? "").trim();
-  if (!u) return u;
-  if (u.includes("drive.google.com")) {
-    return `/api/image-proxy?url=${encodeURIComponent(u)}`;
-  }
-  return u;
-}
 
 function PromoCard({
   promo,
@@ -85,7 +79,7 @@ function PromoCard({
   }
   const vendorName = vendor?.business_name;
   const vendorLogo = vendor?.logo_url;
-  const coverUrl = promo.image_url ? proxiedImageUrl(promo.image_url) : "";
+  const coverUrl = promo.image_url ? proxiedImageUrl(promo.image_url) ?? "" : "";
   const fx = clampPct(Number(promo.image_focus_x ?? 50));
   const fy = clampPct(Number(promo.image_focus_y ?? 50));
   const z = clampZoom(Number(promo.image_zoom ?? 1));
@@ -103,14 +97,13 @@ function PromoCard({
     >
       <div className="absolute inset-0">
         {coverUrl ? (
-          <img
+          <Image
             src={coverUrl}
             alt=""
-            className="h-full w-full object-cover"
+            fill
+            sizes={isGrid ? "(max-width: 640px) 50vw, 320px" : "320px"}
+            className="object-cover"
             style={{ transformOrigin: `${fx}% ${fy}%`, transform: `scale(${z})` }}
-            loading="lazy"
-            decoding="async"
-            referrerPolicy="no-referrer"
             draggable={false}
           />
         ) : (
@@ -146,13 +139,12 @@ function PromoCard({
         </div>
         {vendorLogo ? (
           <div className={`rounded-[6px] border border-white/40 bg-white/50 backdrop-blur-sm overflow-hidden flex-shrink-0 shadow-lg ${isGrid ? 'h-10 w-10' : 'h-16 w-16'}`}>
-            <img
-              src={proxiedImageUrl(vendorLogo)}
+            <Image
+              src={proxiedImageUrl(vendorLogo) ?? vendorLogo}
               alt=""
-              className="h-full w-full object-cover"
-              loading="lazy"
-              decoding="async"
-              referrerPolicy="no-referrer"
+              fill
+              sizes={isGrid ? "40px" : "64px"}
+              className="object-cover"
             />
           </div>
         ) : null}

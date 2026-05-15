@@ -7,6 +7,7 @@ import { createSupabaseBrowserClient } from "../../../lib/supabaseBrowser";
 import { toast } from "../../../lib/toast";
 import CoverCropperModal from "./CoverCropperModal";
 import PhotoModal from "./PhotoModal";
+import VideoModal from "./VideoModal";
 import { ImageUploadDropzone } from "@/components/ImageUploadDropzone";
 import PromoQRCode from "@/components/PromoQRCode";
 import VendorProfileUI from "../../../features/vendors/components/VendorProfileUI";
@@ -55,6 +56,7 @@ type VendorImage = {
   media_type?: 'image' | 'video';
 };
 type Theme = { id: number; name: string; slug: string };
+type VendorVideo = { id: number; video_url: string; title: string | null; display_order: number };
 
 type VendorPromo = {
   id: number;
@@ -467,9 +469,10 @@ export default function VendorDashboardPage() {
   ]);
   const [socialPlatformChoices, setSocialPlatformChoices] = useState<SocialPlatformOption[]>(["facebook", "instagram", "tiktok"]);
   const [socialCustomPlatforms, setSocialCustomPlatforms] = useState<string[]>(["", "", ""]);
-  const [images, setImages] = useState<Array<{ image_url: string; caption: string; is_cover: boolean; display_order: number; media_type: 'image' | 'video' }>>([
-    { image_url: "", caption: "", is_cover: true, display_order: 1, media_type: 'image' },
+  const [images, setImages] = useState<Array<{ image_url: string; caption: string; is_cover: boolean; display_order: number }>>([
+    { image_url: "", caption: "", is_cover: true, display_order: 1 },
   ]);
+  const [videos, setVideos] = useState<VendorVideo[]>([]);
 
   const [promos, setPromos] = useState<VendorPromo[]>([]);
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
@@ -494,6 +497,9 @@ export default function VendorDashboardPage() {
 
   const [promoModalOpen, setPromoModalOpen] = useState(false);
   const [editingPromoId, setEditingPromoId] = useState<number | null>(null);
+
+  const [videoModalOpen, setVideoModalOpen] = useState(false);
+  const [editingVideoIndex, setEditingVideoIndex] = useState<number | null>(null);
 
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
@@ -808,6 +814,7 @@ export default function VendorDashboardPage() {
             themes: { id: number; theme: Theme | Theme[] | null }[];
             allThemes: Theme[];
             subscription: { id: number; status: string; expiry_date: string | null; verification_doc_url: string | null } | null;
+            videos: VendorVideo[];
           }>("/api/vendor/profile", session.access_token);
 
           setVendor(json.vendor);
@@ -863,8 +870,10 @@ export default function VendorDashboardPage() {
           setImages(
             normalizedImgs.length > 0
               ? ensureSingleCover(normalizedImgs)
-              : [{ image_url: "", caption: "", is_cover: true, display_order: 1, media_type: 'image' }]
+              : [{ image_url: "", caption: "", is_cover: true, display_order: 1 }]
           );
+
+          setVideos(json.videos ?? []);
 
           // Normalize themes
           const normalizedThemes = (json.themes ?? [])
@@ -1043,10 +1052,35 @@ export default function VendorDashboardPage() {
       setImages(
         normalizedImgs.length > 0
           ? ensureSingleCover(normalizedImgs)
-          : [{ image_url: "", caption: "", is_cover: true, display_order: 1, media_type: 'image' }]
+          : [{ image_url: "", caption: "", is_cover: true, display_order: 1 }]
       );
     } catch (e: any) {
       toast.error(e?.message ?? "Failed to save photos.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function saveVideos() {
+    if (!token) return;
+    setSaving(true);
+    try {
+      const cleaned = videos.filter((v) => v.video_url.trim().length > 0);
+      const payload = cleaned.map((v, idx) => ({
+        video_url: v.video_url.trim(),
+        title: v.title || null,
+        display_order: idx + 1,
+      }));
+
+      const res = await apiFetch<{ videos: VendorVideo[] }>("/api/vendor/videos", token, {
+        method: "PUT",
+        body: JSON.stringify({ videos: payload }),
+      });
+
+      setVideos(res.videos ?? []);
+      toast.success("Videos saved.");
+    } catch (e: any) {
+      toast.error(e?.message ?? "Failed to save videos.");
     } finally {
       setSaving(false);
     }
@@ -1077,6 +1111,7 @@ export default function VendorDashboardPage() {
                   </button>
                 ) : null}
               </div>
+            </div>
 
               <div className="p-6 grid gap-6">
                 {loading ? <DashboardSkeleton /> : null}
@@ -1540,6 +1575,91 @@ export default function VendorDashboardPage() {
 
                 <section className="rounded-[3px] border border-black/10 bg-white overflow-hidden">
                   <div className="px-4 py-3 border-b border-black/5">
+                    <div className="text-[13px] font-semibold text-[#2c2c2c]">Videos</div>
+                    <div className="mt-1 text-[12px] text-black/45">Embed YouTube or Vimeo videos to showcase your work.</div>
+                  </div>
+
+                  <div className="p-4 grid gap-4">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                      {videos.map((vid, idx) => (
+                        <div key={idx} className="relative aspect-video rounded-[3px] border border-black/10 overflow-hidden bg-black group">
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <span className="text-[24px]">🎥</span>
+                          </div>
+                          <div className="absolute bottom-0 left-0 right-0 bg-black/60 p-2 text-[10px] text-white truncate">
+                            {vid.title || vid.video_url}
+                          </div>
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setEditingVideoIndex(idx);
+                                setVideoModalOpen(true);
+                              }}
+                              className="h-8 px-2 rounded-[3px] bg-white text-[11px] font-semibold text-[#6e4f33] shadow-sm"
+                            >
+                              Edit
+                            </button>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setVideos(rows => rows.filter((_, i) => i !== idx))}
+                            className="absolute top-2 right-2 h-6 w-6 rounded-full bg-white/90 text-black/60 hover:text-[#b42318] flex items-center justify-center text-[14px] shadow-sm"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditingVideoIndex(null);
+                          setVideoModalOpen(true);
+                        }}
+                        className="aspect-video rounded-[3px] border border-dashed border-black/20 bg-[#fcfbf9] hover:bg-black/5 transition-colors flex flex-col items-center justify-center gap-1"
+                      >
+                        <span className="text-[20px] text-black/40">+</span>
+                        <span className="text-[11px] font-semibold text-black/50">Add video</span>
+                      </button>
+                    </div>
+
+                    <div className="flex justify-end pt-2">
+                      <button type="button" onClick={saveVideos} disabled={saving} className="h-9 px-4 rounded-[3px] bg-[#a67c52] text-white text-[13px] font-semibold hover:bg-[#8e6a46] transition-colors disabled:opacity-60">
+                        <span className="inline-flex items-center gap-2">
+                          {saving ? <Spinner className="text-white/90" /> : null}
+                          <span>{saving ? "Saving…" : "Save videos"}</span>
+                        </span>
+                      </button>
+                    </div>
+
+                    <VideoModal
+                      open={videoModalOpen}
+                      video={editingVideoIndex !== null ? videos[editingVideoIndex] : null}
+                      isNew={editingVideoIndex === null}
+                      onCancel={() => {
+                        setVideoModalOpen(false);
+                        setEditingVideoIndex(null);
+                      }}
+                      onSave={(video) => {
+                        if (editingVideoIndex !== null) {
+                          setVideos(rows => rows.map((v, i) => (i === editingVideoIndex ? { ...v, ...video } : v)));
+                        } else {
+                          setVideos(rows => [...rows, { id: Date.now(), ...video }]);
+                        }
+                        setVideoModalOpen(false);
+                        setEditingVideoIndex(null);
+                      }}
+                      onDelete={editingVideoIndex !== null ? () => {
+                        setVideos(rows => rows.filter((_, i) => i !== editingVideoIndex));
+                        setVideoModalOpen(false);
+                        setEditingVideoIndex(null);
+                      } : undefined}
+                    />
+                  </div>
+                </section>
+
+                <section className="rounded-[3px] border border-black/10 bg-white overflow-hidden">
+                  <div className="px-4 py-3 border-b border-black/5">
                     <div className="text-[13px] font-semibold text-[#2c2c2c]">Albums</div>
                     <div className="mt-1 text-[12px] text-black/45">Organize your photos into public albums.</div>
                   </div>
@@ -1830,10 +1950,9 @@ export default function VendorDashboardPage() {
                 )}
               </div>
             </section>
-          </div>
-        </div>
-      </div>
-        </main>
+              </div>
+            </div>
+          </main>
 
         {/* Create Album Modal */}
         {albumModalOpen ? (
@@ -2072,7 +2191,21 @@ export default function VendorDashboardPage() {
                   categories={[]}
                   affiliations={[]}
                   themes={themes}
-                  images={images as any}
+                  images={[
+                    ...images.map(img => ({ ...img, media_type: 'image' })),
+                    ...videos.map(vid => ({
+                      id: vid.id,
+                      image_url: vid.video_url,
+                      caption: vid.title,
+                      is_cover: false,
+                      display_order: vid.display_order,
+                      media_type: 'video'
+                    }))
+                  ].sort((a, b) => {
+                    if (a.is_cover) return -1;
+                    if (b.is_cover) return 1;
+                    return (a.display_order ?? 0) - (b.display_order ?? 0);
+                  }) as any}
                   socials={socials.filter((s) => s.url.trim().length > 0) as any}
                   reviews={inquiries as any}
                   promos={promos}
@@ -2080,8 +2213,8 @@ export default function VendorDashboardPage() {
                 </div>
               </div>
             </div>
-            </div>
           </div>
+        </div>
         ) : null}
       </div>
     </div>

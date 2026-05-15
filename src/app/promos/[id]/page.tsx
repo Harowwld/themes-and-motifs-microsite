@@ -4,6 +4,7 @@ import FadeInOnView from "../../components/FadeInOnView";
 import ShareDeal from "./ShareDeal";
 import PromoCTACard from "./PromoCTACard";
 import PromoQRCode from "../../../components/PromoQRCode";
+import { proxiedImageUrl } from "../../../lib/imageSizes";
 
 type Vendor = {
   id: number;
@@ -44,14 +45,6 @@ function clampZoom(v: number) {
   return Math.max(1, Math.min(3, v));
 }
 
-function proxiedImageUrl(url: string | null | undefined) {
-  const u = (url ?? "").trim();
-  if (!u) return "";
-  if (u.includes("drive.google.com")) {
-    return `/api/image-proxy?url=${encodeURIComponent(u)}`;
-  }
-  return u;
-}
 
 function isPromoCurrentlyValid(promo: Pick<Promo, "valid_from" | "valid_to">) {
   const now = new Date();
@@ -108,7 +101,7 @@ export default async function PromoDetailPage({ params }: Props) {
     notFound();
   }
 
-  const coverUrl = proxiedImageUrl(promo.image_url);
+  const coverUrl = proxiedImageUrl(promo.image_url) ?? "";
   const fx = clampPct(Number(promo.image_focus_x ?? 50));
   const fy = clampPct(Number(promo.image_focus_y ?? 50));
   const z = clampZoom(Number(promo.image_zoom ?? 1));
@@ -186,7 +179,7 @@ export default async function PromoDetailPage({ params }: Props) {
                       >
                         {vendor.logo_url ? (
                           <img
-                            src={proxiedImageUrl(vendor.logo_url)}
+                            src={proxiedImageUrl(vendor.logo_url) ?? vendor.logo_url ?? ""}
                             alt=""
                             className="h-6 w-6 rounded-[3px] object-contain border border-black/10"
                           />
@@ -259,7 +252,7 @@ export default async function PromoDetailPage({ params }: Props) {
                       <div className="h-14 w-14 rounded-[3px] border border-black/10 bg-[#fcfbf9] overflow-hidden flex items-center justify-center shrink-0">
                         {vendor.logo_url ? (
                           <img
-                            src={proxiedImageUrl(vendor.logo_url)}
+                            src={proxiedImageUrl(vendor.logo_url) ?? vendor.logo_url ?? ""}
                             alt=""
                             className="h-full w-full object-contain"
                           />
@@ -353,7 +346,7 @@ async function MorePromos({ currentId }: { currentId: number }) {
         const vendorRaw = promo.vendor;
         const vendor = Array.isArray(vendorRaw) ? vendorRaw[0] ?? null : vendorRaw;
         const vendorName = vendor?.business_name;
-        const coverUrl = proxiedImageUrl(promo.image_url);
+        const coverUrl = proxiedImageUrl(promo.image_url) ?? "";
         const fx = clampPct(Number(promo.image_focus_x ?? 50));
         const fy = clampPct(Number(promo.image_focus_y ?? 50));
         const z = clampZoom(Number(promo.image_zoom ?? 1));

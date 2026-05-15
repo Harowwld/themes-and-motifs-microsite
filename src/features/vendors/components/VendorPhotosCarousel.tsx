@@ -1,7 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import Image from "next/image";
 import { createPortal } from "react-dom";
+import { proxiedImageUrl } from "@/lib/imageSizes";
 
 // Type declarations for video APIs
 declare global {
@@ -26,14 +28,6 @@ type Props = {
   intervalMs?: number;
 };
 
-function proxiedImageUrl(url: string) {
-  const u = (url ?? "").trim();
-  if (!u) return u;
-  if (u.includes("drive.google.com")) {
-    return `/api/image-proxy?url=${encodeURIComponent(u)}`;
-  }
-  return u;
-}
 
 function getVideoEmbedUrl(url: string, enableApi: boolean = false): string | null {
   const u = url.trim();
@@ -98,7 +92,7 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
       const isActuallyVideo = i.media_type === 'video' || isVideoUrl(i.image_url);
       return {
         ...i,
-        image_url: isActuallyVideo ? i.image_url : proxiedImageUrl(i.image_url),
+        image_url: isActuallyVideo ? i.image_url : (proxiedImageUrl(i.image_url) ?? i.image_url),
         media_type: isActuallyVideo ? 'video' : 'image' as const
       };
     }),
@@ -277,16 +271,17 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
           ) : (
             <button
               type="button"
-              className="block h-full w-full"
+              className="block h-full w-full relative"
               onClick={() => openLightbox(activeIndex)}
               aria-label="Open full photo view"
             >
-              <img
+              <Image
                 src={active.image_url}
                 alt={active.caption ?? "Vendor photo"}
-                className="h-full w-full object-contain"
-                loading={activeIndex === 0 ? "eager" : "lazy"}
-                referrerPolicy="no-referrer"
+                fill
+                sizes="(max-width: 640px) 100vw, 800px"
+                className="object-contain"
+                priority={activeIndex === 0}
               />
             </button>
           )}
@@ -321,13 +316,15 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
                   }
                   aria-label={img.caption ?? `Vendor photo ${idx + 1}`}
                 >
-                  <img
-                    src={img.media_type === 'video' ? getVideoThumbnailUrl(img.image_url) || img.image_url : img.image_url}
-                    alt={img.caption ?? `Vendor photo ${idx + 1}`}
-                    className="h-16 w-24 sm:h-20 sm:w-32 object-cover"
-                    loading="lazy"
-                    referrerPolicy="no-referrer"
-                  />
+                  <div className="relative h-16 w-24 sm:h-20 sm:w-32 shrink-0">
+                    <Image
+                      src={img.media_type === 'video' ? getVideoThumbnailUrl(img.image_url) || img.image_url : img.image_url}
+                      alt={img.caption ?? `Vendor photo ${idx + 1}`}
+                      fill
+                      sizes="(max-width: 640px) 96px, 128px"
+                      className="object-cover"
+                    />
+                  </div>
                   {isActive ? <div className="pointer-events-none absolute inset-0 ring-2 ring-[#a67c52]/55" /> : null}
                 </button>
               );
@@ -403,13 +400,16 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
                         )}
                       </div>
                     ) : (
-                      <img
-                        src={normalized[lightboxIndex]?.image_url}
-                        alt={normalized[lightboxIndex]?.caption ?? "Vendor photo"}
-                        className="max-h-[85vh] w-auto max-w-full object-contain"
-                        loading="eager"
-                        referrerPolicy="no-referrer"
-                      />
+                      <div className="relative w-full h-[85vh]">
+                        <Image
+                          src={normalized[lightboxIndex]?.image_url}
+                          alt={normalized[lightboxIndex]?.caption ?? "Vendor photo"}
+                          fill
+                          sizes="100vw"
+                          className="object-contain"
+                          priority
+                        />
+                      </div>
                     )}
                     <div className="mt-3 text-center text-[12px] text-white/70">
                       {lightboxIndex + 1} / {normalized.length}

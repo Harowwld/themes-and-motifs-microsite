@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import Image from "next/image";
 import type { FeaturedVendor } from "../types";
+import { proxiedImageUrl } from "@/lib/imageSizes";
 
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(false);
@@ -24,14 +26,6 @@ function clampZoom(v: number) {
   return Math.max(1, Math.min(3, v));
 }
 
-function proxiedImageUrl(url: string | null | undefined) {
-  const u = (url ?? "").trim();
-  if (!u) return null;
-  if (u.includes("drive.google.com")) {
-    return `/api/image-proxy?url=${encodeURIComponent(u)}`;
-  }
-  return u;
-}
 
 function VendorCard({
   vendor,
@@ -66,14 +60,13 @@ function VendorCard({
       {/* Inner clip wrapper - handles border-radius clipping without breaking backdrop-filter */}
       <div className="absolute inset-0 rounded-[12px] overflow-hidden">
         {coverUrl ? (
-          <img
+          <Image
             src={coverUrl}
             alt=""
-            className="h-full w-full object-cover"
+            fill
+            sizes="(max-width: 640px) 280px, 320px"
+            className="object-cover"
             style={{ transformOrigin: `${fx}% ${fy}%`, transform: `scale(${z})` }}
-            loading="lazy"
-            decoding="async"
-            referrerPolicy="no-referrer"
             draggable={false}
           />
         ) : (
@@ -86,7 +79,7 @@ function VendorCard({
         )}
       </div>
 
-        <div className="absolute inset-x-0 bottom-0 z-20 h-[35%] sm:h-[32%]">
+      <div className="absolute inset-x-0 bottom-0 z-20 h-[35%] sm:h-[32%]">
         {/* Glass blur - clip-path + webkit prefix for Safari */}
         <div
           className="absolute inset-0 bg-white/70 border-t border-white/40 rounded-b-[12px]"
@@ -102,15 +95,16 @@ function VendorCard({
           <div className="flex items-center gap-2 sm:gap-3">
             {logoUrl && (
               <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-md overflow-hidden bg-white shrink-0 shadow-sm">
-                <img
-                  src={logoUrl}
-                  alt={`${vendor.business_name} logo`}
-                  className="h-full w-full object-contain"
-                  loading="lazy"
-                  decoding="async"
-                  referrerPolicy="no-referrer"
-                  draggable={false}
-                />
+                <div className="relative h-full w-full">
+                  <Image
+                    src={logoUrl}
+                    alt={`${vendor.business_name} logo`}
+                    fill
+                    sizes="(max-width: 640px) 48px, 56px"
+                    className="object-contain"
+                    draggable={false}
+                  />
+                </div>
               </div>
             )}
             <div className="min-w-0">
@@ -120,12 +114,14 @@ function VendorCard({
                 </div>
                 {vendor.verified_status === true && (
                   <span className="inline-flex items-center justify-center h-5 w-5 shrink-0" aria-label="Verified">
-                    <img
-                      src="/cropped-vecteezy_verification-badge-set-guaranteed-stamp-or-verified-badge_23900241.svg"
-                      alt="Verified"
-                      className="h-full w-full"
-                      loading="lazy"
-                    />
+                    <div className="relative h-full w-full">
+                      <Image
+                        src="/cropped-vecteezy_verification-badge-set-guaranteed-stamp-or-verified-badge_23900241.svg"
+                        alt="Verified"
+                        fill
+                        sizes="20px"
+                      />
+                    </div>
                   </span>
                 )}
               </div>
@@ -281,11 +277,10 @@ export default function InfiniteVendorCarousel({ vendors }: { vendors: FeaturedV
             <button
               key={i}
               onClick={() => handleDotClick(i)}
-              className={`transition-all duration-300 min-h-[8px] min-w-[8px] ${
-                isActive
+              className={`transition-all duration-300 min-h-[8px] min-w-[8px] ${isActive
                   ? "w-6 h-2 bg-[#a68b6a] rounded-full"
                   : "w-2 h-2 bg-[#a68b6a]/30 rounded-full hover:bg-[#a68b6a]/50"
-              }`}
+                }`}
               aria-label={`Go to slide ${i + 1}`}
             />
           );

@@ -31,7 +31,7 @@ export async function GET(req: Request) {
     const { supabase, user } = await assertVendor(req);
     const vendor = await getVendorForUser(supabase, user.id);
 
-    const [socialsRes, imagesRes, themesRes, allThemesRes, subscriptionRes] = await Promise.all([
+    const [socialsRes, imagesRes, themesRes, allThemesRes, subscriptionRes, videosRes] = await Promise.all([
       supabase
         .from("vendor_social_links")
         .select("id,platform,url")
@@ -60,6 +60,12 @@ export async function GET(req: Request) {
         .order("created_at", { ascending: false })
         .limit(1)
         .maybeSingle(),
+      supabase
+        .from("vendor_videos")
+        .select("id,video_url,title,display_order")
+        .eq("vendor_id", vendor.id)
+        .order("display_order", { ascending: true })
+        .limit(20),
     ]);
 
     if (socialsRes.error) return Response.json({ error: socialsRes.error.message }, { status: 500 });
@@ -67,6 +73,7 @@ export async function GET(req: Request) {
     if (themesRes.error) return Response.json({ error: themesRes.error.message }, { status: 500 });
     if (allThemesRes.error) return Response.json({ error: allThemesRes.error.message }, { status: 500 });
     if (subscriptionRes.error && subscriptionRes.error.code !== 'PGRST116') return Response.json({ error: subscriptionRes.error.message }, { status: 500 });
+    if (videosRes.error) return Response.json({ error: videosRes.error.message }, { status: 500 });
 
     return Response.json(
       {
@@ -76,6 +83,7 @@ export async function GET(req: Request) {
         themes: themesRes.data ?? [],
         allThemes: allThemesRes.data ?? [],
         subscription: subscriptionRes.data ?? null,
+        videos: videosRes.data ?? [],
       },
       { status: 200 }
     );

@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabaseBrowser";
+import { proxiedImageUrl } from "@/lib/imageSizes";
 
 type SavedVendor = {
   id: string;
@@ -25,14 +26,6 @@ type SavedVendor = {
   };
 };
 
-function proxiedImageUrl(url: string | null | undefined) {
-  const u = (url ?? "").trim();
-  if (!u) return null;
-  if (u.includes("drive.google.com")) {
-    return `/api/image-proxy?url=${encodeURIComponent(u)}`;
-  }
-  return u;
-}
 
 function VendorCard({ vendor, onRemove }: { vendor: SavedVendor["vendor"]; onRemove: () => void }) {
   const logoUrl = proxiedImageUrl(vendor.logo_url);

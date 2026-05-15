@@ -19,24 +19,6 @@ type FeaturedPromo = {
   }[];
 };
 
-function clampPct(v: number) {
-  if (!Number.isFinite(v)) return 50;
-  return Math.max(0, Math.min(100, v));
-}
-
-function clampZoom(v: number) {
-  if (!Number.isFinite(v)) return 1;
-  return Math.max(1, Math.min(3, v));
-}
-
-function proxiedImageUrl(url: string) {
-  const u = (url ?? "").trim();
-  if (!u) return u;
-  if (u.includes("drive.google.com")) {
-    return `/api/image-proxy?url=${encodeURIComponent(u)}`;
-  }
-  return u;
-}
 
 export default function PromosSection({ promos }: { promos: FeaturedPromo[] }) {
   return (

@@ -5,15 +5,8 @@ import ImageCropperModal from "../ImageCropper";
 import { ImageUploadDropzone } from "@/components/ImageUploadDropzone";
 import type { UploadResult } from "@/hooks/useImageUpload";
 import { toast } from "@/lib/toast";
+import { proxiedImageUrl } from "@/lib/imageSizes";
 
-function proxiedImageUrl(url: string) {
-  const u = (url ?? "").trim();
-  if (!u) return u;
-  if (u.includes("drive.google.com")) {
-    return `/api/image-proxy?url=${encodeURIComponent(u)}`;
-  }
-  return u;
-}
 
 type Plan = { id: number; name: string };
 
@@ -60,6 +53,13 @@ type VendorImage = {
   focus_x?: number | null;
   focus_y?: number | null;
   zoom?: number | null;
+};
+
+type VendorVideo = {
+  id?: number;
+  video_url: string;
+  title: string | null;
+  display_order: number;
 };
 
 type VendorSocial = {
@@ -186,6 +186,7 @@ export default function SuperadminVendorsPage() {
   });
   const [editSubscription, setEditSubscription] = useState<{ id: number; status: string; expiry_date: string | null; verification_doc_url: string | null } | null>(null);
   const [editImages, setEditImages] = useState<VendorImage[]>([]);
+  const [editVideos, setEditVideos] = useState<VendorVideo[]>([]);
   const [editSocials, setEditSocials] = useState<VendorSocial[]>([]);
   const [editAffiliations, setEditAffiliations] = useState<Affiliation[]>([]);
   const [allAffiliations, setAllAffiliations] = useState<Affiliation[]>([]);
@@ -278,6 +279,7 @@ export default function SuperadminVendorsPage() {
         apiFetch<{
           vendor: Vendor;
           images: VendorImage[];
+          videos: VendorVideo[];
           socials: VendorSocial[];
           affiliations: VendorAffiliation[];
           allAffiliations: Affiliation[];
@@ -335,6 +337,18 @@ export default function SuperadminVendorsPage() {
         normalizedImgs.length > 0
           ? normalizedImgs
           : [{ image_url: "", caption: "", is_cover: true, display_order: 1, focus_x: 50, focus_y: 50, zoom: 1 }]
+      );
+
+      const normalizedVideos = (res.videos ?? []).map((v, idx) => ({
+        id: v.id,
+        video_url: v.video_url,
+        title: v.title ?? "",
+        display_order: v.display_order ?? idx + 1,
+      }));
+      setEditVideos(
+        normalizedVideos.length > 0
+          ? normalizedVideos
+          : [{ video_url: "", title: "", display_order: 1 }]
       );
 
       const normalizedSocials = (res.socials ?? []).map((s) => ({
@@ -461,8 +475,31 @@ export default function SuperadminVendorsPage() {
         method: "PUT",
         body: JSON.stringify({ images: cleaned }),
       });
+    } finally {
+      setEditLoading(false);
+    }
+  }
+
+  async function saveVendorVideos() {
+    if (!editingVendor) return;
+    setEditLoading(true);
+    setEditError(null);
+
+    try {
+      const cleaned = editVideos
+        .filter((v) => v.video_url.trim())
+        .map((v, idx) => ({
+          video_url: v.video_url.trim(),
+          title: v.title?.trim() || null,
+          display_order: idx + 1,
+        }));
+
+      await apiFetch<{ videos: VendorVideo[] }>(`/api/admin/vendors/${editingVendor.id}/videos`, {
+        method: "PUT",
+        body: JSON.stringify({ videos: cleaned }),
+      });
     } catch (e: any) {
-      setEditError(e?.message ?? "Failed to save images.");
+      setEditError(e?.message ?? "Failed to save videos.");
     } finally {
       setEditLoading(false);
     }
@@ -566,6 +603,7 @@ export default function SuperadminVendorsPage() {
   async function saveAllAndClose() {
     await saveVendorProfile();
     await saveVendorImages();
+    await saveVendorVideos();
     await saveVendorSocials();
     await saveVendorAffiliations();
     await saveVendorThemes();
@@ -997,7 +1035,7 @@ export default function SuperadminVendorsPage() {
                       <div className="w-[80px] h-[80px] rounded-[3px] border border-black/10 overflow-hidden bg-black/5 flex items-center justify-center">
                         {editForm.logo_url ? (
                           <img
-                            src={proxiedImageUrl(editForm.logo_url)}
+                            src={proxiedImageUrl(editForm.logo_url) ?? editForm.logo_url}
                             alt="Logo"
                             className="w-full h-full object-contain"
                           />
@@ -1103,7 +1141,7 @@ export default function SuperadminVendorsPage() {
                   <div className="mt-2">
                     <span className="text-[12px] font-semibold text-black/55 block mb-1">Verification Document</span>
                     <a 
-                      href={proxiedImageUrl(editSubscription.verification_doc_url)} 
+                      href={proxiedImageUrl(editSubscription.verification_doc_url) ?? editSubscription.verification_doc_url}
                       target="_blank" 
                       rel="noreferrer"
                       className="inline-flex items-center gap-2 h-9 px-3 rounded-[3px] border border-black/10 bg-white text-[12px] font-semibold text-[#6e4f33] hover:bg-black/5 transition-colors"
@@ -1126,7 +1164,7 @@ export default function SuperadminVendorsPage() {
                       <div className="w-[140px] h-[93px] rounded-[3px] border border-black/10 overflow-hidden bg-black/5 relative">
                         {img.image_url ? (
                           <img
-                            src={proxiedImageUrl(img.image_url)}
+                            src={proxiedImageUrl(img.image_url) ?? img.image_url}
                             alt=""
                             className="w-full h-full object-cover cursor-pointer"
                             style={{
@@ -1249,6 +1287,62 @@ export default function SuperadminVendorsPage() {
                     />
                   </div>
                 )}
+              </section>
+
+              {/* Videos Section */}
+              <section className="grid gap-4">
+                <div className="text-[13px] font-semibold text-[#2c2c2c] border-b border-black/5 pb-2 flex items-center justify-between">
+                  <span>Videos</span>
+                  <button
+                    type="button"
+                    onClick={() => setEditVideos((v) => [...v, { video_url: "", title: "", display_order: v.length + 1 }])}
+                    className="text-[12px] text-[#6e4f33] hover:underline"
+                  >
+                    + Add video
+                  </button>
+                </div>
+                <div className="grid gap-3">
+                  {editVideos.map((vid, idx) => (
+                    <div key={idx} className="grid gap-2 sm:grid-cols-[1fr_1fr_auto] items-end">
+                      <label className="grid gap-1">
+                        <span className="text-[11px] text-black/40">Video URL (YouTube/Vimeo)</span>
+                        <input
+                          value={vid.video_url}
+                          onChange={(e) => {
+                            const newVideos = [...editVideos];
+                            newVideos[idx].video_url = e.target.value;
+                            setEditVideos(newVideos);
+                          }}
+                          className="h-9 rounded-[3px] border border-black/10 px-2 text-[12px]"
+                          placeholder="https://..."
+                        />
+                      </label>
+                      <label className="grid gap-1">
+                        <span className="text-[11px] text-black/40">Title (optional)</span>
+                        <input
+                          value={vid.title || ""}
+                          onChange={(e) => {
+                            const newVideos = [...editVideos];
+                            newVideos[idx].title = e.target.value;
+                            setEditVideos(newVideos);
+                          }}
+                          className="h-9 rounded-[3px] border border-black/10 px-2 text-[12px]"
+                          placeholder="Video title"
+                        />
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => setEditVideos((v) => v.filter((_, i) => i !== idx))}
+                        className="h-9 px-2 rounded-[3px] border border-[#b42318]/20 text-[12px] text-[#b42318] hover:bg-[#b42318]/5"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                  {editVideos.length === 0 && (
+                    <div className="text-[12px] text-black/50 italic">No videos added yet.</div>
+                  )}
+                </div>
               </section>
 
               {/* Social Links Section */}
@@ -1899,8 +1993,10 @@ export default function SuperadminVendorsPage() {
                   onClick={async () => {
                     await saveVendorProfile();
                     await saveVendorImages();
+                    await saveVendorVideos();
                     await saveVendorSocials();
                     await saveVendorAffiliations();
+                    await saveVendorThemes();
                   }}
                   disabled={editLoading}
                   className="h-10 px-4 rounded-[3px] border border-[#a67c52] text-[13px] font-semibold text-[#a67c52] hover:bg-[#a67c52]/5 transition-colors disabled:opacity-60"
@@ -1955,7 +2051,7 @@ export default function SuperadminVendorsPage() {
               <div className="mb-4">
                 <div className="w-24 h-24 mx-auto rounded-[3px] border border-black/10 overflow-hidden bg-black/5 flex items-center justify-center">
                   {logoUrlInput ? (
-                    <img src={proxiedImageUrl(logoUrlInput)} alt="Logo preview" className="w-full h-full object-contain" />
+                    <img src={proxiedImageUrl(logoUrlInput) ?? logoUrlInput} alt="Logo preview" className="w-full h-full object-contain" />
                   ) : (
                     <span className="text-[10px] text-black/40">No logo</span>
                   )}

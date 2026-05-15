@@ -4,6 +4,7 @@ export const dynamic = "force-dynamic";
  
 import { createSupabaseServerClient } from "../../lib/supabaseServer";
 import FadeInOnView from "../components/FadeInOnView";
+import { proxiedImageUrl } from "../../lib/imageSizes";
 
 type Promo = {
   id: number;
@@ -37,14 +38,6 @@ function clampZoom(v: number) {
   return Math.max(1, Math.min(3, v));
 }
 
-function proxiedImageUrl(url: string | null | undefined) {
-  const u = (url ?? "").trim();
-  if (!u) return "";
-  if (u.includes("drive.google.com")) {
-    return `/api/image-proxy?url=${encodeURIComponent(u)}`;
-  }
-  return u;
-}
 
 function isPromoCurrentlyValid(promo: Pick<Promo, "valid_from" | "valid_to">) {
   const now = new Date();
@@ -129,7 +122,7 @@ async function PromosList({ query }: { query: string }) {
         const tone = i % 3 === 0 ? "#a67c52" : i % 3 === 1 ? "#c17a4e" : "#8e6a46";
         const vendor = promo.vendors?.[0];
         const vendorName = vendor?.business_name;
-        const coverUrl = proxiedImageUrl(promo.image_url);
+        const coverUrl = proxiedImageUrl(promo.image_url) ?? "";
         const fx = clampPct(Number(promo.image_focus_x ?? 50));
         const fy = clampPct(Number(promo.image_focus_y ?? 50));
         const z = clampZoom(Number(promo.image_zoom ?? 1));
@@ -180,7 +173,7 @@ async function PromosList({ query }: { query: string }) {
                 <div className="flex items-center gap-2">
                   {vendor?.logo_url ? (
                     <img
-                      src={proxiedImageUrl(vendor.logo_url)}
+                      src={proxiedImageUrl(vendor.logo_url) ?? vendor.logo_url ?? ""}
                       alt=""
                       className="h-5 w-5 rounded-[3px] object-contain border border-black/10"
                     />

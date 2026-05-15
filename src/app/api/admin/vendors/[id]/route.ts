@@ -160,7 +160,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 
     const supabase = createSupabaseAdminClient();
 
-    const [vendorRes, imagesRes, socialsRes, affiliationsRes, allAffiliationsRes, themesRes, allThemesRes, verificationDocsRes, subscriptionRes] = await Promise.all([
+    const [vendorRes, imagesRes, videosRes, socialsRes, affiliationsRes, allAffiliationsRes, themesRes, allThemesRes, verificationDocsRes, subscriptionRes] = await Promise.all([
       supabase
         .from("vendors")
         .select("*")
@@ -169,6 +169,11 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
       supabase
         .from("vendor_images")
         .select("id, image_url, caption, is_cover, display_order")
+        .eq("vendor_id", vendorId)
+        .order("display_order", { ascending: true }),
+      supabase
+        .from("vendor_videos")
+        .select("id, video_url, title, display_order")
         .eq("vendor_id", vendorId)
         .order("display_order", { ascending: true }),
       supabase
@@ -217,6 +222,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
     return Response.json({
       vendor: vendorRes.data,
       images: imagesRes.data ?? [],
+      videos: videosRes.data ?? [],
       socials: socialsRes.data ?? [],
       affiliations: affiliationsRes.data ?? [],
       allAffiliations: allAffiliationsRes.data ?? [],

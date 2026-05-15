@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { createSupabaseBrowserClient } from "@/lib/supabaseBrowser";
 import { useVendorSpeculation } from "@/hooks/useVendorSpeculation";
 import { useSmartPrefetch, prefetchOnHover } from "@/hooks/useSmartPrefetch";
 import { useSavedVendors } from "./SavedVendorsProvider";
 import type { VendorCardVendor } from "../types";
+import { proxiedImageUrl } from "@/lib/imageSizes";
 
 type Props = {
   vendor: VendorCardVendor;
@@ -14,14 +16,6 @@ type Props = {
   featured?: boolean;
 };
 
-function proxiedImageUrl(url: string | null | undefined) {
-  const u = (url ?? "").trim();
-  if (!u) return null;
-  if (u.includes("drive.google.com")) {
-    return `/api/image-proxy?url=${encodeURIComponent(u)}`;
-  }
-  return u;
-}
 
 export default function VendorCard({ vendor, toneSeed, fixedHeight, featured }: Props) {
   const [isHovered, setIsHovered] = useState(false);
@@ -151,13 +145,13 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight, featured }: 
           )}
         </button>
         {coverUrl ? (
-          <img
+          <Image
             src={coverUrl}
             alt=""
-            className="absolute inset-0 h-full w-full object-cover"
+            fill
+            sizes="(max-width: 640px) 100vw, 300px"
+            className="absolute inset-0 object-cover"
             style={{ objectPosition: coverObjectPosition, transformOrigin: coverObjectPosition, transform: `scale(${coverZoom})` }}
-            loading="lazy"
-            referrerPolicy="no-referrer"
           />
         ) : (
           <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${tone}22, #ffffff 65%)` }} />
@@ -176,13 +170,15 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight, featured }: 
         <div className="relative -mt-10 mb-2 flex items-end justify-between">
           <div className="h-20 w-20 rounded-2xl border-4 border-white bg-[#fcfbf9] shadow-lg overflow-hidden flex items-center justify-center shrink-0 -ml-1">
             {logoUrl ? (
-              <img
-                src={logoUrl}
-                alt={`${vendor.business_name} logo`}
-                className="h-full w-full object-contain"
-                loading="lazy"
-                referrerPolicy="no-referrer"
-              />
+              <div className="relative h-full w-full">
+                <Image
+                  src={logoUrl}
+                  alt={`${vendor.business_name} logo`}
+                  fill
+                  sizes="80px"
+                  className="object-contain"
+                />
+              </div>
             ) : (
               <div className="h-full w-full bg-[#fcfbf9]" />
             )}
@@ -198,12 +194,15 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight, featured }: 
               title="Verified Premium Vendor"
               aria-label="Verified Premium Vendor"
             >
-              <img
-                src="/cropped-vecteezy_verification-badge-set-guaranteed-stamp-or-verified-badge_23900241.svg"
-                alt="Verified Premium Vendor"
-                className="h-full w-full"
-                loading="eager"
-              />
+              <div className="relative h-full w-full">
+                <Image
+                  src="/cropped-vecteezy_verification-badge-set-guaranteed-stamp-or-verified-badge_23900241.svg"
+                  alt="Verified Premium Vendor"
+                  fill
+                  sizes="20px"
+                  className="object-contain"
+                />
+              </div>
             </span>
           ) : null}
         </div>

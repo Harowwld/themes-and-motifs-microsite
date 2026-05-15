@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import Image from "next/image";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { DEFAULT_SIZES } from "@/lib/imageSizes";
+import { DEFAULT_SIZES, proxiedImageUrl } from "@/lib/imageSizes";
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -41,14 +41,6 @@ const BlurPlaceholder = ({ className }: { className?: string }) => (
   />
 );
 
-function proxiedImageUrl(url: string): string {
-  const u = (url ?? "").trim();
-  if (!u) return u;
-  if (u.includes("drive.google.com")) {
-    return `/api/image-proxy?url=${encodeURIComponent(u)}`;
-  }
-  return u;
-}
 
 export default function OptimizedImage({
   src,
@@ -70,7 +62,7 @@ export default function OptimizedImage({
   const [hasError, setHasError] = useState(false);
   const imgRef = useRef<HTMLDivElement>(null);
 
-  const optimizedSrc = proxiedImageUrl(src);
+  const optimizedSrc = proxiedImageUrl(src) ?? src;
 
   // Generate blur data URL if not provided and placeholder is blur
   const generateBlurDataURL = (w: number, h: number): string => {
