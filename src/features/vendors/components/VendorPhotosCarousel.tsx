@@ -237,8 +237,8 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
   }, [closeLightbox, goNext, goPrev, isLightboxOpen]);
 
   return (
-    <section>
-      <h2 className="text-[16px] font-semibold text-[#2c2c2c]">Photos & Videos</h2>
+    <section className="w-full min-w-0 overflow-hidden">
+      <h2 className="text-[16px] font-semibold text-[#2c2c2c]">Photos & Videos (Constrained)</h2>
 
       <div ref={mainMediaRef} className="mt-3 rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden">
         <div className="w-full bg-[#fcfbf9]" style={{ aspectRatio: String(activeRatio) }}>
@@ -290,7 +290,7 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
       </div>
 
       {normalized.length > 1 ? (
-        <div className="mt-3">
+        <div className="mt-3 w-full" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)' }}>
           <div
             ref={stripRef}
             className="flex gap-2 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
