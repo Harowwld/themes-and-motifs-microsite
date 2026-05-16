@@ -54,7 +54,7 @@ function VendorCard({
       whileTap={{ scale: 0.98 }}
       key={`${vendor.id}-${index}`}
       href={`/vendors/${encodeURIComponent(vendor.slug)}`}
-      className="group block rounded-2xl relative aspect-[3/4] shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-xl transition-shadow duration-500 flex-shrink-0 w-full sm:w-[calc((100%-48px)/3)] bg-white border border-gray-50 overflow-hidden"
+      className="group block rounded-2xl relative aspect-[3/4] shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-xl transition-shadow duration-500 flex-shrink-0 w-[280px] sm:w-[calc((100%-48px)/3)] bg-white border border-gray-50 overflow-hidden"
     >
       <div className="absolute inset-0">
         {coverUrl ? (
@@ -97,7 +97,7 @@ function VendorCard({
                     alt={`${vendor.business_name} logo`}
                     fill
                     sizes="(max-width: 640px) 48px, 56px"
-                    className="object-contain p-1"
+                    className="object-cover"
                     draggable={false}
                   />
                 </div>
@@ -161,6 +161,7 @@ export default function InfiniteVendorCarousel({ vendors }: { vendors: FeaturedV
   const [isPaused, setIsPaused] = useState(false);
   const isMobile = useIsMobile();
   const controls = useAnimationControls();
+  const isResetting = useRef(false);
 
   const duplicatedVendors = useMemo(() => [...vendors, ...vendors, ...vendors], [vendors]);
   const gap = isMobile ? 16 : 24;
@@ -169,28 +170,46 @@ export default function InfiniteVendorCarousel({ vendors }: { vendors: FeaturedV
 
   useEffect(() => {
     if (!containerRef.current) return;
-    const observer = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        setContainerWidth(entry.contentRect.width);
+    const updateWidth = () => {
+      if (containerRef.current) {
+        setContainerWidth(containerRef.current.offsetWidth);
       }
-    });
+    };
+    updateWidth();
+    const observer = new ResizeObserver(updateWidth);
     observer.observe(containerRef.current);
     return () => observer.disconnect();
   }, []);
 
   const cardWidth = isMobile
-    ? containerWidth
-    : (containerWidth - (gap * 2)) / 3;
+    ? 280
+    : containerWidth > 0 ? (containerWidth - (gap * 2)) / 3 : 320;
 
-  const handleTransitionEnd = useCallback(() => {
+  const handleAnimationComplete = useCallback(() => {
+    if (vendors.length === 0) return;
+    
     if (currentIndex >= vendors.length * 2) {
-      setCurrentIndex(vendors.length);
+      isResetting.current = true;
+      const targetIndex = vendors.length;
+      controls.set({ 
+        transform: `translateX(${-targetIndex * (cardWidth + gap)}px)` 
+      });
+      setCurrentIndex(targetIndex);
     } else if (currentIndex < vendors.length) {
-      setCurrentIndex(vendors.length + currentIndex % vendors.length);
+      isResetting.current = true;
+      const targetIndex = vendors.length + (currentIndex % vendors.length);
+      controls.set({ 
+        transform: `translateX(${-targetIndex * (cardWidth + gap)}px)` 
+      });
+      setCurrentIndex(targetIndex);
     }
-  }, [currentIndex, vendors.length]);
+  }, [currentIndex, vendors.length, cardWidth, gap, controls]);
 
   useEffect(() => {
+    if (isResetting.current) {
+      isResetting.current = false;
+      return;
+    }
     controls.start({
       transform: `translateX(${-currentIndex * (cardWidth + gap)}px)`,
       transition: SPRING
@@ -223,11 +242,11 @@ export default function InfiniteVendorCarousel({ vendors }: { vendors: FeaturedV
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      <div className="overflow-hidden -mx-12 px-12 py-12 -my-12">
+      <div className="overflow-hidden -mx-5 px-5 sm:-mx-12 sm:px-12 py-12 -my-12">
         <motion.div
           animate={controls}
           className="flex gap-4 sm:gap-6 cursor-grab active:cursor-grabbing"
-          onTransitionEnd={handleTransitionEnd}
+          onAnimationComplete={handleAnimationComplete}
         >
           {duplicatedVendors.map((vendor, i) => (
             <VendorCard

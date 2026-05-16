@@ -52,7 +52,7 @@ export function ContactSection({
                 <img
                   src={proxiedImageUrl(editForm.logo_url) ?? editForm.logo_url}
                   alt="Logo"
-                  className="w-full h-full object-contain"
+                  className="w-full h-full object-cover"
                 />
               ) : (
                 <span className="text-[10px] text-black/40">No logo</span>

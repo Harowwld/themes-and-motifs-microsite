@@ -91,7 +91,7 @@ export default function VendorsSection({
   };
 
   return (
-    <section className="mt-12 sm:mt-16">
+    <section className="mt-8 sm:mt-16">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <motion.h2 
@@ -143,7 +143,7 @@ export default function VendorsSection({
         </motion.div>
       </div>
 
-      <div className="mt-8">
+      <div className="mt-6 sm:mt-8">
         <AnimatePresence mode="wait">
           <motion.div 
             key={`${sort}-${page}-${isPending}`}
@@ -151,7 +151,7 @@ export default function VendorsSection({
             initial="hidden"
             animate="visible"
             exit={{ opacity: 0, transition: { duration: 0.2 } }}
-            className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto"
+            className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto"
           >
             {isPending ? (
               Array.from({ length: pageSize }).map((_, i) => (

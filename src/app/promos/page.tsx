@@ -175,7 +175,7 @@ async function PromosList({ query }: { query: string }) {
                     <img
                       src={proxiedImageUrl(vendor.logo_url) ?? vendor.logo_url ?? ""}
                       alt=""
-                      className="h-5 w-5 rounded-[3px] object-contain border border-black/10"
+                      className="h-5 w-5 rounded-[3px] object-cover border border-black/10"
                     />
                   ) : null}
                   <div className="text-[11px] font-semibold text-[#a67c52] uppercase tracking-wide truncate">

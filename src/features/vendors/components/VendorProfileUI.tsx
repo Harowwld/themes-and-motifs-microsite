@@ -85,11 +85,11 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
                     alt={`${vendor.business_name} logo`}
                     fill
                     sizes="(max-width: 640px) 112px, 144px"
-                    className="object-contain"
+                    className="object-cover"
                   />
                 </div>
               ) : (
-                <div className="h-full w-full bg-[#fcfbf9] flex items-center justify-center text-[28px] font-bold text-[#a68b6a]">
+                <div className="relative h-full w-full rounded-2xl bg-white flex items-center justify-center text-[28px] font-bold text-[#a68b6a]">
                   {vendor.business_name.charAt(0).toUpperCase()}
                 </div>
               )}

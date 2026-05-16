@@ -179,7 +179,7 @@ export default function SuperadminVendorsPage() {
               <div className="mb-4">
                 <div className="w-24 h-24 mx-auto rounded-[3px] border border-black/10 overflow-hidden bg-black/5 flex items-center justify-center">
                   {logoUrlInput ? (
-                    <img src={proxiedImageUrl(logoUrlInput) ?? logoUrlInput} alt="Logo preview" className="w-full h-full object-contain" />
+                    <img src={proxiedImageUrl(logoUrlInput) ?? logoUrlInput} alt="Logo preview" className="w-full h-full object-cover" />
                   ) : (
                     <span className="text-[10px] text-black/40">No logo</span>
                   )}

@@ -181,7 +181,7 @@ export default async function PromoDetailPage({ params }: Props) {
                           <img
                             src={proxiedImageUrl(vendor.logo_url) ?? vendor.logo_url ?? ""}
                             alt=""
-                            className="h-6 w-6 rounded-[3px] object-contain border border-black/10"
+                            className="h-6 w-6 rounded-[3px] object-cover border border-black/10"
                           />
                         ) : null}
                         {vendor.business_name}
@@ -254,7 +254,7 @@ export default async function PromoDetailPage({ params }: Props) {
                           <img
                             src={proxiedImageUrl(vendor.logo_url) ?? vendor.logo_url ?? ""}
                             alt=""
-                            className="h-full w-full object-contain"
+                            className="h-full w-full object-cover"
                           />
                         ) : (
                           <div className="text-[11px] text-black/30">No logo</div>

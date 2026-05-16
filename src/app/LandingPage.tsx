@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { unstable_cache } from "next/cache";
+import { headers } from "next/headers";
 import { createSupabaseServerClient } from "../lib/supabaseServer";
 import CategoryBrowser from "./components/CategoryBrowser";
 import HeroSection from "./sections/HeroSection";
@@ -115,7 +116,11 @@ export default async function LandingPage({
 }) {
   const resolvedSearchParams = (await searchParams) ?? {};
 
-  const pageSize = 9;
+  const headersList = await headers();
+  const userAgent = headersList.get("user-agent") || "";
+  const isMobile = /mobile|android|iphone|ipad|phone/i.test(userAgent);
+
+  const pageSize = isMobile ? 10 : 9;
   const rawPage = (resolvedSearchParams.vendorsPage as string | undefined) ?? "1";
   const rawSort = (resolvedSearchParams.vendorsSort as string | undefined) ?? "photos";
   const page = Math.max(1, Number(rawPage) || 1);
@@ -146,19 +151,19 @@ export default async function LandingPage({
       <ScrollToTopOnMount />
 
       <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
-        <main className="py-10 sm:py-14">
+        <main className="pt-6 pb-12 sm:py-14">
           {/* Top section - cached, no Suspense */}
           <HeroSection categories={categories} locations={locations} />
           <CategoryBrowser categories={categories} />
 
-          <div className="my-12 h-px bg-gradient-to-r from-transparent via-black/15 to-transparent" />
+          <div className="my-6 sm:my-12 h-px bg-gradient-to-r from-transparent via-black/15 to-transparent" />
 
           {/* Featured section - now with Suspense for streaming */}
           <Suspense fallback={<div className="h-64 animate-pulse bg-gray-200 rounded-lg" />}>
             <LandingFeaturedDirect />
           </Suspense>
 
-          <div className="my-12 h-px bg-gradient-to-r from-transparent via-black/15 to-transparent" />
+          <div className="my-6 sm:my-12 h-px bg-gradient-to-r from-transparent via-black/15 to-transparent" />
 
           {/* Vendors section - now with Suspense for streaming */}
           <Suspense fallback={<div className="h-96 animate-pulse bg-gray-200 rounded-lg" />}>
@@ -195,7 +200,7 @@ async function LandingFeaturedDirect() {
   return (
     <>
       <PromosSection promos={promos} />
-      <div className="my-12 h-px bg-gradient-to-r from-transparent via-black/15 to-transparent" />
+      <div className="my-6 sm:my-12 h-px bg-gradient-to-r from-transparent via-black/15 to-transparent" />
       <FeaturedVendorsSection vendors={featuredSorted as any} />
     </>
   );

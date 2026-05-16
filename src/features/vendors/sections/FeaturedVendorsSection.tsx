@@ -8,7 +8,7 @@ const EASE_OUT = [0.23, 1, 0.32, 1] as [number, number, number, number];
 
 export default function FeaturedVendorsSection({ vendors }: { vendors: FeaturedVendor[] }) {
   return (
-    <section id="featured" className="mt-12 sm:mt-16 scroll-mt-20">
+    <section id="featured" className="mt-4 sm:mt-16 scroll-mt-20">
       <div className="text-center">
         <motion.h2
           initial={{ opacity: 0, y: 10 }}
@@ -35,7 +35,7 @@ export default function FeaturedVendorsSection({ vendors }: { vendors: FeaturedV
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6, delay: 0.2, ease: EASE_OUT }}
-        className="mt-8 max-w-5xl mx-auto py-12 px-0 sm:px-6 lg:px-8"
+        className="mt-4 sm:mt-8 max-w-5xl mx-auto py-2 sm:py-12 px-0 sm:px-6 lg:px-8"
       >
         <InfiniteVendorCarousel vendors={vendors} />
       </motion.div>

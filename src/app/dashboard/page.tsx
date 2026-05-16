@@ -55,7 +55,7 @@ function VendorCard({ vendor, onRemove }: { vendor: SavedVendor["vendor"]; onRem
           <div className="relative -mt-10 mb-2 flex items-end justify-between">
             <div className="h-20 w-20 rounded-2xl border-4 border-white bg-[#fcfbf9] shadow-lg overflow-hidden flex items-center justify-center shrink-0 -ml-1">
               {logoUrl ? (
-                <img src={logoUrl} alt={`${vendor.business_name} logo`} className="h-full w-full object-contain" loading="lazy" referrerPolicy="no-referrer" />
+                <img src={logoUrl} alt={`${vendor.business_name} logo`} className="h-full w-full object-cover" loading="lazy" referrerPolicy="no-referrer" />
               ) : (
                 <div className="h-full w-full bg-[#fcfbf9]" />
               )}

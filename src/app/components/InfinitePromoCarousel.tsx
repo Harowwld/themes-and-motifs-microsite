@@ -141,7 +141,7 @@ function PromoCard({
           </div>
         </div>
         {vendorLogo ? (
-          <div className={`rounded-lg border border-white/40 bg-white/60 backdrop-blur-sm overflow-hidden flex-shrink-0 shadow-sm ${isGrid ? 'h-8 w-8' : 'h-12 w-12'}`}>
+          <div className={`relative rounded-lg border border-white/40 bg-white/60 backdrop-blur-sm overflow-hidden flex-shrink-0 shadow-sm ${isGrid ? 'h-8 w-8' : 'h-12 w-12'}`}>
             <Image
               src={proxiedImageUrl(vendorLogo) ?? vendorLogo}
               alt=""
@@ -304,7 +304,7 @@ export default function InfinitePromoCarousel({ promos }: { promos: FeaturedProm
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      <div className="overflow-hidden -mx-12 px-12 py-12 -my-12">
+      <div className="overflow-hidden -mx-5 px-5 sm:-mx-12 sm:px-12 py-12 -my-12">
         <motion.div
           animate={controls}
           className="flex gap-6 cursor-grab active:cursor-grabbing"

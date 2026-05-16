@@ -101,7 +101,7 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight, featured }: 
       viewport={{ once: true }}
       transition={{ duration: 0.4, ease: EASE_OUT }}
       href={`/vendors/${encodeURIComponent(vendor.slug)}`}
-      className={`group relative overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-shadow hover:shadow-2xl ${fixedHeight ? 'h-[240px] flex flex-col' : 'block'}`}
+      className={`group relative overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-shadow hover:shadow-2xl ${fixedHeight ? 'h-[200px] sm:h-[240px] flex flex-col' : 'block'}`}
       aria-label={`View ${vendor.business_name}`}
       onMouseEnter={() => {
         setIsHovered(true);
@@ -113,7 +113,7 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight, featured }: 
         onPrefetchLeave();
       }}
     >
-      <div className={`relative ${featured ? 'h-48' : 'h-28'} overflow-hidden`}>
+      <div className={`relative ${featured ? 'h-32 sm:h-48' : 'h-24 sm:h-28'} overflow-hidden`}>
         <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
@@ -176,8 +176,8 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight, featured }: 
       </div>
 
       <div className="relative px-4 pt-0 pb-4">
-        <div className="relative -mt-10 mb-3 flex items-end justify-between">
-          <div className="h-20 w-20 rounded-2xl border-4 border-white bg-white shadow-xl overflow-hidden flex items-center justify-center shrink-0 -ml-1 transition-transform group-hover:-translate-y-1">
+        <div className="relative -mt-8 sm:-mt-10 mb-2 sm:mb-3 flex items-end justify-between">
+          <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-xl sm:rounded-2xl border-2 sm:border-4 border-white bg-white shadow-lg sm:shadow-xl overflow-hidden flex items-center justify-center shrink-0 -ml-1 transition-transform group-hover:-translate-y-1">
             {logoUrl ? (
               <div className="relative h-full w-full">
                 <Image
@@ -185,7 +185,7 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight, featured }: 
                   alt={`${vendor.business_name} logo`}
                   fill
                   sizes="80px"
-                  className="object-contain p-1"
+                  className="object-cover"
                 />
               </div>
             ) : (
@@ -206,7 +206,7 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight, featured }: 
         </div>
 
         <div className="flex items-center gap-1.5 mb-1.5">
-          <h3 className="text-[15px] font-bold text-gray-900 tracking-tight line-clamp-1 font-[family-name:var(--font-plus-jakarta)]">
+          <h3 className="text-[13px] sm:text-[15px] font-bold text-gray-900 tracking-tight line-clamp-1 font-[family-name:var(--font-plus-jakarta)]">
             {vendor.business_name}
           </h3>
           {isPremium && (
@@ -222,7 +222,7 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight, featured }: 
           )}
         </div>
 
-        <div className="flex items-center gap-2 text-[12px] text-gray-500 font-[family-name:var(--font-plus-jakarta)]">
+        <div className="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-[12px] text-gray-500 font-[family-name:var(--font-plus-jakarta)]">
           <div className="flex items-center gap-1">
             <span className="font-bold text-[#a68b6a]">{rating.toFixed(1)}</span>
             <span className="text-gray-200">·</span>

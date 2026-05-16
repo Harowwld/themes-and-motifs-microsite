@@ -26,7 +26,7 @@ const EASE_OUT = [0.23, 1, 0.32, 1] as [number, number, number, number];
 
 export default function PromosSection({ promos }: { promos: FeaturedPromo[] }) {
   return (
-    <section id="promos" className="mt-16 sm:mt-20">
+    <section id="promos" className="mt-6 sm:mt-20">
       <div className="text-center">
         <motion.h2
           initial={{ opacity: 0, y: 10 }}
@@ -53,7 +53,7 @@ export default function PromosSection({ promos }: { promos: FeaturedPromo[] }) {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6, delay: 0.2, ease: EASE_OUT }}
-        className="mt-8 max-w-5xl mx-auto py-12 px-4 sm:px-6 lg:px-8"
+        className="mt-4 sm:mt-8 max-w-5xl mx-auto py-4 sm:py-12 px-0"
       >
         <InfinitePromoCarousel promos={promos} />
       </motion.div>

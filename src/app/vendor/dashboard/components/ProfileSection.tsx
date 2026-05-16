@@ -98,7 +98,7 @@ export function ProfileSection({
             <div className="mt-4 flex items-center gap-6">
               <div className="h-24 w-24 rounded-lg border-4 border-white bg-white shadow-md overflow-hidden flex items-center justify-center shrink-0">
                 {form.logo_url ? (
-                  <img src={form.logo_url} alt="Logo preview" className="h-full w-full object-contain" />
+                  <img src={form.logo_url} alt="Logo preview" className="h-full w-full object-cover" />
                 ) : (
                   <div className="h-full w-full bg-[#fafafa] flex items-center justify-center text-[10px] text-black/30 font-bold uppercase tracking-tighter text-center px-2">
                     No Logo

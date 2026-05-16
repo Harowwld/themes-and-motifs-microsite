@@ -25,28 +25,28 @@ function MenuIcon({ open }: { open: boolean }) {
       strokeLinejoin="round"
     >
       <motion.line
-        x1="3"
-        y1="6"
-        x2="21"
-        y2="6"
+        initial={{ x1: 3, y1: 6, x2: 21, y2: 6 }}
         animate={open ? { x1: 18, y1: 6, x2: 6, y2: 18 } : { x1: 3, y1: 6, x2: 21, y2: 6 }}
         transition={{ duration: 0.2, ease: EASE_OUT }}
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
       />
       <motion.line
-        x1="3"
-        y1="12"
-        x2="21"
-        y2="12"
-        animate={open ? { opacity: 0, x: 10 } : { opacity: 1, x: 0 }}
-        transition={{ duration: 0.15 }}
-      />
-      <motion.line
-        x1="3"
-        y1="18"
-        x2="21"
-        y2="18"
-        animate={open ? { x1: 6, y1: 6, x2: 18, y2: 18 } : { x1: 3, y1: 18, x2: 21, y2: 18 }}
+        initial={{ x1: 3, y1: 12, x2: 21, y2: 12, opacity: 1 }}
+        animate={open ? { x1: 12, y1: 12, x2: 12, y2: 12, opacity: 0 } : { x1: 3, y1: 12, x2: 21, y2: 12, opacity: 1 }}
         transition={{ duration: 0.2, ease: EASE_OUT }}
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <motion.line
+        initial={{ x1: 3, y1: 18, x2: 21, y2: 18 }}
+        animate={open ? { x1: 18, y1: 18, x2: 6, y2: 6 } : { x1: 3, y1: 18, x2: 21, y2: 18 }}
+        transition={{ duration: 0.2, ease: EASE_OUT }}
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
       />
     </svg>
   );

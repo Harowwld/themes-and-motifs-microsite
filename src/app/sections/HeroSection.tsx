@@ -229,7 +229,7 @@ export default function HeroSection({
   };
 
   return (
-    <section className="relative overflow-hidden rounded-xl p-4 sm:p-5 lg:p-8 grid gap-6 sm:gap-8 lg:grid-cols-[1.2fr_0.8fr] items-start shadow-2xl">
+    <section className="relative overflow-hidden rounded-xl p-5 sm:p-6 lg:p-8 grid gap-6 sm:gap-8 lg:grid-cols-[1.2fr_0.8fr] items-start shadow-2xl">
       <div aria-hidden className="absolute inset-0 hidden md:block">
         <Image
           src="https://thepennyslo.com/wp-content/uploads/2024/03/5-The-Penny-San-Luis-Obispo.webp"
@@ -281,9 +281,9 @@ export default function HeroSection({
         
         <motion.p
           variants={itemVariants}
-          className="text-2xl block text-white/80 italic"
+          className="mt-2 text-lg sm:text-xl block text-white/80 italic leading-snug"
         >
-          From the Philippines’ most trusted wedding platform.
+          From the Philippines' most trusted wedding platform.
         </motion.p>
 
         <motion.p
@@ -299,7 +299,7 @@ export default function HeroSection({
         >
           <motion.a
             whileTap={{ scale: 0.97 }}
-            className="h-11 inline-flex items-center justify-center px-5 rounded-md text-white text-[14px] font-medium transition-colors shadow-lg"
+            className="h-12 inline-flex items-center justify-center px-6 rounded-md text-white text-[14px] sm:text-[15px] font-medium transition-colors shadow-lg touch-manipulation"
             style={{ backgroundColor: 'var(--muted-brown)' }}
             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--muted-brown-hover)'}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--muted-brown)'}
@@ -309,7 +309,7 @@ export default function HeroSection({
           </motion.a>
           <motion.a
             whileTap={{ scale: 0.97 }}
-            className="h-11 inline-flex items-center justify-center px-5 rounded-md border border-white/30 bg-white/10 backdrop-blur-sm text-white text-[14px] font-medium hover:bg-white/20 transition-colors shadow-lg"
+            className="h-12 inline-flex items-center justify-center px-6 rounded-md border border-white/30 bg-white/10 backdrop-blur-sm text-white text-[14px] sm:text-[15px] font-medium hover:bg-white/20 transition-colors shadow-lg touch-manipulation"
             href="/vendors/plans"
           >
             Be a verified vendor
@@ -318,7 +318,7 @@ export default function HeroSection({
 
         <motion.div
           variants={itemVariants}
-          className="mt-5 sm:mt-7 grid grid-cols-3 gap-2 sm:gap-3 max-w-xl"
+          className="mt-5 sm:mt-7 grid grid-cols-3 gap-1.5 sm:gap-3 max-w-xl"
         >
           {[
             { label: "Browse", value: "Categories" },
@@ -330,8 +330,8 @@ export default function HeroSection({
               whileHover={{ y: -2, backgroundColor: "rgba(255, 255, 255, 0.15)" }}
               className="rounded-lg border border-white/20 bg-white/10 backdrop-blur-md px-2 sm:px-3 py-2 sm:py-3 transition-colors"
             >
-              <div className="text-[11px] sm:text-[12px] font-medium text-white/60 font-[family-name:var(--font-plus-jakarta)]">{stat.label}</div>
-              <div className="mt-1 text-[13px] sm:text-[14px] font-medium text-white font-[family-name:var(--font-plus-jakarta)]">{stat.value}</div>
+              <div className="text-[10px] sm:text-[12px] font-medium text-white/60 font-[family-name:var(--font-plus-jakarta)]">{stat.label}</div>
+              <div className="mt-0.5 text-[12px] sm:text-[14px] font-medium text-white font-[family-name:var(--font-plus-jakarta)]">{stat.value}</div>
             </motion.div>
           ))}
         </motion.div>
@@ -400,7 +400,7 @@ export default function HeroSection({
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8, duration: 0.4 }}
             type="button"
-            className="mt-1 h-10 inline-flex items-center justify-center rounded-md text-white text-[14px] font-medium transition-colors touch-manipulation shadow-lg"
+            className="mt-1 h-11 inline-flex items-center justify-center rounded-md text-white text-[14px] font-medium transition-colors touch-manipulation shadow-lg"
             style={{ backgroundColor: 'var(--muted-brown)' }}
             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--muted-brown-hover)'}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--muted-brown)'}
