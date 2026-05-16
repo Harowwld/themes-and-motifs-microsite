@@ -39,7 +39,7 @@ export function ProfileSection({
   if (!vendor) return null;
 
   return (
-    <>
+    <div className="grid gap-12">
       <section className="rounded-lg border border-black/[0.08] bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
         <div className="bg-[#fafafa]/50 px-6 py-3 text-[12px] text-black/50 border-b border-black/[0.04] flex justify-between items-center">
           <div className="flex items-center gap-2">
@@ -288,6 +288,6 @@ export function ProfileSection({
           </div>
         </div>
       </section>
-    </>
+    </div>
   );
 }

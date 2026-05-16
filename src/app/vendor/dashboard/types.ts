@@ -44,6 +44,7 @@ export type VendorImage = {
 };
 
 export type Theme = { id: number; name: string; slug: string };
+export type Category = { id: number; name: string; slug: string };
 
 export type VendorVideo = { id: number; video_url: string; title: string | null; display_order: number };
 

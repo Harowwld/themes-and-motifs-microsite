@@ -17,6 +17,7 @@ import {
 import { useVendorDashboard } from "./hooks/useVendorDashboard";
 import { DashboardSkeleton } from "./components/DashboardSections";
 import { ProfileSection } from "./components/ProfileSection";
+import { ThemesSection } from "./components/ThemesSection";
 import { CategoriesSection } from "./components/CategoriesSection";
 import { SocialSection } from "./components/SocialSection";
 import { PhotoSection } from "./components/PhotoSection";
@@ -45,7 +46,8 @@ export default function VendorDashboardPage() {
     inquiries,
     themes,
     allThemes,
-    themeInput,
+    categories,
+    allCategories,
     albums,
     selectedAlbum,
     albumPhotos,
@@ -72,7 +74,7 @@ export default function VendorDashboardPage() {
     setImages,
     setVideos,
     setThemes,
-    setThemeInput,
+    setCategories,
     setAlbumModalOpen,
     setAlbumTitle,
     setAlbumEditorOpen,
@@ -103,6 +105,7 @@ export default function VendorDashboardPage() {
     saveProfile,
     saveSocials,
     saveThemes,
+    saveCategories,
     saveImages,
     saveVideos,
   } = useVendorDashboard();
@@ -165,15 +168,23 @@ export default function VendorDashboardPage() {
               />
             </div>
 
-            <div id="categories">
-              <CategoriesSection 
+            <div id="themes">
+              <ThemesSection 
                 themes={themes}
                 setThemes={setThemes}
                 allThemes={allThemes}
-                themeInput={themeInput}
-                setThemeInput={setThemeInput}
                 saving={saving}
                 saveThemes={saveThemes}
+              />
+            </div>
+
+            <div id="categories">
+              <CategoriesSection 
+                categories={categories}
+                setCategories={setCategories}
+                allCategories={allCategories}
+                saving={saving}
+                saveCategories={saveCategories}
               />
             </div>
 

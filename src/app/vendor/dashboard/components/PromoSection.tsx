@@ -1,5 +1,5 @@
 import React from "react";
-import { PromoModal, PromoQRCode } from "./DashboardModals";
+import { PromoModal } from "./DashboardModals";
 import { VendorPromo } from "../types";
 import { clampPct } from "../utils";
 
@@ -58,77 +58,78 @@ export function PromoSection({
               <div className="text-[13px] text-black/40 max-w-xs mx-auto">Promos are a great way to attract early birds or fill up remaining slots.</div>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {promos.map((p) => (
-                <div key={p.id} className="group relative bg-white rounded-lg border border-black/[0.06] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-1">
-                  <div className="absolute top-1/2 -left-2 h-4 w-4 rounded-full bg-[#fafafa] border border-black/[0.06] z-10" />
-                  <div className="absolute top-1/2 -right-2 h-4 w-4 rounded-full bg-[#fafafa] border border-black/[0.06] z-10" />
-                  
-                  <div className="flex h-full">
-                    {p.image_url ? (
-                      <div className="w-32 shrink-0 relative overflow-hidden border-r border-dashed border-black/[0.1]">
-                        <img
-                          src={p.image_url}
-                          alt=""
-                          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-                          style={{
-                            transformOrigin: `${clampPct(Number(p.image_focus_x ?? 50))}% ${clampPct(Number(p.image_focus_y ?? 50))}%`,
-                          }}
-                        />
-                        <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-300" />
-                      </div>
-                    ) : (
-                      <div className="w-32 shrink-0 bg-[#a67c52]/5 flex items-center justify-center border-r border-dashed border-black/[0.1]">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="#a67c52" strokeWidth="1" className="h-10 w-10 opacity-30">
-                          <path d="M20 12V8H4v4m16 0v4H4v-4m16 0h1m-17 0H3" />
-                        </svg>
-                      </div>
-                    )}
-
-                    <div className="flex-1 p-5 flex flex-col justify-between">
-                      <div>
-                        <div className="flex justify-between items-start mb-2">
-                          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#a67c52]">Official Promo</div>
-                          <div className={`h-2 w-2 rounded-full ${p.is_active ? "bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]" : "bg-black/10"}`} title={p.is_active ? "Active" : "Inactive"} />
-                        </div>
-                        <h4 className="text-[15px] font-serif font-bold text-[#2c2c2c] leading-snug line-clamp-2 mb-1 group-hover:text-[#a67c52] transition-colors">{p.title}</h4>
-                        {p.summary && <p className="text-[12px] text-black/45 line-clamp-2 leading-relaxed">{p.summary}</p>}
-                      </div>
-
-                      <div className="mt-4 flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          {typeof p.discount_percentage === "number" ? (
-                            <div className="px-2.5 py-1 rounded-lg bg-[#a67c52] text-white text-[12px] font-black shadow-lg shadow-[#a67c52]/20">
-                              {p.discount_percentage}% OFF
-                            </div>
-                          ) : (
-                            <div className="px-2.5 py-1 rounded-lg bg-[#fafafa] border border-black/[0.08] text-[11px] font-bold text-[#a67c52]">
-                              Special Deal
-                            </div>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setEditingPromoId(p.id);
-                              setPromoModalOpen(true);
+            <div className="max-h-[500px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-[#a67c52]/20 hover:scrollbar-thumb-[#a67c52]/40">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {promos.map((p) => (
+                  <div key={p.id} className="group relative bg-white rounded-lg border border-black/[0.06] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-1">
+                    <div className="absolute top-1/2 -left-2 h-4 w-4 rounded-full bg-[#fafafa] border border-black/[0.06] z-10" />
+                    <div className="absolute top-1/2 -right-2 h-4 w-4 rounded-full bg-[#fafafa] border border-black/[0.06] z-10" />
+                    
+                    <div className="flex h-full">
+                      {p.image_url ? (
+                        <div className="w-32 shrink-0 relative overflow-hidden border-r border-dashed border-black/[0.1]">
+                          <img
+                            src={p.image_url}
+                            alt=""
+                            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                            style={{
+                              transformOrigin: `${clampPct(Number(p.image_focus_x ?? 50))}% ${clampPct(Number(p.image_focus_y ?? 50))}%`,
                             }}
-                            className="h-8 w-8 rounded-lg bg-white border border-black/[0.08] flex items-center justify-center text-[#a67c52] hover:bg-[#a67c52] hover:text-white transition-all duration-300 shadow-sm"
-                            title="Edit Promo"
-                          >
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4">
-                              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-                            </svg>
-                          </button>
-                          {p.is_active && <PromoQRCode promoId={p.id} promoTitle={p.title} />}
+                          />
+                          <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-300" />
+                        </div>
+                      ) : (
+                        <div className="w-32 shrink-0 bg-[#a67c52]/5 flex items-center justify-center border-r border-dashed border-black/[0.1]">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="#a67c52" strokeWidth="1" className="h-10 w-10 opacity-30">
+                            <path d="M20 12V8H4v4m16 0v4H4v-4m16 0h1m-17 0H3" />
+                          </svg>
+                        </div>
+                      )}
+
+                      <div className="flex-1 p-5 flex flex-col justify-between">
+                        <div>
+                          <div className="flex justify-between items-start mb-2">
+                            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#a67c52]">Official Promo</div>
+                            <div className={`h-2 w-2 rounded-full ${p.is_active ? "bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]" : "bg-black/10"}`} title={p.is_active ? "Active" : "Inactive"} />
+                          </div>
+                          <h4 className="text-[15px] font-serif font-bold text-[#2c2c2c] leading-snug line-clamp-2 mb-1 group-hover:text-[#a67c52] transition-colors">{p.title}</h4>
+                          {p.summary && <p className="text-[12px] text-black/45 line-clamp-2 leading-relaxed">{p.summary}</p>}
+                        </div>
+
+                        <div className="mt-4 flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            {typeof p.discount_percentage === "number" ? (
+                              <div className="px-2.5 py-1 rounded-lg bg-[#a67c52] text-white text-[12px] font-black shadow-lg shadow-[#a67c52]/20">
+                                {p.discount_percentage}% OFF
+                              </div>
+                            ) : (
+                              <div className="px-2.5 py-1 rounded-lg bg-[#fafafa] border border-black/[0.08] text-[11px] font-bold text-[#a67c52]">
+                                Special Deal
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setEditingPromoId(p.id);
+                                setPromoModalOpen(true);
+                              }}
+                              className="h-8 w-8 rounded-lg bg-white border border-black/[0.08] flex items-center justify-center text-[#a67c52] hover:bg-[#a67c52] hover:text-white transition-all duration-300 shadow-sm"
+                              title="Edit Promo"
+                            >
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                              </svg>
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           )}
         </div>

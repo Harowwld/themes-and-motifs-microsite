@@ -6,7 +6,7 @@ import { clampPct, clampZoom } from "../utils";
 import { MultiImageUploadManager } from "@/components/MultiImageUploadManager";
 import { proxiedImageUrl } from "@/lib/imageSizes";
 import { cn } from "@/lib/utils";
-export { default as PromoQRCode } from "@/components/PromoQRCode";
+
 
 export function LogoModal({
   open,

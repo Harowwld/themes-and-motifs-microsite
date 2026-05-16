@@ -7,6 +7,7 @@ import {
   SocialLink, 
   VendorImage, 
   Theme, 
+  Category,
   VendorVideo, 
   VendorPromo, 
   Inquiry, 
@@ -69,7 +70,8 @@ export function useVendorDashboard() {
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
   const [themes, setThemes] = useState<Theme[]>([]);
   const [allThemes, setAllThemes] = useState<Theme[]>([]);
-  const [themeInput, setThemeInput] = useState("");
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [allCategories, setAllCategories] = useState<Category[]>([]);
 
   const [albums, setAlbums] = useState<Album[]>([]);
   const [selectedAlbum, setSelectedAlbum] = useState<Album | null>(null);
@@ -128,6 +130,8 @@ export function useVendorDashboard() {
             images: VendorImage[];
             themes: { id: number; theme: Theme | Theme[] | null }[];
             allThemes: Theme[];
+            categories: { category: Category | Category[] | null }[];
+            allCategories: Category[];
             subscription: { id: number; status: string; expiry_date: string | null; verification_doc_url: string | null } | null;
             videos: VendorVideo[];
           }>("/api/vendor/profile", session.access_token);
@@ -198,6 +202,15 @@ export function useVendorDashboard() {
             .filter((t): t is Theme => t !== null);
           setThemes(normalizedThemes);
           setAllThemes(json.allThemes ?? []);
+
+          const normalizedCategories = (json.categories ?? [])
+            .map((vc) => {
+              const c = Array.isArray(vc.category) ? vc.category[0] : vc.category;
+              return c ? { id: c.id, name: c.name, slug: c.slug } : null;
+            })
+            .filter((c): c is Category => c !== null);
+          setCategories(normalizedCategories);
+          setAllCategories(json.allCategories ?? []);
 
           const [promosRes, inquiriesRes, albumsRes] = await Promise.all([
             apiFetch<{ promos: VendorPromo[] }>("/api/vendor/promos", session.access_token).catch(() => ({ promos: [] as VendorPromo[] })),
@@ -530,9 +543,34 @@ export function useVendorDashboard() {
         .filter((t): t is Theme => t !== null);
       setThemes(normalizedThemes);
       setAllThemes(res.allThemes ?? []);
-      toast.success("Categories updated.");
+      toast.success("Themes updated.");
     } catch (e: any) {
       toast.error(e?.message ?? "Failed to save themes.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const saveCategories = async () => {
+    if (!token) return;
+    setSaving(true);
+    try {
+      const res = await apiFetch<{ categories: { category: Category | Category[] | null }[]; allCategories: Category[] }>("/api/vendor/categories", token, {
+        method: "PUT",
+        body: JSON.stringify({ categories: categories.map((c) => ({ id: c.id, name: c.name, slug: c.slug })) }),
+      });
+
+      const normalizedCategories = (res.categories ?? [])
+        .map((vc) => {
+          const c = Array.isArray(vc.category) ? vc.category[0] : vc.category;
+          return c ? { id: c.id, name: c.name, slug: c.slug } : null;
+        })
+        .filter((c): c is Category => c !== null);
+      setCategories(normalizedCategories);
+      setAllCategories(res.allCategories ?? []);
+      toast.success("Categories updated.");
+    } catch (e: any) {
+      toast.error(e?.message ?? "Failed to save categories.");
     } finally {
       setSaving(false);
     }
@@ -625,7 +663,8 @@ export function useVendorDashboard() {
     inquiries,
     themes,
     allThemes,
-    themeInput,
+    categories,
+    allCategories,
     albums,
     selectedAlbum,
     albumPhotos,
@@ -652,7 +691,7 @@ export function useVendorDashboard() {
     setImages,
     setVideos,
     setThemes,
-    setThemeInput,
+    setCategories,
     setAlbumModalOpen,
     setAlbumTitle,
     setAlbumEditorOpen,
@@ -693,6 +732,7 @@ export function useVendorDashboard() {
     saveProfile,
     saveSocials,
     saveThemes,
+    saveCategories,
     saveImages,
     saveVideos,
   };

@@ -31,7 +31,16 @@ export async function GET(req: Request) {
     const { supabase, user } = await assertVendor(req);
     const vendor = await getVendorForUser(supabase, user.id);
 
-    const [socialsRes, imagesRes, themesRes, allThemesRes, subscriptionRes, videosRes] = await Promise.all([
+    const [
+      socialsRes, 
+      imagesRes, 
+      themesRes, 
+      allThemesRes, 
+      subscriptionRes, 
+      videosRes,
+      categoriesRes,
+      allCategoriesRes
+    ] = await Promise.all([
       supabase
         .from("vendor_social_links")
         .select("id,platform,url")
@@ -66,6 +75,14 @@ export async function GET(req: Request) {
         .eq("vendor_id", vendor.id)
         .order("display_order", { ascending: true })
         .limit(20),
+      supabase
+        .from("vendor_categories")
+        .select("category:categories(id, name, slug)")
+        .eq("vendor_id", vendor.id),
+      supabase
+        .from("categories")
+        .select("id, name, slug")
+        .order("name", { ascending: true }),
     ]);
 
     if (socialsRes.error) return Response.json({ error: socialsRes.error.message }, { status: 500 });
@@ -74,6 +91,8 @@ export async function GET(req: Request) {
     if (allThemesRes.error) return Response.json({ error: allThemesRes.error.message }, { status: 500 });
     if (subscriptionRes.error && subscriptionRes.error.code !== 'PGRST116') return Response.json({ error: subscriptionRes.error.message }, { status: 500 });
     if (videosRes.error) return Response.json({ error: videosRes.error.message }, { status: 500 });
+    if (categoriesRes.error) return Response.json({ error: categoriesRes.error.message }, { status: 500 });
+    if (allCategoriesRes.error) return Response.json({ error: allCategoriesRes.error.message }, { status: 500 });
 
     return Response.json(
       {
@@ -84,6 +103,8 @@ export async function GET(req: Request) {
         allThemes: allThemesRes.data ?? [],
         subscription: subscriptionRes.data ?? null,
         videos: videosRes.data ?? [],
+        categories: categoriesRes.data ?? [],
+        allCategories: allCategoriesRes.data ?? [],
       },
       { status: 200 }
     );
