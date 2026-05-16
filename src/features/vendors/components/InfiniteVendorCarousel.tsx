@@ -77,13 +77,14 @@ function VendorCard({
         )}
       </div>
 
-      <div className="absolute inset-x-0 bottom-0 z-20 h-[38%]">
+      <div className="absolute inset-x-0 bottom-0 z-20 h-[38%] overflow-hidden"> {/* ← overflow-hidden does the clipping */}
         <div
           className="absolute inset-0 bg-white/80 border-t border-white/40"
           style={{
-            clipPath: "polygon(0 15%, 100% 0, 100% 100%, 0 100%)",
             backdropFilter: "blur(16px)",
             WebkitBackdropFilter: "blur(16px)",
+            transform: "skewY(-4.35deg)",      // ← blur region IS the skewed shape now
+            transformOrigin: "top right",       // ← right edge stays flush, left lifts
           }}
         />
         <div className="absolute inset-x-0 bottom-0 px-4 pb-4 pt-4 sm:px-5 sm:pb-5">
@@ -177,8 +178,8 @@ export default function InfiniteVendorCarousel({ vendors }: { vendors: FeaturedV
     return () => observer.disconnect();
   }, []);
 
-  const cardWidth = isMobile 
-    ? containerWidth 
+  const cardWidth = isMobile
+    ? containerWidth
     : (containerWidth - (gap * 2)) / 3;
 
   const handleTransitionEnd = useCallback(() => {
@@ -250,7 +251,7 @@ export default function InfiniteVendorCarousel({ vendors }: { vendors: FeaturedV
               className="group p-2"
               aria-label={`Go to slide ${i + 1}`}
             >
-              <motion.div 
+              <motion.div
                 animate={{
                   width: isActive ? 32 : 8,
                   backgroundColor: isActive ? "#a68b6a" : "rgba(166, 139, 106, 0.2)"
