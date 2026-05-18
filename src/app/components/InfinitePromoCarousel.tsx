@@ -76,7 +76,7 @@ function PromoCard({
   if (Array.isArray(vendorsRaw)) {
     vendor = vendorsRaw[0];
   } else if (vendorsRaw && typeof vendorsRaw === 'object') {
-    vendor = vendorsRaw as any;
+    vendor = vendorsRaw as unknown as { id: number; business_name: string; slug: string; logo_url?: string | null };
   }
   const vendorName = vendor?.business_name;
   const vendorLogo = vendor?.logo_url;
@@ -162,6 +162,7 @@ export default function InfinitePromoCarousel({ promos }: { promos: FeaturedProm
   const containerRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
   const controls = useAnimationControls();
+  const isResetting = useRef(false);
 
   const [currentPage, setCurrentPage] = useState(0);
   const promosPerPage = 6;
@@ -173,27 +174,45 @@ export default function InfinitePromoCarousel({ promos }: { promos: FeaturedProm
 
   useEffect(() => {
     if (!containerRef.current) return;
-    const observer = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        setContainerWidth(entry.contentRect.width);
+    const updateWidth = () => {
+      if (containerRef.current) {
+        setContainerWidth(containerRef.current.offsetWidth);
       }
-    });
+    };
+    updateWidth();
+    const observer = new ResizeObserver(updateWidth);
     observer.observe(containerRef.current);
     return () => observer.disconnect();
   }, []);
 
-  const cardWidth = (containerWidth - (gap * 2)) / 3;
+  const cardWidth = containerWidth > 0 ? (containerWidth - (gap * 2)) / 3 : 320;
 
-  const handleTransitionEnd = useCallback(() => {
+  const handleAnimationComplete = useCallback(() => {
+    if (promos.length === 0) return;
+    
     if (currentIndex >= promos.length * 2) {
-      setCurrentIndex(promos.length);
+      isResetting.current = true;
+      const targetIndex = promos.length;
+      controls.set({ 
+        transform: `translateX(${-targetIndex * (cardWidth + gap)}px)` 
+      });
+      setCurrentIndex(targetIndex);
     } else if (currentIndex < promos.length) {
-      setCurrentIndex(promos.length + currentIndex % promos.length);
+      isResetting.current = true;
+      const targetIndex = promos.length + (currentIndex % promos.length);
+      controls.set({ 
+        transform: `translateX(${-targetIndex * (cardWidth + gap)}px)` 
+      });
+      setCurrentIndex(targetIndex);
     }
-  }, [currentIndex, promos.length]);
+  }, [currentIndex, promos.length, cardWidth, gap, controls]);
 
   useEffect(() => {
     if (isMobile) return;
+    if (isResetting.current) {
+      isResetting.current = false;
+      return;
+    }
     controls.start({
       transform: `translateX(${-currentIndex * (cardWidth + gap)}px)`,
       transition: SPRING
@@ -308,7 +327,7 @@ export default function InfinitePromoCarousel({ promos }: { promos: FeaturedProm
         <motion.div
           animate={controls}
           className="flex gap-6 cursor-grab active:cursor-grabbing"
-          onTransitionEnd={handleTransitionEnd}
+          onAnimationComplete={handleAnimationComplete}
         >
           {duplicatedPromos.map((promo: FeaturedPromo, i: number) => (
             <PromoCard

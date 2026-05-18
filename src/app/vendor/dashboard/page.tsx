@@ -14,6 +14,7 @@ import {
   ChevronRight
 } from "lucide-react";
 
+import { motion, AnimatePresence } from "framer-motion";
 import { useVendorDashboard } from "./hooks/useVendorDashboard";
 import { DashboardSkeleton } from "./components/DashboardSections";
 import { ProfileSection } from "./components/ProfileSection";
@@ -109,6 +110,7 @@ export default function VendorDashboardPage() {
     saveImages,
     saveVideos,
   } = useVendorDashboard();
+  const [showAdvanced, setShowAdvanced] = React.useState(false);
   const supabase = React.useMemo(() => createSupabaseBrowserClient(), []);
 
   if (loading) {
@@ -148,60 +150,8 @@ export default function VendorDashboardPage() {
         </header>
 
         <div className="flex-1 p-6 lg:p-10 max-w-5xl mx-auto w-full">
-          <div className="grid gap-12 pb-20">
-            <div id="profile">
-              <ProfileSection 
-                vendor={vendor}
-                subscription={subscription}
-                form={form}
-                setForm={setForm}
-                saving={saving}
-                saveProfile={saveProfile}
-                saveVerificationDoc={saveVerificationDoc}
-                images={images}
-                cropperOpen={cropperOpen}
-                setCropperOpen={setCropperOpen}
-                saveCoverCrop={saveCoverCrop}
-                logoModalOpen={logoModalOpen}
-                setLogoModalOpen={setLogoModalOpen}
-                isPremium={isPremium}
-              />
-            </div>
-
-            <div id="themes">
-              <ThemesSection 
-                themes={themes}
-                setThemes={setThemes}
-                allThemes={allThemes}
-                saving={saving}
-                saveThemes={saveThemes}
-              />
-            </div>
-
-            <div id="categories">
-              <CategoriesSection 
-                categories={categories}
-                setCategories={setCategories}
-                allCategories={allCategories}
-                saving={saving}
-                saveCategories={saveCategories}
-              />
-            </div>
-
-            <div id="social">
-              <SocialSection 
-                socials={socials}
-                setSocials={setSocials}
-                socialPlatformChoices={socialPlatformChoices}
-                setSocialPlatformChoices={setSocialPlatformChoices}
-                socialCustomPlatforms={socialCustomPlatforms}
-                setSocialCustomPlatforms={setSocialCustomPlatforms}
-                saving={saving}
-                saveSocials={saveSocials}
-                isPremium={isPremium}
-              />
-            </div>
-
+          <div className="grid gap-8 pb-20">
+            {/* Priority Sections */}
             <div id="photos">
               <PhotoSection 
                 images={images}
@@ -212,19 +162,6 @@ export default function VendorDashboardPage() {
                 setEditingPhotoIndex={setEditingPhotoIndex}
                 saving={saving}
                 saveImages={saveImages}
-              />
-            </div>
-
-            <div id="videos">
-              <VideoSection 
-                videos={videos}
-                setVideos={setVideos}
-                videoModalOpen={videoModalOpen}
-                setVideoModalOpen={setVideoModalOpen}
-                editingVideoIndex={editingVideoIndex}
-                setEditingVideoIndex={setEditingVideoIndex}
-                saving={saving}
-                saveVideos={saveVideos}
               />
             </div>
 
@@ -255,6 +192,19 @@ export default function VendorDashboardPage() {
               />
             </div>
 
+            <div id="videos">
+              <VideoSection 
+                videos={videos}
+                setVideos={setVideos}
+                videoModalOpen={videoModalOpen}
+                setVideoModalOpen={setVideoModalOpen}
+                editingVideoIndex={editingVideoIndex}
+                setEditingVideoIndex={setEditingVideoIndex}
+                saving={saving}
+                saveVideos={saveVideos}
+              />
+            </div>
+
             <div id="promos">
               <PromoSection 
                 promos={promos}
@@ -277,6 +227,103 @@ export default function VendorDashboardPage() {
                 updateInquiryStatus={updateInquiryStatus}
               />
             </div>
+
+            {/* Advanced Toggle - Modern UI UX Pro Max approach */}
+            <div className="py-4 flex flex-col items-center relative">
+              <div className="absolute inset-x-0 top-1/2 h-px bg-gradient-to-r from-transparent via-black/[0.06] to-transparent" />
+              
+              <button
+                onClick={() => setShowAdvanced(!showAdvanced)}
+                className="group relative flex items-center gap-4 px-10 py-5 rounded-full bg-white border border-black/[0.05] shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_40px_rgba(166,124,82,0.12)] hover:-translate-y-1.5 transition-all duration-700 ease-[0.22, 1, 0.36, 1] z-10"
+              >
+                {/* Background Glow */}
+                <div className="absolute inset-0 rounded-full bg-[#a67c52]/[0.02] group-hover:bg-[#a67c52]/[0.05] transition-colors duration-700" />
+                
+                <div className="relative flex items-center gap-3">
+                  <div className={`flex items-center justify-center w-8 h-8 rounded-full bg-[#a67c52]/10 text-[#a67c52] transition-all duration-700 group-hover:bg-[#a67c52] group-hover:text-white ${showAdvanced ? 'rotate-180' : ''}`}>
+                    <ChevronRight size={18} className="rotate-90" />
+                  </div>
+                  
+                  <div className="flex flex-col items-start">
+                    <span className="text-[13px] font-black uppercase tracking-[0.15em] text-[#a67c52] group-hover:text-[#8e6a46] transition-colors duration-300">
+                      {showAdvanced ? "System Settings" : "Configure Dashboard"}
+                    </span>
+                    <span className="text-[10px] font-bold text-black/30 uppercase tracking-widest mt-0.5">
+                      {showAdvanced ? "Collapse Advanced View" : "Expand Advanced Options"}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Subtle Decorative Element */}
+                <div className="w-1.5 h-1.5 rounded-full bg-[#a67c52]/40 group-hover:scale-150 group-hover:bg-[#a67c52] transition-all duration-700" />
+              </button>
+            </div>
+
+            {/* Advanced Sections */}
+            <AnimatePresence>
+              {showAdvanced && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 20 }}
+                  transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                  className="grid gap-8"
+                >
+                  <div id="profile">
+                    <ProfileSection 
+                      vendor={vendor}
+                      subscription={subscription}
+                      form={form}
+                      setForm={setForm}
+                      saving={saving}
+                      saveProfile={saveProfile}
+                      saveVerificationDoc={saveVerificationDoc}
+                      images={images}
+                      cropperOpen={cropperOpen}
+                      setCropperOpen={setCropperOpen}
+                      saveCoverCrop={saveCoverCrop}
+                      logoModalOpen={logoModalOpen}
+                      setLogoModalOpen={setLogoModalOpen}
+                      isPremium={isPremium}
+                    />
+                  </div>
+
+                  <div id="themes">
+                    <ThemesSection 
+                      themes={themes}
+                      setThemes={setThemes}
+                      allThemes={allThemes}
+                      saving={saving}
+                      saveThemes={saveThemes}
+                    />
+                  </div>
+
+                  <div id="categories">
+                    <CategoriesSection 
+                      categories={categories}
+                      setCategories={setCategories}
+                      allCategories={allCategories}
+                      saving={saving}
+                      saveCategories={saveCategories}
+                    />
+                  </div>
+
+                  <div id="social">
+                    <SocialSection 
+                      socials={socials}
+                      setSocials={setSocials}
+                      socialPlatformChoices={socialPlatformChoices}
+                      setSocialPlatformChoices={setSocialPlatformChoices}
+                      socialCustomPlatforms={socialCustomPlatforms}
+                      setSocialCustomPlatforms={setSocialCustomPlatforms}
+                      saving={saving}
+                      saveSocials={saveSocials}
+                      isPremium={isPremium}
+                    />
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </main>

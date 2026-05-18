@@ -46,7 +46,7 @@ export async function GET(req: Request) {
       const { data: vendor, error } = await supabase
         .from("vendors")
         .select(
-          "id,business_name,slug,logo_url,average_rating,review_count,location_text,city,verified_status,cover_focus_x,cover_focus_y,cover_zoom,plan:plans(id,name)"
+          "id,business_name,slug,logo_url,average_rating,review_count,location_text,city,document_verified,cover_focus_x,cover_focus_y,cover_zoom,plan:plans(id,name)"
         )
         .eq("slug", slug)
         .eq("is_active", true)

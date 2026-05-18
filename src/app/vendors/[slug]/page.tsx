@@ -21,7 +21,6 @@ type VendorRow = {
   average_rating: number | null;
   review_count: number | null;
   save_count: number | null;
-  verified_status: boolean | null;
   document_verified: string | null;
   user_id: string | null;
   updated_at: string;
@@ -144,7 +143,7 @@ async function VendorDetailData({ slug }: { slug: string }) {
   const { data: vendor } = await supabase
     .from("vendors")
     .select(
-      "id,business_name,slug,logo_url,description,location_text,city,address,website_url,contact_email,contact_phone,sec_dti_number,average_rating,review_count,save_count,verified_status,document_verified,user_id,updated_at,plan:plans(id,name)"
+      "id,business_name,slug,logo_url,description,location_text,city,address,website_url,contact_email,contact_phone,sec_dti_number,average_rating,review_count,save_count,document_verified,user_id,updated_at,plan:plans(id,name)"
     )
     .eq("slug", slug)
     .eq("is_active", true)

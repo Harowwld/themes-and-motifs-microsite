@@ -108,7 +108,7 @@ function VendorCard({
                 <div className="text-[14px] sm:text-[16px] font-bold text-gray-900 uppercase tracking-tight truncate font-[family-name:var(--font-plus-jakarta)] flex-1 min-w-0">
                   {vendor.business_name}
                 </div>
-                {vendor.verified_status === true && (
+                {vendor.document_verified === "verified" && (
                   <span className="inline-flex items-center justify-center h-5 w-5 shrink-0" aria-label="Verified">
                     <div className="relative h-full w-full">
                       <Image

@@ -26,7 +26,7 @@ export type VendorProfile = {
   admin_phone_3?: string | null;
   plan_id: number | null;
   is_active: boolean | null;
-  verified_status: string | null;
+  document_verified: string | null;
   average_rating?: number | null;
   review_count?: number | null;
   plan?: { id: number; name: string } | { id: number; name: string }[] | null;

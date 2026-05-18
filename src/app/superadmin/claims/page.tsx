@@ -92,7 +92,7 @@ export default function SuperadminClaimsPage() {
     const admin_notes = action !== "verify" ? (window.prompt(action === "approve" ? "Admin notes (optional)" : "Reason / admin notes (optional)") ?? "") : undefined;
     setSavingId(id);
     try {
-      const res = await apiFetch<{ claim?: Claim; vendor?: { verified_status: string } }>("/api/admin/claims", {
+      const res = await apiFetch<{ claim?: Claim; vendor?: { document_verified: string } }>("/api/admin/claims", {
         method: "PATCH",
         body: JSON.stringify({ id, action, admin_notes: admin_notes?.trim() ? admin_notes.trim() : null }),
       });

@@ -23,7 +23,6 @@ export type Vendor = {
   contact_phone?: string | null;
   website_url?: string | null;
   logo_url?: string | null;
-  verified_status?: boolean | null;
   document_verified?: string | null;
   contact_person_1_name?: string | null;
   contact_person_1_position?: string | null;
@@ -156,7 +155,6 @@ export function useSuperadminVendors() {
     contact_phone: "",
     website_url: "",
     logo_url: "",
-    verified_status: false,
     document_verified: "verification_in_progress" as "verified" | "verification_in_progress" | "community_recognized" | "established_professional",
     contact_person_1_name: "",
     contact_person_1_position: "",
@@ -279,7 +277,7 @@ export function useSuperadminVendors() {
         contact_phone: v.contact_phone ?? "",
         website_url: v.website_url ?? "",
         logo_url: v.logo_url ?? "",
-        verified_status: v.verified_status ?? false,
+
         document_verified: (v.document_verified === "approved" || v.document_verified === "verified") 
           ? "verified" 
           : (v.document_verified === "pending" || !v.document_verified) 
@@ -392,7 +390,7 @@ export function useSuperadminVendors() {
           contact_phone: editForm.contact_phone || null,
           website_url: editForm.website_url || null,
           logo_url: editForm.logo_url || null,
-          verified_status: editForm.verified_status,
+
           document_verified: editForm.document_verified || null,
           contact_person_1_name: editForm.contact_person_1_name || null,
           contact_person_1_position: editForm.contact_person_1_position || null,

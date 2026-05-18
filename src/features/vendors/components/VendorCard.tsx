@@ -209,8 +209,11 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight, featured }: 
           <h3 className="text-[13px] sm:text-[15px] font-bold text-gray-900 tracking-tight line-clamp-1 font-[family-name:var(--font-plus-jakarta)]">
             {vendor.business_name}
           </h3>
-          {isPremium && (
-            <span className="shrink-0" title="Verified Premium Vendor">
+          {(vendor.document_verified === "verified" || 
+            vendor.document_verified === "established_professional" || 
+            vendor.document_verified === "community_recognized" ||
+            (isPremium && !vendor.document_verified)) && (
+            <span className="shrink-0" title={isPremium ? "Verified Premium Vendor" : "Verified Vendor"}>
               <Image
                 src="/cropped-vecteezy_verification-badge-set-guaranteed-stamp-or-verified-badge_23900241.svg"
                 alt="Verified"

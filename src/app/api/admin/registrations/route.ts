@@ -113,7 +113,6 @@ export async function PATCH(req: Request) {
         sec_dti_number: (reg as any).sec_dti_number ?? null,
         plan_id: reg.plan_id ?? null,
         logo_url: (reg as any)?.extra?.logo_url ?? null,
-        verified_status: false,
         is_active: true,
         is_featured: false,
       })

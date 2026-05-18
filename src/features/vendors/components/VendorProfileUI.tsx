@@ -104,7 +104,17 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
             <h1 className="font-serif text-[26px] sm:text-[34px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">
               <span className="inline-flex items-center gap-2">
                 <span>{vendor.business_name}</span>
-                {vendor.document_verified === "verified" ? (
+                {isPremium && (vendor.document_verified === "verified" || !vendor.document_verified) ? (
+                  <span className="inline-flex items-center justify-center h-6 w-6 relative" title="Verified Premium Vendor">
+                    <Image
+                      src="/cropped-vecteezy_verification-badge-set-guaranteed-stamp-or-verified-badge_23900241.svg"
+                      alt="Verified Premium Vendor"
+                      fill
+                      sizes="24px"
+                      className="object-contain"
+                    />
+                  </span>
+                ) : vendor.document_verified === "verified" ? (
                   <div className="relative h-6 w-6 shrink-0 text-[#60a5fa]" title="Verified Professional">
                     <svg viewBox="0 0 24 24" fill="currentColor" className="h-full w-full">
                       <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" />
@@ -129,16 +139,6 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
                     </svg>
                     <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-white">10</span>
                   </div>
-                ) : isPremium ? (
-                  <span className="inline-flex items-center justify-center h-6 w-6 relative" title="Verified Premium Vendor">
-                    <Image
-                      src="/cropped-vecteezy_verification-badge-set-guaranteed-stamp-or-verified-badge_23900241.svg"
-                      alt="Verified Premium Vendor"
-                      fill
-                      sizes="24px"
-                      className="object-contain"
-                    />
-                  </span>
                 ) : null}
               </span>
             </h1>

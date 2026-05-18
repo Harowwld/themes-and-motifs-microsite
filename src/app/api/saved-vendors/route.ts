@@ -46,6 +46,7 @@ export async function GET(request: NextRequest) {
           review_count,
           starting_price,
           price_range,
+          document_verified,
           plan:plan_id(name)
         )
       `)

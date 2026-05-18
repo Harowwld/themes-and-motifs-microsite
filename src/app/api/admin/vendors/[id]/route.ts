@@ -116,10 +116,7 @@ const FIELD_VALIDATORS: Record<string, (val: unknown) => { valid: boolean; value
     if (typeof val !== "number" && val !== null) return { valid: false, error: "plan_id must be a number or null" };
     return { valid: true, value: val };
   },
-  verified_status: (val) => {
-    if (typeof val !== "boolean") return { valid: false, error: "verified_status must be a boolean" };
-    return { valid: true, value: val };
-  },
+
   document_verified: (val) => {
     if (val !== null && typeof val !== "string") return { valid: false, error: "document_verified must be a string or null" };
     if (typeof val === "string" && !["verified", "verification_in_progress", "community_recognized", "established_professional"].includes(val)) {
@@ -262,24 +259,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 
     const supabase = createSupabaseAdminClient();
 
-    // Auto-update verified_status based on plan_id changes
-    if ("plan_id" in patch) {
-      const newPlanId = patch.plan_id;
-      let isPremium = false;
 
-      if (newPlanId !== null) {
-        const { data: plan } = await supabase
-          .from("plans")
-          .select("name")
-          .eq("id", newPlanId)
-          .maybeSingle();
-        const planName = String(plan?.name ?? "").toLowerCase();
-        isPremium = planName.includes("premium");
-      }
-
-      // Set verified_status: true if premium, false if not premium
-      patch.verified_status = isPremium ? true : false;
-    }
 
     const { data, error } = await supabase
       .from("vendors")

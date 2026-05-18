@@ -38,7 +38,7 @@ export async function GET(req: Request) {
 
     let vendorsQuery = supabase
       .from("vendors")
-      .select("id,business_name,slug,is_active,is_featured,average_rating,review_count,updated_at,plan_id,verified_status,plan:plans(id,name)")
+      .select("id,business_name,slug,is_active,is_featured,average_rating,review_count,updated_at,plan_id,document_verified,plan:plans(id,name)")
       .order("is_featured", { ascending: false })
       .order("updated_at", { ascending: false });
 
@@ -54,7 +54,7 @@ export async function GET(req: Request) {
     }
 
     if (status) {
-      vendorsQuery = vendorsQuery.eq("verified_status", status);
+      vendorsQuery = vendorsQuery.eq("document_verified", status);
     }
 
     const [{ data: vendors, error }, { data: plans, error: plansErr }] = await Promise.all([
@@ -81,7 +81,7 @@ export async function PATCH(req: Request) {
   try {
     await assertAdminOrEditorRequest(req);
 
-    const { id, is_active, is_featured, plan_id, verified_status } = (await req.json()) ?? {};
+    const { id, is_active, is_featured, plan_id } = (await req.json()) ?? {};
 
     if (typeof id !== "number") {
       return Response.json({ error: "Invalid id" }, { status: 400 });
@@ -91,9 +91,6 @@ export async function PATCH(req: Request) {
     if (typeof is_active === "boolean") patch.is_active = is_active;
     if (typeof is_featured === "boolean") patch.is_featured = is_featured;
     if (typeof plan_id === "number" || plan_id === null) patch.plan_id = plan_id;
-    if (typeof verified_status === "boolean") {
-      patch.verified_status = verified_status;
-    }
 
     if (Object.keys(patch).length === 0) {
       return Response.json({ error: "No fields to update" }, { status: 400 });

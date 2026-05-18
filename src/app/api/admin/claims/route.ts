@@ -73,9 +73,9 @@ export async function PATCH(req: Request) {
 
       const { data: vendor, error: vendorErr } = await supabase
         .from("vendors")
-        .update({ verified_status: "verified" })
+        .update({ document_verified: "verified" })
         .eq("id", claim.vendor_id)
-        .select("id,slug,verified_status")
+        .select("id,slug,document_verified")
         .single();
 
       if (vendorErr) {
@@ -175,7 +175,7 @@ export async function PATCH(req: Request) {
       .from("vendors")
       .update({
         user_id: userId,
-        verified_status: "pending",
+        document_verified: "verification_in_progress",
       })
       .eq("id", claim.vendor_id)
       .select("id,slug")

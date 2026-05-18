@@ -59,12 +59,12 @@ export function PromoSection({
             </div>
           ) : (
             <div className="max-h-[500px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-[#a67c52]/20 hover:scrollbar-thumb-[#a67c52]/40">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-1 pb-8">
                 {promos.map((p) => (
                   <div key={p.id} className="group relative bg-white rounded-lg border border-black/[0.06] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-1">
                     <div className="absolute top-1/2 -left-2 h-4 w-4 rounded-full bg-[#fafafa] border border-black/[0.06] z-10" />
                     <div className="absolute top-1/2 -right-2 h-4 w-4 rounded-full bg-[#fafafa] border border-black/[0.06] z-10" />
-                    
+
                     <div className="flex h-full">
                       {p.image_url ? (
                         <div className="w-32 shrink-0 relative overflow-hidden border-r border-dashed border-black/[0.1]">
@@ -163,11 +163,11 @@ export function PromoSection({
         onDelete={
           editingPromoId
             ? () => {
-                const id = editingPromoId;
-                setPromoModalOpen(false);
-                setEditingPromoId(null);
-                void deletePromo(id);
-              }
+              const id = editingPromoId;
+              setPromoModalOpen(false);
+              setEditingPromoId(null);
+              void deletePromo(id);
+            }
             : undefined
         }
         onSave={(payload) => {

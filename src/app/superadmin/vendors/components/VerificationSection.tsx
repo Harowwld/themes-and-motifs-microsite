@@ -22,17 +22,6 @@ export function VerificationSection({
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="grid gap-1.5">
-          <span className="text-[12px] font-semibold text-black/55">Verified Status</span>
-          <select
-            value={String(editForm.verified_status)}
-            onChange={(e) => setEditForm((f: any) => ({ ...f, verified_status: e.target.value === "true" }))}
-            className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]"
-          >
-            <option value="false">Not Verified</option>
-            <option value="true">Verified</option>
-          </select>
-        </label>
-        <label className="grid gap-1.5">
           <span className="text-[12px] font-semibold text-black/55">Plan Expiry Date</span>
           <input
             type="date"
