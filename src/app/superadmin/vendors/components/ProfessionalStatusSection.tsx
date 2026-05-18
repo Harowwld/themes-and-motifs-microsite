@@ -7,6 +7,34 @@ export function ProfessionalStatusSection({
   editForm: any;
   setEditForm: (v: any) => void;
 }) {
+  const checkedStatuses = (editForm.document_verified ?? "")
+    .split(",")
+    .map((s: string) => s.trim())
+    .filter(Boolean);
+
+  const handleCheckboxChange = (status: string, checked: boolean) => {
+    let nextStatuses = [...checkedStatuses];
+    if (checked) {
+      // If checking "verified", uncheck "verification_in_progress"
+      if (status === "verified") {
+        nextStatuses = nextStatuses.filter(s => s !== "verification_in_progress");
+      }
+      // If checking "verification_in_progress", uncheck "verified"
+      if (status === "verification_in_progress") {
+        nextStatuses = nextStatuses.filter(s => s !== "verified");
+      }
+      if (!nextStatuses.includes(status)) {
+        nextStatuses.push(status);
+      }
+    } else {
+      nextStatuses = nextStatuses.filter(s => s !== status);
+    }
+    setEditForm((f: any) => ({
+      ...f,
+      document_verified: nextStatuses.join(",") || null
+    }));
+  };
+
   return (
     <section className="grid gap-4">
       <div className="text-[13px] font-semibold text-[#2c2c2c] border-b border-black/5 pb-2">
@@ -17,11 +45,11 @@ export function ProfessionalStatusSection({
           {/* VERIFIED */}
           <label className="flex items-start gap-3 p-3 rounded-[3px] border border-black/10 bg-[#fafafa] cursor-pointer hover:border-[#a67c52]/30 transition-colors group">
             <input
-              type="radio"
-              name="professional_status"
-              checked={editForm.document_verified === "verified"}
-              onChange={() => setEditForm((f: any) => ({ ...f, document_verified: "verified" }))}
-              className="mt-1 h-4 w-4 accent-[#a67c52]"
+              type="checkbox"
+              name="professional_status_verified"
+              checked={checkedStatuses.includes("verified")}
+              onChange={(e) => handleCheckboxChange("verified", e.target.checked)}
+              className="mt-1 h-4 w-4 accent-[#a67c52] rounded-[3px]"
             />
             <div className="flex-1">
               <div className="text-[13px] font-semibold text-[#2c2c2c]">VERIFIED</div>
@@ -43,11 +71,11 @@ export function ProfessionalStatusSection({
           {/* Verification In Progress */}
           <label className="flex items-start gap-3 p-3 rounded-[3px] border border-black/10 bg-[#fafafa] cursor-pointer hover:border-[#a67c52]/30 transition-colors group">
             <input
-              type="radio"
-              name="professional_status"
-              checked={editForm.document_verified === "verification_in_progress"}
-              onChange={() => setEditForm((f: any) => ({ ...f, document_verified: "verification_in_progress" }))}
-              className="mt-1 h-4 w-4 accent-[#a67c52]"
+              type="checkbox"
+              name="professional_status_in_progress"
+              checked={checkedStatuses.includes("verification_in_progress")}
+              onChange={(e) => handleCheckboxChange("verification_in_progress", e.target.checked)}
+              className="mt-1 h-4 w-4 accent-[#a67c52] rounded-[3px]"
             />
             <div className="flex-1">
               <div className="text-[13px] font-semibold text-[#2c2c2c]">Verification In Progress</div>
@@ -66,11 +94,11 @@ export function ProfessionalStatusSection({
           {/* Community Recognized */}
           <label className="flex items-start gap-3 p-3 rounded-[3px] border border-black/10 bg-[#fafafa] cursor-pointer hover:border-[#a67c52]/30 transition-colors group">
             <input
-              type="radio"
-              name="professional_status"
-              checked={editForm.document_verified === "community_recognized"}
-              onChange={() => setEditForm((f: any) => ({ ...f, document_verified: "community_recognized" }))}
-              className="mt-1 h-4 w-4 accent-[#a67c52]"
+              type="checkbox"
+              name="professional_status_community"
+              checked={checkedStatuses.includes("community_recognized")}
+              onChange={(e) => handleCheckboxChange("community_recognized", e.target.checked)}
+              className="mt-1 h-4 w-4 accent-[#a67c52] rounded-[3px]"
             />
             <div className="flex-1">
               <div className="text-[13px] font-semibold text-[#2c2c2c]">Community Recognized</div>
@@ -92,11 +120,11 @@ export function ProfessionalStatusSection({
           {/* Established Professional */}
           <label className="flex items-start gap-3 p-3 rounded-[3px] border border-black/10 bg-[#fafafa] cursor-pointer hover:border-[#a67c52]/30 transition-colors group">
             <input
-              type="radio"
-              name="professional_status"
-              checked={editForm.document_verified === "established_professional"}
-              onChange={() => setEditForm((f: any) => ({ ...f, document_verified: "established_professional" }))}
-              className="mt-1 h-4 w-4 accent-[#a67c52]"
+              type="checkbox"
+              name="professional_status_established"
+              checked={checkedStatuses.includes("established_professional")}
+              onChange={(e) => handleCheckboxChange("established_professional", e.target.checked)}
+              className="mt-1 h-4 w-4 accent-[#a67c52] rounded-[3px]"
             />
             <div className="flex-1">
               <div className="text-[13px] font-semibold text-[#2c2c2c]">Established Professional</div>

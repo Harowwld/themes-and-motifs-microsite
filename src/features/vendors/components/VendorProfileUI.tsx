@@ -43,6 +43,16 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
 
   const isPremium = (vendor.plan_name ?? "").toLowerCase().includes("premium");
 
+  const verifiedStatuses = (vendor.document_verified ?? "")
+    .split(",")
+    .map((s: string) => s.trim())
+    .filter(Boolean);
+
+  const hasVerified = verifiedStatuses.includes("verified");
+  const hasInProgress = verifiedStatuses.includes("verification_in_progress");
+  const hasCommunity = verifiedStatuses.includes("community_recognized");
+  const hasEstablished = verifiedStatuses.includes("established_professional");
+
   function formatDate(value: string) {
     const d = new Date(value);
     if (Number.isNaN(d.getTime())) return value;
@@ -104,35 +114,51 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
             <h1 className="font-serif text-[26px] sm:text-[34px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">
               <span className="inline-flex items-center gap-2">
                 <span>{vendor.business_name}</span>
-                {isPremium && (vendor.document_verified === "verified" || !vendor.document_verified) ? (
-                  <span className="inline-flex items-center justify-center h-6 w-6 relative" title="Verified Premium Vendor">
-                    <Image
-                      src="/cropped-vecteezy_verification-badge-set-guaranteed-stamp-or-verified-badge_23900241.svg"
-                      alt="Verified Premium Vendor"
-                      fill
-                      sizes="24px"
-                      className="object-contain"
-                    />
-                  </span>
-                ) : vendor.document_verified === "verified" ? (
-                  <div className="relative h-6 w-6 shrink-0 text-[#60a5fa]" title="Verified Professional">
-                    <svg viewBox="0 0 24 24" fill="currentColor" className="h-full w-full">
-                      <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" />
-                    </svg>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="absolute inset-0 h-full w-full p-1.5">
-                      <path d="m9 12 2 2 4-4" />
+                {/* 1. Verified Premium or Standard Verified */}
+                {(hasVerified || (isPremium && !hasInProgress)) ? (
+                  isPremium ? (
+                    <span className="inline-flex items-center justify-center h-6 w-6 relative shrink-0" title="Verified Premium Vendor">
+                      <Image
+                        src="/cropped-vecteezy_verification-badge-set-guaranteed-stamp-or-verified-badge_23900241.svg"
+                        alt="Verified Premium Vendor"
+                        fill
+                        sizes="24px"
+                        className="object-contain"
+                      />
+                    </span>
+                  ) : (
+                    <div className="relative h-6 w-6 shrink-0 text-[#60a5fa]" title="Verified Professional">
+                      <svg viewBox="0 0 24 24" fill="currentColor" className="h-full w-full">
+                        <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" />
+                      </svg>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="absolute inset-0 h-full w-full p-1.5">
+                        <path d="m9 12 2 2 4-4" />
+                      </svg>
+                    </div>
+                  )
+                ) : hasInProgress ? (
+                  <div className="h-6 w-6 shrink-0 flex items-center justify-center text-[#ffc067]" title="Verification In Progress">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
+                      <circle cx="12" cy="12" r="10" />
+                      <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                      <line x1="12" y1="17" x2="12.01" y2="17" />
                     </svg>
                   </div>
-                ) : vendor.document_verified === "community_recognized" ? (
-                  <div className="relative h-6 w-6 shrink-0 text-[#ffc9d7]" title="Community Recognized">
-                    <svg viewBox="0 0 24 24" fill="currentColor" className="h-full w-full">
-                      <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" />
-                    </svg>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="absolute inset-0 h-full w-full p-1.5">
-                      <path d="m9 12 2 2 4-4" />
+                ) : null}
+
+                {/* 2. Community Recognized */}
+                {hasCommunity ? (
+                  <div className="relative h-6 w-6 shrink-0" title="Community Recognized">
+                    <svg viewBox="2296 283 599 599" className="h-full w-full select-none" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path fillRule="nonzero" fill="#e07a90" d="M 2890.210938 579.460938 C 2890.210938 603.738281 2857.238281 623.371094 2851.261719 645.769531 C 2845.058594 668.941406 2863.621094 702.390625 2851.878906 722.679688 C 2839.980469 743.261719 2801.621094 743.828125 2784.921875 760.53125 C 2768.210938 777.238281 2767.640625 815.589844 2747.058594 827.5 C 2726.769531 839.238281 2693.320312 820.679688 2670.148438 826.871094 C 2647.75 832.859375 2628.128906 865.828125 2603.839844 865.828125 C 2579.558594 865.828125 2559.929688 832.859375 2537.539062 826.871094 C 2514.359375 820.679688 2480.921875 839.238281 2460.628906 827.5 C 2440.050781 815.589844 2439.46875 777.238281 2422.769531 760.53125 C 2406.070312 743.828125 2367.710938 743.261719 2355.800781 722.679688 C 2344.070312 702.390625 2362.621094 668.941406 2356.429688 645.769531 C 2350.441406 623.371094 2317.46875 603.738281 2317.46875 579.460938 C 2317.46875 555.179688 2350.441406 535.550781 2356.429688 513.160156 C 2362.621094 489.980469 2344.070312 456.53125 2355.800781 436.238281 C 2367.710938 415.660156 2406.070312 415.089844 2422.769531 398.390625 C 2439.46875 381.679688 2440.050781 343.328125 2460.628906 331.421875 C 2480.921875 319.679688 2514.359375 338.238281 2537.539062 332.050781 C 2559.929688 326.058594 2579.558594 293.089844 2603.839844 293.089844 C 2628.128906 293.089844 2647.75 326.058594 2670.148438 332.050781 C 2693.320312 338.238281 2726.769531 319.679688 2747.058594 331.421875 C 2767.640625 343.328125 2768.210938 381.679688 2784.921875 398.390625 C 2801.621094 415.089844 2839.980469 415.660156 2851.878906 436.25 C 2863.621094 456.53125 2845.058594 489.980469 2851.261719 513.160156 C 2857.238281 535.550781 2890.210938 555.179688 2890.210938 579.460938 Z" />
+                      <path fillRule="nonzero" fill="white" d="M 2749.328125 490.808594 C 2737.230469 478.710938 2717.621094 478.710938 2705.519531 490.808594 L 2578.648438 617.671875 L 2525.96875 564.988281 C 2513.871094 552.890625 2494.25 552.890625 2482.148438 564.988281 C 2470.050781 577.089844 2470.050781 596.710938 2482.148438 608.808594 L 2555.628906 682.28125 C 2561.960938 688.609375 2570.359375 691.628906 2578.648438 691.328125 C 2586.949219 691.628906 2595.339844 688.609375 2601.671875 682.28125 L 2749.328125 534.621094 C 2761.429688 522.519531 2761.429688 502.910156 2749.328125 490.808594 " />
                     </svg>
                   </div>
-                ) : vendor.document_verified === "established_professional" ? (
+                ) : null}
+
+
+                {/* 3. Established Professional */}
+                {hasEstablished ? (
                   <div className="relative h-6 w-6 shrink-0 text-[#4ade80]" title="Established Professional">
                     <svg viewBox="0 0 24 24" fill="currentColor" className="h-full w-full">
                       <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" />
@@ -343,32 +369,67 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
             {/* Professional Status */}
             <div className="rounded-xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)]">
               <h3 className="text-[14px] font-semibold text-[#2c2c2c]">Document Verification</h3>
-              <div className="mt-3">
-                {vendor.document_verified === "verified" ? (
+              <div className="mt-3 flex flex-col gap-3">
+                {/* 1. Verified */}
+                {(hasVerified || (isPremium && !hasInProgress)) && (
                   <div className="flex items-center gap-2" title="VERIFIED (With DTI / SEC / BIR docs submitted)">
                     <div className="relative h-6 w-6 shrink-0" style={{ color: '#60a5fa' }}>
-                      <svg viewBox="0 0 24 24" fill="currentColor" className="h-full w-full">
-                        <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" />
-                      </svg>
-                      <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="absolute inset-0 h-full w-full p-1.5">
-                        <path d="m9 12 2 2 4-4" />
+                      {isPremium ? (
+                        <div className="relative h-6 w-6 shrink-0">
+                          <Image
+                            src="/cropped-vecteezy_verification-badge-set-guaranteed-stamp-or-verified-badge_23900241.svg"
+                            alt="Verified Premium Vendor"
+                            fill
+                            sizes="24px"
+                            className="object-contain"
+                          />
+                        </div>
+                      ) : (
+                        <>
+                          <svg viewBox="0 0 24 24" fill="currentColor" className="h-full w-full">
+                            <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" />
+                          </svg>
+                          <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="absolute inset-0 h-full w-full p-1.5">
+                            <path d="m9 12 2 2 4-4" />
+                          </svg>
+                        </>
+                      )}
+                    </div>
+                    <span className="text-[13px] font-semibold" style={{ color: '#60a5fa' }}>
+                      {isPremium ? "Verified Premium Vendor" : "Verified Professional"}
+                    </span>
+                  </div>
+                )}
+
+                {/* 2. Verification In Progress */}
+                {hasInProgress && (
+                  <div className="flex items-center gap-2" title="Verification In Progress (Awaiting submission of docs)">
+                    <div className="h-6 w-6 shrink-0 flex items-center justify-center" style={{ color: '#ffc067' }}>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                        <line x1="12" y1="17" x2="12.01" y2="17" />
                       </svg>
                     </div>
-                    <span className="text-[13px] font-semibold" style={{ color: '#60a5fa' }}>Verified Professional</span>
+                    <span className="text-[13px] font-semibold" style={{ color: '#ffc067' }}>Verification In Progress</span>
                   </div>
-                ) : vendor.document_verified === "community_recognized" ? (
+                )}
+
+                {/* 3. Community Recognized */}
+                {hasCommunity && (
                   <div className="flex items-center gap-2" title="Community Recognized (Known in the community as legit/trustworthy)">
-                    <div className="relative h-6 w-6 shrink-0" style={{ color: '#ffc9d7' }}>
-                      <svg viewBox="0 0 24 24" fill="currentColor" className="h-full w-full">
-                        <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" />
-                      </svg>
-                      <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="absolute inset-0 h-full w-full p-1.5">
-                        <path d="m9 12 2 2 4-4" />
+                    <div className="relative h-6 w-6 shrink-0">
+                      <svg viewBox="2296 283 599 599" className="h-full w-full select-none" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path fillRule="nonzero" fill="#e07a90" d="M 2890.210938 579.460938 C 2890.210938 603.738281 2857.238281 623.371094 2851.261719 645.769531 C 2845.058594 668.941406 2863.621094 702.390625 2851.878906 722.679688 C 2839.980469 743.261719 2801.621094 743.828125 2784.921875 760.53125 C 2768.210938 777.238281 2767.640625 815.589844 2747.058594 827.5 C 2726.769531 839.238281 2693.320312 820.679688 2670.148438 826.871094 C 2647.75 832.859375 2628.128906 865.828125 2603.839844 865.828125 C 2579.558594 865.828125 2559.929688 832.859375 2537.539062 826.871094 C 2514.359375 820.679688 2480.921875 839.238281 2460.628906 827.5 C 2440.050781 815.589844 2439.46875 777.238281 2422.769531 760.53125 C 2406.070312 743.828125 2367.710938 743.261719 2355.800781 722.679688 C 2344.070312 702.390625 2362.621094 668.941406 2356.429688 645.769531 C 2350.441406 623.371094 2317.46875 603.738281 2317.46875 579.460938 C 2317.46875 555.179688 2350.441406 535.550781 2356.429688 513.160156 C 2362.621094 489.980469 2344.070312 456.53125 2355.800781 436.238281 C 2367.710938 415.660156 2406.070312 415.089844 2422.769531 398.390625 C 2439.46875 381.679688 2440.050781 343.328125 2460.628906 331.421875 C 2480.921875 319.679688 2514.359375 338.238281 2537.539062 332.050781 C 2559.929688 326.058594 2579.558594 293.089844 2603.839844 293.089844 C 2628.128906 293.089844 2647.75 326.058594 2670.148438 332.050781 C 2693.320312 338.238281 2726.769531 319.679688 2747.058594 331.421875 C 2767.640625 343.328125 2768.210938 381.679688 2784.921875 398.390625 C 2801.621094 415.089844 2839.980469 415.660156 2851.878906 436.25 C 2863.621094 456.53125 2845.058594 489.980469 2851.261719 513.160156 C 2857.238281 535.550781 2890.210938 555.179688 2890.210938 579.460938 Z" />
+                        <path fillRule="nonzero" fill="white" d="M 2749.328125 490.808594 C 2737.230469 478.710938 2717.621094 478.710938 2705.519531 490.808594 L 2578.648438 617.671875 L 2525.96875 564.988281 C 2513.871094 552.890625 2494.25 552.890625 2482.148438 564.988281 C 2470.050781 577.089844 2470.050781 596.710938 2482.148438 608.808594 L 2555.628906 682.28125 C 2561.960938 688.609375 2570.359375 691.628906 2578.648438 691.328125 C 2586.949219 691.628906 2595.339844 688.609375 2601.671875 682.28125 L 2749.328125 534.621094 C 2761.429688 522.519531 2761.429688 502.910156 2749.328125 490.808594 " />
                       </svg>
                     </div>
-                    <span className="text-[13px] font-semibold" style={{ color: '#ffc9d7' }}>Community Recognized</span>
+                    <span className="text-[13px] font-semibold text-[#e07a90]">Community Recognized</span>
                   </div>
-                ) : vendor.document_verified === "established_professional" ? (
+                )}
+
+                {/* 4. Established Professional */}
+                {hasEstablished && (
                   <div className="flex items-center gap-2" title="Established Professional (At least 10 years in business)">
                     <div className="relative h-6 w-6 shrink-0" style={{ color: '#4ade80' }}>
                       <svg viewBox="0 0 24 24" fill="currentColor" className="h-full w-full">
@@ -378,17 +439,11 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
                     </div>
                     <span className="text-[13px] font-semibold" style={{ color: '#4ade80' }}>Established Professional</span>
                   </div>
-                ) : (
-                  <div className="flex items-center gap-2" title="Verification In Progress (Awaiting submission of docs)">
-                    <div className="h-6 w-6 shrink-0 flex items-center justify-center" style={{ color: '#ffc067' }}>
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
-                        <circle cx="12" cy="12" r="10" />
-                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-                        <line x1="12" y1="17" x2="12.01" y2="17" />
-                      </svg>
-                    </div>
-                    <span className="text-[13px] font-semibold" style={{ color: '#ffc067' }}>Verification In Progress</span>
-                  </div>
+                )}
+
+                {/* Fallback */}
+                {!hasVerified && !hasInProgress && !hasCommunity && !hasEstablished && !isPremium && (
+                  <div className="text-[13px] text-black/45">Not verified</div>
                 )}
               </div>
             </div>

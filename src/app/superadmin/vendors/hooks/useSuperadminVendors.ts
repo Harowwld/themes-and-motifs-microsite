@@ -155,7 +155,7 @@ export function useSuperadminVendors() {
     contact_phone: "",
     website_url: "",
     logo_url: "",
-    document_verified: "verification_in_progress" as "verified" | "verification_in_progress" | "community_recognized" | "established_professional",
+    document_verified: "verification_in_progress" as string,
     contact_person_1_name: "",
     contact_person_1_position: "",
     contact_person_2_name: "",
@@ -278,11 +278,11 @@ export function useSuperadminVendors() {
         website_url: v.website_url ?? "",
         logo_url: v.logo_url ?? "",
 
-        document_verified: (v.document_verified === "approved" || v.document_verified === "verified") 
+        document_verified: v.document_verified === "approved" 
           ? "verified" 
-          : (v.document_verified === "pending" || !v.document_verified) 
-            ? "verification_in_progress" 
-            : v.document_verified as any,
+          : v.document_verified === "pending"
+            ? "verification_in_progress"
+            : (v.document_verified || "verification_in_progress"),
         contact_person_1_name: v.contact_person_1_name ?? "",
         contact_person_1_position: v.contact_person_1_position ?? "",
         contact_person_2_name: v.contact_person_2_name ?? "",
