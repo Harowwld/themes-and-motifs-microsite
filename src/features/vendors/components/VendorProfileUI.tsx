@@ -237,15 +237,22 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
                 <p className="mt-1 text-[13px] text-black/55">Promos and marketplace deals from this vendor.</p>
                 <div className="mt-4 grid gap-3">
                   {promos.map((p: any) => (
-                    <a key={p.id} href={`/promos/${p.id}`} className="block rounded-xl border-2 border-dashed border-[#c17a4e]/40 bg-gradient-to-br from-[#fff7ed] to-white overflow-hidden relative hover:-translate-y-[1px] active:scale-[0.985] hover:shadow-md transition-[transform,box-shadow] duration-200 ease-out">
-                      {/* Promo Badge */}
-                      <div className="absolute top-0 left-0 z-10">
-                        <div className="bg-[#c17a4e] text-white text-[10px] font-bold px-2.5 py-0.5 rounded-br-md">
-                          PROMO
-                        </div>
-                      </div>
+                    <a
+                      key={p.id}
+                      href={`/promos/${p.id}`}
+                      className="group relative block rounded-2xl border border-[#c17a4e]/20 bg-gradient-to-br from-[#fffdfa] via-white to-[#fffcf7] p-1.5 hover:-translate-y-[1px] active:scale-[0.99] hover:shadow-[0_8px_20px_-6px_rgba(193,122,78,0.15)] transition-[transform,box-shadow] duration-300 ease-out"
+                    >
+                      {/* Inner Dashed Border (signifying a premium ticket/coupon) */}
+                      <div className="absolute inset-1.5 rounded-[10px] border border-dashed border-[#c17a4e]/35 pointer-events-none group-hover:border-[#c17a4e]/60 transition-colors duration-300" />
 
-                      <div className="flex min-w-0">
+                      <div className="flex min-w-0 rounded-[10px] overflow-hidden relative bg-white/40">
+                        {/* Promo Badge */}
+                        <div className="absolute top-2 left-2 z-10">
+                          <div className="bg-[#c17a4e] text-white text-[9px] font-bold tracking-widest px-2.5 py-0.5 rounded shadow-[0_2px_8px_rgba(193,122,78,0.25)] uppercase font-mono">
+                            PROMO
+                          </div>
+                        </div>
+
                         {/* Left: Image */}
                         {p.image_url ? (
                           <div className="w-20 sm:w-24 md:w-28 shrink-0 relative overflow-hidden">
@@ -255,7 +262,7 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
                                 alt=""
                                 fill
                                 sizes="(max-width: 640px) 80px, (max-width: 768px) 96px, 112px"
-                                className="object-cover"
+                                className="object-cover transition-transform duration-500 group-hover:scale-105"
                                 style={{
                                   objectPosition: `${clampPct(Number(p.image_focus_x ?? 50))}% ${clampPct(Number(p.image_focus_y ?? 50))}%`,
                                   transform: `scale(${clampZoom(Number(p.image_zoom ?? 1))})`,
@@ -267,24 +274,26 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
                         ) : null}
 
                         {/* Right: Content */}
-                        <div className="flex-1 p-2.5 sm:p-3.5 min-w-0">
-                          <div className="text-[11px] font-semibold text-[#a67c52] uppercase tracking-wide">
-                            Exclusive Deal
-                          </div>
-
-                          <div className="mt-0.5 text-[14px] font-bold text-[#2c2c2c] leading-tight line-clamp-2">
-                            {p.title}
-                          </div>
-
-                          {p.summary ? (
-                            <div className="mt-1 text-[12px] text-black/60 line-clamp-2">
-                              {p.summary}
+                        <div className="flex-1 p-3 sm:p-4 min-w-0 flex flex-col justify-between">
+                          <div>
+                            <div className="text-[10px] font-semibold text-[#a67c52] uppercase tracking-wider">
+                              Exclusive Deal
                             </div>
-                          ) : null}
 
-                          <div className="mt-2 flex items-center justify-between">
+                            <div className="mt-0.5 text-[15px] font-bold text-[#2c2c2c] leading-snug line-clamp-2 group-hover:text-[#a67c52] transition-colors duration-200 font-serif">
+                              {p.title}
+                            </div>
+
+                            {p.summary ? (
+                              <div className="mt-1 text-[12px] leading-relaxed text-black/60 line-clamp-2">
+                                {p.summary}
+                              </div>
+                            ) : null}
+                          </div>
+
+                          <div className="mt-3 flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-dashed border-[#c17a4e]/15">
                             {typeof p.discount_percentage === "number" ? (
-                              <span className="inline-flex items-center rounded-sm bg-[#c17a4e] px-2 py-0.5 text-[11px] font-bold text-white">
+                              <span className="inline-flex items-center rounded-sm bg-[#c17a4e]/10 px-2 py-0.5 text-[11px] font-bold text-[#c17a4e] border border-[#c17a4e]/20">
                                 {p.discount_percentage}% OFF
                               </span>
                             ) : (
@@ -293,17 +302,17 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
                                 Limited Time
                               </span>
                             )}
+
+                            {(p.valid_from || p.valid_to) ? (
+                              <div className="text-[11px] text-black/45 font-medium">
+                                {p.valid_from ? `From ${formatDate(p.valid_from)}` : null}
+                                {p.valid_from && p.valid_to ? " · " : null}
+                                {p.valid_to ? `Until ${formatDate(p.valid_to)}` : null}
+                              </div>
+                            ) : null}
                           </div>
 
-                          {(p.valid_from || p.valid_to) ? (
-                            <div className="mt-2 text-[11px] text-black/45">
-                              {p.valid_from ? `From ${formatDate(p.valid_from)}` : null}
-                              {p.valid_from && p.valid_to ? " · " : null}
-                              {p.valid_to ? `Until ${formatDate(p.valid_to)}` : null}
-                            </div>
-                          ) : null}
-
-                          {p.terms ? <div className="mt-2 text-[11px] leading-5 text-black/50 whitespace-pre-line line-clamp-3">{p.terms}</div> : null}
+                          {p.terms ? <div className="mt-2 text-[10px] leading-normal text-black/40 whitespace-pre-line line-clamp-2">{p.terms}</div> : null}
                         </div>
                       </div>
                     </a>
@@ -315,7 +324,7 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
             {/* Photos & Videos */}
             {images.length > 0 ? (
               <div className="rounded-2xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] hover:shadow-md transition-shadow duration-300 min-w-0">
-                <VendorPhotosCarousel images={images} />
+                <VendorPhotosCarousel images={images} vendorId={vendor.id} />
               </div>
             ) : null}
 

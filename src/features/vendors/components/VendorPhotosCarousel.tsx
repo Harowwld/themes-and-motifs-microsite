@@ -5,6 +5,7 @@ import Image from "next/image";
 import { createPortal } from "react-dom";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { proxiedImageUrl } from "@/lib/imageSizes";
+import { createSupabaseBrowserClient } from "@/lib/supabaseBrowser";
 
 // Type declarations for video APIs
 declare global {
@@ -27,6 +28,7 @@ type VendorImage = {
 type Props = {
   images: VendorImage[];
   intervalMs?: number;
+  vendorId?: number;
 };
 
 
@@ -87,22 +89,78 @@ function isVideoUrl(url: string): boolean {
   return getVideoEmbedUrl(url) !== null;
 }
 
-export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Props) {
-  const normalized = useMemo(
+export default function VendorPhotosCarousel({ images, intervalMs = 4500, vendorId }: Props) {
+  const normalized = useMemo<VendorImage[]>(
     () => images.filter((i) => Boolean(i?.image_url)).map((i) => {
       const isActuallyVideo = i.media_type === 'video' || isVideoUrl(i.image_url);
       return {
         ...i,
         image_url: isActuallyVideo ? i.image_url : (proxiedImageUrl(i.image_url) ?? i.image_url),
-        media_type: isActuallyVideo ? 'video' : 'image' as const
+        media_type: (isActuallyVideo ? 'video' : 'image') as 'video' | 'image'
       };
     }),
     [images]
   );
+
+  const [albums, setAlbums] = useState<{ id: number; title: string; slug: string; photos: VendorImage[] }[]>([]);
+  const [selectedAlbumId, setSelectedAlbumId] = useState<string | number>("all");
+
+  useEffect(() => {
+    if (!vendorId) return;
+    const supabase = createSupabaseBrowserClient();
+    async function loadAlbums() {
+      try {
+        const { data: albumsData } = await supabase
+          .from("vendor_albums")
+          .select("id, title, slug")
+          .eq("vendor_id", vendorId)
+          .order("created_at", { ascending: true });
+
+        const { data: photosData } = await supabase
+          .from("vendor_album_photos")
+          .select("id, album_id, image_url, display_order")
+          .eq("vendor_id", vendorId)
+          .order("display_order", { ascending: true });
+
+        if (albumsData && photosData) {
+          const mapped = albumsData
+            .map((album) => {
+              const albumPhotos: VendorImage[] = photosData
+                .filter((p) => p.album_id === album.id)
+                .map((p) => ({
+                  id: p.id,
+                  image_url: proxiedImageUrl(p.image_url) ?? p.image_url,
+                  caption: null,
+                  media_type: "image" as const,
+                }));
+              return {
+                ...album,
+                photos: albumPhotos,
+              };
+            })
+            .filter((album) => album.photos.length > 0);
+
+          setAlbums(mapped);
+        }
+      } catch (err) {
+        console.error("Error loading vendor albums:", err);
+      }
+    }
+    loadAlbums();
+  }, [vendorId]);
+
+  const displayedImages = useMemo<VendorImage[]>(() => {
+    if (selectedAlbumId === "all") {
+      return normalized;
+    }
+    const album = albums.find((a) => a.id === selectedAlbumId);
+    return album ? album.photos : [];
+  }, [selectedAlbumId, normalized, albums]);
+
   const initialIndex = useMemo(() => {
-    const coverIdx = normalized.findIndex((i) => i.is_cover);
+    const coverIdx = displayedImages.findIndex((i: VendorImage) => i.is_cover);
     return coverIdx >= 0 ? coverIdx : 0;
-  }, [normalized]);
+  }, [displayedImages]);
 
   const [activeIndex, setActiveIndex] = useState(initialIndex);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
@@ -122,19 +180,19 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
     intervalRef.current = null;
   }, []);
 
-  const hasVideos = useMemo(() => normalized.some((i) => i.media_type === 'video'), [normalized]);
-  const currentIsVideo = normalized[activeIndex]?.media_type === 'video';
+  const hasVideos = useMemo(() => displayedImages.some((i: VendorImage) => i.media_type === 'video'), [displayedImages]);
+  const currentIsVideo = displayedImages[activeIndex]?.media_type === 'video';
 
   const startAutoplay = useCallback(() => {
     if (typeof window === "undefined") return;
-    if (normalized.length <= 1) return;
+    if (displayedImages.length <= 1) return;
     if (intervalRef.current != null) return;
     // Don't auto-advance if user is interacting with video or video is playing
     if (userInteractedWithVideo || isVideoPlaying) return;
     intervalRef.current = window.setInterval(() => {
-      setActiveIndex((i) => (i + 1) % normalized.length);
+      setActiveIndex((i: number) => (i + 1) % displayedImages.length);
     }, intervalMs);
-  }, [intervalMs, normalized.length, userInteractedWithVideo, isVideoPlaying]);
+  }, [intervalMs, displayedImages.length, userInteractedWithVideo, isVideoPlaying]);
 
   const restartAutoplay = useCallback(() => {
     stopAutoplay();
@@ -178,7 +236,7 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
   useEffect(() => {
     if (!userInitiatedRef.current) return;
     const container = stripRef.current;
-    const el = thumbRefs.current[normalized[activeIndex]?.id ?? activeIndex];
+    const el = thumbRefs.current[displayedImages[activeIndex]?.id ?? activeIndex];
     if (!container || !el) return;
 
     const containerRect = container.getBoundingClientRect();
@@ -188,9 +246,9 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
       const left = el.offsetLeft - (container.clientWidth - el.clientWidth) / 2;
       container.scrollTo({ left, behavior: "smooth" });
     }
-  }, [activeIndex, normalized]);
+  }, [activeIndex, displayedImages]);
 
-  const active = normalized[activeIndex];
+  const active = displayedImages[activeIndex] ?? displayedImages[0];
   if (!active) return null;
 
 
@@ -206,12 +264,12 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
   );
 
   const goPrev = useCallback(() => {
-    setLightboxIndex((i) => (i - 1 + normalized.length) % normalized.length);
-  }, [normalized.length]);
+    setLightboxIndex((i) => (i - 1 + displayedImages.length) % displayedImages.length);
+  }, [displayedImages.length]);
 
   const goNext = useCallback(() => {
-    setLightboxIndex((i) => (i + 1) % normalized.length);
-  }, [normalized.length]);
+    setLightboxIndex((i) => (i + 1) % displayedImages.length);
+  }, [displayedImages.length]);
 
   const closeLightbox = useCallback(() => {
     setIsLightboxOpen(false);
@@ -240,6 +298,50 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
   return (
     <section className="flex flex-col w-full max-w-full min-w-0 overflow-hidden">
       <h2 className="text-[16px] font-semibold text-[#2c2c2c]">Photos & Videos</h2>
+
+      {/* Album Tabs (if any are created and have photos) */}
+      {albums.length > 0 && (
+        <div className="flex gap-2 overflow-x-auto pb-2 mt-3 sleek-scrollbar">
+          <button
+            type="button"
+            onClick={() => {
+              setSelectedAlbumId("all");
+              setActiveIndex(0);
+            }}
+            className={`shrink-0 rounded-full px-4 py-1.5 text-[12px] font-bold transition-all duration-300 ${
+              selectedAlbumId === "all"
+                ? "bg-[#a67c52] text-white shadow-sm"
+                : "bg-white border border-black/5 text-black/55 hover:border-black/15 hover:text-black cursor-pointer"
+            }`}
+          >
+            All Portfolio
+          </button>
+          {albums.map((album) => (
+            <button
+              key={album.id}
+              type="button"
+              onClick={() => {
+                setSelectedAlbumId(album.id);
+                setActiveIndex(0);
+              }}
+              className={`shrink-0 rounded-full px-4 py-1.5 text-[12px] font-bold transition-all duration-300 flex items-center gap-1.5 ${
+                selectedAlbumId === album.id
+                  ? "bg-[#a67c52] text-white shadow-sm"
+                  : "bg-white border border-black/5 text-black/55 hover:border-black/15 hover:text-black cursor-pointer"
+              }`}
+            >
+              {album.title}
+              <span className={`text-[10px] font-bold rounded-full px-1.5 py-0.25 ${
+                selectedAlbumId === album.id
+                  ? "bg-white/20 text-white"
+                  : "bg-black/5 text-black/40"
+              }`}>
+                {album.photos.length}
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
 
       <div ref={mainMediaRef} className="mt-3 rounded-2xl border border-black/10 bg-white shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-300">
         <div className="w-full bg-[#fcfbf9]" style={{ aspectRatio: String(activeRatio) }}>
@@ -290,13 +392,13 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
         {active.caption ? <div className="px-4 py-3 text-[12px] text-black/55">{active.caption}</div> : null}
       </div>
 
-      {normalized.length > 1 && (
+      {displayedImages.length > 1 && (
         <div className="mt-3 w-full min-w-0">
           <div
             ref={stripRef}
             className="flex gap-2 overflow-x-auto pb-3 sleek-scrollbar snap-x snap-mandatory scroll-smooth"
           >
-            {normalized.map((img, idx) => {
+            {displayedImages.map((img: VendorImage, idx: number) => {
               const isActive = idx === activeIndex;
 
               return (
@@ -356,7 +458,7 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
               );
             })}
           </div>
-          <div className="mt-1 text-[12px] text-black/45">{activeIndex + 1} / {normalized.length}</div>
+          <div className="mt-1 text-[12px] text-black/45">{activeIndex + 1} / {displayedImages.length}</div>
         </div>
       )}
 
@@ -383,7 +485,7 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
 
               <div className="relative flex h-full w-full max-w-[95vw] items-center justify-center overflow-hidden px-4 sm:px-12">
                 {/* Navigation - Left */}
-                {normalized.length > 1 && (
+                {displayedImages.length > 1 && (
                   <button
                     type="button"
                     onClick={goPrev}
@@ -397,16 +499,16 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
                 {/* Main Media Content */}
                 <div className="flex h-full w-full max-w-6xl flex-col items-center justify-center py-20">
                   <div className="relative h-full w-full">
-                    {normalized[lightboxIndex]?.media_type === 'video' ? (
+                    {displayedImages[lightboxIndex]?.media_type === 'video' ? (
                       <div className="flex h-full w-full items-center justify-center">
                         <div className="w-full max-w-4xl aspect-video shadow-2xl">
-                          {getVideoEmbedUrl(normalized[lightboxIndex]?.image_url!) ? (
+                          {getVideoEmbedUrl(displayedImages[lightboxIndex]?.image_url!) ? (
                             <iframe
-                              src={getVideoEmbedUrl(normalized[lightboxIndex]?.image_url!)!}
+                              src={getVideoEmbedUrl(displayedImages[lightboxIndex]?.image_url!)!}
                               className="h-full w-full border-0 rounded-2xl"
                               allowFullScreen
                               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                              title={normalized[lightboxIndex]?.caption ?? "Vendor video"}
+                              title={displayedImages[lightboxIndex]?.caption ?? "Vendor video"}
                             />
                           ) : (
                             <div className="h-full w-full flex items-center justify-center bg-white/5 rounded-2xl">
@@ -421,8 +523,8 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
                     ) : (
                       <div className="relative h-full w-full flex items-center justify-center">
                         <Image
-                          src={normalized[lightboxIndex]?.image_url}
-                          alt={normalized[lightboxIndex]?.caption ?? "Vendor photo"}
+                          src={displayedImages[lightboxIndex]?.image_url}
+                          alt={displayedImages[lightboxIndex]?.caption ?? "Vendor photo"}
                           fill
                           sizes="95vw"
                           className="object-contain drop-shadow-2xl"
@@ -434,19 +536,19 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
 
                   {/* Caption & Counter */}
                   <div className="mt-6 flex flex-col items-center gap-2">
-                    {normalized[lightboxIndex]?.caption && (
+                    {displayedImages[lightboxIndex]?.caption && (
                       <p className="max-w-2xl px-6 text-center text-[15px] font-medium text-white/90">
-                        {normalized[lightboxIndex].caption}
+                        {displayedImages[lightboxIndex].caption}
                       </p>
                     )}
                     <span className="rounded-full bg-white/10 px-4 py-1.5 text-[13px] font-semibold text-white/80 backdrop-blur-md">
-                      {lightboxIndex + 1} / {normalized.length}
+                      {lightboxIndex + 1} / {displayedImages.length}
                     </span>
                   </div>
                 </div>
 
                 {/* Navigation - Right */}
-                {normalized.length > 1 && (
+                {displayedImages.length > 1 && (
                   <button
                     type="button"
                     onClick={goNext}

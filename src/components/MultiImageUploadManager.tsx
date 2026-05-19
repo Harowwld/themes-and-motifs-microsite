@@ -54,16 +54,25 @@ export function MultiImageUploadManager({
 
   const handleUploadAll = async () => {
     // 1. Start any pending uploads
+    let newResults: { url: string; caption: string; storagePath: string }[] = [];
     if (hasPending) {
-      await startUploads();
+      newResults = await startUploads();
     }
 
     // 2. Collect all successful results using the helper (which uses the latest ref)
-    const successfulUploads = getResults();
+    const alreadySuccessful = getResults();
 
-    if (successfulUploads.length > 0) {
-      onUploadsComplete(successfulUploads);
-      toast.success(`Successfully added ${successfulUploads.length} images to portfolio.`);
+    // Merge them together, ensuring uniqueness by storagePath
+    const allResults = [...alreadySuccessful];
+    for (const res of newResults) {
+      if (!allResults.some(r => r.storagePath === res.storagePath)) {
+        allResults.push(res);
+      }
+    }
+
+    if (allResults.length > 0) {
+      onUploadsComplete(allResults);
+      toast.success(`Successfully added ${allResults.length} images to portfolio.`);
     } else {
       toast.error('No images have been successfully uploaded yet.');
     }

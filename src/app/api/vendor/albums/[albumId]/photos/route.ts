@@ -89,42 +89,6 @@ export async function PUT(req: Request, { params }: { params: Promise<{ albumId:
       }))
       .filter((p) => p.image_url);
 
-    // Fetch existing photos to identify which ones are being removed
-    const { data: existingPhotos, error: fetchExistingErr } = await supabase
-      .from("vendor_album_photos")
-      .select("image_url")
-      .eq("album_id", albumIdNum);
-
-    if (fetchExistingErr) {
-      console.error("Error fetching existing album photos:", fetchExistingErr);
-    }
-
-    // Identify photos being removed (exist in DB but not in new list)
-    const newUrls = new Set(cleaned.map((p) => p.image_url));
-    const photosToDeleteFromStorage: string[] = [];
-
-    if (existingPhotos) {
-      for (const photo of existingPhotos) {
-        if (photo.image_url && !newUrls.has(photo.image_url)) {
-          // This photo is being removed
-          try {
-            const url = new URL(photo.image_url);
-            const pathMatch = url.pathname.match(/\/(gallery|logos)\/(.+)$/);
-            if (pathMatch) {
-              photosToDeleteFromStorage.push(`${pathMatch[1]}/${pathMatch[2]}`);
-            }
-          } catch {
-            if (photo.image_url.includes("/gallery/") || photo.image_url.includes("/logos/")) {
-              const pathMatch = photo.image_url.match(/(gallery|logos)\/.+$/);
-              if (pathMatch) {
-                photosToDeleteFromStorage.push(pathMatch[0]);
-              }
-            }
-          }
-        }
-      }
-    }
-
     // Delete from DB first, then insert new photos
     const { error: delErr } = await supabase
       .from("vendor_album_photos")
@@ -146,17 +110,6 @@ export async function PUT(req: Request, { params }: { params: Promise<{ albumId:
         .insert(insertData);
 
       if (insErr) return Response.json({ error: insErr.message }, { status: 500 });
-    }
-
-    // Delete removed photos from Supabase Storage after successful DB update
-    if (photosToDeleteFromStorage.length > 0) {
-      const { error: storageError } = await supabase.storage
-        .from("vendor-assets")
-        .remove(photosToDeleteFromStorage);
-
-      if (storageError) {
-        console.error("Failed to delete some album photos from storage:", storageError);
-      }
     }
 
     const { data: updatedPhotos, error: fetchErr } = await supabase

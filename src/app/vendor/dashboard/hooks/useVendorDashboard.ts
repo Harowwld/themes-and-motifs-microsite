@@ -414,8 +414,8 @@ export function useVendorDashboard() {
     }
   };
 
-  const saveAlbumPhotos = async (albumId: number, photoUrls: string[]) => {
-    if (!token) return;
+  const saveAlbumPhotos = async (albumId: number, photoUrls: string[]): Promise<boolean> => {
+    if (!token) return false;
     setSaving(true);
     try {
       const photosWithOrder = photoUrls.map((url, idx) => ({
@@ -428,8 +428,10 @@ export function useVendorDashboard() {
       });
       setAlbumPhotos(res.photos ?? []);
       setAlbums((prev) => prev.map((a) => (a.id === albumId ? { ...a, photo_count: photoUrls.length } : a)));
+      return true;
     } catch (e: any) {
       toast.error(e?.message ?? "Failed to save album photos.");
+      return false;
     } finally {
       setSaving(false);
     }

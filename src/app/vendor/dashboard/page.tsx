@@ -127,29 +127,28 @@ export default function VendorDashboardPage() {
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0">
-        <header className="h-20 bg-white/80 backdrop-blur-md border-b border-black/[0.05] sticky top-0 z-[90] px-6 lg:px-10 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="h-10 w-10 rounded-xl bg-[#a67c52] flex items-center justify-center text-white shadow-lg shadow-[#a67c52]/20">
-              <User size={20} />
+        <div className="flex-1 p-6 lg:p-10 max-w-5xl mx-auto w-full">
+          {/* Welcome & Live Preview Banner */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-6 rounded-2xl bg-white border border-black/[0.06] shadow-[0_8px_30px_rgb(0,0,0,0.02)] mb-8">
+            <div className="flex items-center gap-4">
+              <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-[#a67c52] to-[#8e6a46] flex items-center justify-center text-white shadow-md shadow-[#a67c52]/20 shrink-0">
+                <User size={22} />
+              </div>
+              <div>
+                <div className="text-[16px] font-serif font-bold text-[#2c2c2c]">{vendor?.business_name}</div>
+                <div className="text-[11px] font-sans font-bold text-black/30 uppercase tracking-widest mt-0.5">{email}</div>
+              </div>
             </div>
-            <div>
-              <div className="text-[14px] font-bold text-[#2c2c2c]">{vendor?.business_name}</div>
-              <div className="text-[11px] font-bold text-black/30 uppercase tracking-widest">{email}</div>
-            </div>
-          </div>
 
-          <div className="flex items-center gap-3">
             <button
               onClick={() => setIsPreviewOpen(true)}
-              className="h-10 px-5 rounded-lg border border-[#a67c52]/30 bg-white text-[13px] font-bold text-[#a67c52] hover:bg-[#a67c52] hover:text-white transition-all duration-300 shadow-sm flex items-center gap-2"
+              className="h-11 px-6 rounded-xl border border-[#a67c52]/30 bg-white text-[13px] font-black uppercase tracking-wider text-[#a67c52] hover:bg-[#a67c52] hover:text-white transition-all duration-500 shadow-sm hover:shadow-[0_8px_20px_rgba(166,124,82,0.15)] hover:-translate-y-0.5 flex items-center justify-center gap-2"
             >
               <ExternalLink size={16} />
-              <span className="hidden sm:inline">Live Preview</span>
+              <span>Live Preview Profile</span>
             </button>
           </div>
-        </header>
 
-        <div className="flex-1 p-6 lg:p-10 max-w-5xl mx-auto w-full">
           <div className="grid gap-8 pb-20">
             {/* Priority Sections */}
             <div id="photos">

@@ -42,12 +42,20 @@ export function AlbumSection({
   setAlbumEditorOpenState: (v: boolean) => void;
   albumPhotos: AlbumPhoto[];
   images: any[];
-  saveAlbumPhotos: (id: number, urls: string[]) => void;
+  saveAlbumPhotos: (id: number, urls: string[]) => Promise<boolean>;
   deleteAlbumModalOpen: boolean;
   albumToDelete: any;
   setDeleteAlbumModalOpenState: (v: boolean) => void;
   deleteAlbum: (id: number) => void;
 }) {
+  const [localPhotos, setLocalPhotos] = React.useState<AlbumPhoto[]>([]);
+
+  React.useEffect(() => {
+    if (albumEditorOpen) {
+      setLocalPhotos(albumPhotos);
+    }
+  }, [albumPhotos, albumEditorOpen]);
+
   return (
     <>
       <section className="rounded-lg border border-black/[0.08] bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)]">
@@ -201,7 +209,7 @@ export function AlbumSection({
                   <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-[#a67c52] mb-4">Available Masterpieces</h3>
                   <div className="grid gap-3 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
                     {images.filter(img => img.image_url.trim()).map((img, idx) => {
-                      const isInAlbum = albumPhotos.some(ap => ap.image_url === img.image_url);
+                      const isInAlbum = localPhotos.some(ap => ap.image_url === img.image_url);
                       return (
                         <label key={idx} className={`flex items-center gap-4 p-3 rounded-lg border transition-all duration-300 cursor-pointer ${
                           isInAlbum 
@@ -214,10 +222,9 @@ export function AlbumSection({
                               checked={isInAlbum}
                               onChange={(e) => {
                                 if (e.target.checked) {
-                                  saveAlbumPhotos(selectedAlbum.id, [...albumPhotos.map(ap => ap.image_url), img.image_url]);
+                                  setLocalPhotos([...localPhotos, { id: -Date.now() - idx, image_url: img.image_url, display_order: localPhotos.length }]);
                                 } else {
-                                  const newPhotos = albumPhotos.filter(ap => ap.image_url !== img.image_url);
-                                  saveAlbumPhotos(selectedAlbum.id, newPhotos.map(ap => ap.image_url));
+                                  setLocalPhotos(localPhotos.filter(ap => ap.image_url !== img.image_url));
                                 }
                               }}
                               className="h-5 w-5 rounded-md border-black/20 text-[#a67c52] focus:ring-[#a67c52]/20 transition-all"
@@ -240,15 +247,15 @@ export function AlbumSection({
 
                 <div>
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-[#a67c52]">Album Layout ({albumPhotos.length})</h3>
+                    <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-[#a67c52]">Album Layout ({localPhotos.length})</h3>
                   </div>
-                  {albumPhotos.length === 0 ? (
+                  {localPhotos.length === 0 ? (
                     <div className="rounded-lg border-2 border-dashed border-black/[0.04] bg-[#fafafa]/30 p-8 text-center">
                       <p className="text-[13px] text-black/40 italic">The collection is currently empty. Select photos from above to curate your album.</p>
                     </div>
                   ) : (
                     <div className="grid grid-cols-4 sm:grid-cols-5 gap-3">
-                      {albumPhotos.map((photo) => (
+                      {localPhotos.map((photo) => (
                         <div key={photo.id} className="relative group aspect-square">
                           <div className="h-full w-full rounded-lg border border-black/[0.05] bg-white overflow-hidden shadow-sm group-hover:shadow-md transition-all duration-300">
                             <img src={photo.image_url} alt="" className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500" />
@@ -256,8 +263,7 @@ export function AlbumSection({
                           <button
                             type="button"
                             onClick={() => {
-                              const newPhotos = albumPhotos.filter(ap => ap.image_url !== photo.image_url);
-                              saveAlbumPhotos(selectedAlbum.id, newPhotos.map(ap => ap.image_url));
+                              setLocalPhotos(localPhotos.filter(ap => ap.image_url !== photo.image_url));
                             }}
                             className="absolute -top-1.5 -right-1.5 h-6 w-6 rounded-full bg-red-500 text-white shadow-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-75 group-hover:scale-100"
                           >
@@ -277,10 +283,26 @@ export function AlbumSection({
             <div className="px-8 py-6 border-t border-black/[0.04] bg-[#fafafa]/20 flex items-center justify-end">
               <button
                 type="button"
-                onClick={() => setAlbumEditorOpenState(false)}
-                className="h-11 px-10 rounded-lg bg-[#a67c52] text-white text-[14px] font-bold shadow-lg shadow-[#a67c52]/20 hover:bg-[#8e6a46] hover:shadow-xl transition-all duration-300"
+                disabled={saving}
+                onClick={async () => {
+                  const success = await saveAlbumPhotos(selectedAlbum.id, localPhotos.map(ap => ap.image_url));
+                  if (success) {
+                    setAlbumEditorOpenState(false);
+                  }
+                }}
+                className="h-11 px-10 rounded-lg bg-[#a67c52] text-white text-[14px] font-bold shadow-lg shadow-[#a67c52]/20 hover:bg-[#8e6a46] hover:shadow-xl transition-all duration-300 disabled:opacity-60 flex items-center gap-2"
               >
-                Confirm Curation
+                {saving ? (
+                  <>
+                    <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    <span>Saving Curation...</span>
+                  </>
+                ) : (
+                  "Confirm Curation"
+                )}
               </button>
             </div>
           </div>

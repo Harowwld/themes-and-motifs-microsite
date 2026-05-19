@@ -68,7 +68,7 @@ export function useMultiImageUpload(options: UseMultiImageUploadOptions) {
     );
   }, []);
 
-  const uploadFile = async (uploadItem: MultiUploadState) => {
+  const uploadFile = async (uploadItem: MultiUploadState): Promise<{ url: string; caption: string; storagePath: string } | null> => {
     const { id, file } = uploadItem;
 
     try {
@@ -120,7 +120,14 @@ export function useMultiImageUpload(options: UseMultiImageUploadOptions) {
         } : u))
       );
 
-      return publicUrl;
+      // Retrieve the latest caption from ref since it might have changed during upload
+      const latestCaption = uploadsRef.current.find((u) => u.id === id)?.caption ?? uploadItem.caption;
+
+      return {
+        url: publicUrl,
+        caption: latestCaption,
+        storagePath
+      };
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Upload failed';
       setUploads((prev) =>
@@ -136,9 +143,14 @@ export function useMultiImageUpload(options: UseMultiImageUploadOptions) {
       ? uploadsRef.current.filter(u => ids.includes(u.id) && u.status !== 'success')
       : uploadsRef.current.filter(u => u.status === 'pending' || u.status === 'error');
 
+    const results: { url: string; caption: string; storagePath: string }[] = [];
     for (const item of targets) {
-      await uploadFile(item);
+      const res = await uploadFile(item);
+      if (res) {
+        results.push(res);
+      }
     }
+    return results;
   }, [uploadFile]);
 
   const getResults = useCallback(() => {

@@ -144,44 +144,20 @@ export async function DELETE(req: Request) {
     const { supabase, user } = await assertVendor(req);
     const vendor = await getVendorForUser(supabase, user.id);
 
+    let id: number | null = null;
     const { searchParams } = new URL(req.url);
-    const id = Number(searchParams.get("id"));
-    if (!Number.isFinite(id)) {
-      return Response.json({ error: "Invalid id" }, { status: 400 });
-    }
-
-    // Fetch album photos to get storage paths for cleanup
-    const { data: photos, error: photosError } = await supabase
-      .from("vendor_album_photos")
-      .select("image_url")
-      .eq("album_id", id)
-      .eq("vendor_id", vendor.id);
-
-    if (photosError) {
-      console.error("Error fetching album photos:", photosError);
-    }
-
-    // Extract storage paths for cleanup after DB deletion
-    const storagePaths: string[] = [];
-    if (photos && photos.length > 0) {
-      for (const photo of photos) {
-        if (photo.image_url) {
-          try {
-            const url = new URL(photo.image_url);
-            const pathMatch = url.pathname.match(/\/(gallery|logos)\/(.+)$/);
-            if (pathMatch) {
-              storagePaths.push(`${pathMatch[1]}/${pathMatch[2]}`);
-            }
-          } catch {
-            if (photo.image_url.includes("/gallery/") || photo.image_url.includes("/logos/")) {
-              const pathMatch = photo.image_url.match(/(gallery|logos)\/.+$/);
-              if (pathMatch) {
-                storagePaths.push(pathMatch[0]);
-              }
-            }
-          }
-        }
+    const queryId = Number(searchParams.get("id"));
+    if (Number.isFinite(queryId)) {
+      id = queryId;
+    } else {
+      const body = await req.json().catch(() => null);
+      if (body && typeof body.id === "number") {
+        id = body.id;
       }
+    }
+
+    if (id === null || !Number.isFinite(id)) {
+      return Response.json({ error: "Invalid id" }, { status: 400 });
     }
 
     // Delete album from DB first (cascades to vendor_album_photos via foreign key)
@@ -192,17 +168,6 @@ export async function DELETE(req: Request) {
       .eq("vendor_id", vendor.id);
 
     if (error) return Response.json({ error: error.message }, { status: 500 });
-
-    // Delete photos from Supabase Storage after successful DB deletion
-    if (storagePaths.length > 0) {
-      const { error: storageError } = await supabase.storage
-        .from("vendor-assets")
-        .remove(storagePaths);
-
-      if (storageError) {
-        console.error("Failed to delete some album photos from storage:", storageError);
-      }
-    }
 
     return Response.json({ ok: true }, { status: 200 });
   } catch (e: any) {

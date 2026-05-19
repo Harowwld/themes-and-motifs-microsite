@@ -31,49 +31,52 @@ export function PhotoSection({
 
       <div className="p-6 grid gap-6">
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {images.filter(img => img.image_url.trim()).map((img, idx) => (
-            <div key={idx} className="relative aspect-square rounded-lg border border-black/[0.05] overflow-hidden bg-[#fafafa] group shadow-sm hover:shadow-md transition-all duration-300">
-              <img src={img.image_url} alt={img.caption || `Photo ${idx + 1}`} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
-              
-              {img.is_cover && (
-                <div className="absolute top-3 left-3 rounded-lg bg-[#a67c52] px-3 py-1 text-[9px] font-bold uppercase tracking-wider text-white shadow-lg z-10">
-                  Cover
-                </div>
-              )}
+          {images
+            .map((img, originalIdx) => ({ img, originalIdx }))
+            .filter(({ img }) => img.image_url?.trim())
+            .map(({ img, originalIdx }, idx) => (
+              <div key={originalIdx} className="relative aspect-square rounded-lg border border-black/[0.05] overflow-hidden bg-[#fafafa] group shadow-sm hover:shadow-md transition-all duration-300">
+                <img src={img.image_url} alt={img.caption || `Photo ${originalIdx + 1}`} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                
+                {img.is_cover && (
+                  <div className="absolute top-3 left-3 rounded-lg bg-[#a67c52] px-3 py-1 text-[9px] font-bold uppercase tracking-wider text-white shadow-lg z-10">
+                    Cover
+                  </div>
+                )}
 
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3 gap-2">
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setEditingPhotoIndex(idx);
-                      setPhotoModalOpen(true);
-                    }}
-                    className="flex-1 h-8 rounded-lg bg-white text-[11px] font-bold text-[#2c2c2c] shadow-sm hover:bg-[#fafafa] transition-colors"
-                  >
-                    Edit
-                  </button>
-                  {!img.is_cover && (
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3 gap-2">
+                  <div className="flex gap-2">
                     <button
                       type="button"
-                      onClick={() => setImages((rows: any[]) => rows.map((r, i) => ({ ...r, is_cover: i === idx })))}
-                      className="flex-1 h-8 rounded-lg bg-[#a67c52] text-[11px] font-bold text-white shadow-sm hover:bg-[#8e6a46] transition-colors"
+                      onClick={() => {
+                        setEditingPhotoIndex(originalIdx);
+                        setPhotoModalOpen(true);
+                      }}
+                      className="flex-1 h-8 rounded-lg bg-white text-[11px] font-bold text-[#2c2c2c] shadow-sm hover:bg-[#fafafa] transition-colors"
                     >
-                      Cover
+                      Edit
                     </button>
-                  )}
+                    {!img.is_cover && (
+                      <button
+                        type="button"
+                        onClick={() => setImages((rows: any[]) => ensureSingleCover(rows.map((r, i) => ({ ...r, is_cover: i === originalIdx }))))}
+                        className="flex-1 h-8 rounded-lg bg-[#a67c52] text-[11px] font-bold text-white shadow-sm hover:bg-[#8e6a46] transition-colors"
+                      >
+                        Cover
+                      </button>
+                    )}
+                  </div>
                 </div>
-              </div>
 
-              <button
-                type="button"
-                onClick={() => setImages((rows: any[]) => ensureSingleCover(rows.filter((_, i) => i !== idx)))}
-                className="absolute top-2 right-2 h-7 w-7 rounded-full bg-white/90 text-black/40 hover:text-red-500 hover:bg-white flex items-center justify-center text-[18px] shadow-sm transition-all duration-300 opacity-0 group-hover:opacity-100 transform translate-y-[-4px] group-hover:translate-y-0"
-              >
-                ×
-              </button>
-            </div>
-          ))}
+                <button
+                  type="button"
+                  onClick={() => setImages((rows: any[]) => ensureSingleCover(rows.filter((_, i) => i !== originalIdx)))}
+                  className="absolute top-2 right-2 h-7 w-7 rounded-full bg-white/90 text-black/40 hover:text-red-500 hover:bg-white flex items-center justify-center text-[18px] shadow-sm transition-all duration-300 opacity-0 group-hover:opacity-100 transform translate-y-[-4px] group-hover:translate-y-0"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
           <button
             type="button"
             onClick={() => {
