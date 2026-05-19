@@ -150,13 +150,13 @@ async function PromosList({ query }: { query: string }) {
             </div>
 
             {/* Left: Image */}
-            <div className="w-28 sm:w-32 shrink-0 relative overflow-hidden self-stretch">
+            <div className="w-28 sm:w-32 shrink-0 relative overflow-hidden self-stretch bg-[#fcfbf9]">
               <div className="absolute inset-0">
                 {coverUrl ? (
                   <img
                     src={coverUrl}
                     alt=""
-                    className="h-full w-full object-cover"
+                    className="w-full h-auto min-h-0 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
                     style={{ transformOrigin: `${fx}% ${fy}%`, transform: `scale(${z})` }}
                     loading="lazy"
                     decoding="async"

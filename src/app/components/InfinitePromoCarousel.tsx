@@ -97,16 +97,15 @@ function PromoCard({
       href={`/promos/${promo.id}`}
       className={`group block overflow-hidden relative border border-gray-50 bg-white transition-shadow hover:shadow-xl ${isGrid ? gridClasses : carouselClasses}`}
     >
-      <div className="absolute inset-0 overflow-hidden">
+      <div className="absolute inset-0 overflow-hidden bg-[#fcfbf9]">
         {coverUrl ? (
-          <Image
+          <img
             src={coverUrl}
             alt=""
-            fill
-            sizes={isGrid ? "(max-width: 640px) 50vw, 320px" : "320px"}
-            className="object-cover transition-transform duration-700 group-hover:scale-110"
+            className="w-full h-auto min-h-0 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-transform duration-700 group-hover:scale-110"
             style={{ transformOrigin: `${fx}% ${fy}%`, transform: `scale(${z})` }}
             draggable={false}
+            loading="lazy"
           />
         ) : (
           <div

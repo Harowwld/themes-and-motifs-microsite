@@ -135,12 +135,12 @@ export default async function PromoDetailPage({ params }: Props) {
                   </div>
 
                   {/* Large Cover Image */}
-                  <div className="relative aspect-[3/4] overflow-hidden">
+                  <div className="relative aspect-[3/4] overflow-hidden bg-[#fcfbf9]">
                     {coverUrl ? (
                       <img
                         src={coverUrl}
                         alt=""
-                        className="h-full w-full object-cover"
+                        className="w-full h-auto min-h-0 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
                         style={{ transformOrigin: `${fx}% ${fy}%`, transform: `scale(${z})` }}
                         loading="eager"
                         decoding="async"
@@ -364,13 +364,13 @@ async function MorePromos({ currentId }: { currentId: number }) {
             </div>
 
             <div className="flex">
-              <div className="w-24 sm:w-28 shrink-0 relative overflow-hidden">
-                <div className="h-full min-h-25">
+              <div className="w-24 sm:w-28 shrink-0 relative overflow-hidden bg-[#fcfbf9]">
+                <div className="h-full min-h-25 relative">
                   {coverUrl ? (
                     <img
                       src={coverUrl}
                       alt=""
-                      className="h-full w-full object-cover"
+                      className="w-full h-auto min-h-0 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
                       style={{ transformOrigin: `${fx}% ${fy}%`, transform: `scale(${z})` }}
                       loading="lazy"
                     />

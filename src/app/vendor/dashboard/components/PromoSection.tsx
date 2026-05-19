@@ -67,11 +67,11 @@ export function PromoSection({
 
                     <div className="flex h-full">
                       {p.image_url ? (
-                        <div className="w-32 shrink-0 relative overflow-hidden border-r border-dashed border-black/[0.1]">
+                        <div className="w-32 shrink-0 relative overflow-hidden border-r border-dashed border-black/[0.1] bg-[#fcfbf9]">
                           <img
                             src={p.image_url}
                             alt=""
-                            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                            className="w-full h-auto min-h-0 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-transform duration-700 group-hover:scale-110"
                             style={{
                               transformOrigin: `${clampPct(Number(p.image_focus_x ?? 50))}% ${clampPct(Number(p.image_focus_y ?? 50))}%`,
                             }}

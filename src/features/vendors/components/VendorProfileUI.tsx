@@ -255,19 +255,18 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
 
                         {/* Left: Image */}
                         {p.image_url ? (
-                          <div className="w-20 sm:w-24 md:w-28 shrink-0 relative overflow-hidden">
+                          <div className="w-20 sm:w-24 md:w-28 shrink-0 relative overflow-hidden bg-[#fcfbf9]">
                             <div className="h-full min-h-20 sm:min-h-24 relative">
-                              <Image
+                              <img
                                 src={proxiedImageUrl(p.image_url) ?? p.image_url}
                                 alt=""
-                                fill
-                                sizes="(max-width: 640px) 80px, (max-width: 768px) 96px, 112px"
-                                className="object-cover transition-transform duration-500 group-hover:scale-105"
+                                className="w-full h-auto min-h-0 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-transform duration-500 group-hover:scale-105"
                                 style={{
-                                  objectPosition: `${clampPct(Number(p.image_focus_x ?? 50))}% ${clampPct(Number(p.image_focus_y ?? 50))}%`,
+                                  transformOrigin: `${clampPct(Number(p.image_focus_x ?? 50))}% ${clampPct(Number(p.image_focus_y ?? 50))}%`,
                                   transform: `scale(${clampZoom(Number(p.image_zoom ?? 1))})`,
                                 }}
                                 draggable={false}
+                                loading="lazy"
                               />
                             </div>
                           </div>
