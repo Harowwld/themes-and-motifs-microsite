@@ -56,6 +56,7 @@ type SearchVendorsRow = {
   view_count: number | null;
   updated_at: string | null;
   cover_image_url: string | null;
+  document_verified: string | null;
   total_count: number | null;
 };
 

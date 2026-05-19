@@ -48,6 +48,7 @@ type FormState = {
   youtube: string;
   creditCardNumber: string;
   agreeToTerms: boolean;
+  yearEstablished: string;
 };
 
 const initialState: FormState = {
@@ -78,6 +79,7 @@ const initialState: FormState = {
   youtube: "",
   creditCardNumber: "",
   agreeToTerms: false,
+  yearEstablished: "",
 };
 
 function isValidCreditCard(cardNumber: string): boolean {
@@ -184,6 +186,11 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
     if (!form.adminEmail.trim()) errors.add("adminEmail");
     if (!form.adminPhone.trim()) errors.add("adminPhone");
     if (!form.agreeToTerms) errors.add("agreeToTerms");
+    if (!form.yearEstablished.trim()) errors.add("yearEstablished");
+    const yearEstNum = Number(form.yearEstablished.trim());
+    if (form.yearEstablished.trim() && (!Number.isInteger(yearEstNum) || yearEstNum < 1800 || yearEstNum > 2100)) {
+      errors.add("yearEstablished");
+    }
 
     if (errors.size > 0) {
       setFieldErrors(errors);
@@ -208,6 +215,7 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
           categoryId: form.categoryId,
           websiteUrl: form.websiteUrl,
           secDtiNumber: form.secDtiNumber,
+          yearEstablished: form.yearEstablished.trim(),
           planId: form.planId,
           description: form.description,
           location: {
@@ -672,6 +680,18 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
             className={`h-11 w-full rounded-lg border px-3 text-[14px] font-[family-name:var(--font-plus-jakarta)] ${fieldErrors.has("adminPhone") ? "border-red-500 bg-red-50" : "border-black/10"}`}
             value={form.adminPhone}
             onChange={(e) => set("adminPhone", e.target.value)}
+          />
+        </Field>
+
+        <Field id="field-yearEstablished" label="Year Established" required>
+          <input
+            type="number"
+            min="1800"
+            max="2100"
+            placeholder="e.g. 2015"
+            className={`h-11 w-full rounded-lg border px-3 text-[14px] font-[family-name:var(--font-plus-jakarta)] ${fieldErrors.has("yearEstablished") ? "border-red-500 bg-red-50" : "border-black/10"}`}
+            value={form.yearEstablished}
+            onChange={(e) => set("yearEstablished", e.target.value)}
           />
         </Field>
 

@@ -218,12 +218,15 @@ export function ProfileSection({
             </Field>
           </div>
 
-          <div className="grid gap-6 sm:grid-cols-2">
+          <div className="grid gap-6 sm:grid-cols-3">
             <Field label="Address">
               <input className="h-11 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-4 text-[13px] transition-all duration-200 focus:border-[#a67c52] focus:bg-white focus:ring-4 focus:ring-[#a67c52]/10 outline-none" value={form.address} onChange={(e) => setForm((p: any) => ({ ...p, address: e.target.value }))} />
             </Field>
             <Field label="Website">
               <input className="h-11 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-4 text-[13px] transition-all duration-200 focus:border-[#a67c52] focus:bg-white focus:ring-4 focus:ring-[#a67c52]/10 outline-none disabled:opacity-50 disabled:cursor-not-allowed" value={form.website_url} onChange={(e) => setForm((p: any) => ({ ...p, website_url: e.target.value }))} placeholder="https://..." disabled={!isPremium} />
+            </Field>
+            <Field label="Year Established *">
+              <input type="number" min="1800" max="2100" className="h-11 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-4 text-[13px] transition-all duration-200 focus:border-[#a67c52] focus:bg-white focus:ring-4 focus:ring-[#a67c52]/10 outline-none" value={form.year_established} onChange={(e) => setForm((p: any) => ({ ...p, year_established: e.target.value }))} placeholder="e.g. 2015" required />
             </Field>
           </div>
 

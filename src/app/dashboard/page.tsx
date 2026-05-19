@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabaseBrowser";
 import { proxiedImageUrl } from "@/lib/imageSizes";
+import { isVerified } from "@/lib/vendorUtils";
 
 type SavedVendor = {
   id: string;
@@ -64,9 +65,7 @@ function VendorCard({ vendor, onRemove }: { vendor: SavedVendor["vendor"]; onRem
           </div>
           <div className="flex items-center gap-1 text-[14px] sm:text-[15px] font-semibold text-neutral-800 leading-5 line-clamp-1 mb-1 font-[family-name:var(--font-plus-jakarta)]">
             <span className="truncate">{vendor.business_name}</span>
-            {(vendor.document_verified === "verified" || 
-              vendor.document_verified === "established_professional" || 
-              vendor.document_verified === "community_recognized" ||
+            {(isVerified(vendor.document_verified) || 
               (isPremium && !vendor.document_verified)) ? (
               <span className="inline-flex items-center justify-center h-5 w-5 shrink-0" title={isPremium ? "Verified Premium Vendor" : "Verified Vendor"}>
                 <img src="/cropped-vecteezy_verification-badge-set-guaranteed-stamp-or-verified-badge_23900241.svg" alt="Verified" className="h-full w-full" loading="lazy" draggable={false} />

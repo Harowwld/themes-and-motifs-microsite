@@ -117,7 +117,19 @@ const FIELD_VALIDATORS: Record<string, (val: unknown) => { valid: boolean; value
     return { valid: true, value: val };
   },
 
+  year_established: (val) => {
+    if (typeof val !== "string") return { valid: false, error: "year_established must be a string" };
+    const yearStr = val.trim();
+    if (!yearStr) return { valid: false, error: "Year established is required" };
+    const yearNum = Number(yearStr);
+    if (!Number.isInteger(yearNum) || yearNum < 1800 || yearNum > 2100) {
+      return { valid: false, error: "year_established must be a valid year between 1800 and 2100" };
+    }
+    return { valid: true, value: `${yearNum}-01-01` };
+  },
+
   document_verified: (val) => {
+
     if (val !== null && typeof val !== "string") return { valid: false, error: "document_verified must be a string or null" };
     if (typeof val === "string") {
       const parts = val.split(",").map(s => s.trim()).filter(Boolean);

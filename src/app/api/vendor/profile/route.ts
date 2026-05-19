@@ -24,6 +24,7 @@ type PatchBody = {
   admin_phone_1?: string | null;
   admin_phone_2?: string | null;
   admin_phone_3?: string | null;
+  year_established?: string;
 };
 
 export async function GET(req: Request) {
@@ -152,6 +153,18 @@ export async function PATCH(req: Request) {
     if (typeof body.admin_phone_2 === "string" || body.admin_phone_2 === null) patch.admin_phone_2 = body.admin_phone_2;
     if (typeof body.admin_phone_3 === "string" || body.admin_phone_3 === null) patch.admin_phone_3 = body.admin_phone_3;
 
+    if (typeof body.year_established === "string") {
+      const yearStr = body.year_established.trim();
+      if (!yearStr) {
+        return Response.json({ error: "Year established is required" }, { status: 400 });
+      }
+      const yearNum = Number(yearStr);
+      if (!Number.isInteger(yearNum) || yearNum < 1800 || yearNum > 2100) {
+        return Response.json({ error: "Year established must be a valid year between 1800 and 2100" }, { status: 400 });
+      }
+      patch.year_established = `${yearNum}-01-01`;
+    }
+
     if (!isPremium) {
       delete patch.logo_url;
       delete patch.website_url;
@@ -167,7 +180,7 @@ export async function PATCH(req: Request) {
       .update(patch)
       .eq("id", vendor.id)
       .select(
-        "id,user_id,business_name,slug,logo_url,description,location_text,region_id,city,address,contact_email,contact_phone,website_url,plan_id,is_active,document_verified,cover_focus_x,cover_focus_y,cover_zoom,contact_person_1_name,contact_person_1_position,contact_person_2_name,contact_person_2_position,admin_email_1,admin_email_2,admin_email_3,admin_phone_1,admin_phone_2,admin_phone_3"
+        "id,user_id,business_name,slug,logo_url,description,location_text,region_id,city,address,contact_email,contact_phone,website_url,plan_id,is_active,document_verified,cover_focus_x,cover_focus_y,cover_zoom,contact_person_1_name,contact_person_1_position,contact_person_2_name,contact_person_2_position,admin_email_1,admin_email_2,admin_email_3,admin_phone_1,admin_phone_2,admin_phone_3,year_established"
       )
       .single();
 

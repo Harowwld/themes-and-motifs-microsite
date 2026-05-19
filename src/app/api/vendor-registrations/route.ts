@@ -7,6 +7,7 @@ export const dynamic = "force-dynamic";
 type RegistrationPayload = {
   businessName: string;
   contactEmail: string;
+  yearEstablished: string;
   contactPhone?: string;
   categoryId?: string;
   websiteUrl?: string;
@@ -43,6 +44,18 @@ export async function POST(req: Request) {
   if (!contactEmail) {
     return NextResponse.json({ error: "Email is required" }, { status: 400 });
   }
+
+  const yearEstablished = String(body.yearEstablished ?? "").trim();
+  if (!yearEstablished) {
+    return NextResponse.json({ error: "Year established is required" }, { status: 400 });
+  }
+
+  const yearEstNum = Number(yearEstablished);
+  if (!Number.isInteger(yearEstNum) || yearEstNum < 1800 || yearEstNum > 2100) {
+    return NextResponse.json({ error: "Year established must be a valid year between 1800 and 2100" }, { status: 400 });
+  }
+
+  const formattedYearEst = `${yearEstNum}-01-01`;
 
   if (!coverPhotoUrl) {
     return NextResponse.json({ error: "Cover photo is required" }, { status: 400 });
@@ -94,6 +107,7 @@ export async function POST(req: Request) {
       website_url: (body.websiteUrl ?? "").trim() || null,
       sec_dti_number: (body.secDtiNumber ?? "").trim() || null,
       plan_id: Number.isFinite(planIdNum) ? planIdNum : null,
+      year_established: formattedYearEst,
       status: "submitted",
     })
     .select("id")

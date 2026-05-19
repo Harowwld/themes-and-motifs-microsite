@@ -101,7 +101,7 @@ export default function SaveVendorCTA({ vendorId, vendorSlug }: Props) {
     return (
       <button
         type="button"
-        className="h-11 w-full rounded-[3px] bg-black/10 animate-pulse"
+        className="h-11 w-full rounded-xl bg-black/10 animate-pulse"
         disabled
       />
     );
@@ -113,7 +113,7 @@ export default function SaveVendorCTA({ vendorId, vendorSlug }: Props) {
         type="button"
         onClick={() => void toggleSave()}
         disabled={saving}
-        className={`w-full flex h-11 items-center justify-center gap-2 rounded-[3px] text-[14px] font-semibold transition-colors ${
+        className={`w-full flex h-11 items-center justify-center gap-2 rounded-xl text-[14px] font-semibold hover:-translate-y-[1px] active:scale-[0.97] hover:shadow-sm transition-[transform,background-color,color,border-color,box-shadow] duration-200 ease-out ${
           saved
             ? "bg-[#a67c52] text-white hover:bg-[#8e6a46]"
             : "border-2 border-[#a67c52] text-[#a67c52] hover:bg-[#a67c52] hover:text-white bg-white"
@@ -140,16 +140,16 @@ export default function SaveVendorCTA({ vendorId, vendorSlug }: Props) {
         <div className="fixed inset-0 z-[60]">
           <div className="absolute inset-0 bg-black/40" onClick={() => setAuthPromptOpen(false)} />
           <div className="absolute inset-0 flex items-center justify-center p-4">
-            <div className="w-full max-w-sm rounded-[6px] border border-black/20 bg-white shadow-xl overflow-hidden">
+            <div className="w-full max-w-sm rounded-2xl border border-black/5 bg-white shadow-2xl overflow-hidden">
               <div className="px-5 py-4 border-b border-black/10">
                 <div className="text-[14px] font-semibold text-[#2c2c2c]">Save this vendor</div>
                 <div className="mt-1 text-[12px] text-black/55">Sign in or create an account to save vendors.</div>
               </div>
-              <div className="px-5 py-4 flex items-center justify-end gap-2">
+              <div className="px-5 py-4 flex items-center justify-end gap-2 bg-[#fafafa]">
                 <button
                   type="button"
                   onClick={() => setAuthPromptOpen(false)}
-                  className="h-9 px-4 rounded-[6px] border border-black/15 bg-white text-[12px] font-semibold text-black/70 hover:bg-black/[0.02]"
+                  className="h-9 px-4 rounded-xl border border-black/15 bg-white text-[12px] font-semibold text-black/70 hover:bg-black/[0.02] hover:-translate-y-[1px] active:scale-[0.97] hover:shadow-sm transition-[transform,background-color,box-shadow] duration-200 ease-out"
                 >
                   Cancel
                 </button>
@@ -159,7 +159,7 @@ export default function SaveVendorCTA({ vendorId, vendorSlug }: Props) {
                     const returnTo = `/vendors/${encodeURIComponent(vendorSlug)}`;
                     router.push(`/signin?returnTo=${encodeURIComponent(returnTo)}`);
                   }}
-                  className="h-9 px-4 rounded-[6px] border border-[#a67c52] bg-white text-[12px] font-semibold text-[#6e4f33] hover:bg-[#fffaf5]"
+                  className="h-9 px-4 rounded-xl border border-[#a67c52] bg-white text-[12px] font-semibold text-[#6e4f33] hover:bg-[#fffaf5] hover:-translate-y-[1px] active:scale-[0.97] hover:shadow-sm transition-[transform,background-color,box-shadow] duration-200 ease-out"
                 >
                   Sign in
                 </button>
@@ -169,7 +169,7 @@ export default function SaveVendorCTA({ vendorId, vendorSlug }: Props) {
                     const returnTo = `/vendors/${encodeURIComponent(vendorSlug)}`;
                     router.push(`/soon-to-wed/signup?returnTo=${encodeURIComponent(returnTo)}`);
                   }}
-                  className="h-9 px-4 rounded-[6px] bg-[#a67c52] text-white text-[12px] font-semibold hover:bg-[#8e6a46]"
+                  className="h-9 px-4 rounded-xl bg-[#a67c52] text-white text-[12px] font-semibold hover:bg-[#8e6a46] hover:-translate-y-[1px] active:scale-[0.97] hover:shadow-sm transition-[transform,background-color,box-shadow] duration-200 ease-out"
                 >
                   Sign up
                 </button>

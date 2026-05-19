@@ -50,7 +50,7 @@ export async function PATCH(req: Request) {
 
     const { data: reg, error: regErr } = await supabase
       .from("vendor_registrations")
-      .select("id,business_name,contact_email,contact_phone,category_id,location,description,website_url,sec_dti_number,plan_id,status,extra")
+      .select("id,business_name,contact_email,contact_phone,category_id,location,description,website_url,sec_dti_number,plan_id,status,extra,year_established")
       .eq("id", body.id)
       .single();
 
@@ -113,6 +113,7 @@ export async function PATCH(req: Request) {
         sec_dti_number: (reg as any).sec_dti_number ?? null,
         plan_id: reg.plan_id ?? null,
         logo_url: (reg as any)?.extra?.logo_url ?? null,
+        year_established: (reg as any).year_established ?? null,
         is_active: true,
         is_featured: false,
       })

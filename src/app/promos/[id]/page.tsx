@@ -126,10 +126,10 @@ export default async function PromoDetailPage({ params }: Props) {
               {/* Main Content */}
               <div>
                 {/* Promo Card */}
-                <div className="rounded-md border border-black/10 bg-linear-to-br from-[#fff7ed] to-white overflow-hidden relative">
+                <div className="rounded-2xl border border-black/10 bg-linear-to-br from-[#fff7ed] to-white overflow-hidden relative shadow-sm hover:shadow-md transition-shadow duration-300">
                   {/* Promo Badge */}
                   <div className="absolute top-0 left-0 z-10">
-                    <div className="bg-[#c17a4e] text-white text-[12px] font-bold px-4 py-1.5 rounded-br-md">
+                    <div className="bg-[#c17a4e] text-white text-[12px] font-bold px-4 py-1.5 rounded-br-xl">
                       EXCLUSIVE PROMO
                     </div>
                   </div>
@@ -161,7 +161,7 @@ export default async function PromoDetailPage({ params }: Props) {
                     {/* Discount badge on image */}
                     {typeof promo.discount_percentage === "number" ? (
                       <div className="absolute bottom-4 right-4">
-                        <div className="bg-[#c17a4e] text-white px-4 py-2 rounded-md shadow-lg">
+                        <div className="bg-[#c17a4e] text-white px-4 py-2 rounded-xl shadow-lg">
                           <div className="text-[11px] font-semibold uppercase tracking-wide">Save</div>
                           <div className="text-[24px] font-bold leading-none">{promo.discount_percentage}%</div>
                         </div>
@@ -181,7 +181,7 @@ export default async function PromoDetailPage({ params }: Props) {
                           <img
                             src={proxiedImageUrl(vendor.logo_url) ?? vendor.logo_url ?? ""}
                             alt=""
-                            className="h-6 w-6 rounded-[3px] object-cover border border-black/10"
+                            className="h-6 w-6 rounded-md object-cover border border-black/10"
                           />
                         ) : null}
                         {vendor.business_name}
@@ -245,11 +245,11 @@ export default async function PromoDetailPage({ params }: Props) {
 
                 {/* Vendor Mini Card */}
                 {vendor ? (
-                  <div className="rounded-md border border-black/10 bg-white p-5 shadow-sm">
+                  <div className="rounded-2xl border border-black/10 bg-white p-5 shadow-sm hover:shadow-md transition-shadow duration-300">
                     <h4 className="text-[13px] font-semibold text-black/50 uppercase tracking-wide mb-3">About the Vendor</h4>
 
                     <a href={`/vendors/${vendor.slug}`} className="flex items-center gap-3 group">
-                      <div className="h-14 w-14 rounded-[3px] border border-black/10 bg-[#fcfbf9] overflow-hidden flex items-center justify-center shrink-0">
+                      <div className="h-14 w-14 rounded-xl border border-black/10 bg-[#fcfbf9] overflow-hidden flex items-center justify-center shrink-0 shadow-sm">
                         {vendor.logo_url ? (
                           <img
                             src={proxiedImageUrl(vendor.logo_url) ?? vendor.logo_url ?? ""}
@@ -284,7 +284,7 @@ export default async function PromoDetailPage({ params }: Props) {
                 ) : null}
 
                 {/* Share */}
-                <div className="rounded-md border border-black/10 bg-white p-5 shadow-sm">
+                <div className="rounded-2xl border border-black/10 bg-white p-5 shadow-sm hover:shadow-md transition-shadow duration-300">
                   <h4 className="text-[13px] font-semibold text-black/50 uppercase tracking-wide mb-3">Share this deal</h4>
                   <ShareDeal />
                 </div>
@@ -333,7 +333,7 @@ async function MorePromos({ currentId }: { currentId: number }) {
 
   if (promos.length === 0) {
     return (
-      <div className="mt-4 rounded-md border border-black/10 bg-white p-6 text-center">
+      <div className="mt-4 rounded-xl border border-black/10 bg-white p-6 text-center">
         <p className="text-[14px] text-black/55">Check back soon for more exclusive deals!</p>
       </div>
     );
@@ -355,10 +355,10 @@ async function MorePromos({ currentId }: { currentId: number }) {
           <a
             key={promo.id}
             href={`/promos/${promo.id}`}
-            className="rounded-md border border-black/10 bg-linear-to-br from-[#fff7ed] to-white overflow-hidden relative block hover:border-black/20 transition-colors"
+            className="rounded-2xl border border-black/10 bg-linear-to-br from-[#fff7ed] to-white overflow-hidden relative block hover:border-black/20 hover:shadow-md transition-[border-color,box-shadow] duration-300"
           >
             <div className="absolute top-0 left-0 z-10">
-              <div className="bg-[#c17a4e] text-white text-[10px] font-bold px-2.5 py-0.5 rounded-br-md">
+              <div className="bg-[#c17a4e] text-white text-[10px] font-bold px-2.5 py-0.5 rounded-br-xl">
                 PROMO
               </div>
             </div>
@@ -391,7 +391,7 @@ async function MorePromos({ currentId }: { currentId: number }) {
                   {promo.title}
                 </div>
                 {typeof promo.discount_percentage === "number" ? (
-                  <span className="mt-2 inline-flex items-center rounded-sm bg-[#c17a4e] px-1.5 py-0.5 text-[11px] font-bold text-white">
+                  <span className="mt-2 inline-flex items-center rounded-md bg-[#c17a4e] px-1.5 py-0.5 text-[11px] font-bold text-white">
                     {promo.discount_percentage}% OFF
                   </span>
                 ) : (

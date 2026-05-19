@@ -31,7 +31,7 @@ export default function ShareDeal() {
       <button
         type="button"
         onClick={onCopy}
-        className="flex-1 h-9 rounded-[3px] border border-black/10 bg-white text-[12px] font-semibold text-black/60 hover:bg-black/5 transition-colors"
+        className="flex-1 h-9 rounded-xl border border-black/10 bg-white text-[12px] font-semibold text-black/60 hover:bg-black/5 hover:-translate-y-[1px] active:scale-[0.97] hover:shadow-sm transition-[transform,background-color,box-shadow] duration-200 ease-out"
       >
         Copy Link
       </button>

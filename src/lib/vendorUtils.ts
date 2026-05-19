@@ -70,3 +70,10 @@ export function sortVendors<T extends VendorWithSortFields>(vendors: T[], sort: 
     return primaryCmp;
   });
 }
+
+export function isVerified(documentVerified: string | null | undefined): boolean {
+  if (!documentVerified) return false;
+  const statuses = documentVerified.split(",").map(s => s.trim());
+  return statuses.some(s => ["verified", "established_professional", "community_recognized"].includes(s));
+}
+

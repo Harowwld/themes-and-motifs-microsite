@@ -118,28 +118,51 @@ export function ProfessionalStatusSection({
           </label>
 
           {/* Established Professional */}
-          <label className="flex items-start gap-3 p-3 rounded-[3px] border border-black/10 bg-[#fafafa] cursor-pointer hover:border-[#a67c52]/30 transition-colors group">
-            <input
-              type="checkbox"
-              name="professional_status_established"
-              checked={checkedStatuses.includes("established_professional")}
-              onChange={(e) => handleCheckboxChange("established_professional", e.target.checked)}
-              className="mt-1 h-4 w-4 accent-[#a67c52] rounded-[3px]"
-            />
-            <div className="flex-1">
-              <div className="text-[13px] font-semibold text-[#2c2c2c]">Established Professional</div>
-              <div className="text-[11px] text-black/50 mt-0.5">At least 10 years in business</div>
-              <div className="mt-2 opacity-0 group-hover:opacity-100 transition-opacity text-[10px] font-medium flex items-center gap-1" style={{ color: '#4ade80' }}>
-                <div className="relative h-3.5 w-3.5" style={{ color: '#4ade80' }}>
-                  <svg viewBox="0 0 24 24" fill="currentColor" className="h-full w-full">
-                    <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" />
-                  </svg>
-                  <span className="absolute inset-0 flex items-center justify-center text-[7px] font-bold text-white">10</span>
+          {(() => {
+            const currentYear = new Date().getFullYear();
+            const establishedYear = editForm.year_established ? Number(editForm.year_established) : null;
+            const age = establishedYear ? (currentYear - establishedYear) : null;
+            const is10YearsOld = age !== null && age >= 10;
+
+            return (
+              <label className="flex items-start gap-3 p-3 rounded-[3px] border border-black/10 bg-[#fafafa] cursor-not-allowed transition-colors group relative overflow-hidden">
+                <input
+                  type="checkbox"
+                  name="professional_status_established"
+                  checked={is10YearsOld}
+                  disabled
+                  className="mt-1 h-4 w-4 accent-[#4ade80] rounded-[3px] cursor-not-allowed opacity-75"
+                />
+                <div className="flex-1">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[13px] font-semibold text-[#2c2c2c] opacity-75">Established Professional</span>
+                    {is10YearsOld ? (
+                      <span className="text-[9px] font-extrabold tracking-wider bg-green-500/10 text-green-600 px-1.5 py-0.5 rounded-[3px] uppercase border border-green-500/20">
+                        Auto-Active
+                      </span>
+                    ) : (
+                      <span className="text-[9px] font-extrabold tracking-wider bg-black/5 text-black/40 px-1.5 py-0.5 rounded-[3px] uppercase border border-black/10">
+                        Locked
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-[11px] text-black/50 mt-1">
+                    At least 10 years in business (based on Year Established)
+                  </div>
+                  <div className="mt-2 text-[10px] font-medium flex flex-col gap-1">
+                    <span className="text-[#a67c52] font-semibold">
+                      {establishedYear 
+                        ? `Business is ${age} year${age === 1 ? "" : "s"} old (Established ${establishedYear})`
+                        : "Year Established not specified yet"}
+                    </span>
+                    <span className="text-black/40 text-[9px] mt-0.5">
+                      💡 Locked. Automatically calculated from Year Established input.
+                    </span>
+                  </div>
                 </div>
-                Note: Shows Green "10" badge
-              </div>
-            </div>
-          </label>
+              </label>
+            );
+          })()}
         </div>
       </div>
     </section>

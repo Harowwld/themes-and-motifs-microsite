@@ -81,7 +81,7 @@ export default function ClaimVendorButton({ vendorId, vendorName }: Props) {
 
   if (success) {
     return (
-      <div className="rounded-[3px] border border-[#027a48]/20 bg-[#ecfdf3] p-4 text-center">
+      <div className="rounded-2xl border border-[#027a48]/20 bg-[#ecfdf3] p-4 text-center">
         <p className="text-sm text-[#027a48] font-medium">Claim request submitted!</p>
         <p className="text-xs text-[#027a48]/80 mt-1">We'll review your request and get back to you soon.</p>
       </div>
@@ -92,7 +92,7 @@ export default function ClaimVendorButton({ vendorId, vendorName }: Props) {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="w-full inline-flex h-10 items-center justify-center rounded-[3px] bg-[#a67c52] text-white hover:bg-[#8e6a46] transition-colors text-sm font-medium"
+        className="w-full inline-flex h-10 items-center justify-center rounded-xl bg-[#a67c52] text-white hover:bg-[#8e6a46] hover:-translate-y-[1px] active:scale-[0.97] hover:shadow-sm transition-[transform,background-color,box-shadow] duration-200 ease-out text-sm font-medium"
       >
         Claim this vendor
       </button>
@@ -103,7 +103,7 @@ export default function ClaimVendorButton({ vendorId, vendorName }: Props) {
             className="absolute inset-0 bg-black/50"
             onClick={() => setIsOpen(false)}
           />
-          <div className="relative w-full max-w-md rounded-[3px] bg-white p-6 shadow-xl mx-4">
+          <div className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-xl mx-4 border border-black/5">
             <h3 className="text-lg font-semibold text-[#2c2c2c]">Claim {vendorName}</h3>
             <p className="mt-2 text-sm text-black/60">
               Submit a claim request to manage this vendor listing. Our team will review your request.
@@ -120,7 +120,7 @@ export default function ClaimVendorButton({ vendorId, vendorName }: Props) {
                   required
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="mt-1 block w-full rounded-[3px] border border-black/20 px-3 py-2 text-sm focus:border-[#a67c52] focus:outline-none focus:ring-1 focus:ring-[#a67c52]"
+                  className="mt-1 block w-full rounded-xl border border-black/20 px-3 py-2 text-sm bg-white text-[#2c2c2c] outline-none hover:border-black/30 focus:border-[#a67c52] focus:ring-2 focus:ring-[#a67c52]/15 transition-[border-color,box-shadow] duration-200 ease-out"
                   placeholder="Juan Dela Cruz"
                 />
               </div>
@@ -135,7 +135,7 @@ export default function ClaimVendorButton({ vendorId, vendorName }: Props) {
                   required
                   value={contactEmail}
                   onChange={(e) => setContactEmail(e.target.value)}
-                  className="mt-1 block w-full rounded-[3px] border border-black/20 px-3 py-2 text-sm focus:border-[#a67c52] focus:outline-none focus:ring-1 focus:ring-[#a67c52]"
+                  className="mt-1 block w-full rounded-xl border border-black/20 px-3 py-2 text-sm bg-white text-[#2c2c2c] outline-none hover:border-black/30 focus:border-[#a67c52] focus:ring-2 focus:ring-[#a67c52]/15 transition-[border-color,box-shadow] duration-200 ease-out"
                   placeholder="you@company.com"
                 />
               </div>
@@ -149,7 +149,7 @@ export default function ClaimVendorButton({ vendorId, vendorName }: Props) {
                   type="tel"
                   value={contactPhone}
                   onChange={(e) => setContactPhone(e.target.value)}
-                  className="mt-1 block w-full rounded-[3px] border border-black/20 px-3 py-2 text-sm focus:border-[#a67c52] focus:outline-none focus:ring-1 focus:ring-[#a67c52]"
+                  className="mt-1 block w-full rounded-xl border border-black/20 px-3 py-2 text-sm bg-white text-[#2c2c2c] outline-none hover:border-black/30 focus:border-[#a67c52] focus:ring-2 focus:ring-[#a67c52]/15 transition-[border-color,box-shadow] duration-200 ease-out"
                   placeholder="+63 912 345 6789"
                 />
               </div>
@@ -161,7 +161,7 @@ export default function ClaimVendorButton({ vendorId, vendorName }: Props) {
                   <div>
                     <p className="text-xs font-medium text-black/60 mb-1">DTI</p>
                     {dtiUrl ? (
-                      <div className="relative aspect-square rounded-[3px] border border-black/10 overflow-hidden group">
+                      <div className="relative aspect-square rounded-xl border border-black/10 overflow-hidden group hover:shadow-sm transition-shadow duration-200">
                         <img
                           src={dtiUrl}
                           alt="DTI"
@@ -189,7 +189,7 @@ export default function ClaimVendorButton({ vendorId, vendorName }: Props) {
                       <button
                         type="button"
                         onClick={() => openUrlModal("dti")}
-                        className="aspect-square w-full rounded-[3px] border-2 border-dashed border-black/20 hover:border-[#a67c52] flex flex-col items-center justify-center text-black/40 hover:text-[#a67c52] transition-colors"
+                        className="aspect-square w-full rounded-xl border-2 border-dashed border-black/20 hover:border-[#a67c52] flex flex-col items-center justify-center text-black/40 hover:text-[#a67c52] hover:-translate-y-[1px] active:scale-[0.96] transition-[transform,border-color,color] duration-200 ease-out"
                       >
                         <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
@@ -203,7 +203,7 @@ export default function ClaimVendorButton({ vendorId, vendorName }: Props) {
                   <div>
                     <p className="text-xs font-medium text-black/60 mb-1">SEC</p>
                     {secUrl ? (
-                      <div className="relative aspect-square rounded-[3px] border border-black/10 overflow-hidden group">
+                      <div className="relative aspect-square rounded-xl border border-black/10 overflow-hidden group hover:shadow-sm transition-shadow duration-200">
                         <img
                           src={secUrl}
                           alt="SEC"
@@ -231,7 +231,7 @@ export default function ClaimVendorButton({ vendorId, vendorName }: Props) {
                       <button
                         type="button"
                         onClick={() => openUrlModal("sec")}
-                        className="aspect-square w-full rounded-[3px] border-2 border-dashed border-black/20 hover:border-[#a67c52] flex flex-col items-center justify-center text-black/40 hover:text-[#a67c52] transition-colors"
+                        className="aspect-square w-full rounded-xl border-2 border-dashed border-black/20 hover:border-[#a67c52] flex flex-col items-center justify-center text-black/40 hover:text-[#a67c52] hover:-translate-y-[1px] active:scale-[0.96] transition-[transform,border-color,color] duration-200 ease-out"
                       >
                         <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
@@ -245,7 +245,7 @@ export default function ClaimVendorButton({ vendorId, vendorName }: Props) {
                   <div>
                     <p className="text-xs font-medium text-black/60 mb-1">Permit</p>
                     {businessPermitUrl ? (
-                      <div className="relative aspect-square rounded-[3px] border border-black/10 overflow-hidden group">
+                      <div className="relative aspect-square rounded-xl border border-black/10 overflow-hidden group hover:shadow-sm transition-shadow duration-200">
                         <img
                           src={businessPermitUrl}
                           alt="Permit"
@@ -273,7 +273,7 @@ export default function ClaimVendorButton({ vendorId, vendorName }: Props) {
                       <button
                         type="button"
                         onClick={() => openUrlModal("permit")}
-                        className="aspect-square w-full rounded-[3px] border-2 border-dashed border-black/20 hover:border-[#a67c52] flex flex-col items-center justify-center text-black/40 hover:text-[#a67c52] transition-colors"
+                        className="aspect-square w-full rounded-xl border-2 border-dashed border-black/20 hover:border-[#a67c52] flex flex-col items-center justify-center text-black/40 hover:text-[#a67c52] hover:-translate-y-[1px] active:scale-[0.96] transition-[transform,border-color,color] duration-200 ease-out"
                       >
                         <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
@@ -316,7 +316,7 @@ export default function ClaimVendorButton({ vendorId, vendorName }: Props) {
                   onClick={() => setUrlModalOpen(false)}
                 >
                   <div
-                    className="w-full max-w-sm rounded-[3px] bg-white p-5 shadow-xl mx-4"
+                    className="w-full max-w-sm rounded-2xl bg-white p-5 shadow-xl mx-4 border border-black/5"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <h4 className="text-base font-semibold text-[#2c2c2c]">
@@ -332,7 +332,7 @@ export default function ClaimVendorButton({ vendorId, vendorName }: Props) {
                       value={urlInput}
                       onChange={(e) => setUrlInput(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && saveUrlModal()}
-                      className="mt-3 block w-full rounded-[3px] border border-black/20 px-3 py-2 text-sm focus:border-[#a67c52] focus:outline-none focus:ring-1 focus:ring-[#a67c52]"
+                      className="mt-3 block w-full rounded-xl border border-black/20 px-3 py-2 text-sm bg-white text-[#2c2c2c] outline-none hover:border-black/30 focus:border-[#a67c52] focus:ring-2 focus:ring-[#a67c52]/15 transition-[border-color,box-shadow] duration-200 ease-out"
                       placeholder="https://example.com/image.jpg"
                       autoFocus
                     />
@@ -340,14 +340,14 @@ export default function ClaimVendorButton({ vendorId, vendorName }: Props) {
                       <button
                         type="button"
                         onClick={() => setUrlModalOpen(false)}
-                        className="flex-1 inline-flex h-9 items-center justify-center rounded-[3px] border border-black/20 bg-white text-[#2c2c2c] hover:bg-black/5 transition-colors text-sm font-medium"
+                        className="flex-1 inline-flex h-9 items-center justify-center rounded-xl border border-black/20 bg-white text-[#2c2c2c] hover:bg-black/5 hover:-translate-y-[1px] active:scale-[0.97] hover:shadow-sm transition-[transform,background-color,box-shadow] duration-200 ease-out text-sm font-medium"
                       >
                         Cancel
                       </button>
                       <button
                         type="button"
                         onClick={saveUrlModal}
-                        className="flex-1 inline-flex h-9 items-center justify-center rounded-[3px] bg-[#a67c52] text-white hover:bg-[#8e6a46] transition-colors text-sm font-medium"
+                        className="flex-1 inline-flex h-9 items-center justify-center rounded-xl bg-[#a67c52] text-white hover:bg-[#8e6a46] hover:-translate-y-[1px] active:scale-[0.97] hover:shadow-sm transition-[transform,background-color,box-shadow] duration-200 ease-out text-sm font-medium"
                       >
                         Add
                       </button>
@@ -357,7 +357,7 @@ export default function ClaimVendorButton({ vendorId, vendorName }: Props) {
               )}
 
               {error && (
-                <div className="rounded-[3px] bg-[#fff1f3] p-3 text-sm text-[#b42318]">
+                <div className="rounded-xl bg-[#fff1f3] p-3 text-sm text-[#b42318] border border-[#b42318]/15">
                   {error}
                 </div>
               )}
@@ -369,14 +369,14 @@ export default function ClaimVendorButton({ vendorId, vendorName }: Props) {
                     setIsOpen(false);
                     setError("");
                   }}
-                  className="flex-1 inline-flex h-10 items-center justify-center rounded-[3px] border border-black/20 bg-white text-[#2c2c2c] hover:bg-black/5 transition-colors text-sm font-medium"
+                  className="flex-1 inline-flex h-10 items-center justify-center rounded-xl border border-black/20 bg-white text-[#2c2c2c] hover:bg-black/5 hover:-translate-y-[1px] active:scale-[0.97] hover:shadow-sm transition-[transform,background-color,box-shadow] duration-200 ease-out text-sm font-medium"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-1 inline-flex h-10 items-center justify-center rounded-[3px] bg-[#a67c52] text-white hover:bg-[#8e6a46] transition-colors text-sm font-medium disabled:opacity-50"
+                  className="flex-1 inline-flex h-10 items-center justify-center rounded-xl bg-[#a67c52] text-white hover:bg-[#8e6a46] hover:-translate-y-[1px] active:scale-[0.97] hover:shadow-sm transition-[transform,background-color,box-shadow] duration-200 ease-out text-sm font-medium disabled:opacity-50 disabled:pointer-events-none"
                 >
                   {isSubmitting ? "Submitting..." : "Submit Claim"}
                 </button>

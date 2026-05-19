@@ -45,7 +45,7 @@ export function ProfileSection({
         </div>
       </label>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-3">
         <label className="grid gap-1.5">
           <span className="text-[12px] font-semibold text-black/55">Region</span>
           <input
@@ -63,7 +63,23 @@ export function ProfileSection({
             className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]"
           />
         </label>
-        <label className="grid gap-1.5 sm:col-span-2">
+        <label className="grid gap-1.5">
+          <span className="text-[12px] font-semibold text-black/55">Year Established <span className="text-red-500">*</span></span>
+          <input
+            type="text"
+            pattern="[0-9]*"
+            maxLength={4}
+            placeholder="YYYY (e.g. 2015)"
+            value={editForm.year_established || ""}
+            onChange={(e) => {
+              const val = e.target.value.replace(/\D/g, "").slice(0, 4);
+              setEditForm((f: any) => ({ ...f, year_established: val }));
+            }}
+            className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]"
+            required
+          />
+        </label>
+        <label className="grid gap-1.5 sm:col-span-3">
           <span className="text-[12px] font-semibold text-black/55">Address</span>
           <input
             value={editForm.address}

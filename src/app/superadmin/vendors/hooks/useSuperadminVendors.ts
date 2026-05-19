@@ -34,6 +34,7 @@ export type Vendor = {
   admin_phone_1?: string | null;
   admin_phone_2?: string | null;
   admin_phone_3?: string | null;
+  year_established?: string | null;
 };
 
 export type VendorImage = {
@@ -166,6 +167,7 @@ export function useSuperadminVendors() {
     admin_phone_1: "",
     admin_phone_2: "",
     admin_phone_3: "",
+    year_established: "",
   });
   const [editSubscription, setEditSubscription] = useState<{ id: number; status: string; expiry_date: string | null; verification_doc_url: string | null } | null>(null);
   const [editImages, setEditImages] = useState<VendorImage[]>([]);
@@ -293,6 +295,7 @@ export function useSuperadminVendors() {
         admin_phone_1: v.admin_phone_1 ?? "",
         admin_phone_2: v.admin_phone_2 ?? "",
         admin_phone_3: v.admin_phone_3 ?? "",
+        year_established: v.year_established ? v.year_established.substring(0, 4) : "",
       });
 
       setEditSubscription(res.subscription ?? null);
@@ -376,6 +379,16 @@ export function useSuperadminVendors() {
     setEditLoading(true);
     setEditError(null);
 
+    if (!editForm.year_established || !editForm.year_established.trim()) {
+      setEditError("Year established is required.");
+      return;
+    }
+    const yearNum = Number(editForm.year_established.trim());
+    if (!Number.isInteger(yearNum) || yearNum < 1800 || yearNum > 2100) {
+      setEditError("Please enter a valid 4-digit year (e.g. 2015).");
+      return;
+    }
+
     try {
       const res = await apiFetch<{ vendor: Vendor }>(`/api/admin/vendors/${editingVendor.id}`, {
         method: "PATCH",
@@ -402,6 +415,7 @@ export function useSuperadminVendors() {
           admin_phone_1: editForm.admin_phone_1 || null,
           admin_phone_2: editForm.admin_phone_2 || null,
           admin_phone_3: editForm.admin_phone_3 || null,
+          year_established: `${yearNum}-01-01`,
         }),
       });
 

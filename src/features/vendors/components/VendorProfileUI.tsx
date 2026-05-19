@@ -175,7 +175,7 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
                 {categories.map((c: any) => (
                   <a
                     key={c.id}
-                    className="inline-flex items-center rounded-full border border-[#a68b6a]/25 bg-white px-3.5 py-1.5 text-[12px] font-medium text-[#6e4f33] hover:bg-[#fffaf5] transition-all duration-300 shadow-sm hover:shadow-md"
+                    className="inline-flex items-center rounded-full border border-[#a68b6a]/25 bg-white px-3.5 py-1.5 text-[12px] font-medium text-[#6e4f33] hover:bg-[#fffaf5] transition-[transform,background-color,box-shadow,border-color] duration-200 ease-out hover:-translate-y-[1px] active:scale-[0.96] shadow-sm hover:shadow-md"
                     href={`/vendors?category=${encodeURIComponent(c.slug)}`}
                   >
                     {c.name}
@@ -222,7 +222,7 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
           <div className="grid gap-6">
             {/* About */}
             {vendor.description ? (
-              <div className="rounded-xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)]">
+              <div className="rounded-2xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] hover:shadow-md transition-shadow duration-300">
                 <h2 className="font-serif text-[18px] font-semibold text-[#2c2c2c]">About</h2>
                 <p className="mt-3 text-[14px] leading-7 text-black/65 whitespace-pre-line">
                   {vendor.description}
@@ -232,12 +232,12 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
 
             {/* Exclusive Deals / Marketplace */}
             {promos.length > 0 ? (
-              <div className="rounded-xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)]">
+              <div className="rounded-2xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] hover:shadow-md transition-shadow duration-300">
                 <h2 className="font-serif text-[18px] font-semibold text-[#2c2c2c]">Exclusive Deals</h2>
                 <p className="mt-1 text-[13px] text-black/55">Promos and marketplace deals from this vendor.</p>
                 <div className="mt-4 grid gap-3">
                   {promos.map((p: any) => (
-                    <a key={p.id} href={`/promos/${p.id}`} className="block rounded-md border-2 border-dashed border-[#c17a4e]/40 bg-gradient-to-br from-[#fff7ed] to-white overflow-hidden relative hover:shadow-md transition-shadow">
+                    <a key={p.id} href={`/promos/${p.id}`} className="block rounded-xl border-2 border-dashed border-[#c17a4e]/40 bg-gradient-to-br from-[#fff7ed] to-white overflow-hidden relative hover:-translate-y-[1px] active:scale-[0.985] hover:shadow-md transition-[transform,box-shadow] duration-200 ease-out">
                       {/* Promo Badge */}
                       <div className="absolute top-0 left-0 z-10">
                         <div className="bg-[#c17a4e] text-white text-[10px] font-bold px-2.5 py-0.5 rounded-br-md">
@@ -314,13 +314,13 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
 
             {/* Photos & Videos */}
             {images.length > 0 ? (
-              <div className="rounded-xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] min-w-0">
+              <div className="rounded-2xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] hover:shadow-md transition-shadow duration-300 min-w-0">
                 <VendorPhotosCarousel images={images} />
               </div>
             ) : null}
 
             {/* Reviews */}
-            <div className="rounded-xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)]">
+            <div className="rounded-2xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] hover:shadow-md transition-shadow duration-300">
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <h2 className="font-serif text-[18px] font-semibold text-[#2c2c2c]">Reviews</h2>
@@ -335,13 +335,13 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
               <div className="mt-5 grid gap-4">
                 <VendorReviewForm vendorId={vendor.id} vendorSlug={vendor.slug} />
                 {reviews.length === 0 ? (
-                  <div className="rounded-lg border border-black/5 bg-white p-6 text-center">
+                  <div className="rounded-xl border border-black/5 bg-white p-6 text-center">
                     <div className="text-[14px] font-semibold text-[#2c2c2c]">No reviews yet</div>
                     <div className="mt-1 text-[13px] text-black/55">Be the first to review this vendor.</div>
                   </div>
                 ) : (
                   reviews.map((r: any) => (
-                    <div key={r.id} className="rounded-lg border border-black/5 bg-white p-4 hover:shadow-md transition-shadow duration-300">
+                    <div key={r.id} className="rounded-xl border border-black/5 bg-white p-4 hover:-translate-y-[1px] hover:shadow-md active:scale-[0.99] transition-[transform,box-shadow] duration-200 ease-out">
                       <div className="flex items-center justify-between gap-4">
                         <div className="flex items-center gap-2">
                           <div className="h-8 w-8 rounded-full bg-[#a68b6a]/10 flex items-center justify-center">
@@ -367,7 +367,7 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
           {/* Sidebar */}
           <div className="grid gap-4 content-start">
             {/* Professional Status */}
-            <div className="rounded-xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)]">
+            <div className="rounded-2xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] hover:shadow-md transition-shadow duration-300">
               <h3 className="text-[14px] font-semibold text-[#2c2c2c]">Document Verification</h3>
               <div className="mt-3 flex flex-col gap-3">
                 {/* 1. Verified */}
@@ -449,7 +449,7 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
             </div>
 
             {/* Contact Card */}
-            <div className="rounded-xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)]">
+            <div className="rounded-2xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] hover:shadow-md transition-shadow duration-300">
               <h3 className="text-[14px] font-semibold text-[#2c2c2c]">Contact Us!</h3>
               <p className="mt-2 text-[13px] text-black/55">
                 Contact {vendor.business_name} directly to discuss your wedding needs.
@@ -474,7 +474,7 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
                     href={withProtocol(vendor.website_url)}
                     target="_blank"
                     rel="noreferrer"
-                    className="w-full flex h-11 items-center justify-center gap-2 rounded-[3px] border-2 border-[#a67c52] text-[14px] font-semibold text-[#a67c52] hover:bg-[#a67c52] hover:text-white bg-white transition-colors"
+                    className="w-full flex h-11 items-center justify-center gap-2 rounded-xl border-2 border-[#a67c52] text-[14px] font-semibold text-[#a67c52] hover:bg-[#a67c52] hover:text-white bg-white hover:-translate-y-[1px] active:scale-[0.97] hover:shadow-sm transition-[transform,background-color,color,border-color,box-shadow] duration-200 ease-out"
                   >
                     <GlobeIcon className="h-4 w-4" />
                     Visit Website
@@ -497,13 +497,13 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
 
             {/* Social Links */}
             {socials.length > 0 ? (
-              <div className="rounded-xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)]">
+              <div className="rounded-2xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] hover:shadow-md transition-shadow duration-300">
                 <h3 className="text-[14px] font-semibold text-[#2c2c2c]">Social Media</h3>
                 <div className="mt-4 flex flex-wrap gap-2">
                   {socials.map((s: any) => (
                     <a
                       key={s.id}
-                      className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-black/10 bg-[#fcfbf9] p-0 text-[18px] text-[#6e4f33] hover:bg-[#a68b6a] hover:text-white hover:border-[#a68b6a] transition-all duration-300"
+                      className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-black/10 bg-[#fcfbf9] p-0 text-[18px] text-[#6e4f33] hover:bg-[#a68b6a] hover:text-white hover:border-[#a68b6a] hover:-translate-y-[1px] active:scale-[0.95] hover:shadow-sm transition-[transform,background-color,color,border-color,box-shadow] duration-200 ease-out"
                       href={withProtocol(s.url)}
                       target="_blank"
                       rel="noreferrer"
@@ -526,13 +526,13 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
 
             {/* Themes */}
             {themes.length > 0 ? (
-              <div className="rounded-xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)]">
+              <div className="rounded-2xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] hover:shadow-md transition-shadow duration-300">
                 <h3 className="text-[14px] font-semibold text-[#2c2c2c]">Wedding Themes</h3>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {themes.map((t: any) => (
                     <a
                       key={t.id}
-                      className="inline-flex items-center rounded-full border border-purple-200 bg-purple-50/50 px-3 py-1.5 text-[12px] font-medium text-purple-700 hover:bg-purple-50 transition-all duration-300 shadow-sm hover:shadow-md"
+                      className="inline-flex items-center rounded-full border border-purple-200 bg-purple-50/50 px-3 py-1.5 text-[12px] font-medium text-purple-700 hover:bg-purple-50 hover:-translate-y-[1px] active:scale-[0.96] shadow-sm hover:shadow-md transition-[transform,background-color,box-shadow] duration-200 ease-out"
                       href={`/vendors?theme=${encodeURIComponent(t.slug)}`}
                     >
                       <SparklesIcon className="h-3 w-3 mr-1" />
@@ -545,7 +545,7 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
 
             {/* Claim Button for unclaimed vendors */}
             {!vendor.user_id && (
-              <div className="rounded-xl border border-[#a68b6a]/30 bg-[#a68b6a]/5 p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)]">
+              <div className="rounded-2xl border border-[#a68b6a]/30 bg-[#a68b6a]/5 p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] hover:shadow-md transition-shadow duration-300">
                 <h3 className="text-[14px] font-semibold text-[#2c2c2c]">Are you the owner?</h3>
                 <p className="mt-2 text-xs text-black/60">
                   Claim this vendor listing to manage your business profile.

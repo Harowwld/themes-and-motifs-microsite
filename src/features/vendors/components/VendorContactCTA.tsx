@@ -82,7 +82,7 @@ export default function VendorContactCTA({
 
       {/* Modal */}
       <div className="fixed inset-0 flex items-center justify-center p-4 pointer-events-none">
-        <div className="w-full max-w-md rounded-[6px] border border-black/20 bg-white shadow-xl overflow-hidden pointer-events-auto">
+        <div className="w-full max-w-md rounded-2xl border border-black/5 bg-white shadow-2xl overflow-hidden pointer-events-auto">
           {/* Header */}
           <div className="px-5 py-4 border-b border-black/10">
             <div className="text-[16px] font-semibold text-[#2c2c2c]">
@@ -110,7 +110,7 @@ export default function VendorContactCTA({
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
                 {error && (
-                  <div className="rounded-[3px] border border-[#b42318]/20 bg-[#fff1f3] px-3 py-2 text-[13px] text-[#b42318]">
+                  <div className="rounded-xl border border-[#b42318]/20 bg-[#fff1f3] px-3 py-2 text-[13px] text-[#b42318]">
                     {error}
                   </div>
                 )}
@@ -125,7 +125,7 @@ export default function VendorContactCTA({
                     onChange={(e) => setName(e.target.value)}
                     required
                     placeholder="Enter your name"
-                    className="w-full h-10 rounded-[3px] border border-black/15 bg-white px-3 text-[14px] placeholder:text-black/40 focus:outline-none focus:border-[#a67c52]/50"
+                    className="w-full h-10 rounded-xl border border-black/15 bg-white px-3 text-[14px] text-[#2c2c2c] placeholder:text-black/35 outline-none hover:border-black/25 focus:border-[#a67c52] focus:ring-2 focus:ring-[#a67c52]/15 transition-[border-color,box-shadow] duration-200 ease-out"
                   />
                 </div>
 
@@ -139,7 +139,7 @@ export default function VendorContactCTA({
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     placeholder="Enter your email"
-                    className="w-full h-10 rounded-[3px] border border-black/15 bg-white px-3 text-[14px] placeholder:text-black/40 focus:outline-none focus:border-[#a67c52]/50"
+                    className="w-full h-10 rounded-xl border border-black/15 bg-white px-3 text-[14px] text-[#2c2c2c] placeholder:text-black/35 outline-none hover:border-black/25 focus:border-[#a67c52] focus:ring-2 focus:ring-[#a67c52]/15 transition-[border-color,box-shadow] duration-200 ease-out"
                   />
                 </div>
 
@@ -152,7 +152,7 @@ export default function VendorContactCTA({
                     onChange={(e) => setMessage(e.target.value)}
                     required
                     rows={4}
-                    className="w-full rounded-[3px] border border-black/15 bg-white px-3 py-2 text-[14px] placeholder:text-black/40 focus:outline-none focus:border-[#a67c52]/50 resize-none"
+                    className="w-full rounded-xl border border-black/15 bg-white px-3 py-2 text-[14px] text-[#2c2c2c] placeholder:text-black/35 outline-none hover:border-black/25 focus:border-[#a67c52] focus:ring-2 focus:ring-[#a67c52]/15 transition-[border-color,box-shadow] duration-200 ease-out resize-none"
                   />
                 </div>
               </form>
@@ -165,7 +165,7 @@ export default function VendorContactCTA({
               type="button"
               onClick={handleClose}
               disabled={isSubmitting}
-              className="h-9 px-4 rounded-[6px] border border-black/15 bg-white text-[13px] font-semibold text-black/70 hover:bg-black/[0.02] disabled:opacity-60 transition-colors"
+              className="h-9 px-4 rounded-xl border border-black/15 bg-white text-[13px] font-semibold text-black/70 hover:bg-black/[0.02] hover:-translate-y-[1px] active:scale-[0.97] hover:shadow-sm disabled:opacity-60 disabled:pointer-events-none transition-[transform,background-color,box-shadow] duration-200 ease-out"
             >
               {isSuccess ? "Close" : "Cancel"}
             </button>
@@ -174,7 +174,7 @@ export default function VendorContactCTA({
                 type="submit"
                 onClick={handleSubmit}
                 disabled={isSubmitting || !vendorEmail}
-                className="h-9 px-4 rounded-[6px] bg-[#a67c52] text-white text-[13px] font-semibold hover:bg-[#8e6a46] disabled:opacity-60 transition-colors"
+                className="h-9 px-4 rounded-xl bg-[#a67c52] text-white text-[13px] font-semibold hover:bg-[#8e6a46] hover:-translate-y-[1px] active:scale-[0.97] hover:shadow-sm disabled:opacity-60 disabled:pointer-events-none transition-[transform,background-color,box-shadow] duration-200 ease-out"
               >
                 {isSubmitting ? "Sending..." : "Send Inquiry"}
               </button>
@@ -191,7 +191,7 @@ export default function VendorContactCTA({
         {vendorPhone ? (
           <a
             href={`tel:${vendorPhone.replace(/\s/g, "")}`}
-            className="flex h-11 items-center justify-center gap-2 rounded-[3px] bg-[#a67c52] text-white text-[14px] font-semibold hover:bg-[#8e6a46] transition-colors"
+            className="flex h-11 items-center justify-center gap-2 rounded-xl bg-[#a67c52] text-white text-[14px] font-semibold hover:bg-[#8e6a46] hover:-translate-y-[1px] active:scale-[0.97] hover:shadow-sm transition-[transform,background-color,box-shadow] duration-200 ease-out"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
@@ -204,7 +204,7 @@ export default function VendorContactCTA({
           <button
             type="button"
             onClick={() => setIsModalOpen(true)}
-            className="w-full flex h-11 items-center justify-center gap-2 rounded-[3px] border-2 border-[#a67c52] text-[#a67c52] text-[14px] font-semibold hover:bg-[#a67c52] hover:text-white transition-colors"
+            className="w-full flex h-11 items-center justify-center gap-2 rounded-xl border-2 border-[#a67c52] text-[#a67c52] text-[14px] font-semibold hover:bg-[#a67c52] hover:text-white hover:-translate-y-[1px] active:scale-[0.97] hover:shadow-sm transition-[transform,background-color,color,border-color,box-shadow] duration-200 ease-out"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />

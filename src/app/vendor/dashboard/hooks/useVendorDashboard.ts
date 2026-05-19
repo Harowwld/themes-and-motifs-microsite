@@ -51,6 +51,7 @@ export function useVendorDashboard() {
     admin_phone_1: "",
     admin_phone_2: "",
     admin_phone_3: "",
+    year_established: "",
   });
 
   const [socials, setSocials] = useState<Array<{ platform: string; url: string }>>([
@@ -160,6 +161,7 @@ export function useVendorDashboard() {
             admin_phone_1: json.vendor.admin_phone_1 ?? "",
             admin_phone_2: json.vendor.admin_phone_2 ?? "",
             admin_phone_3: json.vendor.admin_phone_3 ?? "",
+            year_established: json.vendor.year_established ? json.vendor.year_established.split('-')[0] : "",
           });
 
           const s = (json.socials ?? []).map((x) => ({ platform: x.platform, url: x.url }));
@@ -453,6 +455,19 @@ export function useVendorDashboard() {
   const saveProfile = async () => {
     if (!token) return;
     setSaving(true);
+    const yearEst = (form.year_established ?? "").trim();
+    if (!yearEst) {
+      toast.error("Year established is required.");
+      setSaving(false);
+      return;
+    }
+    const yearNum = Number(yearEst);
+    if (!Number.isInteger(yearNum) || yearNum < 1800 || yearNum > 2100) {
+      toast.error("Year established must be a valid 4-digit year between 1800 and 2100.");
+      setSaving(false);
+      return;
+    }
+
     try {
       const res = await apiFetch<{ vendor: VendorProfile }>("/api/vendor/profile", token, {
         method: "PATCH",
@@ -478,6 +493,7 @@ export function useVendorDashboard() {
           admin_phone_1: form.admin_phone_1 || null,
           admin_phone_2: form.admin_phone_2 || null,
           admin_phone_3: form.admin_phone_3 || null,
+          year_established: yearEst,
         }),
       });
       setVendor(res.vendor);

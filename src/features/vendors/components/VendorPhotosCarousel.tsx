@@ -241,7 +241,7 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
     <section className="flex flex-col w-full max-w-full min-w-0 overflow-hidden">
       <h2 className="text-[16px] font-semibold text-[#2c2c2c]">Photos & Videos</h2>
 
-      <div ref={mainMediaRef} className="mt-3 rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden">
+      <div ref={mainMediaRef} className="mt-3 rounded-2xl border border-black/10 bg-white shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-300">
         <div className="w-full bg-[#fcfbf9]" style={{ aspectRatio: String(activeRatio) }}>
           {active.media_type === 'video' ? (
             <div
@@ -312,12 +312,12 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
                     restartAutoplay();
                   }}
                   className={
-                    "relative shrink-0 rounded-[3px] border transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]/60 snap-start " +
+                    "relative shrink-0 rounded-xl border focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]/60 snap-start active:scale-[0.95] transition-[transform,border-color,box-shadow] duration-200 ease-out " +
                     (isActive ? "border-[#a67c52]" : "border-black/10 hover:border-black/20")
                   }
                   aria-label={img.caption ?? `Vendor photo ${idx + 1}`}
                 >
-                  <div className="relative h-16 w-24 sm:h-20 sm:w-32 shrink-0 overflow-hidden bg-black/5">
+                  <div className="relative h-16 w-24 sm:h-20 sm:w-32 shrink-0 overflow-hidden rounded-[10px] bg-black/5">
                     {img.media_type === 'video' ? (
                       (() => {
                         const thumb = getVideoThumbnailUrl(img.image_url);
@@ -351,7 +351,7 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
                       />
                     )}
                   </div>
-                  {isActive ? <div className="pointer-events-none absolute inset-0 ring-2 ring-[#a67c52]/55" /> : null}
+                  {isActive ? <div className="pointer-events-none absolute inset-0 ring-2 ring-[#a67c52]/55 rounded-[10px]" /> : null}
                 </button>
               );
             })}
@@ -375,7 +375,7 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
               <button
                 type="button"
                 onClick={closeLightbox}
-                className="absolute top-6 right-6 z-50 flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 hover:scale-110 transition-all duration-200 focus:outline-none"
+                className="absolute top-6 right-6 z-50 flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 active:scale-[0.92] transition-[transform,background-color] duration-200 ease-out focus:outline-none"
                 aria-label="Close lightbox"
               >
                 <X className="h-6 w-6" />
@@ -387,7 +387,7 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
                   <button
                     type="button"
                     onClick={goPrev}
-                    className="absolute left-4 sm:left-8 z-50 flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-white/5 text-white/80 hover:bg-white/15 hover:text-white hover:scale-105 transition-all duration-300 backdrop-blur-sm focus:outline-none"
+                    className="absolute left-4 sm:left-8 z-50 flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-white/5 text-white/80 hover:bg-white/15 hover:text-white active:scale-[0.92] transition-[transform,background-color,color] duration-200 ease-out backdrop-blur-sm focus:outline-none"
                     aria-label="Previous photo"
                   >
                     <ChevronLeft className="h-8 w-8" />
@@ -403,13 +403,13 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
                           {getVideoEmbedUrl(normalized[lightboxIndex]?.image_url!) ? (
                             <iframe
                               src={getVideoEmbedUrl(normalized[lightboxIndex]?.image_url!)!}
-                              className="h-full w-full border-0 rounded-[3px]"
+                              className="h-full w-full border-0 rounded-2xl"
                               allowFullScreen
                               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                               title={normalized[lightboxIndex]?.caption ?? "Vendor video"}
                             />
                           ) : (
-                            <div className="h-full w-full flex items-center justify-center bg-white/5 rounded-[3px]">
+                            <div className="h-full w-full flex items-center justify-center bg-white/5 rounded-2xl">
                               <div className="text-center text-white/60">
                                 <div className="text-[48px] mb-2">🎥</div>
                                 <div className="text-[16px]">Unsupported video format</div>
@@ -450,7 +450,7 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500 }: Prop
                   <button
                     type="button"
                     onClick={goNext}
-                    className="absolute right-4 sm:right-8 z-50 flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-white/5 text-white/80 hover:bg-white/15 hover:text-white hover:scale-105 transition-all duration-300 backdrop-blur-sm focus:outline-none"
+                    className="absolute right-4 sm:right-8 z-50 flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-white/5 text-white/80 hover:bg-white/15 hover:text-white active:scale-[0.92] transition-[transform,background-color,color] duration-200 ease-out backdrop-blur-sm focus:outline-none"
                     aria-label="Next photo"
                   >
                     <ChevronRight className="h-8 w-8" />

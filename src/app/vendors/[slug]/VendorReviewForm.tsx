@@ -153,7 +153,7 @@ export default function VendorReviewForm({ vendorId, vendorSlug }: Props) {
 
   if (!ready) {
     return (
-      <div className="rounded-xl border border-black/6 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] p-6">
+      <div className="rounded-2xl border border-black/6 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] p-6">
         <div className="h-4 w-40 rounded bg-black/10 animate-pulse" />
         <div className="mt-3 h-10 w-full rounded-lg bg-black/10 animate-pulse" />
       </div>
@@ -162,13 +162,13 @@ export default function VendorReviewForm({ vendorId, vendorSlug }: Props) {
 
   if (!signedIn) {
     return (
-      <div className="rounded-xl border border-black/6 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] p-6">
+      <div className="rounded-2xl border border-black/6 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] p-6">
         <div className="text-[13px] font-semibold text-[#2c2c2c]">Write a review</div>
         <div className="mt-1 text-[13px] text-black/55">Sign in first to leave a review.</div>
         <button
           type="button"
           onClick={goToSignIn}
-          className="mt-4 h-10 inline-flex items-center justify-center px-4 rounded-lg bg-[#a68b6a] text-white text-[13px] font-semibold hover:bg-[#957a5c] transition-all duration-300"
+          className="mt-4 h-10 inline-flex items-center justify-center px-4 rounded-xl bg-[#a68b6a] text-white text-[13px] font-semibold hover:bg-[#957a5c] hover:-translate-y-[1px] active:scale-[0.97] hover:shadow-sm transition-[transform,background-color,box-shadow] duration-200 ease-out"
         >
           Sign in
         </button>
@@ -178,7 +178,7 @@ export default function VendorReviewForm({ vendorId, vendorSlug }: Props) {
 
   if (isVendor) {
     return (
-      <div className="rounded-xl border border-black/6 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] p-6">
+      <div className="rounded-2xl border border-black/6 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] p-6">
         <div className="text-[13px] font-semibold text-[#2c2c2c]">Write a review</div>
         <div className="mt-1 text-[13px] text-black/55">Vendor accounts can't submit reviews.</div>
       </div>
@@ -186,18 +186,18 @@ export default function VendorReviewForm({ vendorId, vendorSlug }: Props) {
   }
 
   return (
-    <div className="rounded-xl border border-black/6 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] p-6">
+    <div className="rounded-2xl border border-black/6 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] p-6">
       <div className="text-[13px] font-semibold text-[#2c2c2c]">Write a review</div>
       <div className="mt-1 text-[13px] text-black/55">Share your experience to help other couples.</div>
 
       {error ? (
-        <div className="mt-4 rounded-lg border border-[#b42318]/20 bg-[#fff1f3] px-4 py-3 text-[13px] text-[#7a271a]">
+        <div className="mt-4 rounded-xl border border-[#b42318]/20 bg-[#fff1f3] px-4 py-3 text-[13px] text-[#7a271a]">
           {error}
         </div>
       ) : null}
 
       {success ? (
-        <div className="mt-4 rounded-lg border border-[#a68b6a]/25 bg-[#fffaf5] px-4 py-3 text-[13px] text-[#2c2c2c]">
+        <div className="mt-4 rounded-xl border border-[#a68b6a]/25 bg-[#fffaf5] px-4 py-3 text-[13px] text-[#2c2c2c]">
           {success}
         </div>
       ) : null}
@@ -208,7 +208,7 @@ export default function VendorReviewForm({ vendorId, vendorSlug }: Props) {
           <select
             value={String(rating)}
             onChange={(e) => setRating(Number(e.target.value) || 5)}
-            className="h-10 rounded-lg border border-black/10 bg-white px-3 text-[14px] text-black/70 outline-none focus:border-[#a68b6a]/50 focus:ring-2 focus:ring-[#a68b6a]/15"
+            className="h-10 rounded-xl border border-black/10 bg-white px-3 text-[14px] text-[#2c2c2c] outline-none hover:border-black/20 focus:border-[#a68b6a]/50 focus:ring-2 focus:ring-[#a68b6a]/15 transition-[border-color,box-shadow] duration-200 ease-out"
           >
             <option value="5">5 / 5</option>
             <option value="4">4 / 5</option>
@@ -223,7 +223,7 @@ export default function VendorReviewForm({ vendorId, vendorSlug }: Props) {
           <textarea
             value={reviewText}
             onChange={(e) => setReviewText(e.target.value)}
-            className="min-h-24 rounded-lg border border-black/10 bg-white px-3 py-2 text-[14px] text-[#2c2c2c] placeholder:text-black/35 outline-none focus:border-[#a68b6a]/50 focus:ring-2 focus:ring-[#a68b6a]/15"
+            className="min-h-24 rounded-xl border border-black/10 bg-white px-3 py-2 text-[14px] text-[#2c2c2c] placeholder:text-black/35 outline-none hover:border-black/20 focus:border-[#a68b6a]/50 focus:ring-2 focus:ring-[#a68b6a]/15 transition-[border-color,box-shadow] duration-200 ease-out"
             placeholder="Optional. What did you like? Any tips for others?"
           />
         </label>
@@ -232,7 +232,7 @@ export default function VendorReviewForm({ vendorId, vendorSlug }: Props) {
           type="button"
           onClick={() => void submit()}
           disabled={submitting}
-          className="h-10 inline-flex items-center justify-center px-4 rounded-lg bg-[#a68b6a] text-white text-[13px] font-semibold hover:bg-[#957a5c] transition-all duration-300 disabled:opacity-60"
+          className="h-10 inline-flex items-center justify-center px-4 rounded-xl bg-[#a68b6a] text-white text-[13px] font-semibold hover:bg-[#957a5c] hover:-translate-y-[1px] active:scale-[0.97] hover:shadow-sm transition-[transform,background-color,box-shadow] duration-200 ease-out disabled:opacity-60 disabled:pointer-events-none"
         >
           {submitting ? "Submitting…" : "Submit review"}
         </button>

@@ -67,7 +67,7 @@ export default function VendorQRCode({ vendorSlug, vendorName, className = '' }:
   };
 
   return (
-    <div className={`rounded-xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] ${className}`}>
+    <div className={`rounded-2xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] transition-shadow duration-300 hover:shadow-md ${className}`}>
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-[14px] font-semibold text-[#2c2c2c] flex items-center gap-2">
           <QrCodeIcon className="h-4 w-4 text-[#a68b6a]" />
@@ -76,7 +76,7 @@ export default function VendorQRCode({ vendorSlug, vendorName, className = '' }:
         {qrDataUrl && !isLoading && (
           <button
             onClick={downloadQR}
-            className="inline-flex items-center gap-1.5 text-[12px] font-medium text-[#a68b6a] hover:text-[#957a5c] transition-colors"
+            className="inline-flex items-center gap-1.5 text-[12px] font-medium text-[#a68b6a] hover:text-[#957a5c] hover:-translate-y-[1px] active:scale-[0.95] transition-[transform,colors] duration-200 ease-out"
             title="Download QR Code"
           >
             <DownloadIcon className="h-3.5 w-3.5" />
@@ -92,7 +92,7 @@ export default function VendorQRCode({ vendorSlug, vendorName, className = '' }:
           </div>
         ) : qrDataUrl ? (
           <>
-            <div className="w-[200px] h-[200px] bg-white p-3 rounded-lg border border-black/10">
+            <div className="w-[200px] h-[200px] bg-white p-3 rounded-xl border border-black/10 shadow-sm hover:shadow-md transition-shadow duration-300">
               <img 
                 src={qrDataUrl} 
                 alt={`QR code for ${vendorName}`}

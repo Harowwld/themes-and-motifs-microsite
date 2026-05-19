@@ -30,6 +30,7 @@ export type VendorProfile = {
   average_rating?: number | null;
   review_count?: number | null;
   plan?: { id: number; name: string } | { id: number; name: string }[] | null;
+  year_established?: string | null;
 };
 
 export type SocialLink = { id: number; platform: string; url: string };

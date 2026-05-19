@@ -95,7 +95,7 @@ export default function EmailInquiryModal({
 
       {/* Modal */}
       <div className="fixed inset-0 flex items-center justify-center p-4 pointer-events-none">
-        <div className="w-full max-w-md rounded-[6px] border border-black/20 bg-white shadow-xl overflow-hidden pointer-events-auto">
+        <div className="w-full max-w-md rounded-2xl border border-black/5 bg-white shadow-2xl overflow-hidden pointer-events-auto">
           {/* Header */}
           <div className="px-5 py-4 border-b border-black/10">
             <div className="text-[16px] font-semibold text-[#2c2c2c]">
@@ -132,7 +132,7 @@ export default function EmailInquiryModal({
                     onChange={(e) => setName(e.target.value)}
                     required
                     placeholder="Enter your name"
-                    className="w-full h-10 rounded-[3px] border border-black/15 bg-white px-3 text-[14px] placeholder:text-black/40 focus:outline-none focus:border-[#a67c52]/50"
+                    className="w-full h-10 rounded-xl border border-black/15 bg-white px-3 text-[14px] placeholder:text-black/40 focus:outline-none focus:border-[#a67c52] focus:ring-2 focus:ring-[#a67c52]/20 transition-all duration-200"
                   />
                 </div>
 
@@ -146,7 +146,7 @@ export default function EmailInquiryModal({
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     placeholder="Enter your email"
-                    className="w-full h-10 rounded-[3px] border border-black/15 bg-white px-3 text-[14px] placeholder:text-black/40 focus:outline-none focus:border-[#a67c52]/50"
+                    className="w-full h-10 rounded-xl border border-black/15 bg-white px-3 text-[14px] placeholder:text-black/40 focus:outline-none focus:border-[#a67c52] focus:ring-2 focus:ring-[#a67c52]/20 transition-all duration-200"
                   />
                 </div>
 
@@ -159,7 +159,7 @@ export default function EmailInquiryModal({
                     onChange={(e) => setMessage(e.target.value)}
                     required
                     rows={4}
-                    className="w-full rounded-[3px] border border-black/15 bg-white px-3 py-2 text-[14px] placeholder:text-black/40 focus:outline-none focus:border-[#a67c52]/50 resize-none"
+                    className="w-full rounded-xl border border-black/15 bg-white px-3 py-2 text-[14px] placeholder:text-black/40 focus:outline-none focus:border-[#a67c52] focus:ring-2 focus:ring-[#a67c52]/20 transition-all duration-200 resize-none"
                   />
                 </div>
               </form>
@@ -172,7 +172,7 @@ export default function EmailInquiryModal({
               type="button"
               onClick={handleClose}
               disabled={isSubmitting}
-              className="h-9 px-4 rounded-[6px] border border-black/15 bg-white text-[13px] font-semibold text-black/70 hover:bg-black/[0.02] disabled:opacity-60 transition-colors"
+              className="h-9 px-4 rounded-xl border border-black/15 bg-white text-[13px] font-semibold text-black/70 hover:bg-black/[0.02] hover:-translate-y-[1px] active:scale-[0.97] hover:shadow-sm transition-[transform,background-color,box-shadow] duration-200 ease-out disabled:opacity-60"
             >
               {isSuccess ? "Close" : "Cancel"}
             </button>
@@ -181,7 +181,7 @@ export default function EmailInquiryModal({
                 type="submit"
                 onClick={handleSubmit}
                 disabled={isSubmitting || !vendorEmail}
-                className="h-9 px-4 rounded-[6px] bg-[#a67c52] text-white text-[13px] font-semibold hover:bg-[#8e6a46] disabled:opacity-60 transition-colors"
+                className="h-9 px-4 rounded-xl bg-[#a67c52] text-white text-[13px] font-semibold hover:bg-[#8e6a46] hover:-translate-y-[1px] active:scale-[0.97] hover:shadow-sm transition-[transform,background-color,box-shadow] duration-200 ease-out disabled:opacity-60"
               >
                 {isSubmitting ? "Sending..." : "Send Inquiry"}
               </button>

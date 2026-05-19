@@ -9,6 +9,7 @@ import { useSmartPrefetch, prefetchOnHover } from "@/hooks/useSmartPrefetch";
 import { useSavedVendors } from "./SavedVendorsProvider";
 import type { VendorCardVendor } from "../types";
 import { proxiedImageUrl } from "@/lib/imageSizes";
+import { isVerified } from "@/lib/vendorUtils";
 
 type Props = {
   vendor: VendorCardVendor;
@@ -209,9 +210,7 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight, featured }: 
           <h3 className="text-[13px] sm:text-[15px] font-bold text-gray-900 tracking-tight line-clamp-1 font-[family-name:var(--font-plus-jakarta)]">
             {vendor.business_name}
           </h3>
-          {(vendor.document_verified === "verified" || 
-            vendor.document_verified === "established_professional" || 
-            vendor.document_verified === "community_recognized" ||
+          {(isVerified(vendor.document_verified) || 
             (isPremium && !vendor.document_verified)) && (
             <span className="shrink-0" title={isPremium ? "Verified Premium Vendor" : "Verified Vendor"}>
               <Image
