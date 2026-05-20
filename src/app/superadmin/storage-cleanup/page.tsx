@@ -354,13 +354,13 @@ export default function StorageCleanupPage() {
           </div>
         </div>
 
-        <form onSubmit={handleSaveSchedule} className="p-6 grid gap-6 md:grid-cols-4 items-end">
+        <form onSubmit={handleSaveSchedule} className="p-6 grid gap-6 md:grid-cols-4 items-start">
           <label className="grid gap-1.5 md:col-span-1">
             <span className="text-[12px] font-semibold text-black/55">Daily Schedule Toggle</span>
             <select
               value={schedule.enabled ? "true" : "false"}
               onChange={(e) => setSchedule((prev) => ({ ...prev, enabled: e.target.value === "true" }))}
-              className="h-10 rounded-[3px] border border-black/10 bg-white px-3 text-[13px] outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15"
+              className="h-10 w-full rounded-[3px] border border-black/10 bg-white px-3 text-[13px] outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15 cursor-pointer"
             >
               <option value="false">Disabled</option>
               <option value="true">Enabled (Run Automatically)</option>
@@ -378,7 +378,7 @@ export default function StorageCleanupPage() {
                     setSchedule((prev) => ({ ...prev, cron: val }));
                   }
                 }}
-                className="h-10 rounded-[3px] border border-black/10 bg-white px-3 text-[13px] outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15 cursor-pointer"
+                className="h-10 w-full rounded-[3px] border border-black/10 bg-white px-3 text-[13px] outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15 cursor-pointer"
               >
                 {PRESET_CRONS.map((p) => (
                   <option key={p.value} value={p.value}>
@@ -396,12 +396,12 @@ export default function StorageCleanupPage() {
                   value={schedule.cron}
                   onChange={(e) => setSchedule((prev) => ({ ...prev, cron: e.target.value }))}
                   placeholder="e.g. 0 2 * * *"
-                  className="h-10 rounded-[3px] border border-[#a67c52]/30 bg-white px-3 text-[13px] font-mono outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15"
+                  className="h-10 w-full rounded-[3px] border border-[#a67c52]/30 bg-white px-3 text-[13px] font-mono outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15"
                   title="Standard 5-field cron expression"
                 />
               )}
             </div>
-            <span className="text-[11px] font-semibold text-[#a67c52] mt-0.5">
+            <span className="text-[11px] font-semibold text-[#a67c52] mt-0.5 min-h-[16px] block">
               {getCronDescription(schedule.cron)}
             </span>
           </div>
@@ -411,7 +411,7 @@ export default function StorageCleanupPage() {
             <select
               value={schedule.limit}
               onChange={(e) => setSchedule((prev) => ({ ...prev, limit: Number(e.target.value) }))}
-              className="h-10 rounded-[3px] border border-black/10 bg-white px-3 text-[13px] outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15"
+              className="h-10 w-full rounded-[3px] border border-black/10 bg-white px-3 text-[13px] outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15 cursor-pointer"
             >
               <option value="100">100 files per batch</option>
               <option value="500">500 files per batch</option>
@@ -420,13 +420,16 @@ export default function StorageCleanupPage() {
             </select>
           </label>
 
-          <button
-            type="submit"
-            disabled={isSavingSchedule}
-            className="h-10 px-4 rounded-[3px] bg-[#a67c52] text-white text-[13px] font-semibold hover:bg-[#8e6a46] transition-colors disabled:opacity-60"
-          >
-            {isSavingSchedule ? "Saving..." : "Save Configuration"}
-          </button>
+          <div className="grid gap-1.5 md:col-span-1">
+            <span className="hidden md:block text-[12px] font-semibold select-none">&nbsp;</span>
+            <button
+              type="submit"
+              disabled={isSavingSchedule}
+              className="h-10 w-full rounded-[3px] bg-[#a67c52] text-white text-[13px] font-semibold hover:bg-[#8e6a46] transition-colors disabled:opacity-60"
+            >
+              {isSavingSchedule ? "Saving..." : "Save Configuration"}
+            </button>
+          </div>
         </form>
 
         {/* Automated Cleanup Execution Metrics (last_run) */}
