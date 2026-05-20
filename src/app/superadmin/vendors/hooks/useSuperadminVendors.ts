@@ -124,7 +124,7 @@ async function apiFetch<T>(url: string, init?: RequestInit): Promise<T> {
   });
   const json = await res.json().catch(() => null);
   if (!res.ok) {
-    throw new Error((json as any)?.error ?? "Request failed");
+    throw new Error((json as { error?: string })?.error ?? "Request failed");
   }
   return json as T;
 }
@@ -273,6 +273,7 @@ export function useSuperadminVendors() {
   }
 
   async function openEditModal(vendor: Vendor) {
+    setEditingVendor(vendor);
     setEditLoading(true);
     setEditModalOpen(true);
 
@@ -333,7 +334,7 @@ export function useSuperadminVendors() {
 
       setEditSubscription(res.subscription ?? null);
 
-      const normalizedImgs = (res.images ?? []).map((img: any, idx: number) => ({
+      const normalizedImgs = (res.images ?? []).map((img: { id?: number; image_url: string; caption?: string | null; is_cover?: boolean | null; display_order?: number | null; focus_x?: number | null; focus_y?: number | null; zoom?: number | null }, idx: number) => ({
         id: img.id,
         image_url: img.image_url,
         caption: img.caption ?? "",
@@ -525,14 +526,23 @@ export function useSuperadminVendors() {
   async function saveSubscriptionDate(dateStr: string) {
     if (!editingVendor) return;
     try {
-      const res = await apiFetch<{ subscription: any }>(`/api/admin/vendors/${editingVendor.id}/subscription`, {
+      const res = await apiFetch<{
+        subscription: {
+          id: number;
+          status: string;
+          expiry_date: string | null;
+          verification_doc_url: string | null;
+          sec_doc_url?: string | null;
+          dti_doc_url?: string | null;
+        } | null;
+      }>(`/api/admin/vendors/${editingVendor.id}/subscription`, {
         method: "PATCH",
         body: JSON.stringify({ expiry_date: dateStr || null }),
       });
       setEditSubscription(res.subscription);
       toast.success("Expiry date saved.");
-    } catch (e: any) {
-      toast.error(e?.message ?? "Failed to save expiry date.");
+    } catch (e) {
+      toast.error((e as { message?: string })?.message ?? "Failed to save expiry date.");
     }
   }
 
