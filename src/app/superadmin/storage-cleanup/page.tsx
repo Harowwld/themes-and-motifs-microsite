@@ -23,6 +23,28 @@ interface ScheduleConfig {
   };
 }
 
+const PRESET_CRONS = [
+  { label: "Daily at 2:00 AM UTC", value: "0 2 * * *" },
+  { label: "Daily at Midnight UTC", value: "0 0 * * *" },
+  { label: "Weekly on Sunday at 2:00 AM UTC", value: "0 2 * * 0" },
+  { label: "Hourly", value: "0 * * * *" },
+];
+
+function getCronDescription(cron: string): string {
+  switch (cron.trim()) {
+    case "0 2 * * *":
+      return "Daily at 2:00 AM UTC";
+    case "0 0 * * *":
+      return "Daily at Midnight UTC";
+    case "0 2 * * 0":
+      return "Every Sunday at 2:00 AM UTC";
+    case "0 * * * *":
+      return "Start of every hour";
+    default:
+      return `Custom cron: "${cron}"`;
+  }
+}
+
 export default function StorageCleanupPage() {
   const [loading, setLoading] = useState(true);
   const [orphans, setOrphans] = useState<OrphanFile[]>([]);
@@ -345,17 +367,44 @@ export default function StorageCleanupPage() {
             </select>
           </label>
 
-          <label className="grid gap-1.5 md:col-span-1">
+          <div className="grid gap-1.5 md:col-span-1">
             <span className="text-[12px] font-semibold text-black/55">Cron Schedule (UTC)</span>
-            <input
-              type="text"
-              required
-              value={schedule.cron}
-              onChange={(e) => setSchedule((prev) => ({ ...prev, cron: e.target.value }))}
-              placeholder="0 2 * * *"
-              className="h-10 rounded-[3px] border border-black/10 bg-white px-3 text-[13px] outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15"
-            />
-          </label>
+            <div className="flex flex-col gap-1.5">
+              <select
+                value={PRESET_CRONS.some((p) => p.value === schedule.cron) ? schedule.cron : "custom"}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (val !== "custom") {
+                    setSchedule((prev) => ({ ...prev, cron: val }));
+                  }
+                }}
+                className="h-10 rounded-[3px] border border-black/10 bg-white px-3 text-[13px] outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15 cursor-pointer"
+              >
+                {PRESET_CRONS.map((p) => (
+                  <option key={p.value} value={p.value}>
+                    {p.label}
+                  </option>
+                ))}
+                <option value="custom">Custom Expression...</option>
+              </select>
+
+              {/* Conditionally show raw cron input if custom is selected */}
+              {!PRESET_CRONS.some((p) => p.value === schedule.cron) && (
+                <input
+                  type="text"
+                  required
+                  value={schedule.cron}
+                  onChange={(e) => setSchedule((prev) => ({ ...prev, cron: e.target.value }))}
+                  placeholder="e.g. 0 2 * * *"
+                  className="h-10 rounded-[3px] border border-[#a67c52]/30 bg-white px-3 text-[13px] font-mono outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15"
+                  title="Standard 5-field cron expression"
+                />
+              )}
+            </div>
+            <span className="text-[11px] font-semibold text-[#a67c52] mt-0.5">
+              {getCronDescription(schedule.cron)}
+            </span>
+          </div>
 
           <label className="grid gap-1.5 md:col-span-1">
             <span className="text-[12px] font-semibold text-black/55">Batch Processing Limit</span>
