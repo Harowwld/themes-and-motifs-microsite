@@ -132,17 +132,17 @@ async function apiFetch<T>(url: string, init?: RequestInit): Promise<T> {
 export function useSuperadminVendors() {
   const [loading, setLoading] = useState(true);
   const [savingId, setSavingId] = useState<number | null>(null);
-  const [error, setError] = useState<string | null>(null);
 
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [plans, setPlans] = useState<Plan[]>([]);
   const [query, setQuery] = useState("");
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
 
   // Edit modal state
   const [editingVendor, setEditingVendor] = useState<Vendor | null>(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editLoading, setEditLoading] = useState(false);
-  const [editError, setEditError] = useState<string | null>(null);
 
   // Edit form state
   const [editForm, setEditForm] = useState({
@@ -169,7 +169,14 @@ export function useSuperadminVendors() {
     admin_phone_3: "",
     year_established: "",
   });
-  const [editSubscription, setEditSubscription] = useState<{ id: number; status: string; expiry_date: string | null; verification_doc_url: string | null } | null>(null);
+  const [editSubscription, setEditSubscription] = useState<{ 
+    id: number; 
+    status: string; 
+    expiry_date: string | null; 
+    verification_doc_url: string | null;
+    sec_doc_url?: string | null;
+    dti_doc_url?: string | null;
+  } | null>(null);
   const [editImages, setEditImages] = useState<VendorImage[]>([]);
   const [editVideos, setEditVideos] = useState<VendorVideo[]>([]);
   const [editSocials, setEditSocials] = useState<VendorSocial[]>([]);
@@ -201,34 +208,54 @@ export function useSuperadminVendors() {
   const [editingPhotoIndex, setEditingPhotoIndex] = useState<number | null>(null);
 
   async function refresh(searchQuery?: string) {
-    setError(null);
     setLoading(true);
     try {
-      const q = searchQuery?.trim() || "";
-      const url = q ? `/api/admin/vendors?limit=1000&q=${encodeURIComponent(q)}` : "/api/admin/vendors?limit=1000";
+      const q = searchQuery !== undefined ? searchQuery.trim() : query.trim();
+      const url = q ? `/api/admin/vendors?limit=100&offset=0&q=${encodeURIComponent(q)}` : "/api/admin/vendors?limit=100&offset=0";
       const res = await apiFetch<{ vendors: Vendor[]; plans: Plan[] }>(url);
       setVendors(res.vendors ?? []);
       setPlans(res.plans ?? []);
-    } catch (e: any) {
-      setError(e?.message ?? "Failed to load vendors.");
+      setHasMore((res.vendors ?? []).length === 100);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to load vendors.");
     } finally {
       setLoading(false);
     }
   }
 
-  useEffect(() => {
-    refresh();
-  }, []);
+  async function loadMore() {
+    if (loading || loadingMore || !hasMore) return;
+    setLoadingMore(true);
+    try {
+      const q = query.trim();
+      const currentOffset = vendors.length;
+      const url = q 
+        ? `/api/admin/vendors?limit=100&offset=${currentOffset}&q=${encodeURIComponent(q)}` 
+        : `/api/admin/vendors?limit=100&offset=${currentOffset}`;
+      
+      const res = await apiFetch<{ vendors: Vendor[] }>(url);
+      const newVendors = res.vendors ?? [];
+      
+      setVendors((prev) => {
+        const existingIds = new Set(prev.map((v) => v.id));
+        const filteredNew = newVendors.filter((v) => !existingIds.has(v.id));
+        return [...prev, ...filteredNew];
+      });
+      
+      setHasMore(newVendors.length === 100);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to load more vendors.");
+    } finally {
+      setLoadingMore(false);
+    }
+  }
 
   useEffect(() => {
-    const debounce = setTimeout(() => {
-      refresh(query);
-    }, 300);
-    return () => clearTimeout(debounce);
+    refresh(query);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query]);
 
   async function patchVendor(id: number, patch: Partial<Pick<Vendor, "is_active" | "is_featured" | "plan_id">>) {
-    setError(null);
     setSavingId(id);
     try {
       const res = await apiFetch<{ vendor: Vendor }>("/api/admin/vendors", {
@@ -237,16 +264,15 @@ export function useSuperadminVendors() {
       });
       const next = res.vendor;
       setVendors((prev) => prev.map((v) => (v.id === id ? { ...v, ...next } : v)));
-    } catch (e: any) {
-      setError(e?.message ?? "Failed to update vendor.");
+      toast.success("Vendor updated successfully.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to update vendor.");
     } finally {
       setSavingId(null);
     }
   }
 
   async function openEditModal(vendor: Vendor) {
-    setEditingVendor(vendor);
-    setEditError(null);
     setEditLoading(true);
     setEditModalOpen(true);
 
@@ -262,7 +288,14 @@ export function useSuperadminVendors() {
           themes: VendorTheme[];
           allThemes: Theme[];
           verificationDocuments: VerificationDocument[];
-          subscription: { id: number; status: string; expiry_date: string | null; verification_doc_url: string | null } | null;
+          subscription: { 
+            id: number; 
+            status: string; 
+            expiry_date: string | null; 
+            verification_doc_url: string | null;
+            sec_doc_url?: string | null;
+            dti_doc_url?: string | null;
+          } | null;
         }>(`/api/admin/vendors/${vendor.id}`),
         apiFetch<{ promos: Promo[] }>(`/api/admin/vendors/${vendor.id}/promos`),
       ]);
@@ -361,8 +394,8 @@ export function useSuperadminVendors() {
       setVerificationDocuments(res.verificationDocuments ?? []);
       setEditPromos(promosRes.promos ?? []);
       resetPromoForm();
-    } catch (e: any) {
-      setEditError(e?.message ?? "Failed to load vendor details.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to load vendor details.");
     } finally {
       setEditLoading(false);
     }
@@ -371,21 +404,21 @@ export function useSuperadminVendors() {
   function closeEditModal() {
     setEditModalOpen(false);
     setEditingVendor(null);
-    setEditError(null);
   }
 
   async function saveVendorProfile() {
     if (!editingVendor) return;
     setEditLoading(true);
-    setEditError(null);
 
     if (!editForm.year_established || !editForm.year_established.trim()) {
-      setEditError("Year established is required.");
+      toast.error("Year established is required.");
+      setEditLoading(false);
       return;
     }
     const yearNum = Number(editForm.year_established.trim());
     if (!Number.isInteger(yearNum) || yearNum < 1800 || yearNum > 2100) {
-      setEditError("Please enter a valid 4-digit year (e.g. 2015).");
+      toast.error("Please enter a valid 4-digit year (e.g. 2015).");
+      setEditLoading(false);
       return;
     }
 
@@ -422,8 +455,9 @@ export function useSuperadminVendors() {
       setVendors((prev) =>
         prev.map((v) => (v.id === editingVendor.id ? { ...v, ...res.vendor } : v))
       );
-    } catch (e: any) {
-      setEditError(e?.message ?? "Failed to save vendor profile.");
+      toast.success("Profile saved successfully.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to save vendor profile.");
     } finally {
       setEditLoading(false);
     }
@@ -432,7 +466,6 @@ export function useSuperadminVendors() {
   async function saveVendorImages() {
     if (!editingVendor) return;
     setEditLoading(true);
-    setEditError(null);
 
     try {
       const cleaned = editImages
@@ -456,6 +489,9 @@ export function useSuperadminVendors() {
         method: "PUT",
         body: JSON.stringify({ images: cleaned }),
       });
+      toast.success("Images saved successfully.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to save images.");
     } finally {
       setEditLoading(false);
     }
@@ -464,7 +500,6 @@ export function useSuperadminVendors() {
   async function saveVendorVideos() {
     if (!editingVendor) return;
     setEditLoading(true);
-    setEditError(null);
 
     try {
       const cleaned = editVideos
@@ -479,8 +514,9 @@ export function useSuperadminVendors() {
         method: "PUT",
         body: JSON.stringify({ videos: cleaned }),
       });
-    } catch (e: any) {
-      setEditError(e?.message ?? "Failed to save videos.");
+      toast.success("Videos saved successfully.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to save videos.");
     } finally {
       setEditLoading(false);
     }
@@ -503,7 +539,6 @@ export function useSuperadminVendors() {
   async function saveVendorSocials() {
     if (!editingVendor) return;
     setEditLoading(true);
-    setEditError(null);
 
     try {
       const cleaned = editSocials.filter((s) => s.platform.trim() && s.url.trim());
@@ -512,8 +547,9 @@ export function useSuperadminVendors() {
         method: "PUT",
         body: JSON.stringify({ socials: cleaned }),
       });
-    } catch (e: any) {
-      setEditError(e?.message ?? "Failed to save social links.");
+      toast.success("Social links saved successfully.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to save social links.");
     } finally {
       setEditLoading(false);
     }
@@ -522,7 +558,6 @@ export function useSuperadminVendors() {
   async function saveVendorAffiliations() {
     if (!editingVendor) return;
     setEditLoading(true);
-    setEditError(null);
 
     try {
       const res = await apiFetch<{
@@ -542,8 +577,9 @@ export function useSuperadminVendors() {
         .filter((a): a is Affiliation => a !== null);
       setEditAffiliations(normalizedAffiliations);
       setAllAffiliations(res.allAffiliations ?? []);
-    } catch (e: any) {
-      setEditError(e?.message ?? "Failed to save affiliations.");
+      toast.success("Affiliations saved successfully.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to save affiliations.");
     } finally {
       setEditLoading(false);
     }
@@ -552,7 +588,6 @@ export function useSuperadminVendors() {
   async function saveVendorThemes() {
     if (!editingVendor) return;
     setEditLoading(true);
-    setEditError(null);
 
     try {
       const res = await apiFetch<{
@@ -572,8 +607,9 @@ export function useSuperadminVendors() {
         .filter((t): t is Theme => t !== null);
       setEditThemes(normalizedThemes);
       setAllThemes(res.allThemes ?? []);
-    } catch (e: any) {
-      setEditError(e?.message ?? "Failed to save themes.");
+      toast.success("Themes saved successfully.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to save themes.");
     } finally {
       setEditLoading(false);
     }
@@ -587,6 +623,7 @@ export function useSuperadminVendors() {
     await saveVendorAffiliations();
     await saveVendorThemes();
     closeEditModal();
+    toast.success("All sections saved successfully.");
   }
 
   function resetPromoForm() {
@@ -622,12 +659,11 @@ export function useSuperadminVendors() {
   async function savePromo() {
     if (!editingVendor) return;
     if (!promoForm.title?.trim()) {
-      setEditError("Promo title is required.");
+      toast.error("Promo title is required.");
       return;
     }
 
     setEditLoading(true);
-    setEditError(null);
 
     try {
       if (editingPromoId) {
@@ -663,8 +699,9 @@ export function useSuperadminVendors() {
         setEditPromos((prev) => [res.promo, ...prev]);
       }
       resetPromoForm();
-    } catch (e: any) {
-      setEditError(e?.message ?? "Failed to save promo.");
+      toast.success("Promo saved successfully.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to save promo.");
     } finally {
       setEditLoading(false);
     }
@@ -674,7 +711,6 @@ export function useSuperadminVendors() {
     if (!editingVendor || !promoToDelete) return;
 
     setEditLoading(true);
-    setEditError(null);
 
     try {
       await apiFetch<{ ok: boolean }>(`/api/admin/vendors/${editingVendor.id}/promos?promo_id=${promoToDelete}`, {
@@ -685,8 +721,9 @@ export function useSuperadminVendors() {
         resetPromoForm();
       }
       setPromoToDelete(null);
-    } catch (e: any) {
-      setEditError(e?.message ?? "Failed to delete promo.");
+      toast.success("Promo deleted successfully.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to delete promo.");
     } finally {
       setEditLoading(false);
     }
@@ -695,7 +732,6 @@ export function useSuperadminVendors() {
   async function togglePromoFeatured(promo: Promo) {
     if (!editingVendor) return;
     setEditLoading(true);
-    setEditError(null);
 
     try {
       const res = await apiFetch<{ promo: Promo }>(`/api/admin/vendors/${editingVendor.id}/promos`, {
@@ -706,8 +742,9 @@ export function useSuperadminVendors() {
         }),
       });
       setEditPromos((prev) => prev.map((p) => (p.id === promo.id ? res.promo : p)));
-    } catch (e: any) {
-      setEditError(e?.message ?? "Failed to update promo.");
+      toast.success("Promo updated successfully.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to update promo.");
     } finally {
       setEditLoading(false);
     }
@@ -731,17 +768,18 @@ export function useSuperadminVendors() {
   return {
     loading,
     savingId,
-    error,
     vendors,
     plans,
     query,
     setQuery,
     refresh,
+    loadingMore,
+    hasMore,
+    loadMore,
     patchVendor,
     editingVendor,
     editModalOpen,
     editLoading,
-    editError,
     editForm,
     setEditForm,
     editSubscription,

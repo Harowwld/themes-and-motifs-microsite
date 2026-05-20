@@ -30,9 +30,11 @@ export async function GET(req: Request) {
 
     const { searchParams } = new URL(req.url);
     const limitRaw = searchParams.get("limit");
+    const offsetRaw = searchParams.get("offset");
     const rawQuery = searchParams.get("q")?.trim() || "";
     const status = searchParams.get("status")?.trim() || "";
-    const limit = Math.max(1, Math.min(2000, Number(limitRaw ?? 1000) || 1000));
+    const limit = Math.max(1, Math.min(200, Number(limitRaw ?? 100) || 100));
+    const offset = Math.max(0, Number(offsetRaw ?? 0) || 0);
 
     const supabase = createSupabaseAdminClient();
 
@@ -58,7 +60,7 @@ export async function GET(req: Request) {
     }
 
     const [{ data: vendors, error }, { data: plans, error: plansErr }] = await Promise.all([
-      rawQuery ? vendorsQuery.limit(limit) : vendorsQuery.limit(limit),
+      vendorsQuery.range(offset, offset + limit - 1),
       supabase.from("plans").select("id,name").order("id", { ascending: true }).limit(50),
     ]);
 

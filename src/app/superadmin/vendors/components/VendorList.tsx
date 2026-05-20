@@ -19,7 +19,9 @@ export function VendorList({
   patchVendor,
   savingId,
   openEditModal,
-  error
+  loadingMore,
+  hasMore,
+  onLoadMore
 }: {
   vendors: Vendor[];
   plans: Plan[];
@@ -30,8 +32,45 @@ export function VendorList({
   patchVendor: (id: number, patch: any) => void;
   savingId: number | null;
   openEditModal: (v: Vendor) => void;
-  error: string | null;
+  loadingMore: boolean;
+  hasMore: boolean;
+  onLoadMore: () => void;
 }) {
+  const [localQuery, setLocalQuery] = React.useState(query);
+  const sentinelRef = React.useRef<HTMLDivElement | null>(null);
+
+  React.useEffect(() => {
+    setLocalQuery(query);
+  }, [query]);
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      if (localQuery !== query) {
+        setQuery(localQuery);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [localQuery, query, setQuery]);
+
+  React.useEffect(() => {
+    if (!hasMore || loading || loadingMore) return;
+    const el = sentinelRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          onLoadMore();
+        }
+      },
+      { rootMargin: "200px" }
+    );
+    observer.observe(el);
+    return () => {
+      observer.unobserve(el);
+    };
+  }, [hasMore, loading, loadingMore, onLoadMore]);
+
   return (
     <div className="rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden">
       <div className="px-6 py-5 border-b border-black/5">
@@ -40,18 +79,12 @@ export function VendorList({
       </div>
 
       <div className="p-6 grid gap-4">
-        {error ? (
-          <div className="rounded-[3px] border border-[#c17a4e]/30 bg-[#fff7ed] px-4 py-3 text-[13px] text-[#6e4f33]">
-            {error}
-          </div>
-        ) : null}
-
         <div className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
           <label className="grid gap-1.5">
             <span className="text-[12px] font-semibold text-black/55">Search</span>
             <input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              value={localQuery}
+              onChange={(e) => setLocalQuery(e.target.value)}
               className="h-10 rounded-[3px] border border-black/10 bg-white px-3 text-[13px] outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15"
               placeholder="Search by name, slug, or id"
             />
@@ -171,6 +204,11 @@ export function VendorList({
                   </div>
                 );
               })}
+              {hasMore && (
+                <div ref={sentinelRef} className="py-4 text-center text-[12px] text-black/45 bg-[#fcfbf9] border-t border-black/5 font-medium">
+                  {loadingMore ? "Loading more..." : "Scroll to load more"}
+                </div>
+              )}
             </div>
           )}
         </div>

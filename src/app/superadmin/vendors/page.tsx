@@ -14,17 +14,18 @@ export default function SuperadminVendorsPage() {
   const {
     loading,
     savingId,
-    error,
     vendors,
     plans,
     query,
     setQuery,
     refresh,
+    loadingMore,
+    hasMore,
+    loadMore,
     patchVendor,
     editingVendor,
     editModalOpen,
     editLoading,
-    editError,
     editForm,
     setEditForm,
     editSubscription,
@@ -94,7 +95,9 @@ export default function SuperadminVendorsPage() {
         patchVendor={patchVendor}
         savingId={savingId}
         openEditModal={openEditModal}
-        error={error}
+        loadingMore={loadingMore}
+        hasMore={hasMore}
+        onLoadMore={loadMore}
       />
 
       <VendorEditModal
@@ -102,7 +105,6 @@ export default function SuperadminVendorsPage() {
         onClose={closeEditModal}
         editingVendor={editingVendor}
         editLoading={editLoading}
-        editError={editError}
         editForm={editForm}
         setEditForm={setEditForm}
         editSubscription={editSubscription}
