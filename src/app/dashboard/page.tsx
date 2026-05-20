@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "@/lib/toast";
 import { createSupabaseBrowserClient } from "@/lib/supabaseBrowser";
 import { proxiedImageUrl } from "@/lib/imageSizes";
 import { isVerified } from "@/lib/vendorUtils";
@@ -119,7 +120,6 @@ export default function DashboardPage() {
   const [savedVendors, setSavedVendors] = useState<SavedVendor[]>([]);
   const [recentMoments, setRecentMoments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   const fetchSavedVendors = useCallback(async (token: string) => {
     try {
@@ -131,9 +131,9 @@ export default function DashboardPage() {
       const data = await res.json();
       if (data.error) throw new Error(data.error);
       setSavedVendors(data.savedVendors ?? []);
-    } catch (err: any) {
+    } catch (err) {
       console.error("Error fetching saved vendors:", err);
-      setError(err.message ?? "Failed to load saved vendors");
+      toast.error(err instanceof Error ? err.message : "Failed to load saved vendors");
     }
   }, []);
 
@@ -191,8 +191,10 @@ export default function DashboardPage() {
         },
       });
       setSavedVendors((prev) => prev.filter((sv) => sv.vendor.id !== vendorId));
+      toast.success("Vendor removed from saved.");
     } catch (err) {
       console.error("Error removing vendor:", err);
+      toast.error("Failed to remove vendor from saved.");
     }
   };
 
@@ -238,12 +240,6 @@ export default function DashboardPage() {
             Sign out
           </button>
         </div>
-
-        {error && (
-          <div className="mb-6 rounded-lg bg-[#fff1f3] border border-[#b42318]/20 p-4 text-[13px] text-[#b42318] font-[family-name:var(--font-plus-jakarta)]">
-            {error}
-          </div>
-        )}
 
         <section className="mb-12">
           <div className="flex items-center gap-2 mb-4">

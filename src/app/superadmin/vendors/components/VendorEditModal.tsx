@@ -16,7 +16,6 @@ export function VendorEditModal({
   onClose,
   editingVendor,
   editLoading,
-  editError,
   editForm,
   setEditForm,
   editSubscription,
@@ -57,13 +56,13 @@ export function VendorEditModal({
   saveVendorSocials,
   saveVendorAffiliations,
   saveVendorThemes,
+  saveAll,
   saveAllAndClose
 }: {
   isOpen: boolean;
   onClose: () => void;
   editingVendor: Vendor | null;
   editLoading: boolean;
-  editError: string | null;
   editForm: any;
   setEditForm: (v: any) => void;
   editSubscription: any;
@@ -98,12 +97,13 @@ export function VendorEditModal({
   setPromoToDelete: (v: number | null) => void;
   setLogoUrlInput: (v: string) => void;
   setLogoModalOpen: (v: boolean) => void;
-  saveVendorProfile: () => Promise<void>;
-  saveVendorImages: () => Promise<void>;
-  saveVendorVideos: () => Promise<void>;
-  saveVendorSocials: () => Promise<void>;
-  saveVendorAffiliations: () => Promise<void>;
-  saveVendorThemes: () => Promise<void>;
+  saveVendorProfile: (silent?: boolean) => Promise<boolean>;
+  saveVendorImages: (silent?: boolean) => Promise<boolean>;
+  saveVendorVideos: (silent?: boolean) => Promise<boolean>;
+  saveVendorSocials: (silent?: boolean) => Promise<boolean>;
+  saveVendorAffiliations: (silent?: boolean) => Promise<boolean>;
+  saveVendorThemes: (silent?: boolean) => Promise<boolean>;
+  saveAll: (closeAfter?: boolean) => Promise<boolean>;
   saveAllAndClose: () => Promise<void>;
 }) {
   if (!isOpen || !editingVendor) return null;
@@ -127,11 +127,6 @@ export function VendorEditModal({
 
         <div className="p-4 grid gap-6 flex-1 overflow-y-auto overflow-x-hidden">
           {editLoading && <div className="text-[13px] text-black/60">Loading…</div>}
-          {editError && (
-            <div className="rounded-[3px] border border-[#b42318]/20 bg-[#fff1f3] px-4 py-3 text-[13px] text-[#7a271a]">
-              {editError}
-            </div>
-          )}
 
           <ProfileSection editForm={editForm} setEditForm={setEditForm} />
           <ContactSection editForm={editForm} setEditForm={setEditForm} setLogoUrlInput={setLogoUrlInput} setLogoModalOpen={setLogoModalOpen} />
@@ -191,12 +186,7 @@ export function VendorEditModal({
             <button
               type="button"
               onClick={async () => {
-                await saveVendorProfile();
-                await saveVendorImages();
-                await saveVendorVideos();
-                await saveVendorSocials();
-                await saveVendorAffiliations();
-                await saveVendorThemes();
+                await saveAll(false);
               }}
               disabled={editLoading}
               className="h-10 px-4 rounded-[3px] border border-[#a67c52] text-[13px] font-semibold text-[#a67c52] hover:bg-[#a67c52]/5 transition-colors disabled:opacity-60"

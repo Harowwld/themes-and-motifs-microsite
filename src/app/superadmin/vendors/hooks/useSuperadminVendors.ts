@@ -407,20 +407,20 @@ export function useSuperadminVendors() {
     setEditingVendor(null);
   }
 
-  async function saveVendorProfile() {
-    if (!editingVendor) return;
+  async function saveVendorProfile(silent = false): Promise<boolean> {
+    if (!editingVendor) return false;
     setEditLoading(true);
 
     if (!editForm.year_established || !editForm.year_established.trim()) {
       toast.error("Year established is required.");
       setEditLoading(false);
-      return;
+      return false;
     }
     const yearNum = Number(editForm.year_established.trim());
     if (!Number.isInteger(yearNum) || yearNum < 1800 || yearNum > 2100) {
       toast.error("Please enter a valid 4-digit year (e.g. 2015).");
       setEditLoading(false);
-      return;
+      return false;
     }
 
     try {
@@ -449,23 +449,25 @@ export function useSuperadminVendors() {
           admin_phone_1: editForm.admin_phone_1 || null,
           admin_phone_2: editForm.admin_phone_2 || null,
           admin_phone_3: editForm.admin_phone_3 || null,
-          year_established: `${yearNum}-01-01`,
+          year_established: String(yearNum),
         }),
       });
 
       setVendors((prev) =>
         prev.map((v) => (v.id === editingVendor.id ? { ...v, ...res.vendor } : v))
       );
-      toast.success("Profile saved successfully.");
+      if (!silent) toast.success("Profile saved successfully.");
+      return true;
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed to save vendor profile.");
+      return false;
     } finally {
       setEditLoading(false);
     }
   }
 
-  async function saveVendorImages() {
-    if (!editingVendor) return;
+  async function saveVendorImages(silent = false): Promise<boolean> {
+    if (!editingVendor) return false;
     setEditLoading(true);
 
     try {
@@ -490,16 +492,18 @@ export function useSuperadminVendors() {
         method: "PUT",
         body: JSON.stringify({ images: cleaned }),
       });
-      toast.success("Images saved successfully.");
+      if (!silent) toast.success("Images saved successfully.");
+      return true;
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed to save images.");
+      return false;
     } finally {
       setEditLoading(false);
     }
   }
 
-  async function saveVendorVideos() {
-    if (!editingVendor) return;
+  async function saveVendorVideos(silent = false): Promise<boolean> {
+    if (!editingVendor) return false;
     setEditLoading(true);
 
     try {
@@ -515,9 +519,11 @@ export function useSuperadminVendors() {
         method: "PUT",
         body: JSON.stringify({ videos: cleaned }),
       });
-      toast.success("Videos saved successfully.");
+      if (!silent) toast.success("Videos saved successfully.");
+      return true;
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed to save videos.");
+      return false;
     } finally {
       setEditLoading(false);
     }
@@ -546,8 +552,8 @@ export function useSuperadminVendors() {
     }
   }
 
-  async function saveVendorSocials() {
-    if (!editingVendor) return;
+  async function saveVendorSocials(silent = false): Promise<boolean> {
+    if (!editingVendor) return false;
     setEditLoading(true);
 
     try {
@@ -557,16 +563,18 @@ export function useSuperadminVendors() {
         method: "PUT",
         body: JSON.stringify({ socials: cleaned }),
       });
-      toast.success("Social links saved successfully.");
+      if (!silent) toast.success("Social links saved successfully.");
+      return true;
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed to save social links.");
+      return false;
     } finally {
       setEditLoading(false);
     }
   }
 
-  async function saveVendorAffiliations() {
-    if (!editingVendor) return;
+  async function saveVendorAffiliations(silent = false): Promise<boolean> {
+    if (!editingVendor) return false;
     setEditLoading(true);
 
     try {
@@ -587,16 +595,18 @@ export function useSuperadminVendors() {
         .filter((a): a is Affiliation => a !== null);
       setEditAffiliations(normalizedAffiliations);
       setAllAffiliations(res.allAffiliations ?? []);
-      toast.success("Affiliations saved successfully.");
+      if (!silent) toast.success("Affiliations saved successfully.");
+      return true;
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed to save affiliations.");
+      return false;
     } finally {
       setEditLoading(false);
     }
   }
 
-  async function saveVendorThemes() {
-    if (!editingVendor) return;
+  async function saveVendorThemes(silent = false): Promise<boolean> {
+    if (!editingVendor) return false;
     setEditLoading(true);
 
     try {
@@ -617,23 +627,54 @@ export function useSuperadminVendors() {
         .filter((t): t is Theme => t !== null);
       setEditThemes(normalizedThemes);
       setAllThemes(res.allThemes ?? []);
-      toast.success("Themes saved successfully.");
+      if (!silent) toast.success("Themes saved successfully.");
+      return true;
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed to save themes.");
+      return false;
+    } finally {
+      setEditLoading(false);
+    }
+  }
+
+  async function saveAll(closeAfter = false): Promise<boolean> {
+    if (!editingVendor) return false;
+    setEditLoading(true);
+
+    try {
+      const profileOk = await saveVendorProfile(true);
+      if (!profileOk) return false;
+
+      const imagesOk = await saveVendorImages(true);
+      if (!imagesOk) return false;
+
+      const videosOk = await saveVendorVideos(true);
+      if (!videosOk) return false;
+
+      const socialsOk = await saveVendorSocials(true);
+      if (!socialsOk) return false;
+
+      const affiliationsOk = await saveVendorAffiliations(true);
+      if (!affiliationsOk) return false;
+
+      const themesOk = await saveVendorThemes(true);
+      if (!themesOk) return false;
+
+      toast.success("Vendor saved successfully.");
+      if (closeAfter) {
+        closeEditModal();
+      }
+      return true;
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to save vendor.");
+      return false;
     } finally {
       setEditLoading(false);
     }
   }
 
   async function saveAllAndClose() {
-    await saveVendorProfile();
-    await saveVendorImages();
-    await saveVendorVideos();
-    await saveVendorSocials();
-    await saveVendorAffiliations();
-    await saveVendorThemes();
-    closeEditModal();
-    toast.success("All sections saved successfully.");
+    await saveAll(true);
   }
 
   function resetPromoForm() {
@@ -838,6 +879,7 @@ export function useSuperadminVendors() {
     saveVendorSocials,
     saveVendorAffiliations,
     saveVendorThemes,
+    saveAll,
     saveAllAndClose,
     resetPromoForm,
     startEditPromo,

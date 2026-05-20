@@ -74,6 +74,7 @@ export default function SuperadminVendorsPage() {
     saveVendorSocials,
     saveVendorAffiliations,
     saveVendorThemes,
+    saveAll,
     saveAllAndClose,
     resetPromoForm,
     startEditPromo,
@@ -145,6 +146,7 @@ export default function SuperadminVendorsPage() {
         saveVendorSocials={saveVendorSocials}
         saveVendorAffiliations={saveVendorAffiliations}
         saveVendorThemes={saveVendorThemes}
+        saveAll={saveAll}
         saveAllAndClose={saveAllAndClose}
       />
 

@@ -26,6 +26,7 @@ import { VideoSection } from "./components/VideoSection";
 import { AlbumSection } from "./components/AlbumSection";
 import { PromoSection } from "./components/PromoSection";
 import { InquirySection } from "./components/InquirySection";
+import { ReviewsSection } from "./components/ReviewsSection";
 import { PreviewModal } from "./components/PreviewModal";
 import { createSupabaseBrowserClient } from "../../../lib/supabaseBrowser";
 
@@ -45,6 +46,7 @@ export default function VendorDashboardPage() {
     videos,
     promos,
     inquiries,
+    reviews,
     themes,
     allThemes,
     categories,
@@ -57,6 +59,9 @@ export default function VendorDashboardPage() {
     albumEditorOpen,
     deleteAlbumModalOpen,
     albumToDelete,
+    renameAlbumModalOpen,
+    albumToRename,
+    renameAlbumTitle,
     cropperOpen,
     logoModalOpen,
     photoModalOpen,
@@ -82,6 +87,9 @@ export default function VendorDashboardPage() {
     setSelectedAlbum,
     setDeleteAlbumModalOpen,
     setAlbumToDelete,
+    setRenameAlbumModalOpen,
+    setAlbumToRename,
+    setRenameAlbumTitle,
     setCropperOpen,
     setLogoModalOpen,
     setPhotoModalOpen,
@@ -98,11 +106,14 @@ export default function VendorDashboardPage() {
     deletePromo,
     refreshInquiries,
     updateInquiryStatus,
+    saveReviewReply,
     createAlbum,
     deleteAlbum,
+    renameAlbum,
     loadAlbumPhotos,
     saveAlbumPhotos,
     saveVerificationDoc,
+    saveVerificationDetails,
     saveProfile,
     saveSocials,
     saveThemes,
@@ -188,6 +199,13 @@ export default function VendorDashboardPage() {
                 albumToDelete={albumToDelete}
                 setDeleteAlbumModalOpenState={setDeleteAlbumModalOpen}
                 deleteAlbum={deleteAlbum}
+                renameAlbumModalOpen={renameAlbumModalOpen}
+                albumToRename={albumToRename}
+                renameAlbumTitle={renameAlbumTitle}
+                setRenameAlbumModalOpen={setRenameAlbumModalOpen}
+                setAlbumToRename={setAlbumToRename}
+                setRenameAlbumTitle={setRenameAlbumTitle}
+                renameAlbum={renameAlbum}
               />
             </div>
 
@@ -224,6 +242,14 @@ export default function VendorDashboardPage() {
                 refreshInquiries={refreshInquiries}
                 saving={saving}
                 updateInquiryStatus={updateInquiryStatus}
+              />
+            </div>
+
+            <div id="reviews">
+              <ReviewsSection 
+                reviews={reviews}
+                saving={saving}
+                saveReviewReply={saveReviewReply}
               />
             </div>
 
@@ -277,6 +303,7 @@ export default function VendorDashboardPage() {
                       saving={saving}
                       saveProfile={saveProfile}
                       saveVerificationDoc={saveVerificationDoc}
+                      saveVerificationDetails={saveVerificationDetails}
                       images={images}
                       cropperOpen={cropperOpen}
                       setCropperOpen={setCropperOpen}

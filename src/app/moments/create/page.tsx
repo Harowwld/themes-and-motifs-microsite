@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabaseBrowser";
 import { MomentPhotoUpload } from "@/components/MomentPhotoUpload";
+import { toast } from "@/lib/toast";
 
 type SavedVendor = {
   id: number;
@@ -78,6 +79,7 @@ export default function CreateMomentPage() {
       }
     } catch (error) {
       console.error("Error fetching saved vendors:", error);
+      toast.error("Failed to load saved vendors.");
     }
   };
 
@@ -182,10 +184,11 @@ export default function CreateMomentPage() {
           }),
         });
       }
-
+      toast.success("Moment created successfully!");
       router.push(`/moments/${momentId}`);
     } catch (error) {
       console.error("Error creating moment:", error);
+      toast.error(error instanceof Error ? error.message : "Failed to create moment.");
       setSubmitting(false);
     }
   };

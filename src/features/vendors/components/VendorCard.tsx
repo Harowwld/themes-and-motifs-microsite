@@ -10,6 +10,7 @@ import { useSavedVendors } from "./SavedVendorsProvider";
 import type { VendorCardVendor } from "../types";
 import { proxiedImageUrl } from "@/lib/imageSizes";
 import { isVerified } from "@/lib/vendorUtils";
+import { toast } from "@/lib/toast";
 
 type Props = {
   vendor: VendorCardVendor;
@@ -71,12 +72,14 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight, featured }: 
 
     try {
       if (isSaved) {
-        await fetch(`/api/saved-vendors?vendorId=${vendor.id}`, {
+        const res = await fetch(`/api/saved-vendors?vendorId=${vendor.id}`, {
           method: "DELETE",
           headers: { authorization: `Bearer ${token}` },
         });
+        if (!res.ok) throw new Error("Failed to remove vendor.");
+        toast.success("Vendor removed from your list.");
       } else {
-        await fetch("/api/saved-vendors", {
+        const res = await fetch("/api/saved-vendors", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -84,9 +87,11 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight, featured }: 
           },
           body: JSON.stringify({ vendorId: vendor.id }),
         });
+        if (!res.ok) throw new Error("Failed to save vendor.");
+        toast.success("Vendor saved to your list.");
       }
     } catch (error) {
-      console.error("Error saving vendor:", error);
+      toast.error(error instanceof Error ? error.message : "Failed to update saved vendor.");
       toggleSavedVendor(vendor.id, isSaved);
     } finally {
       setIsLoading(false);

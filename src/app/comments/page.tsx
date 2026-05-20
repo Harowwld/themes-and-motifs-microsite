@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "@/lib/toast";
 
 type BugComment = {
   id: number;
@@ -29,21 +30,19 @@ async function apiFetch<T>(url: string, init?: RequestInit): Promise<T> {
 
 export default function CommentsPage() {
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [bugComments, setBugComments] = useState<BugComment[]>([]);
   const [sortBy, setSortBy] = useState<SortOption>("newest");
   const [selectedBugComments, setSelectedBugComments] = useState<Set<number>>(new Set());
   const [deleting, setDeleting] = useState(false);
 
   async function refresh() {
-    setError(null);
     setLoading(true);
     setSelectedBugComments(new Set());
     try {
       const res = await apiFetch<{ comments: BugComment[] }>("/api/bug-comments");
       setBugComments(res.comments ?? []);
-    } catch (e: any) {
-      setError(e?.message ?? "Failed to load comments.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to load comments.");
     } finally {
       setLoading(false);
     }
@@ -93,15 +92,15 @@ export default function CommentsPage() {
     if (bugIds.length === 0) return;
 
     setDeleting(true);
-    setError(null);
     try {
       await apiFetch(`/api/bug-comments?ids=${bugIds.join(",")}`, {
         method: "DELETE",
       });
       setBugComments((prev) => prev.filter((x) => !bugIds.includes(x.id)));
       setSelectedBugComments(new Set());
-    } catch (e: any) {
-      setError(e?.message ?? "Failed to delete.");
+      toast.success("Comments deleted successfully.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to delete comments.");
     } finally {
       setDeleting(false);
     }
@@ -116,12 +115,6 @@ export default function CommentsPage() {
             All submitted bug comments
           </p>
         </div>
-
-        {error ? (
-          <div className="mb-6 rounded-[3px] border border-[#c17a4e]/30 bg-[#fff7ed] px-4 py-3 text-[13px] text-[#6e4f33]">
-            {error}
-          </div>
-        ) : null}
 
         <div className="rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden">
           <div className="px-6 py-4 border-b border-black/5 flex items-center justify-between">

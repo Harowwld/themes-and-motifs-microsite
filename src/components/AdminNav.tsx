@@ -104,6 +104,9 @@ export function AdminNav({ isSuperadmin, isEditor, email, accountType }: AdminNa
             <Link className={navLinkClass("/superadmin/editors")} href="/superadmin/editors">
               Editors
             </Link>
+            <Link className={navLinkClass("/superadmin/storage-cleanup")} href="/superadmin/storage-cleanup">
+              Storage Cleanup
+            </Link>
             <Link className={navLinkClass("/superadmin/settings")} href="/superadmin/settings">
               Settings
             </Link>

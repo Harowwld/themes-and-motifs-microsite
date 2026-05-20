@@ -4,6 +4,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { createSupabaseBrowserClient } from "../../../lib/supabaseBrowser";
+import { Star } from "lucide-react";
+import { toast } from "@/lib/toast";
 
 type Props = {
   vendorId: number;
@@ -22,10 +24,9 @@ export default function VendorReviewForm({ vendorId, vendorSlug }: Props) {
   const [isVendor, setIsVendor] = useState(false);
 
   const [rating, setRating] = useState(5);
+  const [hoverRating, setHoverRating] = useState<number | null>(null);
   const [reviewText, setReviewText] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -102,9 +103,6 @@ export default function VendorReviewForm({ vendorId, vendorSlug }: Props) {
   };
 
   const submit = async () => {
-    setError(null);
-    setSuccess(null);
-
     const { data } = await supabase.auth.getSession();
     const token = data.session?.access_token ?? "";
 
@@ -137,15 +135,15 @@ export default function VendorReviewForm({ vendorId, vendorSlug }: Props) {
       }
 
       if (!res.ok) {
-        setError(json?.error ?? "Failed to submit review.");
+        toast.error(json?.error ?? "Failed to submit review.");
         return;
       }
 
-      setSuccess("Review submitted.");
+      toast.success("Review submitted.");
       setReviewText("");
       router.refresh();
-    } catch {
-      setError("Failed to submit review.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to submit review.");
     } finally {
       setSubmitting(false);
     }
@@ -180,7 +178,7 @@ export default function VendorReviewForm({ vendorId, vendorSlug }: Props) {
     return (
       <div className="rounded-2xl border border-black/6 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] p-6">
         <div className="text-[13px] font-semibold text-[#2c2c2c]">Write a review</div>
-        <div className="mt-1 text-[13px] text-black/55">Vendor accounts can't submit reviews.</div>
+        <div className="mt-1 text-[13px] text-black/55">Vendor accounts cannot submit reviews.</div>
       </div>
     );
   }
@@ -190,33 +188,40 @@ export default function VendorReviewForm({ vendorId, vendorSlug }: Props) {
       <div className="text-[13px] font-semibold text-[#2c2c2c]">Write a review</div>
       <div className="mt-1 text-[13px] text-black/55">Share your experience to help other couples.</div>
 
-      {error ? (
-        <div className="mt-4 rounded-xl border border-[#b42318]/20 bg-[#fff1f3] px-4 py-3 text-[13px] text-[#7a271a]">
-          {error}
-        </div>
-      ) : null}
-
-      {success ? (
-        <div className="mt-4 rounded-xl border border-[#a68b6a]/25 bg-[#fffaf5] px-4 py-3 text-[13px] text-[#2c2c2c]">
-          {success}
-        </div>
-      ) : null}
 
       <div className="mt-4 grid gap-3">
-        <label className="grid gap-1">
+        <div className="grid gap-1">
           <span className="text-[12px] font-semibold text-black/55">Rating</span>
-          <select
-            value={String(rating)}
-            onChange={(e) => setRating(Number(e.target.value) || 5)}
-            className="h-10 rounded-xl border border-black/10 bg-white px-3 text-[14px] text-[#2c2c2c] outline-none hover:border-black/20 focus:border-[#a68b6a]/50 focus:ring-2 focus:ring-[#a68b6a]/15 transition-[border-color,box-shadow] duration-200 ease-out"
-          >
-            <option value="5">5 / 5</option>
-            <option value="4">4 / 5</option>
-            <option value="3">3 / 5</option>
-            <option value="2">2 / 5</option>
-            <option value="1">1 / 5</option>
-          </select>
-        </label>
+          <div className="flex items-center gap-1.5 py-1">
+            {[1, 2, 3, 4, 5].map((star) => {
+              const active = (hoverRating ?? rating) >= star;
+              return (
+                <button
+                  key={star}
+                  type="button"
+                  onClick={() => setRating(star)}
+                  onMouseEnter={() => setHoverRating(star)}
+                  onMouseLeave={() => setHoverRating(null)}
+                  className="p-1 rounded-md text-[#a68b6a] hover:bg-[#a68b6a]/5 hover:scale-110 active:scale-95 transition-all duration-150 outline-none focus-visible:ring-2 focus-visible:ring-[#a68b6a]/40"
+                  aria-label={`Rate ${star} out of 5 stars`}
+                >
+                  <Star
+                    size={28}
+                    fill={active ? "#a68b6a" : "none"}
+                    className={active ? "text-[#a68b6a] transition-colors duration-150" : "text-black/15 transition-colors duration-150"}
+                  />
+                </button>
+              );
+            })}
+            <span className="ml-2 text-[13px] font-semibold text-[#a68b6a] transition-opacity duration-200">
+              {rating === 5 ? "Excellent! (5/5)" :
+               rating === 4 ? "Very Good (4/5)" :
+               rating === 3 ? "Good (3/5)" :
+               rating === 2 ? "Fair (2/5)" :
+               "Poor (1/5)"}
+            </span>
+          </div>
+        </div>
 
         <label className="grid gap-1">
           <span className="text-[12px] font-semibold text-black/55">Review</span>

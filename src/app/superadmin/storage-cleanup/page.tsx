@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
+import { toast } from "@/lib/toast";
 
 interface OrphanFile {
   name: string;
@@ -57,8 +58,6 @@ export default function StorageCleanupPage() {
   const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
   const [isDeleting, setIsDeleting] = useState(false);
   const [isSavingSchedule, setIsSavingSchedule] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
 
   // Deletion Progress State
   const [deletionProgress, setDeletionProgress] = useState<{
@@ -84,7 +83,6 @@ export default function StorageCleanupPage() {
 
   const fetchData = async () => {
     setLoading(true);
-    setError(null);
     try {
       const res = await fetch("/api/admin/storage-cleanup", {
         credentials: "include",
@@ -94,8 +92,9 @@ export default function StorageCleanupPage() {
 
       setOrphans(data.orphans || []);
       setSchedule(data.schedule || { enabled: false, cron: "0 2 * * *", limit: 1000 });
-    } catch (e: any) {
-      setError(e.message || "Failed to load storage assets.");
+    } catch (e) {
+      const errMsg = e instanceof Error ? e.message : "Failed to load storage assets.";
+      toast.error(errMsg);
     } finally {
       setLoading(false);
     }
@@ -154,8 +153,6 @@ export default function StorageCleanupPage() {
   const handleSaveSchedule = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSavingSchedule(true);
-    setError(null);
-    setSuccess(null);
 
     try {
       const res = await fetch("/api/admin/storage-cleanup", {
@@ -170,10 +167,10 @@ export default function StorageCleanupPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to update schedule");
 
-      setSuccess("Scheduled clean-up settings updated successfully!");
-      setTimeout(() => setSuccess(null), 4000);
-    } catch (e: any) {
-      setError(e.message || "Failed to save schedule.");
+      toast.success("Scheduled clean-up settings updated successfully!");
+    } catch (e) {
+      const errMsg = e instanceof Error ? e.message : "Failed to save schedule.";
+      toast.error(errMsg);
     } finally {
       setIsSavingSchedule(false);
     }
@@ -181,8 +178,6 @@ export default function StorageCleanupPage() {
 
   const handleDeleteConfirmed = async () => {
     setShowDeleteModal(false);
-    setError(null);
-    setSuccess(null);
 
     const filesToDelete =
       deleteMode === "all"
@@ -234,7 +229,7 @@ export default function StorageCleanupPage() {
         ...prev,
         status: "success",
       }));
-      setSuccess(`Successfully deleted ${filesToDelete.length} unreferenced files from storage!`);
+      toast.success(`Successfully deleted ${filesToDelete.length} unreferenced files from storage!`);
 
       // Update orphans list
       const deletedSet = new Set(filesToDelete);
@@ -243,17 +238,16 @@ export default function StorageCleanupPage() {
       setCurrentPage(1);
 
       setTimeout(() => {
-        setSuccess(null);
         setDeletionProgress((prev) => ({ ...prev, status: "idle" }));
       }, 4000);
-    } catch (e: any) {
-      const errMsg = e.message || "Failed to complete deletion process.";
+    } catch (e) {
+      const errMsg = (e instanceof Error ? e.message : null) || "Failed to complete deletion process.";
       setDeletionProgress((prev) => ({
         ...prev,
         status: "error",
         errorMsg: errMsg,
       }));
-      setError(errMsg);
+      toast.error(errMsg);
 
       // Clean up whatever was successfully deleted before failure
       if (completedFiles.length > 0) {
@@ -305,17 +299,6 @@ export default function StorageCleanupPage() {
           </button>
         </div>
 
-        {/* Global Notifications */}
-        {error && (
-          <div className="mx-6 mt-4 rounded-[3px] border border-[#c17a4e]/30 bg-[#fff7ed] px-4 py-3 text-[13px] text-[#6e4f33]">
-            {error}
-          </div>
-        )}
-        {success && (
-          <div className="mx-6 mt-4 rounded-[3px] border border-[#16b364]/30 bg-[#f6fef9] px-4 py-3 text-[13px] text-[#027a48] font-medium">
-            {success}
-          </div>
-        )}
 
         {/* Stats Grid */}
         <div className="p-6 grid gap-4 sm:grid-cols-3">

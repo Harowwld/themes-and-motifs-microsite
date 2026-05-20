@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "@/lib/toast";
+
 
 interface Theme {
   id: number;
@@ -29,7 +31,6 @@ async function apiFetch<T>(url: string, init?: RequestInit): Promise<T> {
 export default function SuperadminThemesPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [themes, setThemes] = useState<Theme[]>([]);
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [themeToDelete, setThemeToDelete] = useState<Theme | null>(null);
@@ -41,12 +42,11 @@ export default function SuperadminThemesPage() {
 
   async function loadThemes() {
     setLoading(true);
-    setError(null);
     try {
       const res = await apiFetch<{ themes: Theme[] }>("/api/admin/themes");
       setThemes(res.themes ?? []);
-    } catch (e: any) {
-      setError(e?.message ?? "Failed to load themes.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to load themes.");
     } finally {
       setLoading(false);
     }
@@ -54,15 +54,15 @@ export default function SuperadminThemesPage() {
 
   async function deleteTheme(id: number) {
     setDeletingId(id);
-    setError(null);
     try {
       await apiFetch<{ success: boolean; message: string }>(`/api/admin/themes?id=${id}`, {
         method: "DELETE",
       });
       setThemes((prev) => prev.filter((t) => t.id !== id));
       setThemeToDelete(null);
-    } catch (e: any) {
-      setError(e?.message ?? "Failed to delete theme.");
+      toast.success("Theme deleted successfully.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to delete theme.");
     } finally {
       setDeletingId(null);
     }
@@ -99,12 +99,6 @@ export default function SuperadminThemesPage() {
             Back to Dashboard
           </button>
         </div>
-
-        {error && (
-          <div className="mb-6 rounded-[3px] border border-[#b42318]/20 bg-[#fff1f3] px-4 py-3 text-[13px] text-[#b42318]">
-            {error}
-          </div>
-        )}
 
         {/* Search */}
         <div className="mb-6">

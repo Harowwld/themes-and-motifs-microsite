@@ -64,6 +64,27 @@ export async function PATCH(req: Request) {
       return Response.json({ error: error.message }, { status: 500 });
     }
 
+    // Recalculate average rating and review count for this vendor
+    const vendorId = data?.vendor_id;
+    if (vendorId) {
+      const { data: allRatings, error: ratingsErr } = await supabase
+        .from("reviews")
+        .select("rating")
+        .eq("vendor_id", vendorId)
+        .eq("status", "published")
+        .limit(5000);
+
+      if (!ratingsErr) {
+        const rs = (allRatings ?? []) as Array<{ rating: number }>;
+        const count = rs.length;
+        const avg = count === 0 ? 0 : rs.reduce((sum, r) => sum + (Number(r.rating) || 0), 0) / count;
+        await supabase
+          .from("vendors")
+          .update({ average_rating: Number(avg.toFixed(2)), review_count: count })
+          .eq("id", vendorId);
+      }
+    }
+
     return Response.json({ review: data }, { status: 200 });
   } catch (e: any) {
     const status = typeof e?.statusCode === "number" ? e.statusCode : 500;

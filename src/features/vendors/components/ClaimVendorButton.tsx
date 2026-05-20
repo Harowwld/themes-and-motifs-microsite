@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createPortal } from "react-dom";
+import { toast } from "@/lib/toast";
 
 type Props = {
   vendorId: number;
@@ -21,7 +22,6 @@ export default function ClaimVendorButton({ vendorId, vendorName }: Props) {
   const [urlModalType, setUrlModalType] = useState<"dti" | "sec" | "permit">("dti");
   const [urlInput, setUrlInput] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
   function openUrlModal(type: "dti" | "sec" | "permit") {
@@ -45,7 +45,6 @@ export default function ClaimVendorButton({ vendorId, vendorName }: Props) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setError("");
 
     try {
       const res = await fetch("/api/vendor-claims", {
@@ -67,13 +66,15 @@ export default function ClaimVendorButton({ vendorId, vendorName }: Props) {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || "Failed to submit claim");
+        toast.error(data.error || "Failed to submit claim");
         return;
       }
 
+      toast.success("Claim request submitted successfully!");
       setSuccess(true);
+      setIsOpen(false);
     } catch {
-      setError("An error occurred. Please try again.");
+      toast.error("An error occurred. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -83,7 +84,7 @@ export default function ClaimVendorButton({ vendorId, vendorName }: Props) {
     return (
       <div className="rounded-2xl border border-[#027a48]/20 bg-[#ecfdf3] p-4 text-center">
         <p className="text-sm text-[#027a48] font-medium">Claim request submitted!</p>
-        <p className="text-xs text-[#027a48]/80 mt-1">We'll review your request and get back to you soon.</p>
+        <p className="text-xs text-[#027a48]/80 mt-1">We&apos;ll review your request and get back to you soon.</p>
       </div>
     );
   }
@@ -356,18 +357,11 @@ export default function ClaimVendorButton({ vendorId, vendorName }: Props) {
                 </div>
               )}
 
-              {error && (
-                <div className="rounded-xl bg-[#fff1f3] p-3 text-sm text-[#b42318] border border-[#b42318]/15">
-                  {error}
-                </div>
-              )}
-
               <div className="flex gap-2 pt-2">
                 <button
                   type="button"
                   onClick={() => {
                     setIsOpen(false);
-                    setError("");
                   }}
                   className="flex-1 inline-flex h-10 items-center justify-center rounded-xl border border-black/20 bg-white text-[#2c2c2c] hover:bg-black/5 hover:-translate-y-[1px] active:scale-[0.97] hover:shadow-sm transition-[transform,background-color,box-shadow] duration-200 ease-out text-sm font-medium"
                 >

@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "@/lib/toast";
+
 
 type Inquiry = {
   id: number;
@@ -45,19 +47,17 @@ function fmtDate(iso: any) {
 
 export default function SuperadminInquiriesPage() {
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [items, setItems] = useState<Inquiry[]>([]);
   const [query, setQuery] = useState("");
   const [savingId, setSavingId] = useState<number | null>(null);
 
   async function refresh() {
-    setError(null);
     setLoading(true);
     try {
       const res = await apiFetch<{ inquiries: Inquiry[] }>("/api/admin/inquiries?limit=500");
       setItems(res.inquiries ?? []);
-    } catch (e: any) {
-      setError(e?.message ?? "Failed to load inquiries.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to load inquiries.");
     } finally {
       setLoading(false);
     }
@@ -84,7 +84,6 @@ export default function SuperadminInquiriesPage() {
   }, [items, query]);
 
   async function updateStatus(id: number, status: string) {
-    setError(null);
     setSavingId(id);
     try {
       const res = await apiFetch<{ inquiry: Inquiry }>("/api/admin/inquiries", {
@@ -92,8 +91,9 @@ export default function SuperadminInquiriesPage() {
         body: JSON.stringify({ id, status }),
       });
       setItems((prev) => prev.map((x) => (x.id === id ? res.inquiry : x)));
-    } catch (e: any) {
-      setError(e?.message ?? "Failed to update inquiry.");
+      toast.success("Inquiry status updated successfully.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to update inquiry.");
     } finally {
       setSavingId(null);
     }
@@ -101,12 +101,12 @@ export default function SuperadminInquiriesPage() {
 
   async function deleteInquiry(id: number) {
     if (!window.confirm("Delete this inquiry?")) return;
-    setError(null);
     try {
       await apiFetch<{ ok: boolean }>(`/api/admin/inquiries?id=${encodeURIComponent(String(id))}`, { method: "DELETE" });
       setItems((prev) => prev.filter((x) => x.id !== id));
-    } catch (e: any) {
-      setError(e?.message ?? "Failed to delete inquiry.");
+      toast.success("Inquiry deleted successfully.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to delete inquiry.");
     }
   }
 
@@ -119,12 +119,6 @@ export default function SuperadminInquiriesPage() {
         </div>
 
         <div className="p-6 grid gap-4">
-          {error ? (
-            <div className="rounded-[3px] border border-[#c17a4e]/30 bg-[#fff7ed] px-4 py-3 text-[13px] text-[#6e4f33]">
-              {error}
-            </div>
-          ) : null}
-
           <div className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
             <label className="grid gap-1.5">
               <span className="text-[12px] font-semibold text-black/55">Search</span>

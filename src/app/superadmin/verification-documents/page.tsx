@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "@/lib/toast";
+
 
 type DocRow = {
   id: number;
@@ -43,19 +45,17 @@ function fmtDate(iso: any) {
 
 export default function SuperadminVerificationDocumentsPage() {
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [items, setItems] = useState<DocRow[]>([]);
   const [query, setQuery] = useState("");
   const [savingId, setSavingId] = useState<number | null>(null);
 
   async function refresh() {
-    setError(null);
     setLoading(true);
     try {
       const res = await apiFetch<{ documents: DocRow[] }>("/api/admin/verification-documents?limit=500");
       setItems(res.documents ?? []);
-    } catch (e: any) {
-      setError(e?.message ?? "Failed to load documents.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to load documents.");
     } finally {
       setLoading(false);
     }
@@ -81,7 +81,6 @@ export default function SuperadminVerificationDocumentsPage() {
   }, [items, query]);
 
   async function patchDoc(id: number, patch: Record<string, any>) {
-    setError(null);
     setSavingId(id);
     try {
       const res = await apiFetch<{ document: DocRow }>("/api/admin/verification-documents", {
@@ -89,8 +88,9 @@ export default function SuperadminVerificationDocumentsPage() {
         body: JSON.stringify({ id, ...patch }),
       });
       setItems((prev) => prev.map((x) => (x.id === id ? (res.document as any) : x)));
-    } catch (e: any) {
-      setError(e?.message ?? "Failed to update document.");
+      toast.success("Document updated successfully.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to update document.");
     } finally {
       setSavingId(null);
     }
@@ -105,12 +105,6 @@ export default function SuperadminVerificationDocumentsPage() {
         </div>
 
         <div className="p-6 grid gap-4">
-          {error ? (
-            <div className="rounded-[3px] border border-[#c17a4e]/30 bg-[#fff7ed] px-4 py-3 text-[13px] text-[#6e4f33]">
-              {error}
-            </div>
-          ) : null}
-
           <div className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
             <label className="grid gap-1.5">
               <span className="text-[12px] font-semibold text-black/55">Search</span>

@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "@/lib/toast";
+
 
 type Review = {
   id: number;
@@ -34,19 +36,17 @@ async function apiFetch<T>(url: string, init?: RequestInit): Promise<T> {
 
 export default function SuperadminReviewsPage() {
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [items, setItems] = useState<Review[]>([]);
   const [query, setQuery] = useState("");
   const [savingId, setSavingId] = useState<number | null>(null);
 
   async function refresh() {
-    setError(null);
     setLoading(true);
     try {
       const res = await apiFetch<{ reviews: Review[] }>("/api/admin/reviews?limit=500");
       setItems(res.reviews ?? []);
-    } catch (e: any) {
-      setError(e?.message ?? "Failed to load reviews.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to load reviews.");
     } finally {
       setLoading(false);
     }
@@ -71,7 +71,6 @@ export default function SuperadminReviewsPage() {
   }, [items, query]);
 
   async function setStatus(id: number, status: string) {
-    setError(null);
     setSavingId(id);
     try {
       const res = await apiFetch<{ review: Review }>("/api/admin/reviews", {
@@ -79,8 +78,9 @@ export default function SuperadminReviewsPage() {
         body: JSON.stringify({ id, status }),
       });
       setItems((prev) => prev.map((x) => (x.id === id ? (res.review as any) : x)));
-    } catch (e: any) {
-      setError(e?.message ?? "Failed to update review.");
+      toast.success("Review status updated successfully.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to update review.");
     } finally {
       setSavingId(null);
     }
@@ -95,12 +95,6 @@ export default function SuperadminReviewsPage() {
         </div>
 
         <div className="p-6 grid gap-4">
-          {error ? (
-            <div className="rounded-[3px] border border-[#c17a4e]/30 bg-[#fff7ed] px-4 py-3 text-[13px] text-[#6e4f33]">
-              {error}
-            </div>
-          ) : null}
-
           <div className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
             <label className="grid gap-1.5">
               <span className="text-[12px] font-semibold text-black/55">Search</span>

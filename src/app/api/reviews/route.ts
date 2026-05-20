@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { createSupabaseAdminClient } from "../../../lib/supabaseAdmin";
+import { withRateLimit, RATE_LIMITS } from "../../../lib/rateLimit";
 
 export const dynamic = "force-dynamic";
 
@@ -10,7 +11,7 @@ type PostBody = {
   reviewText?: string;
 };
 
-export async function POST(req: Request) {
+async function postHandler(req: Request) {
   try {
     const auth = req.headers.get("authorization") ?? "";
     const token = auth.toLowerCase().startsWith("bearer ") ? auth.slice(7).trim() : "";
@@ -75,8 +76,10 @@ export async function POST(req: Request) {
 
     if (createErr) {
       const msg = createErr.message || "Failed to create review";
-      const status = msg.toLowerCase().includes("duplicate") || msg.toLowerCase().includes("unique") ? 409 : 500;
-      return NextResponse.json({ error: msg }, { status });
+      const isDuplicate = msg.toLowerCase().includes("duplicate") || msg.toLowerCase().includes("unique");
+      const status = isDuplicate ? 409 : 500;
+      const friendlyMsg = isDuplicate ? "You have already submitted a review for this vendor." : msg;
+      return NextResponse.json({ error: friendlyMsg }, { status });
     }
 
     const { data: allRatings, error: ratingsErr } = await supabase
@@ -101,3 +104,5 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: e?.message ?? "Unknown error" }, { status: 500 });
   }
 }
+
+export const POST = withRateLimit(postHandler, "REVIEWS_POST", RATE_LIMITS.REVIEWS_POST);

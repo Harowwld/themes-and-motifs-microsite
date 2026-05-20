@@ -4,6 +4,7 @@ import { VendorProfile, VendorImage } from "../types";
 import { ImageUploadDropzone } from "../../../../components/ImageUploadDropzone";
 import { ensureSingleCover, clampPct, clampZoom } from "../utils";
 import { LogoModal, CoverCropperModal } from "./DashboardModals";
+import { toast } from "../../../../lib/toast";
 
 export function ProfileSection({
   vendor,
@@ -13,6 +14,7 @@ export function ProfileSection({
   saving,
   saveProfile,
   saveVerificationDoc,
+  saveVerificationDetails,
   images,
   cropperOpen,
   setCropperOpen,
@@ -28,6 +30,7 @@ export function ProfileSection({
   saving: boolean;
   saveProfile: () => void;
   saveVerificationDoc: (url: string) => void;
+  saveVerificationDetails: (secUrl: string, dtiUrl: string, expiryDate: string | null) => Promise<boolean>;
   images: VendorImage[];
   cropperOpen: boolean;
   setCropperOpen: (v: boolean) => void;
@@ -36,6 +39,20 @@ export function ProfileSection({
   setLogoModalOpen: (v: boolean) => void;
   isPremium: boolean;
 }) {
+  const [secUrl, setSecUrl] = React.useState(subscription?.sec_doc_url || "");
+  const [dtiUrl, setDtiUrl] = React.useState(subscription?.dti_doc_url || "");
+  const [expiryDate, setExpiryDate] = React.useState(
+    subscription?.expiry_date ? new Date(subscription.expiry_date).toISOString().split('T')[0] : ""
+  );
+
+  React.useEffect(() => {
+    if (subscription) {
+      setSecUrl(subscription.sec_doc_url || "");
+      setDtiUrl(subscription.dti_doc_url || "");
+      setExpiryDate(subscription.expiry_date ? new Date(subscription.expiry_date).toISOString().split('T')[0] : "");
+    }
+  }, [subscription]);
+
   if (!vendor) return null;
 
   return (
@@ -59,18 +76,72 @@ export function ProfileSection({
             </div>
           )}
         </div>
-        <div className="p-6 grid gap-4">
-          <div className="text-[13px] font-bold text-[#2c2c2c] uppercase tracking-wider">Plan Verification Document</div>
-          <div className="text-[12px] text-black/45 -mt-1">Upload a document (e.g. DTI Registration, ID) to verify your vendor plan.</div>
-          <div className="max-w-md mt-2">
-            <ImageUploadDropzone
-              bucket="vendor-assets"
-              folder="verifications"
-              label=""
-              onUploadComplete={(res) => saveVerificationDoc(res.url)}
-              existingUrl={subscription?.verification_doc_url}
-              onClear={() => saveVerificationDoc("")}
-            />
+        <div className="p-6 grid gap-6">
+          <div>
+            <div className="text-[13px] font-bold text-[#2c2c2c] uppercase tracking-wider">Business Verification</div>
+            <div className="text-[12px] text-black/45 mt-1">
+              Upload your official business credentials to verify your legitimacy and activate professional status badges on your public profile. **Only one document (either SEC Certificate or DTI Registration) is required** to save, along with an optional expiration date.
+            </div>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-2">
+            <div className="flex flex-col gap-2">
+              <span className="text-[11px] font-bold uppercase tracking-widest text-black/40">SEC Certificate</span>
+              <ImageUploadDropzone
+                bucket="vendor-assets"
+                folder="verifications"
+                label="Upload SEC Certificate"
+                onUploadComplete={(res) => setSecUrl(res.url)}
+                existingUrl={secUrl}
+                onClear={() => setSecUrl("")}
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <span className="text-[11px] font-bold uppercase tracking-widest text-black/40">DTI Registration</span>
+              <ImageUploadDropzone
+                bucket="vendor-assets"
+                folder="verifications"
+                label="Upload DTI Registration"
+                onUploadComplete={(res) => setDtiUrl(res.url)}
+                existingUrl={dtiUrl}
+                onClear={() => setDtiUrl("")}
+              />
+            </div>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-2 items-end border-t border-black/[0.04] pt-6">
+            <Field label="Document Expiration Date *">
+              <input 
+                type="date" 
+                className="h-11 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-4 text-[13px] transition-all duration-200 focus:border-[#a67c52] focus:bg-white focus:ring-4 focus:ring-[#a67c52]/10 outline-none" 
+                value={expiryDate} 
+                onChange={(e) => setExpiryDate(e.target.value)} 
+              />
+            </Field>
+
+            <div className="flex justify-end">
+              <button 
+                type="button" 
+                onClick={() => {
+                  if (!secUrl.trim() && !dtiUrl.trim()) {
+                    toast.error("Please upload at least one document (SEC Certificate or DTI Registration).");
+                    return;
+                  }
+                  if (!expiryDate || !expiryDate.trim()) {
+                    toast.error("Please provide a document expiration date.");
+                    return;
+                  }
+                  void saveVerificationDetails(secUrl, dtiUrl, expiryDate);
+                }} 
+                disabled={saving} 
+                className="h-11 px-8 rounded-lg bg-[#a67c52] text-white text-[13px] font-bold shadow-[0_4px_12px_rgba(166,124,82,0.3)] hover:bg-[#8e6a46] hover:shadow-[0_6px_16px_rgba(166,124,82,0.4)] transition-all duration-300 disabled:opacity-60 disabled:shadow-none w-full md:w-auto"
+              >
+                <span className="inline-flex items-center gap-2 justify-center">
+                  {saving ? <Spinner className="text-white/90" /> : null}
+                  <span>{saving ? "Saving Details..." : "Save Verification Documents"}</span>
+                </span>
+              </button>
+            </div>
           </div>
         </div>
       </section>

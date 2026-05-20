@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "@/lib/toast";
+
 
 import { SuperadminInvite } from "./components/SuperadminInvite";
 
@@ -61,7 +63,6 @@ async function apiFetch<T>(url: string, init?: RequestInit): Promise<T> {
 export default function SuperadminSettingsPage() {
   const [table, setTable] = useState<TableName>("plans");
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [rows, setRows] = useState<Row[]>([]);
   const [query, setQuery] = useState("");
   const [savingId, setSavingId] = useState<number | null>(null);
@@ -83,30 +84,28 @@ export default function SuperadminSettingsPage() {
 
   async function refresh(nextTable?: TableName) {
     const t = nextTable ?? table;
-    setError(null);
     setLoading(true);
     try {
       const res = await apiFetch<{ rows: Row[] }>(`/api/admin/settings?table=${encodeURIComponent(t)}`);
       setRows(res.rows ?? []);
-    } catch (e: any) {
-      setError(e?.message ?? "Failed to load settings.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to load settings.");
     } finally {
       setLoading(false);
     }
   }
 
   async function changePassword() {
-    setError(null);
     if (!pwCurrent || !pwNew) {
-      setError("Current and new password are required.");
+      toast.error("Current and new password are required.");
       return;
     }
     if (pwNew.length < 8) {
-      setError("New password must be at least 8 characters.");
+      toast.error("New password must be at least 8 characters.");
       return;
     }
     if (pwNew !== pwConfirm) {
-      setError("New password and confirmation do not match.");
+      toast.error("New password and confirmation do not match.");
       return;
     }
 
@@ -119,8 +118,9 @@ export default function SuperadminSettingsPage() {
       setPwCurrent("");
       setPwNew("");
       setPwConfirm("");
-    } catch (e: any) {
-      setError(e?.message ?? "Failed to change password.");
+      toast.success("Password changed successfully.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to change password.");
     } finally {
       setPwSaving(false);
     }
@@ -154,7 +154,6 @@ export default function SuperadminSettingsPage() {
   async function patchRow(id: number, patch: Record<string, any>) {
     if (!patch || Object.keys(patch).length === 0) return;
 
-    setError(null);
     setSavingId(id);
     try {
       const res = await apiFetch<{ row: Row }>("/api/admin/settings", {
@@ -162,16 +161,15 @@ export default function SuperadminSettingsPage() {
         body: JSON.stringify({ table, id, patch }),
       });
       setRows((prev) => prev.map((r) => (r.id === id ? (res.row as any) : r)));
-    } catch (e: any) {
-      setError(e?.message ?? "Failed to update row.");
+      toast.success("Row updated successfully.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to update row.");
     } finally {
       setSavingId(null);
     }
   }
 
   async function createRow() {
-    setError(null);
-
     const data: Record<string, any> = {};
     for (const f of TABLE_FIELDS[table]) {
       if (f.key === "name") data.name = createName;
@@ -188,7 +186,7 @@ export default function SuperadminSettingsPage() {
       if (!f.required) continue;
       const raw = String((data as any)[f.key] ?? "").trim();
       if (!raw) {
-        setError(`${f.label} is required.`);
+        toast.error(`${f.label} is required.`);
         return;
       }
     }
@@ -207,7 +205,7 @@ export default function SuperadminSettingsPage() {
         if (!s) continue;
         const n = Number(s);
         if (!Number.isFinite(n)) {
-          setError(`${f.label} must be a number.`);
+          toast.error(`${f.label} must be a number.`);
           return;
         }
         payload[f.key] = n;
@@ -218,7 +216,7 @@ export default function SuperadminSettingsPage() {
         try {
           payload[f.key] = JSON.parse(s);
         } catch {
-          setError(`${f.label} must be valid JSON.`);
+          toast.error(`${f.label} must be valid JSON.`);
           return;
         }
       }
@@ -239,8 +237,9 @@ export default function SuperadminSettingsPage() {
       setCreateIcon("");
       setCreateDisplayOrder("");
       setCreateParentId("");
-    } catch (e: any) {
-      setError(e?.message ?? "Failed to create row.");
+      toast.success("Row created successfully.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to create row.");
     } finally {
       setCreateSaving(false);
     }
@@ -304,12 +303,6 @@ export default function SuperadminSettingsPage() {
           </section>
 
           <SuperadminInvite />
-
-          {error ? (
-            <div className="rounded-[3px] border border-[#c17a4e]/30 bg-[#fff7ed] px-4 py-3 text-[13px] text-[#6e4f33]">
-              {error}
-            </div>
-          ) : null}
 
           <div className="grid gap-3 sm:grid-cols-[200px_1fr_auto] sm:items-end">
             <label className="grid gap-1.5">
@@ -556,6 +549,7 @@ function SettingsRow({
               const raw = String(values[f.key] ?? "");
 
               if (f.required && !raw.trim()) {
+                toast.error(`${f.label} is required.`);
                 return;
               }
 
@@ -568,7 +562,10 @@ function SettingsRow({
                 const s = raw.trim();
                 if (!s) continue;
                 const n = Number(s);
-                if (!Number.isFinite(n)) continue;
+                if (!Number.isFinite(n)) {
+                  toast.error(`${f.label} must be a number.`);
+                  return;
+                }
                 patch[f.key] = n;
               }
 
@@ -581,6 +578,7 @@ function SettingsRow({
                 try {
                   patch[f.key] = JSON.parse(s);
                 } catch {
+                  toast.error(`${f.label} must be valid JSON.`);
                   return;
                 }
               }

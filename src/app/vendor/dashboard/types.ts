@@ -96,3 +96,21 @@ export type AlbumPhoto = {
   image_url: string;
   display_order: number;
 };
+
+export type Review = {
+  id: number;
+  vendor_id: number;
+  user_id: string;
+  rating: number;
+  review_text: string | null;
+  status: string | null;
+  helpful_count: number | null;
+  created_at: string;
+  updated_at: string;
+  vendor_reply_text: string | null;
+  vendor_reply_at: string | null;
+  users?: {
+    email: string;
+  }[] | null;
+};
+

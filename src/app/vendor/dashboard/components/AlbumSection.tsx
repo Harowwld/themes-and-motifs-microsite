@@ -23,7 +23,14 @@ export function AlbumSection({
   deleteAlbumModalOpen,
   albumToDelete,
   setDeleteAlbumModalOpenState,
-  deleteAlbum
+  deleteAlbum,
+  renameAlbumModalOpen,
+  albumToRename,
+  renameAlbumTitle,
+  setRenameAlbumModalOpen,
+  setAlbumToRename,
+  setRenameAlbumTitle,
+  renameAlbum
 }: {
   albums: Album[];
   setAlbumModalOpen: (v: boolean) => void;
@@ -47,6 +54,13 @@ export function AlbumSection({
   albumToDelete: any;
   setDeleteAlbumModalOpenState: (v: boolean) => void;
   deleteAlbum: (id: number) => void;
+  renameAlbumModalOpen: boolean;
+  albumToRename: Album | null;
+  renameAlbumTitle: string;
+  setRenameAlbumModalOpen: (v: boolean) => void;
+  setAlbumToRename: (v: Album | null) => void;
+  setRenameAlbumTitle: (v: string) => void;
+  renameAlbum: () => void;
 }) {
   const [localPhotos, setLocalPhotos] = React.useState<AlbumPhoto[]>([]);
 
@@ -112,6 +126,17 @@ export function AlbumSection({
                       className="h-9 px-4 rounded-lg bg-white border border-black/[0.08] text-[12px] font-bold text-[#6e4f33] hover:bg-[#fafafa] transition-all duration-300 shadow-sm"
                     >
                       Manage
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAlbumToRename(album);
+                        setRenameAlbumTitle(album.title);
+                        setRenameAlbumModalOpen(true);
+                      }}
+                      className="h-9 px-4 rounded-lg bg-white border border-black/[0.08] text-[12px] font-bold text-[#6e4f33] hover:bg-[#fafafa] transition-all duration-300 shadow-sm"
+                    >
+                      Rename
                     </button>
                     <button
                       type="button"
@@ -303,6 +328,52 @@ export function AlbumSection({
                 ) : (
                   "Confirm Curation"
                 )}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {/* Rename Album Modal */}
+      {renameAlbumModalOpen && albumToRename ? (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity" onClick={() => setRenameAlbumModalOpen(false)} />
+          <div className="relative w-full max-w-sm rounded-lg bg-white shadow-2xl overflow-hidden transform transition-all">
+            <div className="px-8 py-6 border-b border-black/[0.04] bg-[#fafafa]/30">
+              <h2 className="font-serif text-[18px] font-bold text-[#2c2c2c]">Rename Album</h2>
+              <p className="mt-1 text-[12px] text-black/45">
+                Change the title of your collection.
+              </p>
+            </div>
+            <div className="px-8 py-6">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[11px] font-black uppercase tracking-[0.2em] text-[#a67c52]">New Title</label>
+                <input
+                  type="text"
+                  className="h-11 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-4 text-[14px] outline-none focus:border-[#a67c52] focus:bg-white focus:ring-4 focus:ring-[#a67c52]/10 transition-all duration-200"
+                  value={renameAlbumTitle}
+                  onChange={(e) => setRenameAlbumTitle(e.target.value)}
+                  placeholder="e.g. Dream Weddings 2024"
+                  autoFocus
+                />
+              </div>
+            </div>
+            <div className="px-8 py-6 border-t border-black/[0.04] flex items-center justify-end gap-3 bg-[#fafafa]/10">
+              <button
+                type="button"
+                disabled={saving}
+                onClick={() => setRenameAlbumModalOpen(false)}
+                className="h-11 px-6 rounded-lg text-[13px] font-bold text-black/40 hover:text-black/60 transition-all duration-300"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={saving || !renameAlbumTitle.trim()}
+                onClick={renameAlbum}
+                className="h-11 px-8 rounded-lg bg-[#a67c52] text-white text-[14px] font-bold shadow-lg shadow-[#a67c52]/20 hover:bg-[#8e6a46] hover:shadow-xl transition-all duration-300 disabled:opacity-60"
+              >
+                {saving ? "Saving..." : "Save Changes"}
               </button>
             </div>
           </div>

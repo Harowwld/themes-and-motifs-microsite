@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createPortal } from "react-dom";
+import { toast } from "@/lib/toast";
 
 interface VendorContactCTAProps {
   vendorId: number;
@@ -22,17 +23,15 @@ export default function VendorContactCTA({
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!vendorEmail) {
-      setError("Vendor contact email is not available.");
+      toast.error("Vendor contact email is not available.");
       return;
     }
 
     setIsSubmitting(true);
-    setError(null);
 
     try {
       const response = await fetch("/api/contact", {
@@ -53,7 +52,7 @@ export default function VendorContactCTA({
 
       setIsSuccess(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      toast.error(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setIsSubmitting(false);
     }
@@ -64,7 +63,6 @@ export default function VendorContactCTA({
       setIsModalOpen(false);
       setTimeout(() => {
         setIsSuccess(false);
-        setError(null);
         setMessage("add basic wedding info like wedding date and venue/location");
         setName("");
         setEmail("");
@@ -109,12 +107,6 @@ export default function VendorContactCTA({
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
-                {error && (
-                  <div className="rounded-xl border border-[#b42318]/20 bg-[#fff1f3] px-3 py-2 text-[13px] text-[#b42318]">
-                    {error}
-                  </div>
-                )}
-
                 <div>
                   <label className="block text-[12px] font-medium text-black/70 mb-1.5">
                     Your Name

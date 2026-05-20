@@ -37,6 +37,8 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
   if (vendor.location_text) locationParts.push(vendor.location_text);
   const location = locationParts.join(", ") || null;
 
+  const yearEstablished = vendor.year_established ? String(vendor.year_established).split("-")[0].trim() : null;
+
   const cover = images.find((i: any) => i.is_cover) ?? images[0];
   const coverUrl = cover?.image_url ? proxiedImageUrl(cover.image_url) ?? "" : "";
   const logoUrl = vendor.logo_url ? proxiedImageUrl(vendor.logo_url) : null;
@@ -112,8 +114,22 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
           {/* Business Info */}
           <div className="mt-5">
             <h1 className="font-serif text-[26px] sm:text-[34px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">
-              <span className="inline-flex items-center gap-2">
-                <span>{vendor.business_name}</span>
+              {vendor.business_name}
+            </h1>
+
+            {/* Category Pills & Badges */}
+            {(categories.length > 0 || hasVerified || (isPremium && !hasInProgress) || hasInProgress || hasCommunity || hasEstablished || yearEstablished) ? (
+              <div className="mt-3 flex flex-wrap gap-2 items-center">
+                {categories.map((c: any) => (
+                  <a
+                    key={c.id}
+                    className="inline-flex items-center rounded-full border border-[#a68b6a]/25 bg-white px-3.5 py-1.5 text-[12px] font-medium text-[#6e4f33] hover:bg-[#fffaf5] transition-[transform,background-color,box-shadow,border-color] duration-200 ease-out hover:-translate-y-[1px] active:scale-[0.96] shadow-sm hover:shadow-md"
+                    href={`/vendors?category=${encodeURIComponent(c.slug)}`}
+                  >
+                    {c.name}
+                  </a>
+                ))}
+
                 {/* 1. Verified Premium or Standard Verified */}
                 {(hasVerified || (isPremium && !hasInProgress)) ? (
                   isPremium ? (
@@ -156,7 +172,6 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
                   </div>
                 ) : null}
 
-
                 {/* 3. Established Professional */}
                 {hasEstablished ? (
                   <div className="relative h-6 w-6 shrink-0 text-[#4ade80]" title="Established Professional">
@@ -166,21 +181,13 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
                     <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-white">10</span>
                   </div>
                 ) : null}
-              </span>
-            </h1>
 
-            {/* Category Pills */}
-            {categories.length > 0 ? (
-              <div className="mt-3 flex flex-wrap gap-2">
-                {categories.map((c: any) => (
-                  <a
-                    key={c.id}
-                    className="inline-flex items-center rounded-full border border-[#a68b6a]/25 bg-white px-3.5 py-1.5 text-[12px] font-medium text-[#6e4f33] hover:bg-[#fffaf5] transition-[transform,background-color,box-shadow,border-color] duration-200 ease-out hover:-translate-y-[1px] active:scale-[0.96] shadow-sm hover:shadow-md"
-                    href={`/vendors?category=${encodeURIComponent(c.slug)}`}
-                  >
-                    {c.name}
-                  </a>
-                ))}
+                {/* 4. Year Established */}
+                {yearEstablished ? (
+                  <span className="inline-flex items-center h-6 px-2.5 rounded-full bg-black/[0.04] text-[11px] font-semibold text-black/50 tracking-wider uppercase font-sans shrink-0 align-middle" title={`Established in ${yearEstablished}`}>
+                    Since {yearEstablished}
+                  </span>
+                ) : null}
               </div>
             ) : null}
 
@@ -365,6 +372,28 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
                         </div>
                       </div>
                       {r.review_text ? <div className="mt-3 text-[13px] leading-6 text-black/60 pl-10">{r.review_text}</div> : null}
+                      
+                      {r.vendor_reply_text ? (
+                        <div className="mt-3 ml-10 p-3.5 rounded-lg border border-black/[0.04] bg-[#fafafa]/50">
+                          <div className="flex items-center gap-2 mb-1.5">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-[#a68b6a]">
+                              Vendor Response
+                            </span>
+                            {r.vendor_reply_at && (
+                              <span className="text-[9px] text-black/30 font-medium">
+                                {new Date(r.vendor_reply_at).toLocaleDateString(undefined, {
+                                  month: "short",
+                                  day: "numeric",
+                                  year: "numeric",
+                                })}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-[12px] leading-relaxed text-black/70 whitespace-pre-line">
+                            {r.vendor_reply_text}
+                          </p>
+                        </div>
+                      ) : null}
                     </div>
                   ))
                 )}
@@ -654,3 +683,5 @@ function SparklesIcon({ className }: { className?: string }) {
     </svg>
   );
 }
+
+

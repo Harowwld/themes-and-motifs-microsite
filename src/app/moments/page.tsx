@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabaseBrowser";
 import Link from "next/link";
+import { toast } from "@/lib/toast";
 
 type Moment = {
   id: string;
@@ -37,15 +38,12 @@ type Moment = {
   }>;
 };
 
-function MomentCard({ moment, onDelete, onRequestDelete }: { moment: Moment; onDelete: (id: string) => void; onRequestDelete: (moment: Moment) => void }) {
+function MomentCard({ moment, onDelete }: { moment: Moment; onDelete: (id: string) => void }) {
   const router = useRouter();
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  const handleDeleteRequest = () => {
-    onRequestDelete(moment);
-  };
-
   const handleDeleteConfirm = async () => {
+    if (!confirm("Are you sure you want to delete this moment?")) return;
     setDeletingId(moment.id);
     try {
       const token = (await createSupabaseBrowserClient().auth.getSession()).data.session?.access_token;
@@ -58,9 +56,14 @@ function MomentCard({ moment, onDelete, onRequestDelete }: { moment: Moment; onD
 
       if (response.ok) {
         onDelete(moment.id);
+        toast.success("Moment deleted successfully.");
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Failed to delete moment (${response.status})`);
       }
     } catch (error) {
       console.error("Error deleting moment:", error);
+      toast.error(error instanceof Error ? error.message : "Failed to delete moment.");
     } finally {
       setDeletingId(null);
     }
@@ -212,7 +215,7 @@ function MomentCard({ moment, onDelete, onRequestDelete }: { moment: Moment; onD
           </div>
           {isOwner && (
             <button
-              onClick={handleDeleteRequest}
+              onClick={handleDeleteConfirm}
               disabled={deletingId === moment.id}
               className="text-[#b42318] hover:text-[#9a1d14] transition-colors text-sm"
             >
@@ -263,10 +266,6 @@ export default function MomentsPage() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "private" | "public">("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
-
-  // Delete modal state
-  const [momentToDelete, setMomentToDelete] = useState<Moment | null>(null);
-  const [deletingMomentId, setDeletingMomentId] = useState<string | null>(null);
 
   const fetchMoments = useCallback(async () => {
     try {
@@ -371,7 +370,7 @@ export default function MomentsPage() {
             </p>
           </div>
           {user && isSoonToWed && (
-            <a
+            <Link
               href="/moments/create"
               className="inline-flex items-center px-4 py-2 bg-[#a68b6a] text-white text-[13px] font-semibold rounded-lg hover:bg-[#957a5c] transition-colors font-[family-name:var(--font-plus-jakarta)]"
             >
@@ -379,7 +378,7 @@ export default function MomentsPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
               </svg>
               Create Moment
-            </a>
+            </Link>
           )}
         </div>
 
@@ -450,26 +449,26 @@ export default function MomentsPage() {
               }
             </p>
             {user && isSoonToWed ? (
-              <a
+              <Link
                 href="/moments/create"
                 className="inline-flex items-center px-5 py-2.5 bg-[#a68b6a] text-white text-[13px] font-semibold rounded-lg hover:bg-[#957a5c] transition-colors font-[family-name:var(--font-plus-jakarta)]"
               >
                 Create Your First Moment
-              </a>
+              </Link>
             ) : (
-              <a
+              <Link
                 href="/soon-to-wed/signup"
                 className="inline-flex items-center px-5 py-2.5 bg-[#a68b6a] text-white text-[13px] font-semibold rounded-lg hover:bg-[#957a5c] transition-colors font-[family-name:var(--font-plus-jakarta)]"
               >
                 Sign Up to Share Moments
-              </a>
+              </Link>
             )}
           </div>
         ) : (
           <div className="max-w-2xl mx-auto">
             <div className="space-y-6">
               {moments.map((moment) => (
-                <MomentCard key={moment.id} moment={moment} onDelete={handleDeleteMoment} onRequestDelete={setMomentToDelete} />
+                <MomentCard key={moment.id} moment={moment} onDelete={handleDeleteMoment} />
               ))}
             </div>
           </div>

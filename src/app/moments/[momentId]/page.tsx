@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { createSupabaseBrowserClient } from "@/lib/supabaseBrowser";
+import { toast } from "@/lib/toast";
 
 type Moment = {
   id: string;
@@ -129,8 +130,8 @@ function PhotoGallery({ photos }: { photos: Moment["moment_photos"] }) {
   );
 }
 
-function VendorReviewCard({ review }: { review: Moment["vendor_reviews"][0] }) {
-  const StarRating = ({ rating }: { rating: number }) => (
+function StarRating({ rating }: { rating: number }) {
+  return (
     <div className="flex items-center gap-1">
       {[1, 2, 3, 4, 5].map((star) => (
         <svg
@@ -144,7 +145,9 @@ function VendorReviewCard({ review }: { review: Moment["vendor_reviews"][0] }) {
       ))}
     </div>
   );
+}
 
+function VendorReviewCard({ review }: { review: Moment["vendor_reviews"][0] }) {
   return (
     <div className="border border-gray-200 rounded-lg p-6">
       <div className="flex items-start justify-between mb-4">
@@ -454,10 +457,15 @@ export default function MomentDetailPage() {
                         });
 
                         if (response.ok) {
+                          toast.success("Moment deleted successfully.");
                           router.push("/moments");
+                        } else {
+                          const errorData = await response.json().catch(() => ({}));
+                          throw new Error(errorData.error || `Failed to delete moment (${response.status})`);
                         }
                       } catch (error) {
                         console.error("Error deleting moment:", error);
+                        toast.error(error instanceof Error ? error.message : "Failed to delete moment.");
                       }
                     }}
                     className="px-4 py-2 text-[#b42318] hover:text-[#9a1d14] transition-colors"

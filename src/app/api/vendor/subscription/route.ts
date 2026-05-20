@@ -9,8 +9,17 @@ export async function PATCH(req: Request) {
 
     const body = await req.json();
 
-    if (typeof body.verification_doc_url !== "string") {
-      return Response.json({ error: "Missing verification_doc_url" }, { status: 400 });
+    const sec_doc_url = typeof body.sec_doc_url === "string" ? body.sec_doc_url.trim() : null;
+    const dti_doc_url = typeof body.dti_doc_url === "string" ? body.dti_doc_url.trim() : null;
+    const expiry_date = typeof body.expiry_date === "string" && body.expiry_date.trim() !== "" ? body.expiry_date.trim() : null;
+    const verification_doc_url = sec_doc_url || dti_doc_url || (typeof body.verification_doc_url === "string" ? body.verification_doc_url.trim() : null);
+
+    if (!sec_doc_url && !dti_doc_url && !verification_doc_url) {
+      return Response.json({ error: "At least one document (SEC Certificate or DTI Registration) is required." }, { status: 400 });
+    }
+
+    if (!expiry_date) {
+      return Response.json({ error: "Document expiration date is required." }, { status: 400 });
     }
 
     // Upsert subscription
@@ -30,7 +39,13 @@ export async function PATCH(req: Request) {
     if (sub) {
       const { data, error } = await supabase
         .from("vendor_subscriptions")
-        .update({ verification_doc_url: body.verification_doc_url, updated_at: new Date().toISOString() })
+        .update({ 
+          verification_doc_url, 
+          sec_doc_url, 
+          dti_doc_url, 
+          expiry_date, 
+          updated_at: new Date().toISOString() 
+        })
         .eq("id", sub.id)
         .select()
         .single();
@@ -41,7 +56,10 @@ export async function PATCH(req: Request) {
         .from("vendor_subscriptions")
         .insert({
           vendor_id: vendor.id,
-          verification_doc_url: body.verification_doc_url,
+          verification_doc_url,
+          sec_doc_url,
+          dti_doc_url,
+          expiry_date,
           status: 'pending_verification'
         })
         .select()

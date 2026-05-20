@@ -14,7 +14,8 @@ import {
   SocialPlatformOption, 
   Album, 
   AlbumPhoto,
-  SOCIAL_PLATFORM_OPTIONS
+  SOCIAL_PLATFORM_OPTIONS,
+  Review
 } from "../types";
 import { apiFetch, ensureSingleCover, isKnownPlatform, clampPct, clampZoom } from "../utils";
 
@@ -28,7 +29,14 @@ export function useVendorDashboard() {
   const [saving, setSaving] = useState(false);
 
   const [vendor, setVendor] = useState<VendorProfile | null>(null);
-  const [subscription, setSubscription] = useState<{ id: number; status: string; expiry_date: string | null; verification_doc_url: string | null } | null>(null);
+  const [subscription, setSubscription] = useState<{ 
+    id: number; 
+    status: string; 
+    expiry_date: string | null; 
+    verification_doc_url: string | null;
+    sec_doc_url?: string | null;
+    dti_doc_url?: string | null;
+  } | null>(null);
   const [form, setForm] = useState({
     business_name: "",
     logo_url: "",
@@ -69,6 +77,7 @@ export function useVendorDashboard() {
 
   const [promos, setPromos] = useState<VendorPromo[]>([]);
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [themes, setThemes] = useState<Theme[]>([]);
   const [allThemes, setAllThemes] = useState<Theme[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -83,6 +92,9 @@ export function useVendorDashboard() {
   const [albumEditorOpen, setAlbumEditorOpen] = useState(false);
   const [deleteAlbumModalOpen, setDeleteAlbumModalOpen] = useState(false);
   const [albumToDelete, setAlbumToDelete] = useState<{ id: number; title: string } | null>(null);
+  const [renameAlbumModalOpen, setRenameAlbumModalOpen] = useState(false);
+  const [albumToRename, setAlbumToRename] = useState<Album | null>(null);
+  const [renameAlbumTitle, setRenameAlbumTitle] = useState("");
 
   const [cropperOpen, setCropperOpen] = useState(false);
   const [logoModalOpen, setLogoModalOpen] = useState(false);
@@ -133,7 +145,14 @@ export function useVendorDashboard() {
             allThemes: Theme[];
             categories: { category: Category | Category[] | null }[];
             allCategories: Category[];
-            subscription: { id: number; status: string; expiry_date: string | null; verification_doc_url: string | null } | null;
+            subscription: { 
+              id: number; 
+              status: string; 
+              expiry_date: string | null; 
+              verification_doc_url: string | null;
+              sec_doc_url?: string | null;
+              dti_doc_url?: string | null;
+            } | null;
             videos: VendorVideo[];
           }>("/api/vendor/profile", session.access_token);
 
@@ -214,15 +233,17 @@ export function useVendorDashboard() {
           setCategories(normalizedCategories);
           setAllCategories(json.allCategories ?? []);
 
-          const [promosRes, inquiriesRes, albumsRes] = await Promise.all([
+          const [promosRes, inquiriesRes, albumsRes, reviewsRes] = await Promise.all([
             apiFetch<{ promos: VendorPromo[] }>("/api/vendor/promos", session.access_token).catch(() => ({ promos: [] as VendorPromo[] })),
             apiFetch<{ inquiries: Inquiry[] }>("/api/vendor/inquiries", session.access_token).catch(() => ({ inquiries: [] as Inquiry[] })),
-            apiFetch<{ albums: Album[] }>("/api/vendor/albums", session.access_token).catch(() => ({ albums: [] as Album[] }))
+            apiFetch<{ albums: Album[] }>("/api/vendor/albums", session.access_token).catch(() => ({ albums: [] as Album[] })),
+            apiFetch<{ reviews: Review[] }>("/api/vendor/reviews", session.access_token).catch(() => ({ reviews: [] as Review[] }))
           ]);
 
           setPromos(promosRes.promos ?? []);
           setInquiries(inquiriesRes.inquiries ?? []);
           setAlbums(albumsRes.albums ?? []);
+          setReviews(reviewsRes.reviews ?? []);
         } catch (e: any) {
           toast.error(e?.message ?? "Failed to load vendor profile.");
         } finally {
@@ -360,6 +381,33 @@ export function useVendorDashboard() {
     }
   };
 
+  const saveReviewReply = async (reviewId: number, text: string | null) => {
+    if (!token) return;
+    setSaving(true);
+    try {
+      const res = await apiFetch<{ review: Review }>("/api/vendor/reviews", token, {
+        method: "PATCH",
+        body: JSON.stringify({ reviewId, replyText: text }),
+      });
+      setReviews((prev) =>
+        prev.map((r) =>
+          r.id === reviewId
+            ? {
+                ...r,
+                vendor_reply_text: res.review.vendor_reply_text,
+                vendor_reply_at: res.review.vendor_reply_at,
+              }
+            : r
+        )
+      );
+      toast.success(text ? "Reply saved successfully." : "Reply deleted successfully.");
+    } catch (e: any) {
+      toast.error(e?.message ?? "Failed to save reply.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const createAlbum = async () => {
     if (!token) return;
     if (!albumTitle.trim()) {
@@ -404,6 +452,31 @@ export function useVendorDashboard() {
     }
   };
 
+  const renameAlbum = async () => {
+    if (!token) return;
+    if (!albumToRename) return;
+    if (!renameAlbumTitle.trim()) {
+      toast.error("Album title is required");
+      return;
+    }
+    setSaving(true);
+    try {
+      const res = await apiFetch<{ album: Album }>("/api/vendor/albums", token, {
+        method: "PATCH",
+        body: JSON.stringify({ id: albumToRename.id, title: renameAlbumTitle.trim() }),
+      });
+      setAlbums((prev) => prev.map((a) => (a.id === albumToRename.id ? { ...a, title: res.album.title, slug: res.album.slug } : a)));
+      setRenameAlbumModalOpen(false);
+      setAlbumToRename(null);
+      setRenameAlbumTitle("");
+      toast.success("Album renamed successfully.");
+    } catch (e: any) {
+      toast.error(e?.message ?? "Failed to rename album.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const loadAlbumPhotos = async (albumId: number) => {
     if (!token) return;
     try {
@@ -437,21 +510,31 @@ export function useVendorDashboard() {
     }
   };
 
-  const saveVerificationDoc = async (url: string) => {
-    if (!token) return;
+  const saveVerificationDetails = async (secUrl: string, dtiUrl: string, expiryDate: string | null) => {
+    if (!token) return false;
     setSaving(true);
     try {
       const res = await apiFetch<{ subscription: any }>("/api/vendor/subscription", token, {
         method: "PATCH",
-        body: JSON.stringify({ verification_doc_url: url }),
+        body: JSON.stringify({ 
+          sec_doc_url: secUrl || null, 
+          dti_doc_url: dtiUrl || null, 
+          expiry_date: expiryDate || null 
+        }),
       });
       setSubscription(res.subscription);
-      toast.success("Verification document uploaded.");
+      toast.success("Verification details saved.");
+      return true;
     } catch (e: any) {
-      toast.error(e?.message ?? "Failed to save verification document.");
+      toast.error(e?.message ?? "Failed to save verification details.");
+      return false;
     } finally {
       setSaving(false);
     }
+  };
+
+  const saveVerificationDoc = async (url: string) => {
+    await saveVerificationDetails(url, "", null);
   };
 
   const saveProfile = async () => {
@@ -679,6 +762,7 @@ export function useVendorDashboard() {
     videos,
     promos,
     inquiries,
+    reviews,
     themes,
     allThemes,
     categories,
@@ -691,6 +775,9 @@ export function useVendorDashboard() {
     albumEditorOpen,
     deleteAlbumModalOpen,
     albumToDelete,
+    renameAlbumModalOpen,
+    albumToRename,
+    renameAlbumTitle,
     cropperOpen,
     logoModalOpen,
     photoModalOpen,
@@ -716,6 +803,9 @@ export function useVendorDashboard() {
     setSelectedAlbum,
     setDeleteAlbumModalOpen,
     setAlbumToDelete,
+    setRenameAlbumModalOpen,
+    setAlbumToRename,
+    setRenameAlbumTitle,
     setCropperOpen,
     setLogoModalOpen,
     setPhotoModalOpen,
@@ -733,6 +823,7 @@ export function useVendorDashboard() {
     deletePromo,
     refreshInquiries,
     updateInquiryStatus,
+    saveReviewReply,
     loadAlbums: async () => {
       if (!token) return;
       try {
@@ -744,9 +835,11 @@ export function useVendorDashboard() {
     },
     createAlbum,
     deleteAlbum,
+    renameAlbum,
     loadAlbumPhotos,
     saveAlbumPhotos,
     saveVerificationDoc,
+    saveVerificationDetails,
     saveProfile,
     saveSocials,
     saveThemes,

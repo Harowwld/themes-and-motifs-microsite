@@ -24,6 +24,7 @@ type VendorRow = {
   document_verified: string | null;
   user_id: string | null;
   updated_at: string;
+  year_established: string | null;
   plan?: { id: number; name: string } | { id: number; name: string }[] | null;
 };
 
@@ -68,6 +69,8 @@ type ReviewRow = {
   rating: number;
   review_text: string | null;
   created_at: string;
+  vendor_reply_text?: string | null;
+  vendor_reply_at?: string | null;
   users?: {
     email: string;
   }[] | null;
@@ -143,7 +146,7 @@ async function VendorDetailData({ slug }: { slug: string }) {
   const { data: vendor } = await supabase
     .from("vendors")
     .select(
-      "id,business_name,slug,logo_url,description,location_text,city,address,website_url,contact_email,contact_phone,sec_dti_number,average_rating,review_count,save_count,document_verified,user_id,updated_at,plan:plans(id,name)"
+      "id,business_name,slug,logo_url,description,location_text,city,address,website_url,contact_email,contact_phone,sec_dti_number,average_rating,review_count,save_count,document_verified,user_id,updated_at,year_established,plan:plans(id,name)"
     )
     .eq("slug", slug)
     .eq("is_active", true)
@@ -179,7 +182,7 @@ const [categoriesRes, affiliationsRes, imagesRes, socialsRes, reviewsRes, promos
       .limit(20),
     supabase
       .from("reviews")
-      .select("id,rating,review_text,created_at,users(email)")
+      .select("id,rating,review_text,created_at,users(email),vendor_reply_text,vendor_reply_at")
       .eq("vendor_id", vendor.id)
       .eq("status", "published")
       .order("created_at", { ascending: false })
@@ -256,6 +259,7 @@ const [categoriesRes, affiliationsRes, imagesRes, socialsRes, reviewsRes, promos
         user_id: vendor.user_id,
         updated_at: vendor.updated_at,
         plan_name: planName,
+        year_established: vendor.year_established,
       }}
       categories={categories as any}
       affiliations={affiliations as any}

@@ -1,16 +1,16 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "@/lib/toast";
+
 
 export function SuperadminInvite() {
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [result, setResult] = useState<{ success: boolean; message: string } | null>(null);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setIsSubmitting(true);
-    setResult(null);
 
     try {
       const res = await fetch("/api/admin/superadmins/invite", {
@@ -25,16 +25,10 @@ export function SuperadminInvite() {
         throw new Error(data.error || "Failed to send invitation.");
       }
 
-      setResult({
-        success: true,
-        message: `Invitation sent to ${data.email}. They will receive an email with a link to set up their account.`,
-      });
+      toast.success(`Invitation sent to ${data.email}. They will receive an email with a link to set up their account.`);
       setEmail("");
-    } catch (err: any) {
-      setResult({
-        success: false,
-        message: err?.message ?? "Failed to send invitation.",
-      });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to send invitation.");
     } finally {
       setIsSubmitting(false);
     }
@@ -52,19 +46,7 @@ export function SuperadminInvite() {
       </div>
 
       <div className="p-5">
-        {result ? (
-          <div
-            className={`rounded-[3px] px-4 py-3 text-[13px] ${
-              result.success
-                ? "border border-black/10 bg-[#f0fdf4] text-[#166534]"
-                : "border border-[#b42318]/20 bg-[#fff1f3] text-[#7a271a]"
-            }`}
-          >
-            {result.message}
-          </div>
-        ) : null}
-
-        <form onSubmit={onSubmit} className="mt-4 grid gap-4">
+        <form onSubmit={onSubmit} className="grid gap-4">
           <label className="grid gap-1.5">
             <span className="text-[12px] font-semibold text-black/55">Email Address</span>
             <input

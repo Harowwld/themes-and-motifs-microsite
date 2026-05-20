@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { createPortal } from "react-dom";
-import { toast } from "../../../lib/toast";
+import { toast } from "@/lib/toast";
 
 type Props = {
   vendorId: number;
@@ -23,7 +23,6 @@ function Spinner({ className = "" }: { className?: string }) {
 export default function ContactVendorForm({ vendorId, vendorName, className, children }: Props) {
   const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [success, setSuccess] = useState<string | null>(null);
 
   const [startedAt, setStartedAt] = useState<number | null>(null);
   const [form, setForm] = useState({
@@ -39,7 +38,6 @@ export default function ContactVendorForm({ vendorId, vendorName, className, chi
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setSuccess(null);
 
     if (!canSubmit) {
       toast.error("Please fill in your name, email, and message.");
@@ -69,9 +67,10 @@ export default function ContactVendorForm({ vendorId, vendorName, className, chi
         return;
       }
 
-      setSuccess(`Message sent to ${vendorName}.`);
+      toast.success(`Message sent to ${vendorName}.`);
       setForm({ name: "", email: "", message: "", company: "" });
       setStartedAt(Date.now());
+      setOpen(false);
     } catch {
       toast.error("Failed to send message.");
     } finally {
@@ -86,7 +85,6 @@ export default function ContactVendorForm({ vendorId, vendorName, className, chi
 
   function handleClose() {
     setOpen(false);
-    setSuccess(null);
   }
 
   return (
@@ -121,12 +119,6 @@ export default function ContactVendorForm({ vendorId, vendorName, className, chi
 
                   {/* Content */}
                   <div className="px-5 py-4">
-                    {success ? (
-                      <div className="mb-4 rounded-[3px] border border-[#a67c52]/25 bg-[#fffaf5] px-3 py-2 text-[12px] text-[#2c2c2c]">
-                        {success}
-                      </div>
-                    ) : null}
-
                     <form onSubmit={onSubmit} className="grid gap-3">
                       <label className="grid gap-1.5">
                         <span className="text-[12px] font-semibold text-black/55">Your name</span>
