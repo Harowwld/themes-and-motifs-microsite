@@ -192,7 +192,7 @@ function VendorsPageSkeleton() {
           <div className="h-4 w-16 rounded bg-black/10 animate-pulse" />
         </div>
         <div className="mt-6">
-          <div className="flex gap-3 overflow-x-auto">
+          <div className="flex gap-3 overflow-x-auto flex-nowrap scrollbar-none pb-3">
             {Array.from({ length: 6 }).map((_, i) => (
               <CategoryCardSkeleton key={i} />
             ))}

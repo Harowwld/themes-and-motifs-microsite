@@ -301,45 +301,50 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500, vendor
 
       {/* Album Tabs (if any are created and have photos) */}
       {albums.length > 0 && (
-        <div className="flex gap-2 overflow-x-auto pb-2 mt-3 sleek-scrollbar">
-          <button
-            type="button"
-            onClick={() => {
-              setSelectedAlbumId("all");
-              setActiveIndex(0);
-            }}
-            className={`shrink-0 rounded-full px-4 py-1.5 text-[12px] font-bold transition-all duration-300 ${
-              selectedAlbumId === "all"
-                ? "bg-[#a67c52] text-white shadow-sm"
-                : "bg-white border border-black/5 text-black/55 hover:border-black/15 hover:text-black cursor-pointer"
-            }`}
-          >
-            All Portfolio
-          </button>
-          {albums.map((album) => (
+        <div className="relative select-none mt-3">
+          <div className="flex gap-2 overflow-x-auto flex-nowrap scrollbar-none scroll-smooth pb-2 touch-manipulation">
             <button
-              key={album.id}
               type="button"
               onClick={() => {
-                setSelectedAlbumId(album.id);
+                setSelectedAlbumId("all");
                 setActiveIndex(0);
               }}
-              className={`shrink-0 rounded-full px-4 py-1.5 text-[12px] font-bold transition-all duration-300 flex items-center gap-1.5 ${
-                selectedAlbumId === album.id
+              className={`shrink-0 rounded-full px-4 py-1.5 text-[12px] font-bold transition-all duration-300 cursor-pointer ${
+                selectedAlbumId === "all"
                   ? "bg-[#a67c52] text-white shadow-sm"
-                  : "bg-white border border-black/5 text-black/55 hover:border-black/15 hover:text-black cursor-pointer"
+                  : "bg-white border border-black/5 text-black/55 hover:border-black/15 hover:text-black"
               }`}
             >
-              {album.title}
-              <span className={`text-[10px] font-bold rounded-full px-1.5 py-0.25 ${
-                selectedAlbumId === album.id
-                  ? "bg-white/20 text-white"
-                  : "bg-black/5 text-black/40"
-              }`}>
-                {album.photos.length}
-              </span>
+              All Portfolio
             </button>
-          ))}
+            {albums.map((album) => (
+              <button
+                key={album.id}
+                type="button"
+                onClick={() => {
+                  setSelectedAlbumId(album.id);
+                  setActiveIndex(0);
+                }}
+                className={`shrink-0 rounded-full px-4 py-1.5 text-[12px] font-bold transition-all duration-300 flex items-center gap-1.5 cursor-pointer ${
+                  selectedAlbumId === album.id
+                    ? "bg-[#a67c52] text-white shadow-sm"
+                    : "bg-white border border-black/5 text-black/55 hover:border-black/15 hover:text-black"
+                }`}
+              >
+                {album.title}
+                <span className={`text-[10px] font-bold rounded-full px-1.5 py-0.25 ${
+                  selectedAlbumId === album.id
+                    ? "bg-white/20 text-white"
+                    : "bg-black/5 text-black/40"
+                }`}>
+                  {album.photos.length}
+                </span>
+              </button>
+            ))}
+          </div>
+          {/* Subtle horizontal fade overlays */}
+          <div className="pointer-events-none absolute top-0 bottom-2 left-0 w-6 bg-gradient-to-r from-[#fcfbf9] via-[#fcfbf9]/80 to-transparent z-10" />
+          <div className="pointer-events-none absolute top-0 bottom-2 right-0 w-6 bg-gradient-to-l from-[#fcfbf9] via-[#fcfbf9]/80 to-transparent z-10" />
         </div>
       )}
 

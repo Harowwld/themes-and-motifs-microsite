@@ -257,7 +257,7 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true }}
-                className="flex gap-3 overflow-x-auto scroll-smooth pb-3 sleek-scrollbar snap-x snap-mandatory"
+                className="flex gap-3 overflow-x-auto flex-nowrap scrollbar-none scroll-smooth pb-3 touch-manipulation snap-x snap-mandatory"
               >
                 {items.map((c) => {
                   const isActive = isCategoryActive(c.slug);
