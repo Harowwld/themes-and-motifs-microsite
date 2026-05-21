@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="599" height="599" viewBox="2296 283 599 599">
+  <defs>
+    <!-- Premium horizontal metallic linear gradient using a rich light gold reflection band instead of white in the center -->
+    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#dfb44a" />
+      <stop offset="35%" stop-color="#e8c158" />
+      <stop offset="48%" stop-color="#fbe396" />
+      <stop offset="52%" stop-color="#fbe396" />
+      <stop offset="68%" stop-color="#e8c158" />
+      <stop offset="85%" stop-color="#be9332" />
+      <stop offset="100%" stop-color="#9a721d" />
+    </linearGradient>
+    
+    <!-- Premium drop shadow for the rosette badge to lift it off the background -->
+    <filter id="dropShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#000000" flood-opacity="0.16"/>
+    </filter>
+    
+    <!-- Soft shadow for the white text to match the reference image exactly -->
+    <filter id="textShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#000000" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <!-- Gold Rosette Badge body using the exact path of the original badge -->
+  <path fill-rule="nonzero" fill="url(#goldGradient)" filter="url(#dropShadow)" d="M 2890.210938 579.460938 C 2890.210938 603.738281 2857.238281 623.371094 2851.261719 645.769531 C 2845.058594 668.941406 2863.621094 702.390625 2851.878906 722.679688 C 2839.980469 743.261719 2801.621094 743.828125 2784.921875 760.53125 C 2768.210938 777.238281 2767.640625 815.589844 2747.058594 827.5 C 2726.769531 839.238281 2693.320312 820.679688 2670.148438 826.871094 C 2647.75 832.859375 2628.128906 865.828125 2603.839844 865.828125 C 2579.558594 865.828125 2559.929688 832.859375 2537.539062 826.871094 C 2514.359375 820.679688 2480.921875 839.238281 2460.628906 827.5 C 2440.050781 815.589844 2439.46875 777.238281 2422.769531 760.53125 C 2406.070312 743.828125 2367.710938 743.261719 2355.800781 722.679688 C 2344.070312 702.390625 2362.621094 668.941406 2356.429688 645.769531 C 2350.441406 623.371094 2317.46875 603.738281 2317.46875 579.460938 C 2317.46875 555.179688 2350.441406 535.550781 2356.429688 513.160156 C 2362.621094 489.980469 2344.070312 456.53125 2355.800781 436.238281 C 2367.710938 415.660156 2406.070312 415.089844 2422.769531 398.390625 C 2439.46875 381.679688 2440.050781 343.328125 2460.628906 331.421875 C 2480.921875 319.679688 2514.359375 338.238281 2537.539062 332.050781 C 2559.929688 326.058594 2579.558594 293.089844 2603.839844 293.089844 C 2628.128906 293.089844 2647.75 326.058594 2670.148438 332.050781 C 2693.320312 338.238281 2726.769531 319.679688 2747.058594 331.421875 C 2767.640625 343.328125 2768.210938 381.679688 2784.921875 398.390625 C 2801.621094 415.089844 2839.980469 415.660156 2851.878906 436.25 C 2863.621094 456.53125 2845.058594 489.980469 2851.261719 513.160156 C 2857.238281 535.550781 2890.210938 555.179688 2890.210938 579.460938" />
+
+  <!-- Singular, elegant white dashed line sits close to the scallop valleys, matching the user's reference image exactly -->
+  <circle cx="2603.8" cy="579.4" r="215" fill="none" stroke="#ffffff" stroke-width="4.5" stroke-dasharray="20,13" opacity="0.9" />
+
+  <!-- Clean, elegant modern typography centered exactly inside the rosette -->
+  <text x="2603.8" y="660" 
+        font-family="system-ui, -apple-system, 'SF Pro Display', 'Plus Jakarta Sans', 'Inter', sans-serif" 
+        font-weight="500" 
+        font-size="245" 
+        text-anchor="middle" 
+        fill="#ffffff" 
+        filter="url(#textShadow)" 
+        letter-spacing="-2">10</text>
+</svg>

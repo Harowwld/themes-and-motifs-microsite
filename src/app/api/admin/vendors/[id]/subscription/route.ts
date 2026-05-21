@@ -13,8 +13,11 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     }
 
     const body = (await req.json().catch(() => null)) ?? {};
-    if (typeof body.expiry_date !== "string" && body.expiry_date !== null) {
+    if (typeof body.expiry_date !== "undefined" && typeof body.expiry_date !== "string" && body.expiry_date !== null) {
       return Response.json({ error: "Invalid expiry_date" }, { status: 400 });
+    }
+    if (typeof body.tin !== "undefined" && typeof body.tin !== "string" && body.tin !== null) {
+      return Response.json({ error: "Invalid tin" }, { status: 400 });
     }
 
     const supabase = createSupabaseAdminClient();
@@ -28,24 +31,39 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
       .limit(1)
       .maybeSingle();
 
+    const patchObj: any = { updated_at: new Date().toISOString() };
+    if (typeof body.expiry_date !== "undefined") {
+      patchObj.expiry_date = body.expiry_date;
+    }
+    if (typeof body.tin !== "undefined") {
+      patchObj.tin = body.tin;
+    }
+
     let result;
     if (sub) {
       const { data, error } = await supabase
         .from("vendor_subscriptions")
-        .update({ expiry_date: body.expiry_date, updated_at: new Date().toISOString() })
+        .update(patchObj)
         .eq("id", sub.id)
         .select()
         .single();
       if (error) return createErrorResponse(error, 500, { source: "admin_subscription_update", vendorId });
       result = data;
     } else {
+      const insertObj: any = {
+        vendor_id: vendorId,
+        status: 'pending_verification'
+      };
+      if (typeof body.expiry_date !== "undefined") {
+        insertObj.expiry_date = body.expiry_date;
+      }
+      if (typeof body.tin !== "undefined") {
+        insertObj.tin = body.tin;
+      }
+
       const { data, error } = await supabase
         .from("vendor_subscriptions")
-        .insert({
-          vendor_id: vendorId,
-          expiry_date: body.expiry_date,
-          status: 'pending_verification'
-        })
+        .insert(insertObj)
         .select()
         .single();
       if (error) return createErrorResponse(error, 500, { source: "admin_subscription_insert", vendorId });

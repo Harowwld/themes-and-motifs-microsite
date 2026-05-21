@@ -66,7 +66,7 @@ export function VendorEditModal({
   editForm: any;
   setEditForm: (v: any) => void;
   editSubscription: any;
-  saveSubscriptionDate: (v: string) => void;
+  saveSubscriptionDate: (date: string | null, tin?: string | null) => void;
   verificationDocuments: VerificationDocument[];
   editImages: VendorImage[];
   setEditImages: (v: any) => void;
@@ -128,35 +128,12 @@ export function VendorEditModal({
         <div className="p-4 grid gap-6 flex-1 overflow-y-auto overflow-x-hidden">
           {editLoading && <div className="text-[13px] text-black/60">Loading…</div>}
 
-          <ProfileSection editForm={editForm} setEditForm={setEditForm} />
-          <ContactSection editForm={editForm} setEditForm={setEditForm} setLogoUrlInput={setLogoUrlInput} setLogoModalOpen={setLogoModalOpen} />
-          <AdminContactSection editForm={editForm} setEditForm={setEditForm} />
-          <VerificationSection 
-            editForm={editForm} 
-            setEditForm={setEditForm} 
-            editSubscription={editSubscription} 
-            saveSubscriptionDate={saveSubscriptionDate} 
-            verificationDocuments={verificationDocuments} 
-          />
           <PhotosSection 
             editImages={editImages} 
             setEditImages={setEditImages} 
             setEditingPhotoIndex={setEditingPhotoIndex} 
             setPhotoModalOpen={setPhotoModalOpen} 
           />
-          <VideosSection editVideos={editVideos} setEditVideos={setEditVideos} />
-          <SocialLinksSection editSocials={editSocials} setEditSocials={setEditSocials} />
-          <AffiliationsThemesSection 
-            editAffiliations={editAffiliations} 
-            setEditAffiliations={setEditAffiliations} 
-            allAffiliations={allAffiliations} 
-            affiliationInput={affiliationInput} 
-            setAffiliationInput={setAffiliationInput} 
-            editThemes={editThemes} 
-            setEditThemes={setEditThemes} 
-            allThemes={allThemes} 
-          />
-          <ProfessionalStatusSection editForm={editForm} setEditForm={setEditForm} />
           <PromosSection 
             editPromos={editPromos} 
             showPromoForm={showPromoForm} 
@@ -172,6 +149,29 @@ export function VendorEditModal({
             setPromoToDelete={setPromoToDelete} 
             editingVendorId={editingVendor.id} 
           />
+          <ProfileSection editForm={editForm} setEditForm={setEditForm} />
+          <ContactSection editForm={editForm} setEditForm={setEditForm} setLogoUrlInput={setLogoUrlInput} setLogoModalOpen={setLogoModalOpen} />
+          <AdminContactSection editForm={editForm} setEditForm={setEditForm} />
+          <VerificationSection 
+            editForm={editForm} 
+            setEditForm={setEditForm} 
+            editSubscription={editSubscription} 
+            saveSubscriptionDate={saveSubscriptionDate} 
+            verificationDocuments={verificationDocuments} 
+          />
+          <VideosSection editVideos={editVideos} setEditVideos={setEditVideos} />
+          <SocialLinksSection editSocials={editSocials} setEditSocials={setEditSocials} />
+          <AffiliationsThemesSection 
+            editAffiliations={editAffiliations} 
+            setEditAffiliations={setEditAffiliations} 
+            allAffiliations={allAffiliations} 
+            affiliationInput={affiliationInput} 
+            setAffiliationInput={setAffiliationInput} 
+            editThemes={editThemes} 
+            setEditThemes={setEditThemes} 
+            allThemes={allThemes} 
+          />
+          <ProfessionalStatusSection editForm={editForm} setEditForm={setEditForm} />
         </div>
 
         <div className="px-4 py-3 border-t border-black/5 flex items-center justify-between">

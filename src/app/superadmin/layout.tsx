@@ -1,4 +1,4 @@
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { createServerClient } from '@supabase/ssr'
@@ -56,8 +56,20 @@ async function getCurrentUser(): Promise<{ isSuperadmin: boolean; isEditor: bool
 export default async function SuperadminLayout({ children }: { children: React.ReactNode }) {
   const user = await getCurrentUser();
   
-  if (!user.email) {
+  if (!user.email || (!user.isSuperadmin && !user.isEditor)) {
     redirect("/admin/login");
+  }
+
+  // Enforce editor page-access limits by reading the x-pathname header forwarded from the middleware
+  const headerList = await headers();
+  const pathname = headerList.get("x-pathname") || "";
+
+  if (user.isEditor && !user.isSuperadmin) {
+    const EDITOR_ALLOWED_PATHS = ["/superadmin/promos", "/superadmin/vendors"];
+    const isAllowed = EDITOR_ALLOWED_PATHS.some((path) => pathname.startsWith(path));
+    if (!isAllowed) {
+      redirect("/admin/login");
+    }
   }
 
   const accountType = user.isSuperadmin ? "superadmin" : user.isEditor ? "editor" : null;

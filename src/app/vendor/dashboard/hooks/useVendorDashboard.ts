@@ -36,6 +36,7 @@ export function useVendorDashboard() {
     verification_doc_url: string | null;
     sec_doc_url?: string | null;
     dti_doc_url?: string | null;
+    tin?: string | null;
   } | null>(null);
   const [form, setForm] = useState({
     business_name: "",
@@ -152,6 +153,7 @@ export function useVendorDashboard() {
               verification_doc_url: string | null;
               sec_doc_url?: string | null;
               dti_doc_url?: string | null;
+              tin?: string | null;
             } | null;
             videos: VendorVideo[];
           }>("/api/vendor/profile", session.access_token);
@@ -510,7 +512,7 @@ export function useVendorDashboard() {
     }
   };
 
-  const saveVerificationDetails = async (secUrl: string, dtiUrl: string, expiryDate: string | null) => {
+  const saveVerificationDetails = async (secUrl: string, dtiUrl: string, expiryDate: string | null, tin: string | null) => {
     if (!token) return false;
     setSaving(true);
     try {
@@ -519,7 +521,8 @@ export function useVendorDashboard() {
         body: JSON.stringify({ 
           sec_doc_url: secUrl || null, 
           dti_doc_url: dtiUrl || null, 
-          expiry_date: expiryDate || null 
+          expiry_date: expiryDate || null,
+          tin: tin || null
         }),
       });
       setSubscription(res.subscription);
@@ -534,7 +537,7 @@ export function useVendorDashboard() {
   };
 
   const saveVerificationDoc = async (url: string) => {
-    await saveVerificationDetails(url, "", null);
+    await saveVerificationDetails(url, "", null, subscription?.tin || null);
   };
 
   const saveProfile = async () => {

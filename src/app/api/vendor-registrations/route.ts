@@ -12,6 +12,7 @@ type RegistrationPayload = {
   categoryId?: string;
   websiteUrl?: string;
   secDtiNumber?: string;
+  tin?: string;
   planId?: string;
   description?: string;
   location?: {
@@ -69,6 +70,11 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Credit/debit card number is required" }, { status: 400 });
   }
 
+  const tin = (body.tin ?? "").trim();
+  if (!tin) {
+    return NextResponse.json({ error: "TIN # is required" }, { status: 400 });
+  }
+
   const categoryIdNum = body.categoryId ? Number(body.categoryId) : null;
   const planIdNum = body.planId ? Number(body.planId) : null;
 
@@ -106,6 +112,7 @@ export async function POST(req: Request) {
       extra,
       website_url: (body.websiteUrl ?? "").trim() || null,
       sec_dti_number: (body.secDtiNumber ?? "").trim() || null,
+      tin: tin || null,
       plan_id: Number.isFinite(planIdNum) ? planIdNum : null,
       year_established: formattedYearEst,
       status: "submitted",

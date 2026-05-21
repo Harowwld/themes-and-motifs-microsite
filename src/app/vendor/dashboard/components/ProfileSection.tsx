@@ -30,7 +30,7 @@ export function ProfileSection({
   saving: boolean;
   saveProfile: () => void;
   saveVerificationDoc: (url: string) => void;
-  saveVerificationDetails: (secUrl: string, dtiUrl: string, expiryDate: string | null) => Promise<boolean>;
+  saveVerificationDetails: (secUrl: string, dtiUrl: string, expiryDate: string | null, tin: string | null) => Promise<boolean>;
   images: VendorImage[];
   cropperOpen: boolean;
   setCropperOpen: (v: boolean) => void;
@@ -44,12 +44,14 @@ export function ProfileSection({
   const [expiryDate, setExpiryDate] = React.useState(
     subscription?.expiry_date ? new Date(subscription.expiry_date).toISOString().split('T')[0] : ""
   );
+  const [tin, setTin] = React.useState(subscription?.tin || "");
 
   React.useEffect(() => {
     if (subscription) {
       setSecUrl(subscription.sec_doc_url || "");
       setDtiUrl(subscription.dti_doc_url || "");
       setExpiryDate(subscription.expiry_date ? new Date(subscription.expiry_date).toISOString().split('T')[0] : "");
+      setTin(subscription.tin || "");
     }
   }, [subscription]);
 
@@ -109,15 +111,27 @@ export function ProfileSection({
             </div>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-2 items-end border-t border-black/[0.04] pt-6">
-            <Field label="Document Expiration Date *">
-              <input 
-                type="date" 
-                className="h-11 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-4 text-[13px] transition-all duration-200 focus:border-[#a67c52] focus:bg-white focus:ring-4 focus:ring-[#a67c52]/10 outline-none" 
-                value={expiryDate} 
-                onChange={(e) => setExpiryDate(e.target.value)} 
-              />
-            </Field>
+          <div className="border-t border-black/[0.04] pt-6 grid gap-6">
+            <div className="grid gap-6 md:grid-cols-2">
+              <Field label="Document Expiration Date *">
+                <input 
+                  type="date" 
+                  className="h-11 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-4 text-[13px] transition-all duration-200 focus:border-[#a67c52] focus:bg-white focus:ring-4 focus:ring-[#a67c52]/10 outline-none" 
+                  value={expiryDate} 
+                  onChange={(e) => setExpiryDate(e.target.value)} 
+                />
+              </Field>
+
+              <Field label="TIN *">
+                <input 
+                  type="text" 
+                  className="h-11 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-4 text-[13px] transition-all duration-200 focus:border-[#a67c52] focus:bg-white focus:ring-4 focus:ring-[#a67c52]/10 outline-none" 
+                  value={tin} 
+                  onChange={(e) => setTin(e.target.value)} 
+                  placeholder="Enter TIN"
+                />
+              </Field>
+            </div>
 
             <div className="flex justify-end">
               <button 
@@ -131,7 +145,11 @@ export function ProfileSection({
                     toast.error("Please provide a document expiration date.");
                     return;
                   }
-                  void saveVerificationDetails(secUrl, dtiUrl, expiryDate);
+                  if (!tin || !tin.trim()) {
+                    toast.error("Please provide your TIN.");
+                    return;
+                  }
+                  void saveVerificationDetails(secUrl, dtiUrl, expiryDate, tin);
                 }} 
                 disabled={saving} 
                 className="h-11 px-8 rounded-lg bg-[#a67c52] text-white text-[13px] font-bold shadow-[0_4px_12px_rgba(166,124,82,0.3)] hover:bg-[#8e6a46] hover:shadow-[0_6px_16px_rgba(166,124,82,0.4)] transition-all duration-300 disabled:opacity-60 disabled:shadow-none w-full md:w-auto"
@@ -152,12 +170,49 @@ export function ProfileSection({
           <div className="mt-1 text-[12px] text-black/45">Edit the core business details that show on your vendor page.</div>
         </div>
         <div className="p-6 grid gap-6">
-          <div className="grid gap-6 sm:grid-cols-2">
-            <Field label="Business name">
-              <input className="h-11 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-4 text-[13px] transition-all duration-200 focus:border-[#a67c52] focus:bg-white focus:ring-4 focus:ring-[#a67c52]/10 outline-none" value={form.business_name} onChange={(e) => setForm((p: any) => ({ ...p, business_name: e.target.value }))} />
+          <Field label="Business name">
+            <input className="h-11 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-4 text-[13px] transition-all duration-200 focus:border-[#a67c52] focus:bg-white focus:ring-4 focus:ring-[#a67c52]/10 outline-none" value={form.business_name} onChange={(e) => setForm((p: any) => ({ ...p, business_name: e.target.value }))} />
+          </Field>
+
+          <Field label="What Makes Us Unique">
+            <div className="relative">
+              <textarea
+                className="min-h-32 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-4 py-3 text-[13px] pr-14 leading-relaxed transition-all duration-200 focus:border-[#a67c52] focus:bg-white focus:ring-4 focus:ring-[#a67c52]/10 outline-none resize-none"
+                value={form.description}
+                onChange={(e) => setForm((p: any) => ({ ...p, description: e.target.value.slice(0, 300) }))}
+                maxLength={300}
+                placeholder="Tell couples what makes your business special..."
+              />
+              <span className="absolute bottom-3 right-4 text-[10px] font-bold text-black/30 bg-white/80 px-1.5 py-0.5 rounded-md shadow-sm">{(form.description?.length ?? 0)}/300</span>
+            </div>
+          </Field>
+
+          <div className="grid gap-6 sm:grid-cols-3">
+            <Field label="Region">
+              <input className="h-11 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-4 text-[13px] transition-all duration-200 focus:border-[#a67c52] focus:bg-white focus:ring-4 focus:ring-[#a67c52]/10 outline-none" value={form.location_text} onChange={(e) => setForm((p: any) => ({ ...p, location_text: e.target.value }))} />
             </Field>
+            <Field label="City/Wedding Center">
+              <input className="h-11 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-4 text-[13px] transition-all duration-200 focus:border-[#a67c52] focus:bg-white focus:ring-4 focus:ring-[#a67c52]/10 outline-none" value={form.city} onChange={(e) => setForm((p: any) => ({ ...p, city: e.target.value }))} />
+            </Field>
+            <Field label="Year Established *">
+              <input type="number" min="1800" max="2100" className="h-11 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-4 text-[13px] transition-all duration-200 focus:border-[#a67c52] focus:bg-white focus:ring-4 focus:ring-[#a67c52]/10 outline-none" value={form.year_established} onChange={(e) => setForm((p: any) => ({ ...p, year_established: e.target.value }))} placeholder="e.g. 2015" required />
+            </Field>
+            <div className="sm:col-span-3">
+              <Field label="Address">
+                <input className="h-11 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-4 text-[13px] transition-all duration-200 focus:border-[#a67c52] focus:bg-white focus:ring-4 focus:ring-[#a67c52]/10 outline-none" value={form.address} onChange={(e) => setForm((p: any) => ({ ...p, address: e.target.value }))} />
+              </Field>
+            </div>
+          </div>
+
+          <div className="grid gap-6 sm:grid-cols-3">
             <Field label="Public contact email">
               <input className="h-11 w-full rounded-lg border border-black/[0.08] px-4 text-[13px] bg-[#fafafa] text-black/40 cursor-not-allowed" value={vendor?.contact_email ?? ""} disabled />
+            </Field>
+            <Field label="Phone">
+              <input className="h-11 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-4 text-[13px] transition-all duration-200 focus:border-[#a67c52] focus:bg-white focus:ring-4 focus:ring-[#a67c52]/10 outline-none disabled:opacity-50 disabled:cursor-not-allowed" value={form.contact_phone} onChange={(e) => setForm((p: any) => ({ ...p, contact_phone: e.target.value }))} disabled={!isPremium} />
+            </Field>
+            <Field label="Website">
+              <input className="h-11 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-4 text-[13px] transition-all duration-200 focus:border-[#a67c52] focus:bg-white focus:ring-4 focus:ring-[#a67c52]/10 outline-none disabled:opacity-50 disabled:cursor-not-allowed" value={form.website_url} onChange={(e) => setForm((p: any) => ({ ...p, website_url: e.target.value }))} placeholder="https://..." disabled={!isPremium} />
             </Field>
           </div>
 
@@ -262,43 +317,6 @@ export function ProfileSection({
                 </div>
               );
             })()}
-          </div>
-
-          <Field label="What Makes Us Unique">
-            <div className="relative">
-              <textarea
-                className="min-h-32 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-4 py-3 text-[13px] pr-14 leading-relaxed transition-all duration-200 focus:border-[#a67c52] focus:bg-white focus:ring-4 focus:ring-[#a67c52]/10 outline-none resize-none"
-                value={form.description}
-                onChange={(e) => setForm((p: any) => ({ ...p, description: e.target.value.slice(0, 300) }))}
-                maxLength={300}
-                placeholder="Tell couples what makes your business special..."
-              />
-              <span className="absolute bottom-3 right-4 text-[10px] font-bold text-black/30 bg-white/80 px-1.5 py-0.5 rounded-md shadow-sm">{(form.description?.length ?? 0)}/300</span>
-            </div>
-          </Field>
-
-          <div className="grid gap-6 sm:grid-cols-3">
-            <Field label="Region">
-              <input className="h-11 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-4 text-[13px] transition-all duration-200 focus:border-[#a67c52] focus:bg-white focus:ring-4 focus:ring-[#a67c52]/10 outline-none" value={form.location_text} onChange={(e) => setForm((p: any) => ({ ...p, location_text: e.target.value }))} />
-            </Field>
-            <Field label="City/Wedding Center">
-              <input className="h-11 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-4 text-[13px] transition-all duration-200 focus:border-[#a67c52] focus:bg-white focus:ring-4 focus:ring-[#a67c52]/10 outline-none" value={form.city} onChange={(e) => setForm((p: any) => ({ ...p, city: e.target.value }))} />
-            </Field>
-            <Field label="Phone">
-              <input className="h-11 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-4 text-[13px] transition-all duration-200 focus:border-[#a67c52] focus:bg-white focus:ring-4 focus:ring-[#a67c52]/10 outline-none disabled:opacity-50 disabled:cursor-not-allowed" value={form.contact_phone} onChange={(e) => setForm((p: any) => ({ ...p, contact_phone: e.target.value }))} disabled={!isPremium} />
-            </Field>
-          </div>
-
-          <div className="grid gap-6 sm:grid-cols-3">
-            <Field label="Address">
-              <input className="h-11 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-4 text-[13px] transition-all duration-200 focus:border-[#a67c52] focus:bg-white focus:ring-4 focus:ring-[#a67c52]/10 outline-none" value={form.address} onChange={(e) => setForm((p: any) => ({ ...p, address: e.target.value }))} />
-            </Field>
-            <Field label="Website">
-              <input className="h-11 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-4 text-[13px] transition-all duration-200 focus:border-[#a67c52] focus:bg-white focus:ring-4 focus:ring-[#a67c52]/10 outline-none disabled:opacity-50 disabled:cursor-not-allowed" value={form.website_url} onChange={(e) => setForm((p: any) => ({ ...p, website_url: e.target.value }))} placeholder="https://..." disabled={!isPremium} />
-            </Field>
-            <Field label="Year Established *">
-              <input type="number" min="1800" max="2100" className="h-11 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-4 text-[13px] transition-all duration-200 focus:border-[#a67c52] focus:bg-white focus:ring-4 focus:ring-[#a67c52]/10 outline-none" value={form.year_established} onChange={(e) => setForm((p: any) => ({ ...p, year_established: e.target.value }))} placeholder="e.g. 2015" required />
-            </Field>
           </div>
 
           <div className="my-8 border-t border-black/[0.04]" />

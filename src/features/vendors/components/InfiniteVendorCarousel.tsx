@@ -5,7 +5,7 @@ import Image from "next/image";
 import { motion, useAnimationControls } from "framer-motion";
 import type { FeaturedVendor } from "../types";
 import { proxiedImageUrl } from "@/lib/imageSizes";
-import { isVerified } from "@/lib/vendorUtils";
+import { shouldShowVerifiedBadge } from "@/lib/vendorUtils";
 
 const SPRING = { type: "spring" as const, stiffness: 300, damping: 30 };
 
@@ -48,6 +48,11 @@ function VendorCard({
   const reviews = vendor.review_count ?? 0;
   const location = vendor.city ?? vendor.location_text;
   const affiliations = vendor.affiliations ?? [];
+
+  const planName = String((Array.isArray(vendor.plan) ? vendor.plan?.[0]?.name : vendor.plan?.name) ?? "")
+    .trim()
+    .toLowerCase();
+  const isPremium = planName.includes("premium");
 
   return (
     <motion.a
@@ -109,7 +114,7 @@ function VendorCard({
                 <div className="text-[14px] sm:text-[16px] font-bold text-gray-900 uppercase tracking-tight truncate font-[family-name:var(--font-plus-jakarta)] flex-1 min-w-0">
                   {vendor.business_name}
                 </div>
-                {isVerified(vendor.document_verified) && (
+                {shouldShowVerifiedBadge(vendor.document_verified, isPremium) && (
                   <span className="inline-flex items-center justify-center h-5 w-5 shrink-0" aria-label="Verified">
                     <div className="relative h-full w-full">
                       <Image

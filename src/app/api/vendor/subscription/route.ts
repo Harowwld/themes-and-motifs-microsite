@@ -12,6 +12,7 @@ export async function PATCH(req: Request) {
     const sec_doc_url = typeof body.sec_doc_url === "string" ? body.sec_doc_url.trim() : null;
     const dti_doc_url = typeof body.dti_doc_url === "string" ? body.dti_doc_url.trim() : null;
     const expiry_date = typeof body.expiry_date === "string" && body.expiry_date.trim() !== "" ? body.expiry_date.trim() : null;
+    const tin = typeof body.tin === "string" ? body.tin.trim() : null;
     const verification_doc_url = sec_doc_url || dti_doc_url || (typeof body.verification_doc_url === "string" ? body.verification_doc_url.trim() : null);
 
     if (!sec_doc_url && !dti_doc_url && !verification_doc_url) {
@@ -20,6 +21,10 @@ export async function PATCH(req: Request) {
 
     if (!expiry_date) {
       return Response.json({ error: "Document expiration date is required." }, { status: 400 });
+    }
+
+    if (!tin) {
+      return Response.json({ error: "TIN is required." }, { status: 400 });
     }
 
     // Upsert subscription
@@ -44,6 +49,7 @@ export async function PATCH(req: Request) {
           sec_doc_url, 
           dti_doc_url, 
           expiry_date, 
+          tin,
           updated_at: new Date().toISOString() 
         })
         .eq("id", sub.id)
@@ -60,6 +66,7 @@ export async function PATCH(req: Request) {
           sec_doc_url,
           dti_doc_url,
           expiry_date,
+          tin,
           status: 'pending_verification'
         })
         .select()

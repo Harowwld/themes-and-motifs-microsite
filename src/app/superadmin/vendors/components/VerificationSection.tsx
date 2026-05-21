@@ -12,10 +12,15 @@ export function VerificationSection({
   editForm: any;
   setEditForm: (v: any) => void;
   editSubscription: any;
-  saveSubscriptionDate: (v: string) => void;
+  saveSubscriptionDate: (date: string | null, tin?: string | null) => void;
   verificationDocuments: VerificationDocument[];
 }) {
   const [maximizedUrl, setMaximizedUrl] = React.useState<string | null>(null);
+  const [localTin, setLocalTin] = React.useState(editSubscription?.tin || "");
+
+  React.useEffect(() => {
+    setLocalTin(editSubscription?.tin || "");
+  }, [editSubscription?.tin]);
 
   const getDocTypeLabel = (url: string, type: 'sec' | 'dti' | 'legacy') => {
     if (type === 'sec') return "SEC Certificate";
@@ -111,14 +116,29 @@ export function VerificationSection({
         Verification details
       </div>
 
-      {/* Date Picker Input */}
+      {/* Date Picker and TIN Inputs */}
       <div className="grid gap-4 sm:grid-cols-2 bg-[#fafafa]/50 p-4 rounded-xl border border-black/[0.04]">
         <label className="grid gap-1.5">
           <span className="text-[11px] font-bold uppercase tracking-widest text-black/40">Set Expiration / Expiry Date</span>
           <input
             type="date"
             value={editSubscription?.expiry_date ? new Date(editSubscription.expiry_date).toISOString().split('T')[0] : ""}
-            onChange={(e) => saveSubscriptionDate(e.target.value)}
+            onChange={(e) => saveSubscriptionDate(e.target.value, editSubscription?.tin)}
+            className="h-10 rounded-lg border border-black/10 bg-white px-3 text-[13px] transition focus:border-[#6e4f33] focus:ring-4 focus:ring-[#6e4f33]/5 outline-none"
+          />
+        </label>
+        <label className="grid gap-1.5">
+          <span className="text-[11px] font-bold uppercase tracking-widest text-black/40">TIN #</span>
+          <input
+            type="text"
+            placeholder="000-000-000-000"
+            value={localTin}
+            onChange={(e) => setLocalTin(e.target.value)}
+            onBlur={() => {
+              if (localTin !== (editSubscription?.tin || "")) {
+                saveSubscriptionDate(editSubscription?.expiry_date, localTin);
+              }
+            }}
             className="h-10 rounded-lg border border-black/10 bg-white px-3 text-[13px] transition focus:border-[#6e4f33] focus:ring-4 focus:ring-[#6e4f33]/5 outline-none"
           />
         </label>

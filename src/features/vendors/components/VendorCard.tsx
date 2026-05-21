@@ -9,7 +9,7 @@ import { useSmartPrefetch, prefetchOnHover } from "@/hooks/useSmartPrefetch";
 import { useSavedVendors } from "./SavedVendorsProvider";
 import type { VendorCardVendor } from "../types";
 import { proxiedImageUrl } from "@/lib/imageSizes";
-import { isVerified } from "@/lib/vendorUtils";
+import { shouldShowVerifiedBadge } from "@/lib/vendorUtils";
 import { toast } from "@/lib/toast";
 
 type Props = {
@@ -215,18 +215,22 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight, featured }: 
           <h3 className="text-[13px] sm:text-[15px] font-bold text-gray-900 tracking-tight line-clamp-1 font-[family-name:var(--font-plus-jakarta)]">
             {vendor.business_name}
           </h3>
-          {(isVerified(vendor.document_verified) || 
-            (isPremium && !vendor.document_verified)) && (
-            <span className="shrink-0" title={isPremium ? "Verified Premium Vendor" : "Verified Vendor"}>
-              <Image
-                src="/cropped-vecteezy_verification-badge-set-guaranteed-stamp-or-verified-badge_23900241.svg"
-                alt="Verified"
-                width={18}
-                height={18}
-                className="object-contain"
-              />
-            </span>
-          )}
+          {(() => {
+            if (shouldShowVerifiedBadge(vendor.document_verified, isPremium)) {
+              return (
+                <span className="shrink-0" title={isPremium ? "Verified Premium Vendor" : "Verified Vendor"}>
+                  <Image
+                    src="/cropped-vecteezy_verification-badge-set-guaranteed-stamp-or-verified-badge_23900241.svg"
+                    alt="Verified"
+                    width={18}
+                    height={18}
+                    className="object-contain"
+                  />
+                </span>
+              );
+            }
+            return null;
+          })()}
         </div>
 
         <div className="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-[12px] text-gray-500 font-[family-name:var(--font-plus-jakarta)]">

@@ -156,7 +156,7 @@ export function useSuperadminVendors() {
     contact_phone: "",
     website_url: "",
     logo_url: "",
-    document_verified: "verification_in_progress" as string,
+    document_verified: "",
     contact_person_1_name: "",
     contact_person_1_position: "",
     contact_person_2_name: "",
@@ -176,6 +176,7 @@ export function useSuperadminVendors() {
     verification_doc_url: string | null;
     sec_doc_url?: string | null;
     dti_doc_url?: string | null;
+    tin?: string | null;
   } | null>(null);
   const [editImages, setEditImages] = useState<VendorImage[]>([]);
   const [editVideos, setEditVideos] = useState<VendorVideo[]>([]);
@@ -296,6 +297,7 @@ export function useSuperadminVendors() {
             verification_doc_url: string | null;
             sec_doc_url?: string | null;
             dti_doc_url?: string | null;
+            tin?: string | null;
           } | null;
         }>(`/api/admin/vendors/${vendor.id}`),
         apiFetch<{ promos: Promo[] }>(`/api/admin/vendors/${vendor.id}/promos`),
@@ -314,11 +316,7 @@ export function useSuperadminVendors() {
         website_url: v.website_url ?? "",
         logo_url: v.logo_url ?? "",
 
-        document_verified: v.document_verified === "approved" 
-          ? "verified" 
-          : v.document_verified === "pending"
-            ? "verification_in_progress"
-            : (v.document_verified || "verification_in_progress"),
+        document_verified: v.document_verified || "verification_in_progress",
         contact_person_1_name: v.contact_person_1_name ?? "",
         contact_person_1_position: v.contact_person_1_position ?? "",
         contact_person_2_name: v.contact_person_2_name ?? "",
@@ -438,7 +436,7 @@ export function useSuperadminVendors() {
           website_url: editForm.website_url || null,
           logo_url: editForm.logo_url || null,
 
-          document_verified: editForm.document_verified || null,
+          document_verified: editForm.document_verified || "verification_in_progress",
           contact_person_1_name: editForm.contact_person_1_name || null,
           contact_person_1_position: editForm.contact_person_1_position || null,
           contact_person_2_name: editForm.contact_person_2_name || null,
@@ -529,9 +527,13 @@ export function useSuperadminVendors() {
     }
   }
 
-  async function saveSubscriptionDate(dateStr: string) {
+  async function saveSubscriptionDate(dateStr: string | null, tinStr?: string | null) {
     if (!editingVendor) return;
     try {
+      const payload: any = {};
+      if (dateStr !== undefined) payload.expiry_date = dateStr || null;
+      if (tinStr !== undefined) payload.tin = tinStr || null;
+
       const res = await apiFetch<{
         subscription: {
           id: number;
@@ -540,15 +542,16 @@ export function useSuperadminVendors() {
           verification_doc_url: string | null;
           sec_doc_url?: string | null;
           dti_doc_url?: string | null;
+          tin?: string | null;
         } | null;
       }>(`/api/admin/vendors/${editingVendor.id}/subscription`, {
         method: "PATCH",
-        body: JSON.stringify({ expiry_date: dateStr || null }),
+        body: JSON.stringify(payload),
       });
       setEditSubscription(res.subscription);
-      toast.success("Expiry date saved.");
+      toast.success("Verification details saved.");
     } catch (e) {
-      toast.error((e as { message?: string })?.message ?? "Failed to save expiry date.");
+      toast.error((e as { message?: string })?.message ?? "Failed to save verification details.");
     }
   }
 

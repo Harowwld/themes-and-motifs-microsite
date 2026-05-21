@@ -15,23 +15,28 @@ export function ProfessionalStatusSection({
   const handleCheckboxChange = (status: string, checked: boolean) => {
     let nextStatuses = [...checkedStatuses];
     if (checked) {
-      // If checking "verified", uncheck "verification_in_progress"
-      if (status === "verified") {
-        nextStatuses = nextStatuses.filter(s => s !== "verification_in_progress");
-      }
-      // If checking "verification_in_progress", uncheck "verified"
       if (status === "verification_in_progress") {
-        nextStatuses = nextStatuses.filter(s => s !== "verified");
-      }
-      if (!nextStatuses.includes(status)) {
-        nextStatuses.push(status);
+        // Checking in progress clears verified and community_recognized,
+        // but preserves established_professional (they can now coexist).
+        nextStatuses = nextStatuses.filter(s =>
+          s === "established_professional"
+        );
+        nextStatuses = ["verification_in_progress", ...nextStatuses];
+      } else if (status !== "established_professional") {
+        // Checking verified or community_recognized clears in progress
+        nextStatuses = nextStatuses.filter(s => s !== "verification_in_progress");
+        if (!nextStatuses.includes(status)) {
+          nextStatuses.push(status);
+        }
       }
     } else {
       nextStatuses = nextStatuses.filter(s => s !== status);
     }
+    // Never allow an empty/null state — fall back to verification_in_progress.
+    const next = nextStatuses.join(",") || "verification_in_progress";
     setEditForm((f: any) => ({
       ...f,
-      document_verified: nextStatuses.join(",") || null
+      document_verified: next
     }));
   };
 
@@ -131,13 +136,13 @@ export function ProfessionalStatusSection({
                   name="professional_status_established"
                   checked={is10YearsOld}
                   disabled
-                  className="mt-1 h-4 w-4 accent-[#4ade80] rounded-[3px] cursor-not-allowed opacity-75"
+                  className="mt-1 h-4 w-4 accent-[#a67c52] rounded-[3px] cursor-not-allowed opacity-75"
                 />
                 <div className="flex-1">
                   <div className="flex items-center gap-1.5">
                     <span className="text-[13px] font-semibold text-[#2c2c2c] opacity-75">Established Professional</span>
                     {is10YearsOld ? (
-                      <span className="text-[9px] font-extrabold tracking-wider bg-green-500/10 text-green-600 px-1.5 py-0.5 rounded-[3px] uppercase border border-green-500/20">
+                      <span className="text-[9px] font-extrabold tracking-wider bg-[#a67c52]/10 text-[#a67c52] px-1.5 py-0.5 rounded-[3px] uppercase border border-[#a67c52]/20">
                         Auto-Active
                       </span>
                     ) : (

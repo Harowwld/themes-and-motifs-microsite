@@ -74,6 +74,24 @@ export function sortVendors<T extends VendorWithSortFields>(vendors: T[], sort: 
 export function isVerified(documentVerified: string | null | undefined): boolean {
   if (!documentVerified) return false;
   const statuses = documentVerified.split(",").map(s => s.trim());
-  return statuses.some(s => ["verified", "established_professional", "community_recognized"].includes(s));
+  return statuses.includes("verified");
 }
+
+export function shouldShowVerifiedBadge(
+  documentVerified: string | null | undefined,
+  isPremium: boolean
+): boolean {
+  const statuses = (documentVerified ?? "").split(",").map(s => s.trim()).filter(Boolean);
+  
+  // 1. If explicitly verified, always show the blue checkmark
+  if (statuses.includes("verified")) return true;
+
+  // 2. If premium and has no verification statuses set (legacy/default fallback), show it
+  if (isPremium && statuses.length === 0) {
+    return true;
+  }
+
+  return false;
+}
+
 

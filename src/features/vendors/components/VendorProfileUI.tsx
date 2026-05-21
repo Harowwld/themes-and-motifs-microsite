@@ -12,6 +12,7 @@ import {
 } from "react-icons/fa6";
 import Image from "next/image";
 import { proxiedImageUrl } from "@/lib/imageSizes";
+import { shouldShowVerifiedBadge } from "@/lib/vendorUtils";
 
 import VendorPhotosCarousel from "./VendorPhotosCarousel";
 import ClaimVendorButton from "./ClaimVendorButton";
@@ -50,10 +51,10 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
     .map((s: string) => s.trim())
     .filter(Boolean);
 
-  const hasVerified = verifiedStatuses.includes("verified");
-  const hasInProgress = verifiedStatuses.includes("verification_in_progress");
-  const hasCommunity = verifiedStatuses.includes("community_recognized");
-  const hasEstablished = verifiedStatuses.includes("established_professional");
+  const hasInProgress = verifiedStatuses.includes("verification_in_progress") || verifiedStatuses.includes("pending");
+  const hasVerified = !hasInProgress && verifiedStatuses.includes("verified");
+  const hasCommunity = !hasInProgress && verifiedStatuses.includes("community_recognized");
+  const hasEstablished = !hasInProgress && verifiedStatuses.includes("established_professional");
 
   function formatDate(value: string) {
     const d = new Date(value);
@@ -118,7 +119,7 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
             </h1>
 
             {/* Category Pills & Badges */}
-            {(categories.length > 0 || hasVerified || (isPremium && !hasInProgress) || hasInProgress || hasCommunity || hasEstablished || yearEstablished) ? (
+            {(categories.length > 0 || shouldShowVerifiedBadge(vendor.document_verified, isPremium) || hasInProgress || hasCommunity || hasEstablished || yearEstablished) ? (
               <div className="mt-3 flex flex-wrap gap-2 items-center">
                 {categories.map((c: any) => (
                   <a
@@ -131,7 +132,7 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
                 ))}
 
                 {/* 1. Verified Premium or Standard Verified */}
-                {(hasVerified || (isPremium && !hasInProgress)) ? (
+                {shouldShowVerifiedBadge(vendor.document_verified, isPremium) ? (
                   isPremium ? (
                     <span className="inline-flex items-center justify-center h-6 w-6 relative shrink-0" title="Verified Premium Vendor">
                       <Image
@@ -174,12 +175,15 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
 
                 {/* 3. Established Professional */}
                 {hasEstablished ? (
-                  <div className="relative h-6 w-6 shrink-0 text-[#4ade80]" title="Established Professional">
-                    <svg viewBox="0 0 24 24" fill="currentColor" className="h-full w-full">
-                      <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" />
-                    </svg>
-                    <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-white">10</span>
-                  </div>
+                  <span className="inline-flex items-center justify-center h-6 w-6 relative shrink-0" title="Established Professional (10+ Years in Business)">
+                    <Image
+                      src="/gold-10-year-badge.svg"
+                      alt="Established Professional"
+                      fill
+                      sizes="24px"
+                      className="object-contain"
+                    />
+                  </span>
                 ) : null}
 
                 {/* 4. Year Established */}
@@ -408,7 +412,7 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
               <h3 className="text-[14px] font-semibold text-[#2c2c2c]">Document Verification</h3>
               <div className="mt-3 flex flex-col gap-3">
                 {/* 1. Verified */}
-                {(hasVerified || (isPremium && !hasInProgress)) && (
+                {shouldShowVerifiedBadge(vendor.document_verified, isPremium) && (
                   <div className="flex items-center gap-2" title="VERIFIED (With DTI / SEC / BIR docs submitted)">
                     <div className="relative h-6 w-6 shrink-0" style={{ color: '#60a5fa' }}>
                       {isPremium ? (
@@ -468,13 +472,16 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
                 {/* 4. Established Professional */}
                 {hasEstablished && (
                   <div className="flex items-center gap-2" title="Established Professional (At least 10 years in business)">
-                    <div className="relative h-6 w-6 shrink-0" style={{ color: '#4ade80' }}>
-                      <svg viewBox="0 0 24 24" fill="currentColor" className="h-full w-full">
-                        <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" />
-                      </svg>
-                      <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-white">10</span>
+                    <div className="relative h-6 w-6 shrink-0">
+                      <Image
+                        src="/gold-10-year-badge.svg"
+                        alt="Established Professional"
+                        fill
+                        sizes="24px"
+                        className="object-contain"
+                      />
                     </div>
-                    <span className="text-[13px] font-semibold" style={{ color: '#4ade80' }}>Established Professional</span>
+                    <span className="text-[13px] font-semibold text-[#a67c52]">Established Professional</span>
                   </div>
                 )}
 

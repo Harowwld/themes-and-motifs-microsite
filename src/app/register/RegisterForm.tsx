@@ -29,6 +29,7 @@ type FormState = {
   contactPhone: string;
   websiteUrl: string;
   secDtiNumber: string;
+  tin: string;
   coverPhotoUrl: string;
   logoUrl: string;
   regionId: string;
@@ -60,6 +61,7 @@ const initialState: FormState = {
   contactPhone: "",
   websiteUrl: "",
   secDtiNumber: "",
+  tin: "",
   coverPhotoUrl: "",
   logoUrl: "",
   regionId: "",
@@ -173,6 +175,7 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
     if (!form.contactEmail.trim()) errors.add("contactEmail");
     if (!form.contactPhone.trim()) errors.add("contactPhone");
     if (!form.secDtiNumber.trim()) errors.add("secDtiNumber");
+    if (!form.tin.trim()) errors.add("tin");
     if (!form.contactPerson.trim()) errors.add("contactPerson");
     if (!form.address.trim()) errors.add("address");
     if (!form.regionId) errors.add("regionId");
@@ -215,6 +218,7 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
           categoryId: form.categoryId,
           websiteUrl: form.websiteUrl,
           secDtiNumber: form.secDtiNumber,
+          tin: form.tin,
           yearEstablished: form.yearEstablished.trim(),
           planId: form.planId,
           description: form.description,
@@ -655,6 +659,14 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
             className={`h-11 w-full rounded-lg border px-3 text-[14px] font-[family-name:var(--font-plus-jakarta)] ${fieldErrors.has("secDtiNumber") ? "border-red-500 bg-red-50" : "border-black/10"}`}
             value={form.secDtiNumber}
             onChange={(e) => set("secDtiNumber", e.target.value)}
+          />
+        </Field>
+
+        <Field id="field-tin" label="TIN #">
+          <input
+            className={`h-11 w-full rounded-lg border px-3 text-[14px] font-[family-name:var(--font-plus-jakarta)] ${fieldErrors.has("tin") ? "border-red-500 bg-red-50" : "border-black/10"}`}
+            value={form.tin}
+            onChange={(e) => set("tin", e.target.value)}
           />
         </Field>
 

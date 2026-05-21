@@ -129,16 +129,27 @@ const FIELD_VALIDATORS: Record<string, (val: unknown) => { valid: boolean; value
   },
 
   document_verified: (val) => {
-
-    if (val !== null && typeof val !== "string") return { valid: false, error: "document_verified must be a string or null" };
-    if (typeof val === "string") {
-      const parts = val.split(",").map(s => s.trim()).filter(Boolean);
-      const invalid = parts.filter(p => !["verified", "verification_in_progress", "community_recognized", "established_professional"].includes(p));
-      if (invalid.length > 0) {
-        return { valid: false, error: "document_verified can only contain verified, verification_in_progress, community_recognized, and established_professional" };
-      }
+    // document_verified is required and may never be null
+    if (typeof val !== "string" || val.trim() === "") {
+      return { valid: false, error: "document_verified is required and must be a non-empty string" };
+    }
+    const parts = val.split(",").map(s => s.trim()).filter(Boolean);
+    const ALLOWED = ["verified", "verification_in_progress", "community_recognized", "established_professional"];
+    const invalid = parts.filter(p => !ALLOWED.includes(p));
+    if (invalid.length > 0) {
+      return { valid: false, error: "document_verified can only contain verified, verification_in_progress, community_recognized, and established_professional" };
+    }
+    // verification_in_progress cannot combine with verified or community_recognized,
+    // but CAN coexist with established_professional (10-year automatic badge).
+    const hasInProgress = parts.includes("verification_in_progress");
+    if (hasInProgress && (parts.includes("verified") || parts.includes("community_recognized"))) {
+      return { valid: false, error: "Cannot combine verification_in_progress with verified or community_recognized" };
     }
     return { valid: true, value: val };
+  },
+  tin: (val) => {
+    if (typeof val !== "string" && val !== null) return { valid: false, error: "tin must be a string or null" };
+    return { valid: true, value: val === null ? null : val.trim() };
   },
 };
 
