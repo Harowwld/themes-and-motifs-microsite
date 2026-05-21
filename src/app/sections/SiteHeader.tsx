@@ -114,6 +114,7 @@ export default function SiteHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -235,7 +236,11 @@ export default function SiteHeader() {
   useEffect(() => {
     if (!mobileMenuOpen) return;
     const onPointerDown = (e: PointerEvent) => {
-      if (mobileMenuRef.current && !mobileMenuRef.current.contains(e.target as Node)) {
+      const target = e.target as Node;
+      if (
+        mobileMenuRef.current && !mobileMenuRef.current.contains(target) &&
+        menuButtonRef.current && !menuButtonRef.current.contains(target)
+      ) {
         setMobileMenuOpen(false);
       }
     };
@@ -422,12 +427,10 @@ export default function SiteHeader() {
 
           {/* Mobile menu button */}
           <motion.button
+            ref={menuButtonRef}
             whileTap={{ scale: 0.9 }}
             type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              setMobileMenuOpen((v) => !v);
-            }}
+            onClick={() => setMobileMenuOpen((v) => !v)}
             className="sm:hidden h-10 w-10 inline-flex items-center justify-center rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
             aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
             aria-expanded={mobileMenuOpen}
