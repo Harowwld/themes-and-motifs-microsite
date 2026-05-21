@@ -96,13 +96,15 @@ export default function ResetPasswordPage() {
 
       setIsReadyToReset(true);
     } catch (err: any) {
-      setError(err?.message ?? "Invalid or expired reset link. Please request a new one.");
+      const isPkce = typeof err?.message === "string" && err.message.toLowerCase().includes("pkce");
 
-      if (
-        typeof err?.message === "string" &&
-        err.message.toLowerCase().includes("pkce")
-      ) {
-        setPkceError(err.message);
+      if (isPkce) {
+        setError("We couldn't verify this password reset link.");
+        setPkceError(
+          "For your security, password reset links must be opened in the same browser window where you requested them. Please request a new link and make sure to open it in this same browser."
+        );
+      } else {
+        setError(err?.message ?? "Invalid or expired reset link. Please request a new one.");
       }
     } finally {
       setIsCheckingLink(false);
@@ -138,9 +140,9 @@ export default function ResetPasswordPage() {
                   <p className="font-medium">{error}</p>
                   {pkceError ? (
                     <div className="mt-2 pt-2 border-t border-[#c17a4e]/20">
-                      <p className="text-[12px] text-[#b42318]">PKCE Error detected.</p>
+                      <p className="text-[12px] text-[#b42318] font-semibold">Security Check Mismatch</p>
                       <p className="mt-1 text-[12px]">
-                        This can happen if you open the link in a different browser than where you requested it. Please request a new link and open it in the same browser.
+                        {pkceError}
                       </p>
                     </div>
                   ) : null}
@@ -239,10 +241,9 @@ export default function ResetPasswordPage() {
                 <p className="font-medium">{error}</p>
                 {pkceError ? (
                   <div className="mt-2 pt-2 border-t border-[#c17a4e]/20">
-                    <p className="text-[12px] text-[#b42318]">Error: {pkceError}</p>
+                    <p className="text-[12px] text-[#b42318] font-semibold">Security Check Mismatch</p>
                     <p className="mt-1 text-[12px]">
-                      This error can occur when clicking a password reset link in a
-                      different browser or private window.
+                      {pkceError}
                     </p>
                     <Link
                       href="/forgot-password"

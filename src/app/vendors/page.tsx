@@ -67,7 +67,7 @@ const getCachedDefaultVendors = unstable_cache(
     });
     return { vendors, total };
   },
-  ["default-vendors"],
+  ["default-vendors-v2"],
   { revalidate: 300 } // 5 minutes
 );
 

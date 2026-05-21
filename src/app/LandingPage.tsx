@@ -57,7 +57,7 @@ const getCachedFeaturedData = unstable_cache(
 
     return { vendors: vendorsWithAffiliations, promos };
   },
-  ["featured-data-v2"],
+  ["featured-data-v3"],
   { revalidate: 300 }
 );
 
@@ -216,7 +216,7 @@ async function LandingVendorsDirect({ page, pageSize, sort }: { page: number; pa
   let q = supabase
     .from("vendors")
     .select(
-      "id,business_name,slug,logo_url,average_rating,review_count,location_text,city,cover_focus_x,cover_focus_y,cover_zoom,plan:plans(id,name)",
+      "id,business_name,slug,logo_url,average_rating,review_count,location_text,city,document_verified,cover_focus_x,cover_focus_y,cover_zoom,plan:plans(id,name)",
       { count: "exact" }
     )
     .eq("is_active", true);

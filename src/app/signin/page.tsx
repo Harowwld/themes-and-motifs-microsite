@@ -116,7 +116,7 @@ function SignInPageContent() {
                 <div className="flex items-center justify-between">
                   <span className="text-[12px] font-semibold text-black/55">Password</span>
                   <a href="/forgot-password" className="text-[11px] font-semibold text-[#6e4f33] hover:underline">
-                    Forgot password?
+                    Create / Forgot Password?
                   </a>
                 </div>
                 <input

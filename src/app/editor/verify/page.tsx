@@ -121,7 +121,7 @@ export default function EditorVerifyPage() {
       ) {
         setError(null);
         setPkceError(
-          "PKCE code verifier not found in storage. This usually happens if the link was opened in a different browser/tab than the one that requested it. Please request a new sign-in link and open it in the same browser."
+          "For your security, this verification link must be opened in the same browser window where you requested it. Please request a new sign-in link and make sure to open it in this same browser."
         );
       }
 
