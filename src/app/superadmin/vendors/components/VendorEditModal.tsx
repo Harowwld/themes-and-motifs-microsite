@@ -106,29 +106,7 @@ export function VendorEditModal({
   saveAll: (closeAfter?: boolean) => Promise<boolean>;
   saveAllAndClose: () => Promise<void>;
 }) {
-  const [activeTab, setActiveTab] = React.useState("profile");
-  const scrollContainerRef = React.useRef<HTMLDivElement | null>(null);
-
-  React.useEffect(() => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollTop = 0;
-    }
-  }, [activeTab]);
-
   if (!isOpen || !editingVendor) return null;
-
-  const TABS = [
-    { id: "profile", label: "Profile" },
-    { id: "photos", label: "Photos" },
-    { id: "videos", label: "Videos" },
-    { id: "promos", label: "Promos" },
-    { id: "contact", label: "Contact Details" },
-    { id: "socials", label: "Social Links" },
-    { id: "themes", label: "Themes & Affiliations" },
-    { id: "professional", label: "Professional Status" },
-    { id: "verification", label: "Verification Docs" },
-    { id: "admin_contact", label: "Admin Contact" },
-  ];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
@@ -147,113 +125,53 @@ export function VendorEditModal({
           </button>
         </div>
 
-        {/* Swipe-scrollable Tab Bar */}
-        <div className="relative border-b border-black/5 bg-[#fafafa]/50 px-4 py-2 select-none">
-          <div className="flex gap-1.5 overflow-x-auto flex-nowrap scrollbar-none scroll-smooth py-1">
-            {TABS.map((tab) => {
-              const active = activeTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  type="button"
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`shrink-0 rounded-[3px] px-3.5 py-1.5 text-[11px] font-bold tracking-wide uppercase transition-all duration-200 cursor-pointer touch-manipulation ${
-                    active
-                      ? "bg-[#a67c52] text-white shadow-sm"
-                      : "bg-white border border-black/5 text-black/55 hover:border-black/15 hover:text-black"
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              );
-            })}
-          </div>
-          {/* Subtle horizontal fade overlays */}
-          <div className="pointer-events-none absolute top-2 bottom-2 left-0 w-6 bg-gradient-to-r from-white to-transparent z-10" />
-          <div className="pointer-events-none absolute top-2 bottom-2 right-0 w-6 bg-gradient-to-l from-white to-transparent z-10" />
-        </div>
+        <div className="p-4 grid gap-6 flex-1 overflow-y-auto overflow-x-hidden">
+          {editLoading && <div className="text-[13px] text-black/60">Loading…</div>}
 
-        <div 
-          ref={scrollContainerRef}
-          className="p-4 flex-1 overflow-y-auto overflow-x-hidden scroll-smooth"
-        >
-          {editLoading && <div className="text-[13px] text-black/60 mb-4">Loading…</div>}
-
-          <div className="space-y-6">
-            {activeTab === "profile" && (
-              <ProfileSection editForm={editForm} setEditForm={setEditForm} />
-            )}
-            
-            {activeTab === "photos" && (
-              <PhotosSection 
-                editImages={editImages} 
-                setEditImages={setEditImages} 
-                setEditingPhotoIndex={setEditingPhotoIndex} 
-                setPhotoModalOpen={setPhotoModalOpen} 
-              />
-            )}
-
-            {activeTab === "videos" && (
-              <VideosSection editVideos={editVideos} setEditVideos={setEditVideos} />
-            )}
-
-            {activeTab === "promos" && (
-              <PromosSection 
-                editPromos={editPromos} 
-                showPromoForm={showPromoForm} 
-                setShowPromoForm={setShowPromoForm} 
-                promoForm={promoForm} 
-                setPromoForm={setPromoForm} 
-                editingPromoId={editingPromoId} 
-                resetPromoForm={resetPromoForm} 
-                savePromo={savePromo} 
-                editLoading={editLoading} 
-                togglePromoFeatured={togglePromoFeatured} 
-                startEditPromo={startEditPromo} 
-                setPromoToDelete={setPromoToDelete} 
-                editingVendorId={editingVendor.id} 
-              />
-            )}
-
-            {activeTab === "contact" && (
-              <ContactSection editForm={editForm} setEditForm={setEditForm} setLogoUrlInput={setLogoUrlInput} setLogoModalOpen={setLogoModalOpen} />
-            )}
-
-            {activeTab === "socials" && (
-              <SocialLinksSection editSocials={editSocials} setEditSocials={setEditSocials} />
-            )}
-
-            {activeTab === "themes" && (
-              <AffiliationsThemesSection 
-                editAffiliations={editAffiliations} 
-                setEditAffiliations={setEditAffiliations} 
-                allAffiliations={allAffiliations} 
-                affiliationInput={affiliationInput} 
-                setAffiliationInput={setAffiliationInput} 
-                editThemes={editThemes} 
-                setEditThemes={setEditThemes} 
-                allThemes={allThemes} 
-              />
-            )}
-
-            {activeTab === "professional" && (
-              <ProfessionalStatusSection editForm={editForm} setEditForm={setEditForm} />
-            )}
-
-            {activeTab === "verification" && (
-              <VerificationSection 
-                editForm={editForm} 
-                setEditForm={setEditForm} 
-                editSubscription={editSubscription} 
-                saveSubscriptionDate={saveSubscriptionDate} 
-                verificationDocuments={verificationDocuments} 
-              />
-            )}
-
-            {activeTab === "admin_contact" && (
-              <AdminContactSection editForm={editForm} setEditForm={setEditForm} />
-            )}
-          </div>
+          <PhotosSection 
+            editImages={editImages} 
+            setEditImages={setEditImages} 
+            setEditingPhotoIndex={setEditingPhotoIndex} 
+            setPhotoModalOpen={setPhotoModalOpen} 
+          />
+          <PromosSection 
+            editPromos={editPromos} 
+            showPromoForm={showPromoForm} 
+            setShowPromoForm={setShowPromoForm} 
+            promoForm={promoForm} 
+            setPromoForm={setPromoForm} 
+            editingPromoId={editingPromoId} 
+            resetPromoForm={resetPromoForm} 
+            savePromo={savePromo} 
+            editLoading={editLoading} 
+            togglePromoFeatured={togglePromoFeatured} 
+            startEditPromo={startEditPromo} 
+            setPromoToDelete={setPromoToDelete} 
+            editingVendorId={editingVendor.id} 
+          />
+          <ProfileSection editForm={editForm} setEditForm={setEditForm} />
+          <ContactSection editForm={editForm} setEditForm={setEditForm} setLogoUrlInput={setLogoUrlInput} setLogoModalOpen={setLogoModalOpen} />
+          <AdminContactSection editForm={editForm} setEditForm={setEditForm} />
+          <VerificationSection 
+            editForm={editForm} 
+            setEditForm={setEditForm} 
+            editSubscription={editSubscription} 
+            saveSubscriptionDate={saveSubscriptionDate} 
+            verificationDocuments={verificationDocuments} 
+          />
+          <VideosSection editVideos={editVideos} setEditVideos={setEditVideos} />
+          <SocialLinksSection editSocials={editSocials} setEditSocials={setEditSocials} />
+          <AffiliationsThemesSection 
+            editAffiliations={editAffiliations} 
+            setEditAffiliations={setEditAffiliations} 
+            allAffiliations={allAffiliations} 
+            affiliationInput={affiliationInput} 
+            setAffiliationInput={setAffiliationInput} 
+            editThemes={editThemes} 
+            setEditThemes={setEditThemes} 
+            allThemes={allThemes} 
+          />
+          <ProfessionalStatusSection editForm={editForm} setEditForm={setEditForm} />
         </div>
 
         <div className="px-4 py-3 border-t border-black/5 flex items-center justify-between">
