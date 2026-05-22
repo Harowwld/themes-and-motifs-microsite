@@ -274,6 +274,18 @@ export default function SoonToWedSignupPage() {
       const { data: signUpData, error: signUpErr } = await supabase.auth.signUp({
         email: e1,
         password,
+        options: {
+          data: {
+            bride_nickname: bride,
+            groom_nickname: groom,
+            wedding_date: weddingDate ? weddingDate : null,
+            wedding_date_public: Boolean(weddingDatePublic),
+            wedding_venue_area: venue ? venue : null,
+            wedding_venue_public: Boolean(weddingVenuePublic),
+            location: loc,
+            profile_visibility: profileVisibility,
+          }
+        }
       });
 
       if (signUpErr) {
