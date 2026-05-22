@@ -496,6 +496,8 @@ export default function CoupleMicrositePage() {
     if (profile?.groom_nickname && profile?.bride_nickname) {
       return `${profile.groom_nickname} & ${profile.bride_nickname}`;
     }
+    if (profile?.groom_nickname) return profile.groom_nickname;
+    if (profile?.bride_nickname) return profile.bride_nickname;
     return "Wilson & Diana";
   }, [profile]);
 
@@ -629,6 +631,23 @@ export default function CoupleMicrositePage() {
             Back to Public Couples Feed
           </Link>
         </div>
+
+        {/* Setup notice banner for logged in owners with empty profile names */}
+        {isOwner && (!profile?.groom_nickname || !profile?.bride_nickname) && (
+          <div className="mb-6 max-w-2xl mx-auto bg-amber-50/80 border border-amber-200/60 rounded-2xl p-5 shadow-[0_1px_3px_rgba(0,0,0,0.02)] select-none">
+            <div className="flex gap-4">
+              <span className="text-2xl shrink-0">👋</span>
+              <div className="space-y-1">
+                <h4 className="font-extrabold text-[14px] text-amber-800 font-[family-name:var(--font-plus-jakarta)]">
+                  Personalize Your Wedding Microsite!
+                </h4>
+                <p className="text-[12.5px] text-amber-700 leading-relaxed font-[family-name:var(--font-plus-jakarta)] font-medium">
+                  Your profile nicknames are currently unset, so we are displaying our default theme placeholder names (<strong>"Wilson &amp; Diana"</strong>). Please go to your <Link href="/dashboard" className="underline font-bold hover:text-amber-900 transition-colors">Dashboard Settings</Link> to configure your nicknames, wedding date, and ceremony location!
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Mockup Top Brand Script Header */}
         <div className="text-center mb-6 pt-4">

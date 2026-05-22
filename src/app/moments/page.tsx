@@ -197,7 +197,7 @@ export default function PublicMomentsPage() {
             {filteredCouples.map((couple) => {
               const displayNames = couple.groom_nickname && couple.bride_nickname
                 ? `${couple.groom_nickname} & ${couple.bride_nickname}`
-                : "Wilson & Diana";
+                : couple.groom_nickname || couple.bride_nickname || "Wilson & Diana";
                 
               const weddingDateFormatted = formatWeddingDate(couple.wedding_date);
               const displayLoc = couple.location || "Peoria, Illinois";
