@@ -15,18 +15,29 @@ export default async function RegisterPage({
 
   const supabase = createSupabaseServerClient();
 
-  const [{ data: categories }, { data: regionRows }, { data: plans }, { data: affiliations }, { data: cityRows }] = await Promise.all([
+  const [
+    { data: categories },
+    { data: regionRows },
+    { data: plans },
+    { data: affiliations },
+    { data: cityRowsPart1 },
+    { data: cityRowsPart2 }
+  ] = await Promise.all([
     supabase.from("categories").select("id,name,slug").order("display_order", { ascending: true }).order("name", { ascending: true }).limit(200),
     supabase.from("regions").select("id,name,parent_id").order("name", { ascending: true }).limit(2000),
     supabase.from("plans").select("id,name").order("id", { ascending: true }).limit(20),
     supabase.from("affiliations").select("id,name,slug").order("name", { ascending: true }).limit(500),
-    supabase.from("cities").select("id,name,region_id").order("name", { ascending: true }).limit(3000),
+    supabase.from("cities").select("id,name,region_id").order("name", { ascending: true }).range(0, 999),
+    supabase.from("cities").select("id,name,region_id").order("name", { ascending: true }).range(1000, 1999),
   ]);
 
   const allRegions = (regionRows ?? []) as { id: number; name: string; parent_id: number | null }[];
   const regions = allRegions.filter((r) => r.parent_id == null).map((r) => ({ id: r.id, name: r.name }));
   
-  const cities = (cityRows ?? []) as { id: number; name: string; region_id: number }[];
+  const cities = [
+    ...(cityRowsPart1 ?? []),
+    ...(cityRowsPart2 ?? [])
+  ] as { id: number; name: string; region_id: number }[];
 
   return (
     <div className="min-h-screen bg-[#fafafa]">

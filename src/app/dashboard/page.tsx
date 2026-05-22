@@ -141,45 +141,7 @@ function LoadingSkeleton() {
   );
 }
 
-// Pre-populated default mockup items
-const DEFAULT_BUDGET: BudgetItem[] = [
-  { id: "b1", category: "Venue & Catering", name: "Grand Ballroom downpayment", estimated: 250000, actual: 150000, status: "paid", notes: "Capacity: 150 guests" },
-  { id: "b2", category: "Photography & Videography", name: "Pre-wedding & Day Coverage", estimated: 80000, actual: 80000, status: "pending", notes: "Luminous Frames booking" },
-  { id: "b3", category: "Wedding Apparel", name: "Custom Dress & Suit fittings", estimated: 60000, actual: 60000, status: "paid" },
-];
 
-const DEFAULT_GUESTS: Guest[] = [
-  { id: "g1", name: "Maria Clara", category: "Family", email: "maria.clara@noli.ph", phone: "09170000001", dietary: "No seafood", rsvpStatus: "attending", tableId: "t1" },
-  { id: "g2", name: "Crisostomo Ibarra", category: "Family", email: "ibarra.cris@noli.ph", phone: "09170000002", dietary: "", rsvpStatus: "attending", tableId: "t1" },
-  { id: "g3", name: "Padre Damaso", category: "Other", email: "damaso@church.ph", phone: "09170000003", dietary: "Gluten-free", rsvpStatus: "declined", tableId: null },
-  { id: "g4", name: "Elias Salvi", category: "Friends", email: "elias@rebel.ph", phone: "09170000004", dietary: "", rsvpStatus: "pending", tableId: null },
-];
-
-const DEFAULT_TABLES: WeddingTable[] = [
-  { id: "t1", name: "Head Table (VIP)", capacity: 8 },
-  { id: "t2", name: "Family & Close Kin", capacity: 10 },
-  { id: "t3", name: "Friends Table A", capacity: 8 },
-];
-
-const DEFAULT_TASKS: TaskItem[] = [
-  { id: "ts1", category: "Venue & Catering", title: "Reserve Grand Ballroom", dueDate: "2026-06-01", status: "completed" },
-  { id: "ts2", category: "Rings & Legal Documents", title: "Obtain Marriage License", dueDate: "2026-08-15", status: "in-progress" },
-  { id: "ts3", category: "Apparel & Grooming", title: "Final fittings with designer", dueDate: "2026-09-10", status: "todo" },
-];
-
-const DEFAULT_VENDORS: DreamVendor[] = [
-  { id: "v1", name: "Gilded Caterer Inc", category: "Catering", rating: 5, status: "booked", contact: "info@gildedcaterer.ph", notes: "Menu: Asian Fusion Buffet" },
-  { id: "v2", name: "Luminous Frames", category: "Photography", rating: 4, status: "inquired", contact: "booking@luminousframes.com" },
-];
-
-const DEFAULT_JOURNAL: RantReview[] = [
-  { id: "j1", title: "Food Tasting was amazing!", content: "Tasted the main courses today. The garlic herb roast chicken is spectacular. Everyone will love it!", type: "review", rating: 5, mood: "😍", date: new Date(Date.now() - 172800000).toISOString() },
-  { id: "j2", title: "Headcount drama is real 🤯", content: "Chris wanted to invite 15 extra cousins. We simply don't have space. Had to stay strong and say no.", type: "rant", mood: "🤯", date: new Date(Date.now() - 86400000).toISOString() },
-];
-
-const DEFAULT_NOTES: NoteItem[] = [
-  { id: "n1", title: "Ring Engraving Drafts", content: "Maria: 'Forever & Always' in script font.\nChris: 'My sun, my stars' in script font.", date: new Date().toISOString() },
-];
 
 const tabNames: Record<string, string> = {
   budget_planner: "Budget Planner",

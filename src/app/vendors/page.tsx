@@ -49,8 +49,14 @@ const getCachedCategories = unstable_cache(
 const getCachedCities = unstable_cache(
   async () => {
     const supabase = createSupabaseServerClient();
-    const { data } = await supabase.from("cities").select("id,name,region_id").order("name", { ascending: true }).limit(3000);
-    return (data ?? []) as { id: number; name: string; region_id: number }[];
+    const [part1, part2] = await Promise.all([
+      supabase.from("cities").select("id,name,region_id").order("name", { ascending: true }).range(0, 999),
+      supabase.from("cities").select("id,name,region_id").order("name", { ascending: true }).range(1000, 1999),
+    ]);
+    return [
+      ...(part1.data ?? []),
+      ...(part2.data ?? [])
+    ] as { id: number; name: string; region_id: number }[];
   },
   ["cities"],
   { revalidate: 3600 }
