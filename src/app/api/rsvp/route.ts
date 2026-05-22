@@ -5,12 +5,42 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const guestId = searchParams.get("guestId");
+    const userId = searchParams.get("userId");
+    const name = searchParams.get("name");
+
+    const supabase = createSupabaseAdminClient();
+
+    // If userId and name are provided, perform a guest search
+    if (userId && name) {
+      const { data: guests, error: searchError } = await supabase
+        .from("wedding_guests")
+        .select(`
+          id, 
+          name, 
+          rsvp_status, 
+          dietary, 
+          email, 
+          phone, 
+          table_id,
+          wedding_tables (
+            name
+          )
+        `)
+        .eq("user_id", userId)
+        .ilike("name", `%${name}%`)
+        .limit(10);
+
+      if (searchError) {
+        console.error("Error searching wedding guests:", searchError);
+        return NextResponse.json({ error: "Failed to search guests" }, { status: 500 });
+      }
+
+      return NextResponse.json({ guests: guests || [] });
+    }
 
     if (!guestId) {
       return NextResponse.json({ error: "Missing guestId parameter" }, { status: 400 });
     }
-
-    const supabase = createSupabaseAdminClient();
 
     // 1. Fetch guest by secure UUID
     const { data: guest, error: guestError } = await supabase

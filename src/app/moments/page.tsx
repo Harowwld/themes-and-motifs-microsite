@@ -1,478 +1,279 @@
 "use client";
 
-import { useEffect, useState, useMemo, useCallback } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabaseBrowser";
 import Link from "next/link";
 import { toast } from "@/lib/toast";
 
-type Moment = {
-  id: string;
+type CoupleProfile = {
   user_id: string;
-  title: string;
-  content: string | null;
-  moment_type: "photo" | "review" | "story" | "milestone";
-  visibility: "private" | "public" | "friends";
-  created_at: string;
-  updated_at: string;
-  moment_photos: Array<{
-    id: string;
-    image_url: string;
-    caption: string | null;
-    upload_order: number;
-  }>;
-  vendor_reviews: Array<{
-    id: string;
-    vendor_id: number;
-    overall_rating: number;
-    quality_rating: number;
-    communication_rating: number;
-    value_rating: number;
-    review_text: string | null;
-    would_recommend: boolean;
-    vendors: {
-      business_name: string;
-      slug: string;
-      logo_url: string | null;
-    };
-  }>;
+  groom_nickname: string | null;
+  bride_nickname: string | null;
+  wedding_date: string | null;
+  location: string | null;
+  profile_photo_url: string | null;
+  is_premium: boolean | null;
+  profile_visibility: string | null;
 };
 
-function MomentCard({ moment, onDelete }: { moment: Moment; onDelete: (id: string) => void }) {
-  const router = useRouter();
-  const [deletingId, setDeletingId] = useState<string | null>(null);
-
-  const handleDeleteConfirm = async () => {
-    if (!confirm("Are you sure you want to delete this moment?")) return;
-    setDeletingId(moment.id);
-    try {
-      const token = (await createSupabaseBrowserClient().auth.getSession()).data.session?.access_token;
-      const response = await fetch(`/api/moments/${moment.id}`, {
-        method: "DELETE",
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        onDelete(moment.id);
-        toast.success("Moment deleted successfully.");
-      } else {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || `Failed to delete moment (${response.status})`);
-      }
-    } catch (error) {
-      console.error("Error deleting moment:", error);
-      toast.error(error instanceof Error ? error.message : "Failed to delete moment.");
-    } finally {
-      setDeletingId(null);
-    }
-  };
-
-  const getMomentIcon = () => {
-    switch (moment.moment_type) {
-      case "photo":
-        return (
-          <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-          </svg>
-        );
-      case "review":
-        return (
-          <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
-          </svg>
-        );
-      case "story":
-        return (
-          <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
-          </svg>
-        );
-      case "milestone":
-        return (
-          <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
-          </svg>
-        );
-      default:
-        return null;
-    }
-  };
-
-  // Check if current user owns this moment
-  const isOwner = moment.user_id === localStorage.getItem('user_id');
-
-  return (
-    <div className="bg-white rounded-xl border border-black/5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] hover:shadow-[0_10px_25px_rgba(0,0,0,0.08),0_4px_10px_rgba(0,0,0,0.04)] transition-all duration-300">
-      {/* Header */}
-      <div className="p-4 border-b border-gray-100">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#a68b6a] to-[#957a5c] flex items-center justify-center">
-              <span className="text-white font-medium text-sm">
-                {moment.title.charAt(0).toUpperCase()}
-              </span>
-            </div>
-            <div>
-              <h3 className="font-semibold text-[#2c2c2c]">{moment.title}</h3>
-              <div className="flex items-center gap-2 text-sm text-gray-500">
-                <span className="capitalize">{moment.moment_type}</span>
-                <span>•</span>
-                <span>{new Date(moment.created_at).toLocaleDateString()}</span>
-                {moment.visibility === "public" && (
-                  <>
-                    <span>•</span>
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-[#ecfdf3] text-[#027a48]">
-                      Public
-                    </span>
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-[#a68b6a]/10 text-[#a68b6a]">
-              {getMomentIcon()}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="p-4">
-        {moment.content && (
-          <p className="text-gray-700 mb-4 whitespace-pre-wrap">{moment.content}</p>
-        )}
-
-        {moment.moment_photos && moment.moment_photos.length > 0 && (
-          <div className="mb-4 space-y-2 -mx-4">
-            {moment.moment_photos.map((photo, index) => (
-              <div key={photo.id} className="px-4">
-                <img
-                  src={photo.image_url}
-                  alt={photo.caption || "Moment photo"}
-                  className="w-full h-auto object-contain"
-                  style={{ maxHeight: 'none' }}
-                />
-                {photo.caption && (
-                  <p className="text-sm text-gray-600 mt-2">{photo.caption}</p>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-
-        {moment.vendor_reviews && moment.vendor_reviews.length > 0 && (
-          <div className="mb-4">
-            {moment.vendor_reviews.map((review) => (
-              <div key={review.id} className="bg-gray-50 rounded-lg p-3 mb-2">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="font-medium text-sm text-gray-900">{review.vendors.business_name}</span>
-                  <div className="flex items-center">
-                    {[...Array(5)].map((_, i) => (
-                      <svg
-                        key={i}
-                        className={`h-4 w-4 ${i < review.overall_rating ? "text-yellow-400" : "text-gray-300"}`}
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                      </svg>
-                    ))}
-                  </div>
-                </div>
-                {review.review_text && (
-                  <p className="text-sm text-gray-600">{review.review_text}</p>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-
-        </div>
-
-      {/* Footer */}
-      <div className="px-4 py-3 border-t border-gray-100">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => router.push(`/moments/${moment.id}`)}
-              className="flex items-center gap-2 text-gray-600 hover:text-[#a68b6a] transition-colors"
-            >
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-              </svg>
-              <span className="text-sm">View</span>
-            </button>
-            <button className="flex items-center gap-2 text-gray-600 hover:text-[#b42318] transition-colors">
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-              </svg>
-              <span className="text-sm">Like</span>
-            </button>
-          </div>
-          {isOwner && (
-            <button
-              onClick={handleDeleteConfirm}
-              disabled={deletingId === moment.id}
-              className="text-[#b42318] hover:text-[#9a1d14] transition-colors text-sm"
-            >
-              {deletingId === moment.id ? "Deleting..." : "Delete"}
-            </button>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function LoadingSkeleton() {
-  return (
-    <div className="bg-white rounded-xl border border-black/5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] overflow-hidden">
-      <div className="p-6">
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-gray-200 animate-pulse" />
-            <div>
-              <div className="h-5 w-32 bg-gray-200 animate-pulse rounded mb-2" />
-              <div className="h-4 w-20 bg-gray-200 animate-pulse rounded" />
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="h-6 w-16 bg-gray-200 animate-pulse rounded-full" />
-            <div className="h-5 w-5 bg-gray-200 animate-pulse rounded" />
-            <div className="h-5 w-5 bg-gray-200 animate-pulse rounded" />
-          </div>
-        </div>
-        <div className="h-4 w-full bg-gray-200 animate-pulse rounded mb-4" />
-        <div className="h-4 w-3/4 bg-gray-200 animate-pulse rounded mb-4" />
-        <div className="grid grid-cols-2 gap-2 mb-4">
-          <div className="aspect-square bg-gray-200 animate-pulse rounded-lg" />
-          <div className="aspect-square bg-gray-200 animate-pulse rounded-lg" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default function MomentsPage() {
+export default function PublicMomentsPage() {
   const router = useRouter();
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);
-  const [user, setUser] = useState<any>(null);
-  const [isSoonToWed, setIsSoonToWed] = useState(false);
-  const [moments, setMoments] = useState<Moment[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<"all" | "private" | "public">("all");
-  const [typeFilter, setTypeFilter] = useState<string>("all");
 
-  const fetchMoments = useCallback(async () => {
-    try {
-      const token = user ? (await supabase.auth.getSession()).data.session?.access_token : null;
-      const params = new URLSearchParams({
-        visibility: user ? filter : "public", // Public users only see public moments
-        ...(typeFilter !== "all" && { type: typeFilter }),
-      });
-      
-      const headers: Record<string, string> = {};
-      if (token) {
-        headers.authorization = `Bearer ${token}`;
-      }
-      
-      const response = await fetch(`/api/moments?${params}`, { headers });
-      
-      const data = await response.json();
-      if (data.moments) {
-        setMoments(data.moments);
-      }
-    } catch (error) {
-      console.error("Error fetching moments:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [user, filter, typeFilter, supabase]);
+  // Authentication & context
+  const [user, setUser] = useState<any>(null);
+  const [userProfile, setUserProfile] = useState<CoupleProfile | null>(null);
+  const [couples, setCouples] = useState<CoupleProfile[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     let cancelled = false;
 
-    async function checkAuth() {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!cancelled) {
-        setUser(session?.user);
+    async function checkAuthAndFetchProfiles() {
+      try {
+        // Check current session
+        const { data: { session } } = await supabase.auth.getSession();
         
-        // Check if user is soon-to-wed using the same API as SiteHeader
+        if (cancelled) return;
+        setUser(session?.user);
+
         if (session?.user) {
-          try {
-            const token = session.access_token;
-            const response = await fetch('/api/auth/me', {
-              headers: {
-                authorization: `Bearer ${token}`,
-              },
-            });
-            const data = await response.json();
-            setIsSoonToWed(data.isSoonToWed);
-          } catch (error) {
-            console.error('Error checking user role:', error);
-            setIsSoonToWed(false);
+          // Fetch current user's profile to see if they are a soon-to-wed
+          const { data: currentProfile } = await supabase
+            .from("soon_to_wed_profiles")
+            .select("*")
+            .eq("user_id", session.user.id)
+            .maybeSingle();
+
+          if (!cancelled && currentProfile) {
+            setUserProfile(currentProfile);
           }
-        } else {
-          setIsSoonToWed(false);
+        }
+
+        // Fetch all public couples profiles
+        const { data: profiles, error } = await supabase
+          .from("soon_to_wed_profiles")
+          .select("*")
+          .eq("profile_visibility", "public")
+          .order("created_at", { ascending: false });
+
+        if (!cancelled) {
+          if (!error && profiles) {
+            // Filter out profiles with absolutely no nicknames set, or keep them with fallbacks
+            setCouples(profiles);
+          } else {
+            console.error("Error fetching profiles:", error);
+          }
+        }
+      } catch (error) {
+        console.error("Unexpected error in initialization:", error);
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
         }
       }
     }
 
-    checkAuth();
+    checkAuthAndFetchProfiles();
 
     return () => {
       cancelled = true;
     };
-  }, [router, supabase]);
+  }, [supabase]);
 
-  useEffect(() => {
-    fetchMoments(); // Fetch for all users (public and authenticated)
-  }, [fetchMoments]);
+  // Filter couples based on search query
+  const filteredCouples = useMemo(() => {
+    return couples.filter((couple) => {
+      const groom = couple.groom_nickname || "";
+      const bride = couple.bride_nickname || "";
+      const loc = couple.location || "";
+      const nameStr = `${groom} and ${bride} ${loc}`.toLowerCase();
+      return nameStr.includes(searchQuery.toLowerCase());
+    });
+  }, [couples, searchQuery]);
 
-  const handleDeleteMoment = (momentId: string) => {
-    setMoments((prev) => prev.filter((m) => m.id !== momentId));
+  // Formatter for wedding date
+  const formatWeddingDate = (dateStr: string | null) => {
+    if (!dateStr) return "TBA";
+    try {
+      const d = new Date(dateStr);
+      return d.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+    } catch {
+      return dateStr;
+    }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#fafafa]">
-        <div className="mx-auto w-full max-w-6xl px-5 sm:px-8 py-10 sm:py-14">
-          <div className="h-8 w-48 bg-black/10 animate-pulse rounded mb-8" />
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="h-64 bg-black/10 animate-pulse rounded-lg" />
-            ))}
-          </div>
-        </div>
+      <div className="min-h-screen bg-[#fafafa] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#a68b6a]"></div>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-[#fafafa]">
-      <div className="mx-auto w-full max-w-6xl px-5 sm:px-8 py-10 sm:py-14">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-[24px] sm:text-[28px] font-semibold tracking-[-0.01em] text-[#2c2c2c] font-[family-name:var(--font-noto-serif)]">
-              Wedding Moments
-            </h1>
-            <p className="mt-1 text-[14px] text-neutral-500 font-[family-name:var(--font-plus-jakarta)]">
-              {user 
-                ? "Document your wedding journey and share your experiences" 
-                : "Discover beautiful wedding moments and get inspired for your big day"
-              }
-            </p>
-          </div>
-          {user && isSoonToWed && (
-            <Link
-              href="/moments/create"
-              className="inline-flex items-center px-4 py-2 bg-[#a68b6a] text-white text-[13px] font-semibold rounded-lg hover:bg-[#957a5c] transition-colors font-[family-name:var(--font-plus-jakarta)]"
-            >
-              <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-              </svg>
-              Create Moment
-            </Link>
-          )}
+      {/* Import script-style Google fonts dynamically */}
+      <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet" />
+
+      <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 py-12 sm:py-16">
+        
+        {/* Page Main Brand Header */}
+        <div className="text-center max-w-2xl mx-auto mb-10 select-none">
+          <span className="text-[#a68b6a] text-xs font-bold uppercase tracking-widest bg-[#a68b6a]/5 px-3 py-1 rounded-full">
+            Themes & Motifs Directory
+          </span>
+          <h1 className="text-[36px] sm:text-[46px] font-bold text-[#2c2c2c] mt-4 font-[family-name:var(--font-noto-serif)] leading-tight">
+            Wedding Moments
+          </h1>
+          <p className="text-[13px] sm:text-[14px] text-neutral-500 font-[family-name:var(--font-plus-jakarta)] mt-3 leading-relaxed">
+            Discover the beautiful stories, entourage lines, registries, and wedding moments of couples celebrating their marriage union.
+          </p>
         </div>
 
-        {/* Filters */}
-        {user && (
-          <div className="flex flex-wrap gap-4 mb-8">
-            <div className="flex items-center gap-2">
-              <label className="text-sm font-medium text-gray-700">Visibility:</label>
-              <select
-                value={filter}
-                onChange={(e) => setFilter(e.target.value as any)}
-                className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#a68b6a]"
-              >
-                <option value="all">All Moments</option>
-                <option value="private">My Private</option>
-                <option value="public">Public</option>
-              </select>
-            </div>
-            <div className="flex items-center gap-2">
-              <label className="text-sm font-medium text-gray-700">Type:</label>
-              <select
-                value={typeFilter}
-                onChange={(e) => setTypeFilter(e.target.value)}
-                className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#a68b6a]"
-              >
-                <option value="all">All Types</option>
-                <option value="photo">Photos</option>
-                <option value="review">Reviews</option>
-                <option value="story">Stories</option>
-                <option value="milestone">Milestones</option>
-              </select>
-            </div>
-          </div>
-        )}
-
-        {/* Type filter for public users */}
-        {!user && (
-          <div className="flex flex-wrap gap-4 mb-8">
-            <div className="flex items-center gap-2">
-              <label className="text-sm font-medium text-gray-700">Type:</label>
-              <select
-                value={typeFilter}
-                onChange={(e) => setTypeFilter(e.target.value)}
-                className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#a68b6a]"
-              >
-                <option value="all">All Types</option>
-                <option value="photo">Photos</option>
-                <option value="review">Reviews</option>
-                <option value="story">Stories</option>
-                <option value="milestone">Milestones</option>
-              </select>
-            </div>
-          </div>
-        )}
-
-        {moments.length === 0 ? (
-          <div className="rounded-xl border border-black/10 bg-white p-12 text-center">
-            <svg className="h-16 w-16 mx-auto text-neutral-300 mb-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-            </svg>
-            <h3 className="text-[18px] font-semibold text-[#2c2c2c] mb-2 font-[family-name:var(--font-noto-serif)]">
-              {user ? "No moments yet" : "No public moments yet"}
-            </h3>
-            <p className="text-[14px] text-neutral-500 mb-6 font-[family-name:var(--font-plus-jakarta)]">
-              {user 
-                ? "Start documenting your wedding journey by creating your first moment"
-                : "Be the first to share your wedding moments with the community!"
-              }
-            </p>
-            {user && isSoonToWed ? (
+        {/* Dashboard Shortcut Banner for Active Soon-to-Wed Couples */}
+        {userProfile && (
+          <div className="max-w-3xl mx-auto mb-12 bg-gradient-to-r from-[#a68b6a]/10 to-[#957a5c]/5 border border-[#a68b6a]/20 rounded-2xl p-5 sm:p-6 shadow-sm select-none">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="space-y-1 text-center sm:text-left">
+                <h3 className="font-bold text-[15px] sm:text-[16px] text-neutral-800 font-[family-name:var(--font-plus-jakarta)]">
+                  💍 Welcome back, {userProfile.groom_nickname || "Groom"} & {userProfile.bride_nickname || "Bride"}!
+                </h3>
+                <p className="text-[12px] sm:text-[13px] text-neutral-500">
+                  Manage your wedding registry, principal sponsors, entourage directory, and share moments with guests.
+                </p>
+              </div>
               <Link
-                href="/moments/create"
-                className="inline-flex items-center px-5 py-2.5 bg-[#a68b6a] text-white text-[13px] font-semibold rounded-lg hover:bg-[#957a5c] transition-colors font-[family-name:var(--font-plus-jakarta)]"
+                href={`/moments/couple/${userProfile.user_id}`}
+                className="px-5 py-2.5 bg-[#a68b6a] text-white text-[12px] font-bold uppercase tracking-wider rounded-xl hover:bg-[#957a5c] transition-all shadow-sm shrink-0"
               >
-                Create Your First Moment
+                View Your Microsite
               </Link>
-            ) : (
+            </div>
+          </div>
+        )}
+
+        {/* Search bar and Filters */}
+        <div className="max-w-md mx-auto mb-10 select-none">
+          <div className="relative">
+            <span className="absolute left-3.5 top-3 text-neutral-400">
+              <svg className="h-4.5 w-4.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </span>
+            <input
+              type="text"
+              placeholder="Search couples by name or location..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full h-11 pl-10 pr-4 border border-black/[0.06] rounded-full bg-white text-[13px] font-medium outline-none focus:border-[#a68b6a] focus:ring-1 focus:ring-[#a68b6a] transition-all font-[family-name:var(--font-plus-jakarta)] shadow-sm"
+            />
+          </div>
+        </div>
+
+        {/* Couples directory card grid */}
+        {filteredCouples.length === 0 ? (
+          <div className="max-w-md mx-auto text-center border border-black/[0.04] bg-white rounded-2xl p-10 sm:p-12 shadow-sm select-none">
+            <span className="text-3xl">🕊️</span>
+            <h3 className="text-[16px] font-bold text-neutral-700 font-[family-name:var(--font-noto-serif)] mt-4">
+              No couples found
+            </h3>
+            <p className="text-[12px] text-neutral-400 font-[family-name:var(--font-plus-jakarta)] mt-1.5 leading-relaxed">
+              We couldn't find any public couples matching your search query. Be sure to check again later!
+            </p>
+            {!user && (
               <Link
                 href="/soon-to-wed/signup"
-                className="inline-flex items-center px-5 py-2.5 bg-[#a68b6a] text-white text-[13px] font-semibold rounded-lg hover:bg-[#957a5c] transition-colors font-[family-name:var(--font-plus-jakarta)]"
+                className="inline-flex items-center mt-6 px-5 py-2.5 bg-[#a68b6a] text-white text-[11px] font-bold uppercase tracking-wider rounded-lg hover:bg-[#957a5c] transition-colors"
               >
-                Sign Up to Share Moments
+                Sign Up & Share Your Story
               </Link>
             )}
           </div>
         ) : (
-          <div className="max-w-2xl mx-auto">
-            <div className="space-y-6">
-              {moments.map((moment) => (
-                <MomentCard key={moment.id} moment={moment} onDelete={handleDeleteMoment} />
-              ))}
-            </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            {filteredCouples.map((couple) => {
+              const displayNames = couple.groom_nickname && couple.bride_nickname
+                ? `${couple.groom_nickname} & ${couple.bride_nickname}`
+                : "Wilson & Diana";
+                
+              const weddingDateFormatted = formatWeddingDate(couple.wedding_date);
+              const displayLoc = couple.location || "Peoria, Illinois";
+              const isPremium = couple.is_premium;
+
+              return (
+                <div
+                  key={couple.user_id}
+                  className="bg-white border border-black/5 rounded-2xl overflow-hidden hover:shadow-[0_15px_30px_rgba(0,0,0,0.06),0_4px_12px_rgba(0,0,0,0.03)] transition-all duration-300 flex flex-col justify-between group"
+                >
+                  <div>
+                    {/* Visual Card Frame */}
+                    <div className="aspect-[16/10] bg-neutral-100 relative overflow-hidden select-none">
+                      <img
+                        src={couple.profile_photo_url || "https://images.unsplash.com/photo-1583939003579-730e3918a45a?q=80&w=600"}
+                        alt="Wedding Couple Frame"
+                        className="w-full h-full object-cover group-hover:scale-[1.02] filter brightness-95 transition-transform duration-500"
+                        loading="lazy"
+                      />
+                      
+                      {/* Premium ribbon badge */}
+                      {isPremium && (
+                        <div className="absolute top-3 right-3 bg-gradient-to-r from-amber-500 to-yellow-600 text-white text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full tracking-wider shadow-sm flex items-center gap-1 select-none">
+                          👑 Premium
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Card Body content */}
+                    <div className="p-5 sm:p-6 text-center space-y-4">
+                      {/* Cursive Name banner */}
+                      <h3
+                        className="text-[34px] sm:text-[38px] font-normal text-neutral-800 leading-none truncate select-none px-2"
+                        style={{ fontFamily: "'Great Vibes', cursive" }}
+                      >
+                        {displayNames}
+                      </h3>
+
+                      {/* Line divider */}
+                      <div className="w-12 h-[1px] bg-neutral-200 mx-auto" />
+
+                      {/* Details */}
+                      <div className="space-y-1.5 select-none">
+                        <div className="flex items-center justify-center gap-1.5 text-neutral-600 font-[family-name:var(--font-plus-jakarta)] font-semibold text-[13px]">
+                          <svg className="h-3.5 w-3.5 text-[#a68b6a]" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+                          </svg>
+                          <span>{weddingDateFormatted}</span>
+                        </div>
+
+                        <div className="flex items-center justify-center gap-1.5 text-neutral-400 font-[family-name:var(--font-plus-jakarta)] font-bold text-[11px] uppercase tracking-wider">
+                          <svg className="h-3.5 w-3.5 text-neutral-300" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                          </svg>
+                          <span className="truncate max-w-[200px]">{displayLoc}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Card Button */}
+                  <div className="px-5 pb-5 select-none">
+                    <Link
+                      href={`/moments/couple/${couple.user_id}`}
+                      className="block w-full text-center py-2.5 border border-[#a68b6a] text-[#a68b6a] text-[11px] sm:text-[12px] font-bold uppercase tracking-wider rounded-xl hover:bg-[#a68b6a] hover:text-white transition-colors duration-300 cursor-pointer shadow-sm hover:shadow font-[family-name:var(--font-plus-jakarta)]"
+                    >
+                      Explore Microsite
+                    </Link>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
+
       </div>
     </div>
   );

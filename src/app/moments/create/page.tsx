@@ -292,6 +292,19 @@ export default function CreateMomentPage() {
             </p>
           </div>
 
+          {/* Premium banner linking to Microsite settings */}
+          <div className="mb-8 p-5 bg-gradient-to-r from-[#bca374]/10 to-transparent border border-[#bca374]/25 rounded-2xl flex items-start gap-4 shadow-sm select-none">
+            <span className="text-2xl mt-0.5 shrink-0">✨</span>
+            <div className="space-y-1">
+              <h4 className="text-[13px] font-bold text-neutral-800 font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wider">
+                Customize Your Core Wedding Microsite Pages!
+              </h4>
+              <p className="text-[12px] text-neutral-500 font-[family-name:var(--font-plus-jakarta)] leading-relaxed">
+                Looking to write your <strong>Love Story</strong> narrative, build your <strong>Entourage Wedding Party</strong>, list your <strong>Sponsors Directory</strong>, or write a custom <strong>Guest Welcome Message</strong>? You can now configure all of these dynamically in your private dashboard under the <a href="/dashboard" className="text-[#a68b6a] hover:underline font-bold font-semibold">Microsite Settings</a> tab!
+              </p>
+            </div>
+          </div>
+
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Basic Information */}
             <div className="bg-white rounded-xl border border-black/5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] p-6">

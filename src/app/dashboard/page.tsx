@@ -17,7 +17,8 @@ import {
   Award,
   Heart,
   FileText,
-  Lock
+  Lock,
+  Globe
 } from "lucide-react";
 
 // Custom tab features
@@ -31,6 +32,7 @@ import DreamTeam from "./components/DreamTeam";
 import RantsReviews from "./components/RantsReviews";
 import Notes from "./components/Notes";
 import PremiumBanner from "./components/PremiumBanner";
+import MicrositeSettings from "./components/MicrositeSettings";
 
 type SavedVendor = {
   id: string;
@@ -144,6 +146,7 @@ function LoadingSkeleton() {
 
 
 const tabNames: Record<string, string> = {
+  microsite_settings: "Microsite Settings",
   budget_planner: "Budget Planner",
   guest_list: "Guest List Tracker",
   rsvp: "RSVP Manager",
@@ -155,6 +158,7 @@ const tabNames: Record<string, string> = {
 };
 
 const tabDescriptions: Record<string, string> = {
+  microsite_settings: "Configure your public microsite page—love story, entourage members, principal and secondary sponsors, and guest welcome message.",
   budget_planner: "Take control of your wedding budget. Log estimates, track payments, and visualize cost distribution seamlessly.",
   guest_list: "Keep a clean record of your guests, their contact information, dietary requirements, and RSVP counts.",
   rsvp: "Monitor RSVP status in real-time, view guest choices, and ensure a precise head count for seating.",
@@ -936,6 +940,17 @@ export default function DashboardPage() {
             </div>
             
             <div className="flex items-center gap-3">
+              {user && (
+                <a
+                  href={`/moments/couple/${user.id}`}
+                  className="px-4 py-2 text-[13px] font-bold text-white bg-gradient-to-r from-[#bca374] to-[#a68b6a] hover:from-[#a68b6a] hover:to-[#957a5c] rounded-lg shadow-sm hover:shadow transition-all font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wider inline-flex items-center gap-1.5"
+                >
+                  <span>View Microsite</span>
+                  <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                  </svg>
+                </a>
+              )}
               <button
                 onClick={handleSignOut}
                 className="px-4 py-2 text-[13px] font-bold text-neutral-500 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wider"
@@ -956,6 +971,7 @@ export default function DashboardPage() {
                 </div>
                 {[
                   { id: "wedding_tools", label: "Wedding Tools Hub", icon: LayoutDashboard },
+                  { id: "microsite_settings", label: "Microsite Settings", icon: Globe },
                   { id: "budget_planner", label: "Budget Planner", icon: Wallet },
                   { id: "guest_list", label: "Guest List Tracker", icon: Users },
                   { id: "rsvp", label: "RSVP Manager", icon: MailOpen },
@@ -967,7 +983,7 @@ export default function DashboardPage() {
                 ].map((tab) => {
                   const isSelected = activeTab === tab.id;
                   const Icon = tab.icon;
-                  const isTabPremium = tab.id !== "wedding_tools";
+                  const isTabPremium = tab.id !== "wedding_tools" && tab.id !== "microsite_settings";
                   const isLocked = isTabPremium && !isPremium;
                   return (
                     <button
@@ -999,7 +1015,7 @@ export default function DashboardPage() {
                   transition={{ duration: 0.25, ease: "easeInOut" }}
                 >
                   {(() => {
-                    const isTabPremium = activeTab !== "wedding_tools";
+                    const isTabPremium = activeTab !== "wedding_tools" && activeTab !== "microsite_settings";
                     const isLocked = isTabPremium && !isPremium;
 
                     const renderTabContent = () => {
@@ -1108,7 +1124,7 @@ export default function DashboardPage() {
                                         Recent Moments
                                       </h2>
                                     </div>
-                                    <a href="/moments" className="text-sm text-[#a68b6a] hover:text-[#957a5c] font-medium">View All →</a>
+                                    <a href={user ? `/moments/couple/${user.id}` : "/moments"} className="text-sm text-[#a68b6a] hover:text-[#957a5c] font-medium">View All →</a>
                                   </div>
 
                                   {recentMoments.length === 0 ? (
@@ -1307,6 +1323,13 @@ export default function DashboardPage() {
                               onAddNote={handleAddNote}
                               onUpdateNote={handleUpdateNote}
                               onDeleteNote={handleDeleteNote}
+                            />
+                          );
+                        case "microsite_settings":
+                          return (
+                            <MicrositeSettings
+                              user={user}
+                              supabase={supabase}
                             />
                           );
                         default:
