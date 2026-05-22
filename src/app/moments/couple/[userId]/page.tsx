@@ -519,6 +519,19 @@ export default function CoupleMicrositePage() {
     return loc;
   }, [profile, isOwner]);
 
+  // Update browser document/tab title dynamically based on couple details loaded from database
+  useEffect(() => {
+    if (profile) {
+      const cleanDate = profile.wedding_date 
+        ? new Date(profile.wedding_date).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
+        : "TBA";
+      const cleanLoc = profile.location || "TBA";
+      document.title = `${displayTitle} | Wedding on ${cleanDate} at ${cleanLoc}`;
+    } else {
+      document.title = "Wedding Microsite | Themes & Motifs";
+    }
+  }, [profile, displayTitle]);
+
 
   // Gift registry actions
   const handleContribute = (itemId: string, amount: number) => {
