@@ -190,12 +190,7 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
               No categories loaded.
             </motion.div>
           ) : expanded ? (
-            <motion.div
-              key="grid"
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-              exit={{ opacity: 0, transition: { duration: 0.2 } }}
+            <div
               className="grid gap-3 sm:gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4"
             >
               {items.map((c) => {
@@ -204,7 +199,6 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
                 return (
                   <motion.a
                     key={c.id}
-                    variants={itemVariants}
                     whileHover={{ y: -2, scale: 1.02 }}
                     whileTap={{ scale: 0.97 }}
                     href={`/vendors?category=${encodeURIComponent(c.slug)}`}
@@ -239,7 +233,7 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
                   </motion.a>
                 );
               })}
-            </motion.div>
+            </div>
           ) : (
             <motion.div
               key="scroller"
@@ -251,12 +245,8 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
               <div className="pointer-events-none absolute top-0 bottom-3 left-0 w-8 bg-linear-to-r from-[#fcfbf9] to-transparent z-10" />
               <div className="pointer-events-none absolute top-0 bottom-3 right-0 w-8 bg-linear-to-l from-[#fcfbf9] to-transparent z-10" />
 
-              <motion.div
+              <div
                 ref={scrollerRef}
-                variants={containerVariants}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
                 className="flex gap-3 overflow-x-auto flex-nowrap scrollbar-none scroll-smooth pb-3 touch-manipulation snap-x snap-mandatory"
               >
                 {items.map((c) => {
@@ -265,7 +255,6 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
                   return (
                     <motion.a
                       key={c.id}
-                      variants={itemVariants}
                       whileHover={{ y: -2, scale: 1.02 }}
                       whileTap={{ scale: 0.97 }}
                       href={`/vendors?category=${encodeURIComponent(c.slug)}`}
@@ -301,7 +290,7 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
                     </motion.a>
                   );
                 })}
-              </motion.div>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
@@ -309,3 +298,41 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
     </section>
   );
 }
+
+export function CategoryBrowserSkeleton() {
+  return (
+    <section className="mt-8 sm:mt-10 lg:mt-14">
+      <div className="flex items-end justify-between gap-4 sm:gap-6">
+        <div>
+          <div className="text-[11px] sm:text-[12px] font-medium text-gray-400 uppercase tracking-wider font-[family-name:var(--font-plus-jakarta)]">
+            Browse
+          </div>
+          <h2 className="mt-1 text-[15px] sm:text-[16px] lg:text-[18px] font-medium tracking-[-0.01em] text-gray-900">
+            Categories
+          </h2>
+        </div>
+        <div className="text-[13px] font-medium text-gray-500 font-[family-name:var(--font-plus-jakarta)] h-4 w-12 bg-stone-100 rounded animate-pulse" />
+      </div>
+
+      <div className="mt-6 overflow-hidden">
+        <div className="relative -mx-4 px-4 sm:-mx-0 sm:px-0">
+          <div className="pointer-events-none absolute top-0 bottom-3 left-0 w-8 bg-linear-to-r from-[#fcfbf9] to-transparent z-10" />
+          <div className="pointer-events-none absolute top-0 bottom-3 right-0 w-8 bg-linear-to-l from-[#fcfbf9] to-transparent z-10" />
+
+          <div className="flex gap-3 overflow-x-auto flex-nowrap scrollbar-none pb-3">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div
+                key={i}
+                className="group shrink-0 rounded-lg bg-white shadow-sm px-3 py-3 text-center w-[calc(45vw-1rem)] max-w-[180px] min-h-24 snap-start border border-gray-50 animate-pulse"
+              >
+                <div className="mx-auto inline-flex h-10 w-10 items-center justify-center rounded-full bg-stone-100" />
+                <div className="mt-2 h-3.5 w-16 mx-auto rounded bg-stone-100" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+

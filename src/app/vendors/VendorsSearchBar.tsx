@@ -263,3 +263,32 @@ export default function VendorsSearchBar({
     </div>
   );
 }
+
+export function VendorsSearchBarSkeleton() {
+  return (
+    <div className="rounded-lg border border-stone-200/60 bg-white/80 backdrop-blur-sm shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
+      <div className="px-6 py-5 border-b border-stone-100">
+        <div className="text-lg font-semibold text-stone-800 font-headline font-[family-name:var(--font-plus-jakarta)]">Search vendors</div>
+        <div className="mt-1 text-sm text-stone-500 font-[family-name:var(--font-plus-jakarta)]">Refine by keyword, region, location, or affiliation.</div>
+      </div>
+
+      <div className="p-6 space-y-4">
+        <div className="grid gap-3 items-end grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+          {["Keyword", "Area", "City", "Affiliation", "Theme", "Sort"].map((label) => (
+            <div key={label} className="grid gap-1.5 animate-pulse">
+              <span className="text-xs font-medium text-stone-500 uppercase tracking-wide font-[family-name:var(--font-plus-jakarta)]">
+                {label}
+              </span>
+              <div className="h-11 w-full rounded-md border border-stone-200 bg-stone-50/50" />
+            </div>
+          ))}
+        </div>
+
+        <div className="flex justify-center animate-pulse">
+          <div className="h-11 w-full max-w-[200px] rounded-md bg-[#a68b6a]/20" />
+        </div>
+      </div>
+    </div>
+  );
+}
+

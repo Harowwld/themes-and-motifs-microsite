@@ -12,6 +12,7 @@ const HIDDEN_ROUTES = [
   "/signup",
   "/soon-to-wed/signin",
   "/soon-to-wed/signup",
+  "/rsvp",
 ];
 
 export default function NavWrapper({ children }: { children: React.ReactNode }) {

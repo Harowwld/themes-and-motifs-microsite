@@ -21,6 +21,11 @@ export default function CreateMomentPage() {
   const [submitting, setSubmitting] = useState(false);
   const [savedVendors, setSavedVendors] = useState<SavedVendor[]>([]);
   
+  // Premium state controls
+  const [isPremium, setIsPremium] = useState(false);
+  const [existingPhotoMomentsCount, setExistingPhotoMomentsCount] = useState(0);
+  const [totalExistingPhotosCount, setTotalExistingPhotosCount] = useState(0);
+
   // Form state
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -52,9 +57,26 @@ export default function CreateMomentPage() {
         return;
       }
 
-      if (!cancelled) {
-        setUser(session?.user);
-        await fetchSavedVendors(session?.access_token ?? "");
+      if (!cancelled && session?.user) {
+        setUser(session.user);
+        
+        // Sync premium status from the database
+        const { data: profile, error: profileErr } = await supabase
+          .from("soon_to_wed_profiles")
+          .select("is_premium")
+          .eq("user_id", session.user.id)
+          .maybeSingle();
+
+        if (!profileErr && profile) {
+          setIsPremium(!!profile.is_premium);
+        } else {
+          setIsPremium(false);
+        }
+
+        await Promise.all([
+          fetchSavedVendors(session.access_token ?? ""),
+          fetchExistingMoments(session.access_token ?? "")
+        ]);
         setLoading(false);
       }
     }
@@ -65,6 +87,25 @@ export default function CreateMomentPage() {
       cancelled = true;
     };
   }, [router, supabase]);
+
+  const fetchExistingMoments = async (token: string) => {
+    try {
+      const res = await fetch("/api/moments?visibility=private", {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await res.json();
+      if (data.moments) {
+        const photoMoments = data.moments.filter((m: any) => m.moment_type === "photo");
+        setExistingPhotoMomentsCount(photoMoments.length);
+        const totalPhotos = photoMoments.reduce((acc: number, m: any) => acc + (m.moment_photos?.length ?? 0), 0);
+        setTotalExistingPhotosCount(totalPhotos);
+      }
+    } catch (error) {
+      console.error("Error fetching existing moments:", error);
+    }
+  };
 
   const fetchSavedVendors = async (token: string) => {
     try {
@@ -94,6 +135,17 @@ export default function CreateMomentPage() {
     if (!title.trim()) {
       setTitleError("Please enter a title for your moment");
       return;
+    }
+
+    if (!isPremium && momentType === "photo") {
+      if (existingPhotoMomentsCount >= 1) {
+        toast.error("Free accounts are limited to 1 photo album. Please upgrade to Premium to upload more albums!");
+        return;
+      }
+      if (totalExistingPhotosCount + files.length > 10) {
+        toast.error(`Free accounts are limited to 10 photos in total. You currently have ${totalExistingPhotosCount} photos and are trying to upload ${files.length} more. Please upgrade to Premium to upload more photos!`);
+        return;
+      }
     }
 
     setTitleError("");
@@ -324,17 +376,59 @@ export default function CreateMomentPage() {
                 <h2 className="text-lg font-semibold text-[#2c2c2c] mb-6 font-[family-name:var(--font-noto-serif)]">
                   Photos
                 </h2>
-                
-                <MomentPhotoUpload
-                  onFilesSelected={handlePhotoUpload}
-                  maxFiles={10}
-                  acceptedTypes={["image/jpeg", "image/png", "image/webp"]}
-                  className="mb-4"
-                />
-                
-                <p className="text-sm text-gray-500">
-                  Upload up to 10 photos. You can add captions after uploading.
-                </p>
+
+                {!isPremium && existingPhotoMomentsCount >= 1 ? (
+                  <div className="p-6 rounded-xl border border-[#bca374]/30 bg-[#bca374]/5 text-center flex flex-col items-center">
+                    <span className="text-3xl mb-3">⚠️</span>
+                    <h3 className="text-[16px] font-bold text-neutral-800 font-[family-name:var(--font-noto-serif)]">Photo Album Limit Reached</h3>
+                    <p className="mt-2 text-sm text-neutral-500 max-w-md font-[family-name:var(--font-plus-jakarta)] leading-relaxed">
+                      Standard accounts are limited to <strong>1 photo album</strong>. You have already created a photo album. Please upgrade to Premium Soon-to-Wed to create more albums and upload unlimited photos!
+                    </p>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        try {
+                          const { error } = await supabase
+                            .from("soon_to_wed_profiles")
+                            .upsert({ user_id: user.id, is_premium: true }, { onConflict: "user_id" });
+
+                          if (error) throw error;
+
+                          setIsPremium(true);
+                          toast.success("✨ Welcome to Premium Soon-to-Wed! Photo limits and premium planners unlocked.");
+                        } catch (err) {
+                          console.error("Upgrade failed:", err);
+                          toast.error("Failed to upgrade to Premium.");
+                        }
+                      }}
+                      className="mt-4 py-2 px-5 bg-gradient-to-r from-[#bca374] to-[#a68b6a] text-white text-[12px] font-bold uppercase tracking-wider rounded-lg shadow-md hover:shadow-lg transition-all"
+                    >
+                      Unlock Premium Suite
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    {!isPremium && (
+                      <div className="mb-6 p-4 rounded-xl border border-[#bca374]/20 bg-[#bca374]/5 text-sm text-[#a68b6a] font-[family-name:var(--font-plus-jakarta)]">
+                        <p className="font-bold">Standard Plan Photo Quota</p>
+                        <p className="mt-1 text-neutral-600">
+                          Standard couples can upload up to 10 photos total across 1 album. You currently have <strong>{totalExistingPhotosCount}/10</strong> photos uploaded. You can upload up to <strong>{10 - totalExistingPhotosCount}</strong> more photos.
+                        </p>
+                      </div>
+                    )}
+                    
+                    <MomentPhotoUpload
+                      onFilesSelected={handlePhotoUpload}
+                      maxFiles={isPremium ? 10 : Math.max(0, 10 - totalExistingPhotosCount)}
+                      acceptedTypes={["image/jpeg", "image/png", "image/webp"]}
+                      className="mb-4"
+                    />
+                    
+                    <p className="text-sm text-gray-500">
+                      Upload up to {isPremium ? 10 : Math.max(0, 10 - totalExistingPhotosCount)} photos. You can add captions after uploading.
+                    </p>
+                  </>
+                )}
               </div>
             )}
 

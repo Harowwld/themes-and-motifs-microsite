@@ -250,3 +250,34 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight, featured }: 
     </motion.a>
   );
 }
+
+export function VendorCardSkeleton({ fixedHeight, featured }: { fixedHeight?: boolean; featured?: boolean }) {
+  return (
+    <div className={`relative overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm animate-pulse ${fixedHeight ? 'h-[200px] sm:h-[240px] flex flex-col' : 'block'}`}>
+      <div className={`relative ${featured ? 'h-32 sm:h-48' : 'h-24 sm:h-28'} overflow-hidden bg-stone-100`} />
+      <div className="relative px-4 pt-0 pb-4">
+        <div className="relative -mt-8 sm:-mt-10 mb-2 sm:mb-3 flex items-end justify-between">
+          <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-xl sm:rounded-2xl border-2 sm:border-4 border-white bg-white shadow-lg sm:shadow-xl overflow-hidden flex items-center justify-center shrink-0 -ml-1">
+            <div className="h-full w-full bg-stone-100" />
+          </div>
+          <div className="h-6 w-14 rounded-full bg-stone-100" />
+        </div>
+
+        <div className="flex items-center gap-1.5 mb-1.5">
+          <div className="h-4 w-2/3 bg-stone-100 rounded animate-pulse" />
+        </div>
+
+        <div className="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-[12px] text-gray-500 font-[family-name:var(--font-plus-jakarta)]">
+          <div className="flex items-center gap-1">
+            <div className="h-3 w-6 bg-stone-100 rounded animate-pulse" />
+            <span className="text-gray-200">·</span>
+            <div className="h-3 w-14 bg-stone-100 rounded animate-pulse" />
+          </div>
+          <span className="text-gray-200">·</span>
+          <div className="h-3 w-20 bg-stone-100 rounded animate-pulse" />
+        </div>
+      </div>
+    </div>
+  );
+}
+

@@ -41,6 +41,41 @@ export type Database = {
         }
         Relationships: []
       }
+      album_photos: {
+        Row: {
+          album_id: number
+          caption: string | null
+          created_at: string
+          display_order: number | null
+          id: number
+          photo_url: string
+        }
+        Insert: {
+          album_id: number
+          caption?: string | null
+          created_at?: string
+          display_order?: number | null
+          id?: number
+          photo_url: string
+        }
+        Update: {
+          album_id?: number
+          caption?: string | null
+          created_at?: string
+          display_order?: number | null
+          id?: number
+          photo_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "album_photos_album_id_fkey"
+            columns: ["album_id"]
+            isOneToOne: false
+            referencedRelation: "soon_to_wed_albums"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bridal_fairs: {
         Row: {
           created_at: string
@@ -683,14 +718,69 @@ export type Database = {
           },
         ]
       }
+      soon_to_wed_guests: {
+        Row: {
+          created_at: string
+          dietary_preferences: string | null
+          email: string | null
+          id: string
+          meal_choice: string | null
+          name: string
+          phone: string | null
+          plus_one_count: number | null
+          relationship: string | null
+          rsvp_status: string
+          table_number: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          dietary_preferences?: string | null
+          email?: string | null
+          id?: string
+          meal_choice?: string | null
+          name: string
+          phone?: string | null
+          plus_one_count?: number | null
+          relationship?: string | null
+          rsvp_status?: string
+          table_number?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          dietary_preferences?: string | null
+          email?: string | null
+          id?: string
+          meal_choice?: string | null
+          name?: string
+          phone?: string | null
+          plus_one_count?: number | null
+          relationship?: string | null
+          rsvp_status?: string
+          table_number?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "soon_to_wed_guests_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       soon_to_wed_profiles: {
         Row: {
           bride_nickname: string | null
           budget_range: string | null
           created_at: string
           groom_nickname: string | null
+          is_premium: boolean | null
           location: string | null
           notes: string | null
+          plan_type: string
           profile_photo_url: string | null
           profile_visibility: string | null
           updated_at: string
@@ -706,8 +796,10 @@ export type Database = {
           budget_range?: string | null
           created_at?: string
           groom_nickname?: string | null
+          is_premium?: boolean | null
           location?: string | null
           notes?: string | null
+          plan_type?: string
           profile_photo_url?: string | null
           profile_visibility?: string | null
           updated_at?: string
@@ -723,8 +815,10 @@ export type Database = {
           budget_range?: string | null
           created_at?: string
           groom_nickname?: string | null
+          is_premium?: boolean | null
           location?: string | null
           notes?: string | null
+          plan_type?: string
           profile_photo_url?: string | null
           profile_visibility?: string | null
           updated_at?: string
@@ -1322,6 +1416,70 @@ export type Database = {
           },
         ]
       }
+      vendor_reviews: {
+        Row: {
+          communication_rating: number
+          created_at: string | null
+          id: string
+          moment_id: string
+          overall_rating: number
+          quality_rating: number
+          review_text: string | null
+          updated_at: string | null
+          value_rating: number
+          vendor_id: number
+          would_recommend: boolean
+        }
+        Insert: {
+          communication_rating: number
+          created_at?: string | null
+          id?: string
+          moment_id: string
+          overall_rating: number
+          quality_rating: number
+          review_text?: string | null
+          updated_at?: string | null
+          value_rating: number
+          vendor_id: number
+          would_recommend?: boolean
+        }
+        Update: {
+          communication_rating?: number
+          created_at?: string | null
+          id?: string
+          moment_id?: string
+          overall_rating?: number
+          quality_rating?: number
+          review_text?: string | null
+          updated_at?: string | null
+          value_rating?: number
+          vendor_id?: number
+          would_recommend?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vendor_reviews_moment_id_fkey"
+            columns: ["moment_id"]
+            isOneToOne: false
+            referencedRelation: "wedding_moments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vendor_reviews_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_details"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vendor_reviews_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       vendor_social_links: {
         Row: {
           created_at: string
@@ -1740,6 +1898,173 @@ export type Database = {
           },
         ]
       }
+      wedding_budgets: {
+        Row: {
+          actual: number
+          category: string
+          created_at: string | null
+          estimated: number
+          id: string
+          name: string
+          notes: string | null
+          status: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          actual?: number
+          category: string
+          created_at?: string | null
+          estimated?: number
+          id?: string
+          name: string
+          notes?: string | null
+          status: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          actual?: number
+          category?: string
+          created_at?: string | null
+          estimated?: number
+          id?: string
+          name?: string
+          notes?: string | null
+          status?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      wedding_dream_suppliers: {
+        Row: {
+          category: string
+          contact: string | null
+          created_at: string | null
+          id: string
+          name: string
+          notes: string | null
+          rating: number
+          status: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          category: string
+          contact?: string | null
+          created_at?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          rating?: number
+          status: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          category?: string
+          contact?: string | null
+          created_at?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          rating?: number
+          status?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      wedding_guests: {
+        Row: {
+          category: string
+          created_at: string | null
+          dietary: string | null
+          email: string
+          id: string
+          name: string
+          phone: string
+          rsvp_status: string
+          table_id: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          dietary?: string | null
+          email: string
+          id?: string
+          name: string
+          phone: string
+          rsvp_status: string
+          table_id?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          dietary?: string | null
+          email?: string
+          id?: string
+          name?: string
+          phone?: string
+          rsvp_status?: string
+          table_id?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wedding_guests_table_id_fkey"
+            columns: ["table_id"]
+            isOneToOne: false
+            referencedRelation: "wedding_tables"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wedding_journal: {
+        Row: {
+          content: string
+          created_at: string | null
+          date: string
+          entry_type: string
+          id: string
+          mood: string
+          rating: number | null
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          date?: string
+          entry_type: string
+          id?: string
+          mood: string
+          rating?: number | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          date?: string
+          entry_type?: string
+          id?: string
+          mood?: string
+          rating?: number | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       wedding_moments: {
         Row: {
           content: string | null
@@ -1770,6 +2095,96 @@ export type Database = {
           updated_at?: string | null
           user_id?: string
           visibility?: string | null
+        }
+        Relationships: []
+      }
+      wedding_notes: {
+        Row: {
+          content: string
+          created_at: string | null
+          date: string
+          id: string
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          date?: string
+          id?: string
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          date?: string
+          id?: string
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      wedding_tables: {
+        Row: {
+          capacity: number
+          created_at: string | null
+          id: string
+          name: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          capacity?: number
+          created_at?: string | null
+          id?: string
+          name: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          capacity?: number
+          created_at?: string | null
+          id?: string
+          name?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      wedding_tasks: {
+        Row: {
+          category: string
+          created_at: string | null
+          due_date: string
+          id: string
+          status: string
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          due_date: string
+          id?: string
+          status: string
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          due_date?: string
+          id?: string
+          status?: string
+          title?: string
+          updated_at?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -1835,11 +2250,22 @@ export type Database = {
       }
     }
     Functions: {
+      cleanup_expired_free_stw_accounts: { Args: never; Returns: undefined }
       decrement_save_count: { Args: { vendor_id: number }; Returns: undefined }
       get_orphan_images: {
         Args: { p_bucket_id: string }
         Returns: {
           object_name: string
+        }[]
+      }
+      get_stw_accounts_entering_grace_period: {
+        Args: never
+        Returns: {
+          bride_nickname: string
+          email: string
+          groom_nickname: string
+          user_id: string
+          wedding_date: string
         }[]
       }
       get_superadmin_by_auth_user_id: {

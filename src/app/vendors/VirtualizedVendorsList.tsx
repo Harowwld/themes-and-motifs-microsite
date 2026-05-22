@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import VendorCard from "../../features/vendors/components/VendorCard";
+import VendorCard, { VendorCardSkeleton } from "../../features/vendors/components/VendorCard";
 import type { VendorListItem } from "../../features/vendors/types";
 
 type SortKey = "alpha" | "rating" | "newest" | "saves" | "views";
@@ -24,27 +24,6 @@ type Props = {
   };
 };
 
-function VendorCardSkeleton() {
-  return (
-    <div className="rounded-xl border border-black/5 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] overflow-hidden">
-      <div className="h-28 w-full bg-black/5 animate-pulse" />
-      <div className="relative px-4 pt-0 pb-4">
-        <div className="relative -mt-10 mb-2 flex items-end justify-between">
-          <div className="h-20 w-20 rounded-2xl border-4 border-white bg-black/5 shadow-lg overflow-hidden shrink-0 -ml-1" />
-          <div className="h-3.5 w-14 bg-black/5 rounded animate-pulse" />
-        </div>
-        <div className="h-5 w-3/4 rounded bg-black/5 animate-pulse mb-2" />
-        <div className="flex items-center gap-2">
-          <div className="h-3 w-10 rounded bg-black/5 animate-pulse" />
-          <div className="h-3 w-2 rounded bg-black/5 animate-pulse" />
-          <div className="h-3 w-16 rounded bg-black/5 animate-pulse" />
-          <div className="h-3 w-2 rounded bg-black/5 animate-pulse" />
-          <div className="h-3 w-20 rounded bg-black/5 animate-pulse" />
-        </div>
-      </div>
-    </div>
-  );
-}
 
 type VendorsApiResponse = {
   vendors: VendorListItem[];
