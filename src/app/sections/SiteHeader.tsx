@@ -326,7 +326,7 @@ export default function SiteHeader() {
             <>
               <motion.div variants={itemVariants}>
                 <NavLink className="hover:text-[#a68b6a] transition-colors" href="/dashboard">
-                  My Wedding
+                  Dashboard
                 </NavLink>
               </motion.div>
               <motion.div variants={itemVariants}>
@@ -505,7 +505,7 @@ export default function SiteHeader() {
                       className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
                       href="/dashboard"
                     >
-                      My Wedding
+                      Dashboard
                     </NavLink>
                   </motion.div>
                   <motion.div

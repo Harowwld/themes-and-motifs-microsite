@@ -342,31 +342,14 @@ export default function CoupleMicrositePage() {
     if (profile?.entourage && Array.isArray(profile.entourage) && profile.entourage.length > 0) {
       return profile.entourage as EntourageMember[];
     }
-    return [
-      { name: "John Sterling", role: "Best Man", side: "groom" },
-      { name: "Clara Bennett", role: "Maid of Honor", side: "bride" },
-      { name: "Ethan Vance", role: "Groomsman", side: "groom" },
-      { name: "Sophia Davis", role: "Bridesmaid", side: "bride" },
-      { name: "Lucas Reyes", role: "Groomsman", side: "groom" },
-      { name: "Isabella Cruz", role: "Bridesmaid", side: "bride" },
-      { name: "Liam Anderson", role: "Ring Bearer", side: "general" },
-      { name: "Emma Watson", role: "Flower Girl", side: "general" }
-    ];
+    return [];
   }, [profile?.entourage]);
 
   const sponsorsList = useMemo<Sponsor[]>(() => {
     if (profile?.sponsors && Array.isArray(profile.sponsors) && profile.sponsors.length > 0) {
       return profile.sponsors as Sponsor[];
     }
-    return [
-      { name: "Mr. Edward Harrison", type: "principal" },
-      { name: "Mrs. Evelyn Carter", type: "principal" },
-      { name: "Mr. Christopher Bennett", type: "principal" },
-      { name: "Mrs. Natalia Sterling", type: "principal" },
-      { name: "Mr. Julian Vance (Candle)", type: "secondary" },
-      { name: "Mrs. Elena Thorne (Veil)", type: "secondary" },
-      { name: "Mr. Marcus Cruz (Cord)", type: "secondary" }
-    ];
+    return [];
   }, [profile?.sponsors]);
 
   // Fetch wedding moments directly for this specific couple
@@ -886,26 +869,36 @@ export default function CoupleMicrositePage() {
               </p>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 select-none">
-              {entourageList.map((member, idx) => (
-                <div key={idx} className="bg-white border border-black/5 rounded-xl p-4 shadow-sm text-center flex flex-col items-center hover:shadow-md transition-all">
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#a68b6a]/15 to-[#a68b6a]/5 border border-[#a68b6a]/20 flex items-center justify-center mb-3">
-                    <span className="text-[#a68b6a] font-black text-lg">
-                      {member.name.split(" ").map(n => n.charAt(0)).join("")}
+            {entourageList.length === 0 ? (
+              <div className="bg-white border border-black/5 rounded-xl p-8 text-center max-w-md mx-auto space-y-3">
+                <span className="text-3xl block">👥</span>
+                <h4 className="font-bold text-[15px] text-neutral-800 font-[family-name:var(--font-plus-jakarta)]">Entourage party is not yet set</h4>
+                <p className="text-[12.5px] text-neutral-400 font-[family-name:var(--font-plus-jakarta)] leading-relaxed">
+                  The couple hasn't added their entourage members yet.
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 select-none">
+                {entourageList.map((member, idx) => (
+                  <div key={idx} className="bg-white border border-black/5 rounded-xl p-4 shadow-sm text-center flex flex-col items-center hover:shadow-md transition-all">
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#a68b6a]/15 to-[#a68b6a]/5 border border-[#a68b6a]/20 flex items-center justify-center mb-3">
+                      <span className="text-[#a68b6a] font-black text-lg">
+                        {member.name.split(" ").map(n => n.charAt(0)).join("")}
+                      </span>
+                    </div>
+                    <h4 className="font-bold text-[14px] text-neutral-800 font-[family-name:var(--font-plus-jakarta)] leading-tight">{member.name}</h4>
+                    <p className="text-[11px] text-[#a68b6a] font-bold uppercase tracking-wider mt-1.5">{member.role}</p>
+                    <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide mt-2 ${
+                      member.side === "bride" ? "bg-rose-50 text-rose-600" :
+                      member.side === "groom" ? "bg-blue-50 text-blue-600" :
+                      "bg-neutral-100 text-neutral-500"
+                    }`}>
+                      {member.side === "general" ? "Attendant" : `${member.side}'s side`}
                     </span>
                   </div>
-                  <h4 className="font-bold text-[14px] text-neutral-800 font-[family-name:var(--font-plus-jakarta)] leading-tight">{member.name}</h4>
-                  <p className="text-[11px] text-[#a68b6a] font-bold uppercase tracking-wider mt-1.5">{member.role}</p>
-                  <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide mt-2 ${
-                    member.side === "bride" ? "bg-rose-50 text-rose-600" :
-                    member.side === "groom" ? "bg-blue-50 text-blue-600" :
-                    "bg-neutral-100 text-neutral-500"
-                  }`}>
-                    {member.side === "general" ? "Attendant" : `${member.side}'s side`}
-                  </span>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
@@ -921,39 +914,49 @@ export default function CoupleMicrositePage() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 select-none">
-              
-              {/* Principal Sponsors Column */}
-              <div className="bg-white border border-black/5 rounded-xl p-5 shadow-sm space-y-4">
-                <h4 className="font-bold text-[14px] text-[#a68b6a] font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wider border-b border-black/[0.04] pb-2">
-                  Principal Sponsors
-                </h4>
-                <ul className="space-y-3">
-                  {sponsorsList.filter(s => s.type === "principal").map((sponsor, idx) => (
-                    <li key={idx} className="flex items-center gap-2.5">
-                      <span className="h-1.5 w-1.5 rounded-full bg-[#a68b6a]" />
-                      <span className="text-[13px] font-semibold text-neutral-700">{sponsor.name}</span>
-                    </li>
-                  ))}
-                </ul>
+            {sponsorsList.length === 0 ? (
+              <div className="bg-white border border-black/5 rounded-xl p-8 text-center max-w-md mx-auto space-y-3">
+                <span className="text-3xl block">✨</span>
+                <h4 className="font-bold text-[15px] text-neutral-800 font-[family-name:var(--font-plus-jakarta)]">Sponsors directory is not yet set</h4>
+                <p className="text-[12.5px] text-neutral-400 font-[family-name:var(--font-plus-jakarta)] leading-relaxed">
+                  The couple hasn't listed their wedding sponsors yet.
+                </p>
               </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 select-none">
+                
+                {/* Principal Sponsors Column */}
+                <div className="bg-white border border-black/5 rounded-xl p-5 shadow-sm space-y-4">
+                  <h4 className="font-bold text-[14px] text-[#a68b6a] font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wider border-b border-black/[0.04] pb-2">
+                    Principal Sponsors
+                  </h4>
+                  <ul className="space-y-3">
+                    {sponsorsList.filter(s => s.type === "principal").map((sponsor, idx) => (
+                      <li key={idx} className="flex items-center gap-2.5">
+                        <span className="h-1.5 w-1.5 rounded-full bg-[#a68b6a]" />
+                        <span className="text-[13px] font-semibold text-neutral-700">{sponsor.name}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
 
-              {/* Secondary Sponsors Column */}
-              <div className="bg-white border border-black/5 rounded-xl p-5 shadow-sm space-y-4">
-                <h4 className="font-bold text-[14px] text-[#a68b6a] font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wider border-b border-black/[0.04] pb-2">
-                  Secondary Sponsors
-                </h4>
-                <ul className="space-y-3">
-                  {sponsorsList.filter(s => s.type === "secondary").map((sponsor, idx) => (
-                    <li key={idx} className="flex items-center gap-2.5">
-                      <span className="h-1.5 w-1.5 rounded-full bg-[#a68b6a]" />
-                      <span className="text-[13px] font-semibold text-neutral-700">{sponsor.name}</span>
-                    </li>
-                  ))}
-                </ul>
+                {/* Secondary Sponsors Column */}
+                <div className="bg-white border border-black/5 rounded-xl p-5 shadow-sm space-y-4">
+                  <h4 className="font-bold text-[14px] text-[#a68b6a] font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wider border-b border-black/[0.04] pb-2">
+                    Secondary Sponsors
+                  </h4>
+                  <ul className="space-y-3">
+                    {sponsorsList.filter(s => s.type === "secondary").map((sponsor, idx) => (
+                      <li key={idx} className="flex items-center gap-2.5">
+                        <span className="h-1.5 w-1.5 rounded-full bg-[#a68b6a]" />
+                        <span className="text-[13px] font-semibold text-neutral-700">{sponsor.name}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
               </div>
-
-            </div>
+            )}
           </div>
         )}
 
@@ -969,36 +972,32 @@ export default function CoupleMicrositePage() {
               </p>
             </div>
 
-            <div className="bg-white border border-black/5 rounded-2xl p-6 sm:p-10 shadow-sm max-w-lg mx-auto relative select-none">
-              {/* Elegant floating decorative quote mark */}
-              <span className="absolute top-4 left-6 text-[#a68b6a]/10 text-[80px] leading-none pointer-events-none select-none font-serif">“</span>
-              
-              <div className="relative z-10 text-center space-y-5 font-[family-name:var(--font-plus-jakarta)] text-neutral-600 leading-relaxed text-[13px] sm:text-[14px]">
-                <p className="font-bold text-neutral-800 text-[15px] sm:text-[16px] mb-4">Dear Family and Friends,</p>
-                {profile?.our_message ? (
-                  <p className="whitespace-pre-line text-neutral-600 leading-relaxed">{profile.our_message}</p>
-                ) : (
-                  <>
-                    <p>
-                      We are incredibly blessed to have you in our lives. As we embark on this beautiful journey of marriage, we want to express our deepest gratitude for your love, support, and friendship.
-                    </p>
-                    <p>
-                      Our wedding day is not just a celebration of our love, but a celebration of the community that has shaped who we are. Each of you has left an indelible mark on our hearts, and we cannot imagine our big day without you.
-                    </p>
-                    <p>
-                      Thank you for being our mentors, our guides, and our biggest cheerleaders. We look forward to creating unforgettable memories together!
-                    </p>
-                  </>
-                )}
+            {profile?.our_message ? (
+              <div className="bg-white border border-black/5 rounded-2xl p-6 sm:p-10 shadow-sm max-w-lg mx-auto relative select-none">
+                {/* Elegant floating decorative quote mark */}
+                <span className="absolute top-4 left-6 text-[#a68b6a]/10 text-[80px] leading-none pointer-events-none select-none font-serif">“</span>
                 
-                <div className="pt-6 border-t border-black/[0.04] mt-6">
-                  <p className="text-[12px] text-neutral-400 uppercase tracking-widest font-bold">With all our love,</p>
-                  <p className="text-[36px] text-[#a68b6a] leading-none mt-3" style={{ fontFamily: "'Great Vibes', cursive" }}>
-                    {displayTitle}
-                  </p>
+                <div className="relative z-10 text-center space-y-5 font-[family-name:var(--font-plus-jakarta)] text-neutral-600 leading-relaxed text-[13px] sm:text-[14px]">
+                  <p className="font-bold text-neutral-800 text-[15px] sm:text-[16px] mb-4">Dear Family and Friends,</p>
+                  <p className="whitespace-pre-line text-neutral-600 leading-relaxed">{profile.our_message}</p>
+                  
+                  <div className="pt-6 border-t border-black/[0.04] mt-6">
+                    <p className="text-[12px] text-neutral-400 uppercase tracking-widest font-bold">With all our love,</p>
+                    <p className="text-[36px] text-[#a68b6a] leading-none mt-3" style={{ fontFamily: "'Great Vibes', cursive" }}>
+                      {displayTitle}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
+            ) : (
+              <div className="bg-white border border-black/5 rounded-xl p-8 text-center max-w-md mx-auto space-y-3">
+                <span className="text-3xl block">✉️</span>
+                <h4 className="font-bold text-[15px] text-neutral-800 font-[family-name:var(--font-plus-jakarta)]">Guest welcome message is not yet set</h4>
+                <p className="text-[12.5px] text-neutral-400 font-[family-name:var(--font-plus-jakarta)] leading-relaxed">
+                  The couple hasn't written their guest welcome letter yet.
+                </p>
+              </div>
+            )}
           </div>
         )}
 

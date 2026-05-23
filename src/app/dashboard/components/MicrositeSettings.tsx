@@ -225,7 +225,7 @@ export default function MicrositeSettings({ user, supabase }: MicrositeSettingsP
         <button
           onClick={handleSave}
           disabled={saving}
-          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#bca374] to-[#a68b6a] text-white text-[12px] font-bold uppercase tracking-wider rounded-xl shadow-md hover:shadow-lg hover:from-[#a68b6a] hover:to-[#957a5c] transition-all disabled:opacity-50 disabled:cursor-not-allowed shrink-0 font-[family-name:var(--font-plus-jakarta)]"
+          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#a68b6a] text-white text-[12px] font-bold uppercase tracking-wider rounded-xl shadow-md hover:shadow-lg hover:bg-[#957a5c] transition-all disabled:opacity-50 disabled:cursor-not-allowed shrink-0 font-[family-name:var(--font-plus-jakarta)]"
         >
           <Save size={14} className="stroke-[2.5]" />
           {saving ? "Saving Changes..." : "Save Configuration"}
@@ -631,7 +631,7 @@ export default function MicrositeSettings({ user, supabase }: MicrositeSettingsP
         <button
           onClick={handleSave}
           disabled={saving}
-          className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-[#bca374] to-[#a68b6a] text-white text-[13px] font-bold uppercase tracking-wider rounded-xl shadow-lg hover:shadow-xl hover:from-[#a68b6a] hover:to-[#957a5c] transition-all disabled:opacity-50 disabled:cursor-not-allowed font-[family-name:var(--font-plus-jakarta)]"
+          className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#a68b6a] text-white text-[13px] font-bold uppercase tracking-wider rounded-xl shadow-lg hover:shadow-xl hover:bg-[#957a5c] transition-all disabled:opacity-50 disabled:cursor-not-allowed font-[family-name:var(--font-plus-jakarta)]"
         >
           <Save size={15} className="stroke-[2.5]" />
           {saving ? "Saving Changes..." : "Save Microsite Configuration"}
