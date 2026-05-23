@@ -31,6 +31,57 @@ type GuestDetails = {
   tableName: string | null;
 };
 
+function RSVPSimulatorSkeleton() {
+  return (
+    <div className="min-h-screen bg-[#faf8f5] relative overflow-hidden py-12 px-4 flex items-center justify-center animate-pulse">
+      {/* Elegantly placed ambient highlights */}
+      <div className="absolute top-[-25%] left-[-20%] w-[700px] h-[700px] rounded-full bg-[#a68b6a]/5 blur-3xl pointer-events-none" />
+      <div className="absolute bottom-[-15%] right-[-15%] w-[600px] h-[600px] rounded-full bg-[#a68b6a]/5 blur-3xl pointer-events-none" />
+
+      <div className="max-w-lg w-full relative z-10">
+        <div className="bg-white/90 backdrop-blur-lg rounded-3xl border border-[#a68b6a]/20 shadow-[0_20px_50px_rgba(166,139,106,0.1)] overflow-hidden">
+          {/* Gold Top Border */}
+          <div className="h-2 bg-gradient-to-r from-[#bca374] via-[#a68b6a] to-[#bca374]" />
+          
+          <div className="p-6 sm:p-8 flex flex-col items-center">
+            {/* Icon placeholder */}
+            <div className="h-12 w-12 rounded-full bg-black/5 mb-3" />
+            <div className="h-7 w-48 rounded bg-black/10 mb-2" />
+            <div className="h-4 w-36 rounded bg-black/5 mb-6" />
+
+            {/* Dear box placeholder */}
+            <div className="w-full bg-[#a68b6a]/5 rounded-2xl p-5 border border-[#a68b6a]/10 flex flex-col items-center space-y-3 mb-6">
+              <div className="h-3.5 w-10 rounded bg-black/5" />
+              <div className="h-6 w-36 rounded bg-black/10" />
+              <div className="h-3.5 w-56 rounded bg-black/5" />
+            </div>
+
+            {/* Form elements */}
+            <div className="w-full space-y-5">
+              <div className="space-y-2">
+                <div className="h-3.5 w-24 rounded bg-black/5" />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="h-20 rounded-2xl bg-black/[0.03]" />
+                  <div className="h-20 rounded-2xl bg-black/[0.03]" />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="h-3.5 w-20 rounded bg-black/5" />
+                <div className="h-10 rounded-xl bg-black/[0.03]" />
+              </div>
+              <div className="space-y-2">
+                <div className="h-3.5 w-20 rounded bg-black/5" />
+                <div className="h-10 rounded-xl bg-black/[0.03]" />
+              </div>
+              <div className="h-12 rounded-xl bg-black/10 mt-6" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function RSVPSimulatorContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -152,16 +203,7 @@ function RSVPSimulatorContent() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-[#faf8f5] flex items-center justify-center">
-        <div className="flex flex-col items-center gap-3">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#a68b6a]"></div>
-          <p className="text-sm font-medium text-neutral-500 font-[family-name:var(--font-plus-jakarta)] animate-pulse">
-            Opening your personal wedding invitation...
-          </p>
-        </div>
-      </div>
-    );
+    return <RSVPSimulatorSkeleton />;
   }
 
   // Simulator Guest Selector View (If guestId parameter is not found or not active)
@@ -514,11 +556,7 @@ function RSVPSimulatorContent() {
 
 export default function RSVPSimulatorPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-[#faf8f5] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#a68b6a]"></div>
-      </div>
-    }>
+    <Suspense fallback={<RSVPSimulatorSkeleton />}>
       <RSVPSimulatorContent />
     </Suspense>
   );

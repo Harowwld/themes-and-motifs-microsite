@@ -48,6 +48,8 @@ export default function SuperadminVerificationDocumentsPage() {
   const [items, setItems] = useState<DocRow[]>([]);
   const [query, setQuery] = useState("");
   const [savingId, setSavingId] = useState<number | null>(null);
+  const [editingNotesId, setEditingNotesId] = useState<number | null>(null);
+  const [editingNotesValue, setEditingNotesValue] = useState<string>("");
 
   async function refresh() {
     setLoading(true);
@@ -180,21 +182,54 @@ export default function SuperadminVerificationDocumentsPage() {
                       {x.reviewed_at ? <div className="mt-1 text-[11px] text-black/45">Reviewed: {fmtDate(x.reviewed_at)}</div> : null}
                     </div>
                     <div className="px-3 py-3 grid gap-2">
-                      <div className="text-[12px] text-black/60 line-clamp-3">{x.notes ?? ""}</div>
-                      <button
-                        type="button"
-                        disabled={savingId === x.id}
-                        onClick={() => {
-                          const notes = window.prompt("Notes (optional)", x.notes ?? "") ?? "";
-                          patchDoc(x.id, {
-                            notes: notes.trim() ? notes.trim() : null,
-                            reviewed_at: new Date().toISOString(),
-                          });
-                        }}
-                        className="h-9 w-full rounded-[3px] border border-black/10 bg-white text-[12px] font-semibold text-black/70 hover:bg-black/5 transition-colors disabled:opacity-60"
-                      >
-                        Edit notes
-                      </button>
+                      {editingNotesId === x.id ? (
+                        <div className="flex flex-col gap-1.5 w-full">
+                          <textarea
+                            rows={2}
+                            value={editingNotesValue}
+                            onChange={(e) => setEditingNotesValue(e.target.value)}
+                            className="w-full text-[11px] p-1 border border-black/10 rounded outline-none focus:border-[#a67c52]"
+                            placeholder="Notes (optional)"
+                          />
+                          <div className="flex gap-1.5 justify-end">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                patchDoc(x.id, {
+                                  notes: editingNotesValue.trim() ? editingNotesValue.trim() : null,
+                                  reviewed_at: new Date().toISOString(),
+                                });
+                                setEditingNotesId(null);
+                              }}
+                              className="px-2 py-0.5 bg-[#a67c52] text-white text-[10px] font-semibold rounded hover:bg-[#8e6a46] transition-colors"
+                            >
+                              Save
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setEditingNotesId(null)}
+                              className="px-2 py-0.5 bg-gray-200 text-black/60 text-[10px] font-semibold rounded hover:bg-gray-300 transition-colors"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="text-[12px] text-black/60 line-clamp-3">{x.notes ?? ""}</div>
+                          <button
+                            type="button"
+                            disabled={savingId === x.id}
+                            onClick={() => {
+                              setEditingNotesId(x.id);
+                              setEditingNotesValue(x.notes ?? "");
+                            }}
+                            className="h-9 w-full rounded-[3px] border border-black/10 bg-white text-[12px] font-semibold text-black/70 hover:bg-black/5 transition-colors disabled:opacity-60"
+                          >
+                            Edit notes
+                          </button>
+                        </>
+                      )}
                     </div>
                   </div>
                 ))}

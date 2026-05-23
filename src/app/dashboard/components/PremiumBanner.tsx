@@ -47,7 +47,7 @@ export default function PremiumBanner({ onUpgrade }: PremiumBannerProps) {
           <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
             <button
               onClick={onUpgrade}
-              className="w-full sm:w-auto h-12 px-8 bg-[#a68b6a] hover:bg-[#957a5c] text-white text-[13px] font-black rounded-xl transition-all duration-300 shadow-sm hover:shadow-[0_6px_20px_rgba(166,139,106,0.2)] hover:-translate-y-0.5 font-[family-name:var(--font-plus-jakarta)] uppercase tracking-widest cursor-pointer"
+              className="w-full sm:w-auto h-12 px-8 bg-[#a68b6a] hover:bg-[#957a5c] text-white text-[13px] font-black rounded-xl active:scale-[0.97] transition-all duration-150 shadow-sm hover:shadow-[0_6px_20px_rgba(166,139,106,0.2)] hover:-translate-y-0.5 font-[family-name:var(--font-plus-jakarta)] uppercase tracking-widest cursor-pointer"
             >
               Unlock Premium Workspace
             </button>

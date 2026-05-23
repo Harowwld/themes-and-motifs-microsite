@@ -253,14 +253,14 @@ export default function BudgetPlanner({
                 <button
                   type="button"
                   onClick={handleCancelEdit}
-                  className="flex-1 h-11 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 text-[13px] font-bold rounded-lg transition-colors font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wider"
+                  className="flex-1 h-11 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 text-[13px] font-bold rounded-lg active:scale-[0.97] transition-all duration-100 font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wider"
                 >
                   Cancel
                 </button>
               )}
               <button
                 type="submit"
-                className="flex-1 h-11 bg-[#a68b6a] hover:bg-[#957a5c] text-white text-[13px] font-bold rounded-lg transition-colors font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wider"
+                className="flex-1 h-11 bg-[#a68b6a] hover:bg-[#957a5c] text-white text-[13px] font-bold rounded-lg active:scale-[0.97] transition-all duration-100 font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wider"
               >
                 {editingItem ? "Save Changes" : "Add Expense"}
               </button>
@@ -325,7 +325,7 @@ export default function BudgetPlanner({
                     <td className="py-3.5 pr-4 text-center">
                       <button
                         onClick={() => onToggleStatus(item.id)}
-                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider border cursor-pointer select-none transition-all duration-200 ${
+                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider border cursor-pointer select-none active:scale-[0.95] transition-all duration-100 ${
                           item.status === "paid"
                             ? "bg-emerald-50 text-emerald-600 border-emerald-200/50 hover:bg-emerald-100/50"
                             : "bg-amber-50 text-amber-600 border-amber-200/50 hover:bg-amber-100/50"
@@ -339,14 +339,14 @@ export default function BudgetPlanner({
                       <div className="flex justify-end gap-1.5 opacity-60 group-hover:opacity-100 transition-opacity">
                         <button
                           onClick={() => handleStartEdit(item)}
-                          className="p-1.5 text-neutral-400 hover:text-[#a68b6a] hover:bg-[#a68b6a]/5 rounded-lg transition-all cursor-pointer inline-flex items-center justify-center"
+                          className="p-1.5 text-neutral-400 hover:text-[#a68b6a] hover:bg-[#a68b6a]/5 rounded-lg active:scale-75 transition-all duration-100 cursor-pointer inline-flex items-center justify-center"
                           title="Edit expense"
                         >
                           <Edit2 size={15} />
                         </button>
                         <button
                           onClick={() => onDelete(item.id)}
-                          className="p-1.5 text-neutral-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all cursor-pointer inline-flex items-center justify-center"
+                          className="p-1.5 text-neutral-400 hover:text-red-500 hover:bg-red-50 rounded-lg active:scale-75 transition-all duration-100 cursor-pointer inline-flex items-center justify-center"
                           title="Delete expense"
                         >
                           <Trash2 size={15} />

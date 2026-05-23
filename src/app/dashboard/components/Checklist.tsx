@@ -197,14 +197,14 @@ export default function Checklist({
                 <button
                   type="button"
                   onClick={handleCancelEdit}
-                  className="flex-1 h-11 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 text-[13px] font-bold rounded-lg transition-colors font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wider"
+                  className="flex-1 h-11 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 text-[13px] font-bold rounded-lg active:scale-[0.97] transition-all duration-100 font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wider"
                 >
                   Cancel
                 </button>
               )}
               <button
                 type="submit"
-                className="flex-1 h-11 bg-[#a68b6a] hover:bg-[#957a5c] text-white text-[13px] font-bold rounded-lg transition-colors font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wider"
+                className="flex-1 h-11 bg-[#a68b6a] hover:bg-[#957a5c] text-white text-[13px] font-bold rounded-lg active:scale-[0.97] transition-all duration-100 font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wider"
               >
                 {editingTask ? "Save" : "Add Task"}
               </button>
@@ -223,7 +223,7 @@ export default function Checklist({
             <div className="flex items-center gap-1.5 bg-[#fafafa] border border-black/[0.04] p-1 rounded-lg">
               <button
                 onClick={() => setFilter("all")}
-                className={`px-3 py-1.5 rounded-md text-[11px] font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer ${
+                className={`px-3 py-1.5 rounded-md text-[11px] font-bold uppercase tracking-wider active:scale-[0.95] transition-all duration-100 cursor-pointer ${
                   filter === "all" ? "bg-white text-[#a68b6a] shadow-sm" : "text-neutral-400 hover:text-neutral-600"
                 }`}
               >
@@ -231,7 +231,7 @@ export default function Checklist({
               </button>
               <button
                 onClick={() => setFilter("todo")}
-                className={`px-3 py-1.5 rounded-md text-[11px] font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer ${
+                className={`px-3 py-1.5 rounded-md text-[11px] font-bold uppercase tracking-wider active:scale-[0.95] transition-all duration-100 cursor-pointer ${
                   filter === "todo" ? "bg-white text-[#a68b6a] shadow-sm" : "text-neutral-400 hover:text-neutral-600"
                 }`}
               >
@@ -239,7 +239,7 @@ export default function Checklist({
               </button>
               <button
                 onClick={() => setFilter("completed")}
-                className={`px-3 py-1.5 rounded-md text-[11px] font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer ${
+                className={`px-3 py-1.5 rounded-md text-[11px] font-bold uppercase tracking-wider active:scale-[0.95] transition-all duration-100 cursor-pointer ${
                   filter === "completed" ? "bg-white text-[#a68b6a] shadow-sm" : "text-neutral-400 hover:text-neutral-600"
                 }`}
               >
@@ -269,7 +269,7 @@ export default function Checklist({
                       {/* Checkbox trigger button */}
                       <button
                         onClick={() => onToggleTask(t.id)}
-                        className={`h-5 w-5 rounded-full border flex items-center justify-center shrink-0 mt-0.5 cursor-pointer transition-colors ${
+                        className={`h-5 w-5 rounded-full border flex items-center justify-center shrink-0 mt-0.5 cursor-pointer active:scale-75 transition-all duration-100 ${
                           isCompleted
                             ? "bg-[#a68b6a] border-[#a68b6a] text-white"
                             : "border-black/[0.15] bg-white hover:border-[#a68b6a]"
@@ -300,14 +300,14 @@ export default function Checklist({
                     <div className="flex items-center gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
                       <button
                         onClick={() => handleStartEdit(t)}
-                        className="p-1.5 text-neutral-400 hover:text-[#a68b6a] hover:bg-[#a68b6a]/5 rounded-lg transition-all cursor-pointer inline-flex items-center justify-center"
+                        className="p-1.5 text-neutral-400 hover:text-[#a68b6a] hover:bg-[#a68b6a]/5 rounded-lg active:scale-75 transition-all duration-100 cursor-pointer inline-flex items-center justify-center"
                         title="Edit task"
                       >
                         <Edit2 size={15} />
                       </button>
                       <button
                         onClick={() => onDeleteTask(t.id)}
-                        className="p-1.5 text-neutral-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all cursor-pointer inline-flex items-center justify-center"
+                        className="p-1.5 text-neutral-400 hover:text-red-500 hover:bg-red-50 rounded-lg active:scale-75 transition-all duration-100 cursor-pointer inline-flex items-center justify-center"
                         title="Delete task"
                       >
                         <Trash2 size={15} />

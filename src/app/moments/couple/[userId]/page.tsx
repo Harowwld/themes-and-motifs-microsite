@@ -7,6 +7,55 @@ import Link from "next/link";
 import { toast } from "@/lib/toast";
 import { proxiedImageUrl } from "@/lib/imageSizes";
 
+function CoupleMicrositeSkeleton() {
+  return (
+    <div className="min-h-screen bg-[#fafafa]">
+      <div className="mx-auto w-full max-w-4xl px-4 sm:px-6 py-10 sm:py-14 animate-pulse">
+        {/* Back button skeleton */}
+        <div className="h-4 w-40 rounded bg-black/10 mb-8 max-w-2xl mx-auto" />
+
+        {/* Brand Script Title Skeleton */}
+        <div className="flex justify-center mb-8 pt-4">
+          <div className="h-14 w-80 rounded bg-black/10" />
+        </div>
+
+        {/* Tab Navigation skeleton */}
+        <div className="flex justify-center border-b border-black/[0.06] mb-10 pb-0.5">
+          <div className="flex gap-4 sm:gap-8 px-2">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="py-3 px-3 w-16 sm:w-20 h-8 rounded bg-black/5" />
+            ))}
+          </div>
+        </div>
+
+        {/* Main Content card skeleton */}
+        <div className="space-y-12">
+          <div className="bg-white border border-black/5 rounded-2xl p-4 sm:p-6 shadow-sm max-w-2xl mx-auto flex flex-col items-center space-y-6">
+            {/* Couple Main Portrait frame */}
+            <div className="w-full aspect-[4/3] rounded-xl bg-black/[0.03]" />
+
+            {/* Title & Info */}
+            <div className="flex flex-col items-center space-y-3 w-full">
+              <div className="h-6 w-2/3 rounded bg-black/10" />
+              <div className="h-4 w-1/3 rounded bg-black/5" />
+              <div className="h-10 w-48 rounded-xl bg-[#fafafa] border border-black/[0.03]" />
+            </div>
+
+            {/* RSVP button */}
+            <div className="h-10 w-28 rounded-full bg-black/10" />
+
+            {/* Subtext */}
+            <div className="w-full border-t border-black/[0.04] pt-5 flex flex-col items-center space-y-2">
+              <div className="h-3 w-5/6 rounded bg-black/5" />
+              <div className="h-3 w-4/5 rounded bg-black/5" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 type Moment = {
   id: string;
   user_id: string;
@@ -65,9 +114,9 @@ type RegistryItem = {
 function MomentCard({ moment, onDelete, isOwner }: { moment: Moment; onDelete: (id: string) => void; isOwner: boolean }) {
   const router = useRouter();
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const handleDeleteConfirm = async () => {
-    if (!confirm("Are you sure you want to delete this moment?")) return;
     setDeletingId(moment.id);
     try {
       const token = (await createSupabaseBrowserClient().auth.getSession()).data.session?.access_token;
@@ -90,6 +139,7 @@ function MomentCard({ moment, onDelete, isOwner }: { moment: Moment; onDelete: (
       toast.error(error instanceof Error ? error.message : "Failed to delete moment.");
     } finally {
       setDeletingId(null);
+      setShowDeleteConfirm(false);
     }
   };
 
@@ -234,13 +284,35 @@ function MomentCard({ moment, onDelete, isOwner }: { moment: Moment; onDelete: (
             </button>
           </div>
           {isOwner && (
-            <button
-              onClick={handleDeleteConfirm}
-              disabled={deletingId === moment.id}
-              className="text-[#b42318] hover:text-[#9a1d14] transition-colors text-sm font-bold"
-            >
-              {deletingId === moment.id ? "Deleting..." : "Delete"}
-            </button>
+            <div className="flex items-center gap-2">
+              {showDeleteConfirm ? (
+                <>
+                  <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mr-1">Confirm delete?</span>
+                  <button
+                    onClick={handleDeleteConfirm}
+                    disabled={deletingId === moment.id}
+                    className="px-2.5 py-1 bg-[#b42318] hover:bg-[#9a1d14] text-white text-[11px] font-black uppercase tracking-wider rounded-lg transition-colors cursor-pointer"
+                  >
+                    Yes
+                  </button>
+                  <button
+                    onClick={() => setShowDeleteConfirm(false)}
+                    disabled={deletingId === moment.id}
+                    className="px-2.5 py-1 bg-neutral-100 hover:bg-neutral-200 text-neutral-500 text-[11px] font-black uppercase tracking-wider rounded-lg border border-black/5 transition-colors cursor-pointer"
+                  >
+                    No
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={() => setShowDeleteConfirm(true)}
+                  disabled={deletingId === moment.id}
+                  className="text-[#b42318] hover:text-[#9a1d14] transition-colors text-sm font-bold cursor-pointer"
+                >
+                  Delete
+                </button>
+              )}
+            </div>
           )}
         </div>
       </div>
@@ -665,11 +737,7 @@ export default function CoupleMicrositePage() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-[#fafafa] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#a68b6a]"></div>
-      </div>
-    );
+    return <CoupleMicrositeSkeleton />;
   }
 
   return (

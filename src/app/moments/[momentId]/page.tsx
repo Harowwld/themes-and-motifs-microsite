@@ -228,6 +228,7 @@ export default function MomentDetailPage() {
   const [moment, setMoment] = useState<Moment | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const momentId = params.momentId as string;
 
@@ -437,41 +438,60 @@ export default function MomentDetailPage() {
                   Last updated {new Date(moment.updated_at).toLocaleDateString()}
                 </p>
                 <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => router.push(`/moments/${moment.id}/edit`)}
-                    className="px-4 py-2 text-[#a68b6a] hover:text-[#957a5c] transition-colors"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={async () => {
-                      if (!confirm("Are you sure you want to delete this moment?")) return;
-                      
-                      try {
-                        const token = (await supabase.auth.getSession()).data.session?.access_token;
-                        const response = await fetch(`/api/moments/${moment.id}`, {
-                          method: "DELETE",
-                          headers: {
-                            authorization: `Bearer ${token}`,
-                          },
-                        });
+                  {showDeleteConfirm ? (
+                    <div className="flex items-center gap-3 bg-red-50 border border-red-100 rounded-xl px-4 py-2 text-sm text-red-700">
+                      <span className="font-semibold">Delete this moment?</span>
+                      <button
+                        onClick={async () => {
+                          try {
+                            const token = (await supabase.auth.getSession()).data.session?.access_token;
+                            const response = await fetch(`/api/moments/${moment.id}`, {
+                              method: "DELETE",
+                              headers: {
+                                authorization: `Bearer ${token}`,
+                              },
+                            });
 
-                        if (response.ok) {
-                          toast.success("Moment deleted successfully.");
-                          router.push("/moments");
-                        } else {
-                          const errorData = await response.json().catch(() => ({}));
-                          throw new Error(errorData.error || `Failed to delete moment (${response.status})`);
-                        }
-                      } catch (error) {
-                        console.error("Error deleting moment:", error);
-                        toast.error(error instanceof Error ? error.message : "Failed to delete moment.");
-                      }
-                    }}
-                    className="px-4 py-2 text-[#b42318] hover:text-[#9a1d14] transition-colors"
-                  >
-                    Delete
-                  </button>
+                            if (response.ok) {
+                              toast.success("Moment deleted successfully.");
+                              router.push("/moments");
+                            } else {
+                              const errorData = await response.json().catch(() => ({}));
+                              throw new Error(errorData.error || `Failed to delete moment (${response.status})`);
+                            }
+                          } catch (error) {
+                            console.error("Error deleting moment:", error);
+                            toast.error(error instanceof Error ? error.message : "Failed to delete moment.");
+                            setShowDeleteConfirm(false);
+                          }
+                        }}
+                        className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-lg transition-all"
+                      >
+                        Yes, Delete
+                      </button>
+                      <button
+                        onClick={() => setShowDeleteConfirm(false)}
+                        className="px-3 py-1.5 border border-gray-300 hover:bg-gray-50 text-gray-700 text-xs font-bold rounded-lg bg-white transition-all"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => router.push(`/moments/${moment.id}/edit`)}
+                        className="px-4 py-2 text-[#a68b6a] hover:text-[#957a5c] transition-colors"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => setShowDeleteConfirm(true)}
+                        className="px-4 py-2 text-[#b42318] hover:text-[#9a1d14] transition-colors"
+                      >
+                        Delete
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
             )}

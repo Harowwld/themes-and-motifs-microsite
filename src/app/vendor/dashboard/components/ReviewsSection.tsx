@@ -13,6 +13,7 @@ export function ReviewsSection({
 }) {
   const [editingReviewId, setEditingReviewId] = useState<number | null>(null);
   const [draftReplyText, setDraftReplyText] = useState("");
+  const [deletingReviewId, setDeletingReviewId] = useState<number | null>(null);
 
   const handleStartReply = (review: Review) => {
     setEditingReviewId(review.id);
@@ -32,10 +33,13 @@ export function ReviewsSection({
     setDraftReplyText("");
   };
 
-  const handleDeleteReply = async (reviewId: number) => {
-    if (window.confirm("Are you sure you want to delete your response to this review?")) {
-      await saveReviewReply(reviewId, null);
-    }
+  const handleDeleteReply = (reviewId: number) => {
+    setDeletingReviewId(reviewId);
+  };
+
+  const confirmDeleteReply = async (reviewId: number) => {
+    await saveReviewReply(reviewId, null);
+    setDeletingReviewId(null);
   };
 
   function maskEmail(email?: string | null) {
@@ -197,24 +201,49 @@ export function ReviewsSection({
 
                           {/* Quick Reply Actions */}
                           <div className="flex items-center gap-1.5 opacity-60 group-hover/reply:opacity-100 transition-opacity">
-                            <button
-                              type="button"
-                              onClick={() => handleStartReply(r)}
-                              title="Edit reply"
-                              disabled={saving}
-                              className="p-1.5 rounded-lg border border-black/[0.06] bg-white text-black/50 hover:text-[#a67c52] hover:border-[#a67c52]/20 transition-all shadow-sm"
-                            >
-                              <Edit3 size={12} />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => handleDeleteReply(r.id)}
-                              title="Delete reply"
-                              disabled={saving}
-                              className="p-1.5 rounded-lg border border-black/[0.06] bg-white text-black/50 hover:text-red-600 hover:border-red-100 transition-all shadow-sm"
-                            >
-                              <Trash2 size={12} />
-                            </button>
+                            {deletingReviewId === r.id ? (
+                              <div className="flex items-center gap-2 text-[11px] bg-red-50 text-red-700 px-2.5 py-1 rounded-lg border border-red-100">
+                                <span>Delete response?</span>
+                                <button
+                                  type="button"
+                                  onClick={() => confirmDeleteReply(r.id)}
+                                  disabled={saving}
+                                  className="font-bold hover:underline"
+                                >
+                                  Yes
+                                </button>
+                                <span className="text-red-300">|</span>
+                                <button
+                                  type="button"
+                                  onClick={() => setDeletingReviewId(null)}
+                                  disabled={saving}
+                                  className="hover:underline text-neutral-500 font-medium"
+                                >
+                                  No
+                                </button>
+                              </div>
+                            ) : (
+                              <>
+                                <button
+                                  type="button"
+                                  onClick={() => handleStartReply(r)}
+                                  title="Edit reply"
+                                  disabled={saving}
+                                  className="p-1.5 rounded-lg border border-black/[0.06] bg-white text-black/50 hover:text-[#a67c52] hover:border-[#a67c52]/20 transition-all shadow-sm"
+                                >
+                                  <Edit3 size={12} />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeleteReply(r.id)}
+                                  title="Delete reply"
+                                  disabled={saving}
+                                  className="p-1.5 rounded-lg border border-black/[0.06] bg-white text-black/50 hover:text-red-600 hover:border-red-100 transition-all shadow-sm"
+                                >
+                                  <Trash2 size={12} />
+                                </button>
+                              </>
+                            )}
                           </div>
                         </div>
                         <p className="text-[13px] leading-relaxed text-black/75 whitespace-pre-line">

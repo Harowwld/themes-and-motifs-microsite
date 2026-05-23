@@ -35,6 +35,7 @@ export default function GiftRegistry({ userId, supabase }: GiftRegistryProps) {
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<number | null>(null);
   const [editingTarget, setEditingTarget] = useState<{ [key: number]: string }>({});
+  const [removingId, setRemovingId] = useState<number | null>(null);
 
   const fetchRegistryItems = useCallback(async () => {
     try {
@@ -129,9 +130,11 @@ export default function GiftRegistry({ userId, supabase }: GiftRegistryProps) {
     }
   };
 
-  const handleRemoveItem = async (promoId: number) => {
-    if (!confirm("Are you sure you want to remove this item from your wedding registry?")) return;
+  const handleRemoveItem = (promoId: number) => {
+    setRemovingId(promoId);
+  };
 
+  const confirmRemoveItem = async (promoId: number) => {
     try {
       const { error } = await supabase
         .from("saved_promos")
@@ -146,6 +149,8 @@ export default function GiftRegistry({ userId, supabase }: GiftRegistryProps) {
     } catch (err) {
       console.error("Error removing item:", err);
       toast.error("Failed to remove item.");
+    } finally {
+      setRemovingId(null);
     }
   };
 
@@ -337,23 +342,47 @@ export default function GiftRegistry({ userId, supabase }: GiftRegistryProps) {
 
                   {/* Actions */}
                   <div className="flex items-center justify-between gap-4 pt-1">
-                    <a
-                      href={`/promos/${item.promo_id}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-[11px] font-bold text-[#a68b6a] hover:text-[#957a5c] uppercase tracking-wider"
-                    >
-                      <span>View Deal Page</span>
-                      <ExternalLink size={11} strokeWidth={2.5} />
-                    </a>
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveItem(item.promo_id)}
-                      className="p-1.5 text-neutral-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all cursor-pointer inline-flex items-center justify-center shrink-0"
-                      title="Remove from registry"
-                    >
-                      <Trash2 size={15} />
-                    </button>
+                    {removingId === item.promo_id ? (
+                      <div className="flex items-center justify-between gap-2 p-2 bg-red-50 border border-red-100 rounded-xl text-[11px] text-red-700 w-full">
+                        <span>Remove this item?</span>
+                        <div className="flex gap-2">
+                          <button
+                            type="button"
+                            onClick={() => confirmRemoveItem(item.promo_id)}
+                            className="font-bold hover:underline"
+                          >
+                            Yes, Remove
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setRemovingId(null)}
+                            className="hover:underline text-neutral-500 font-medium"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <a
+                          href={`/promos/${item.promo_id}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-[11px] font-bold text-[#a68b6a] hover:text-[#957a5c] uppercase tracking-wider"
+                        >
+                          <span>View Deal Page</span>
+                          <ExternalLink size={11} strokeWidth={2.5} />
+                        </a>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveItem(item.promo_id)}
+                          className="p-1.5 text-neutral-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all cursor-pointer inline-flex items-center justify-center shrink-0"
+                          title="Remove from registry"
+                        >
+                          <Trash2 size={15} />
+                        </button>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>

@@ -54,6 +54,7 @@ function fmtDate(iso: string) {
 export default function SuperadminClaimsPage() {
   const [loading, setLoading] = useState(true);
   const [savingId, setSavingId] = useState<number | null>(null);
+  const [activePrompt, setActivePrompt] = useState<{ id: number; action: "approve" | "reject"; value: string } | null>(null);
 
   const [claims, setClaims] = useState<Claim[]>([]);
   const [query, setQuery] = useState("");
@@ -88,8 +89,12 @@ export default function SuperadminClaimsPage() {
     });
   }, [claims, query]);
 
-  async function act(id: number, action: "approve" | "reject" | "verify") {
-    const admin_notes = action !== "verify" ? (window.prompt(action === "approve" ? "Admin notes (optional)" : "Reason / admin notes (optional)") ?? "") : undefined;
+  async function act(id: number, action: "approve" | "reject" | "verify", notes?: string) {
+    if (action !== "verify" && notes === undefined) {
+      setActivePrompt({ id, action, value: "" });
+      return;
+    }
+    const admin_notes = action !== "verify" ? notes : undefined;
     setSavingId(id);
     try {
       const res = await apiFetch<{ claim?: Claim; vendor?: { document_verified: string } }>("/api/admin/claims", {
@@ -222,41 +227,77 @@ export default function SuperadminClaimsPage() {
                         {c.status}
                       </span>
                     </div>
-                    <div className="px-3 py-3 flex gap-2">
-                      {c.status === "pending" && (
-                        <>
-                          <button
-                            type="button"
-                            disabled={savingId === c.id}
-                            onClick={() => act(c.id, "approve")}
-                            className="px-3 h-8 rounded-[3px] bg-[#027a48] text-white text-[11px] font-medium hover:bg-[#046c4e] transition-colors disabled:opacity-50"
-                          >
-                            Approve
-                          </button>
-                          <button
-                            type="button"
-                            disabled={savingId === c.id}
-                            onClick={() => act(c.id, "reject")}
-                            className="px-3 h-8 rounded-[3px] border border-[#b42318]/20 bg-white text-[#b42318] text-[11px] font-medium hover:bg-[#fff1f3] transition-colors disabled:opacity-50"
-                          >
-                            Reject
-                          </button>
-                        </>
-                      )}
-                      {c.status === "approved" && (
-                        <button
-                          type="button"
-                          disabled={savingId === c.id}
-                          onClick={() => act(c.id, "verify")}
-                          className="px-3 h-8 rounded-[3px] bg-blue-600 text-white text-[11px] font-medium hover:bg-blue-700 transition-colors disabled:opacity-50"
-                        >
-                          Verify Business
-                        </button>
-                      )}
-                      {(c.status === "rejected" || c.status === "verified") && (
-                        <div className="text-[11px] text-black/40">
-                          {c.reviewed_at ? fmtDate(c.reviewed_at) : "?"}
+                    <div className="px-3 py-3 flex flex-col gap-2 relative">
+                      {activePrompt?.id === c.id ? (
+                        <div className="flex flex-col gap-1.5 p-2 border border-black/10 bg-[#fcfbf9] rounded-md shadow-sm w-full min-w-[140px] z-10">
+                          <span className="text-[10px] font-bold text-[#a67c52] uppercase tracking-wider">
+                            {activePrompt.action === "approve" ? "Approval Notes" : "Rejection Reason"}
+                          </span>
+                          <textarea
+                            rows={2}
+                            value={activePrompt.value}
+                            onChange={(e) => setActivePrompt({ ...activePrompt, value: e.target.value })}
+                            placeholder="Enter notes (optional)..."
+                            className="w-full text-[11px] p-1 border border-black/10 rounded outline-none focus:border-[#a67c52]"
+                          />
+                          <div className="flex gap-1.5 justify-end">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                act(c.id, activePrompt.action, activePrompt.value);
+                                setActivePrompt(null);
+                              }}
+                              className="px-2 py-0.5 bg-[#027a48] text-white text-[10px] font-semibold rounded hover:bg-[#046c4e] transition-colors"
+                            >
+                              Confirm
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setActivePrompt(null)}
+                              className="px-2 py-0.5 bg-gray-200 text-black/60 text-[10px] font-semibold rounded hover:bg-gray-300 transition-colors"
+                            >
+                              Cancel
+                            </button>
+                          </div>
                         </div>
+                      ) : (
+                        <>
+                          {c.status === "pending" && (
+                            <div className="flex gap-1.5 w-full">
+                              <button
+                                type="button"
+                                disabled={savingId === c.id}
+                                onClick={() => act(c.id, "approve")}
+                                className="flex-1 h-8 rounded-[3px] bg-[#027a48] text-white text-[11px] font-medium hover:bg-[#046c4e] transition-colors disabled:opacity-50"
+                              >
+                                Approve
+                              </button>
+                              <button
+                                type="button"
+                                disabled={savingId === c.id}
+                                onClick={() => act(c.id, "reject")}
+                                className="flex-1 h-8 rounded-[3px] border border-[#b42318]/20 bg-white text-[#b42318] text-[11px] font-medium hover:bg-[#fff1f3] transition-colors disabled:opacity-50"
+                              >
+                                Reject
+                              </button>
+                            </div>
+                          )}
+                          {c.status === "approved" && (
+                            <button
+                              type="button"
+                              disabled={savingId === c.id}
+                              onClick={() => act(c.id, "verify")}
+                              className="w-full h-8 rounded-[3px] bg-blue-600 text-white text-[11px] font-medium hover:bg-blue-700 transition-colors disabled:opacity-50"
+                            >
+                              Verify Business
+                            </button>
+                          )}
+                          {(c.status === "rejected" || c.status === "verified") && (
+                            <div className="text-[11px] text-black/40">
+                              {c.reviewed_at ? fmtDate(c.reviewed_at) : "?"}
+                            </div>
+                          )}
+                        </>
                       )}
                     </div>
                   </div>

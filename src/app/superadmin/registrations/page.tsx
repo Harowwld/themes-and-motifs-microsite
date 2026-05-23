@@ -44,6 +44,7 @@ function fmtDate(iso: string) {
 export default function SuperadminRegistrationsPage() {
   const [loading, setLoading] = useState(true);
   const [savingId, setSavingId] = useState<number | null>(null);
+  const [activePrompt, setActivePrompt] = useState<{ id: number; action: "approve" | "reject"; value: string } | null>(null);
 
   const [registrations, setRegistrations] = useState<Registration[]>([]);
   const [query, setQuery] = useState("");
@@ -78,13 +79,16 @@ export default function SuperadminRegistrationsPage() {
     });
   }, [registrations, query, statusFilter]);
 
-  async function act(id: number, action: "approve" | "reject") {
-    const admin_notes = window.prompt(action === "approve" ? "Admin notes (optional)" : "Reason / admin notes (optional)") ?? "";
+  async function act(id: number, action: "approve" | "reject", notes?: string) {
+    if (notes === undefined) {
+      setActivePrompt({ id, action, value: "" });
+      return;
+    }
     setSavingId(id);
     try {
       const res = await apiFetch<{ registration: Registration }>("/api/admin/registrations", {
         method: "PATCH",
-        body: JSON.stringify({ id, action, admin_notes: admin_notes.trim() ? admin_notes.trim() : null }),
+        body: JSON.stringify({ id, action, admin_notes: notes.trim() ? notes.trim() : null }),
       });
       setRegistrations((prev) => prev.map((r) => (r.id === id ? { ...r, ...(res.registration as any) } : r)));
       toast.success(action === "approve" ? "Vendor approved successfully" : "Registration rejected");
@@ -190,23 +194,59 @@ export default function SuperadminRegistrationsPage() {
                           {r.status}
                         </span>
                       </div>
-                      <div className="px-3 py-3 flex gap-2">
-                        <button
-                          type="button"
-                          disabled={isSaving || r.status === "approved"}
-                          onClick={() => act(r.id, "approve")}
-                          className="h-8 px-3 rounded-[3px] border border-[#027a48]/20 bg-[#ecfdf3] text-[12px] font-semibold text-[#027a48] hover:bg-[#d1fadf] transition-colors disabled:opacity-60"
-                        >
-                          Approve
-                        </button>
-                        <button
-                          type="button"
-                          disabled={isSaving || r.status === "rejected"}
-                          onClick={() => act(r.id, "reject")}
-                          className="h-8 px-3 rounded-[3px] border border-[#b42318]/20 bg-[#fff1f3] text-[12px] font-semibold text-[#b42318] hover:bg-[#ffe4e8] transition-colors disabled:opacity-60"
-                        >
-                          Reject
-                        </button>
+                      <div className="px-3 py-3 flex flex-col gap-2 relative">
+                        {activePrompt?.id === r.id ? (
+                          <div className="flex flex-col gap-1.5 p-2 border border-black/10 bg-[#fcfbf9] rounded-md shadow-sm w-full min-w-[140px] z-10">
+                            <span className="text-[10px] font-bold text-[#a67c52] uppercase tracking-wider">
+                              {activePrompt.action === "approve" ? "Approval Notes" : "Rejection Reason"}
+                            </span>
+                            <textarea
+                              rows={2}
+                              value={activePrompt.value}
+                              onChange={(e) => setActivePrompt({ ...activePrompt, value: e.target.value })}
+                              placeholder="Enter notes (optional)..."
+                              className="w-full text-[11px] p-1 border border-black/10 rounded outline-none focus:border-[#a67c52]"
+                            />
+                            <div className="flex gap-1.5 justify-end">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  act(r.id, activePrompt.action, activePrompt.value);
+                                  setActivePrompt(null);
+                                }}
+                                className="px-2 py-0.5 bg-[#027a48] text-white text-[10px] font-semibold rounded hover:bg-[#046c4e] transition-colors"
+                              >
+                                Confirm
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setActivePrompt(null)}
+                                className="px-2 py-0.5 bg-gray-200 text-black/60 text-[10px] font-semibold rounded hover:bg-gray-300 transition-colors"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex gap-2 w-full">
+                            <button
+                              type="button"
+                              disabled={isSaving || r.status === "approved"}
+                              onClick={() => act(r.id, "approve")}
+                              className="flex-1 h-8 px-3 rounded-[3px] border border-[#027a48]/20 bg-[#ecfdf3] text-[12px] font-semibold text-[#027a48] hover:bg-[#d1fadf] transition-colors disabled:opacity-60"
+                            >
+                              Approve
+                            </button>
+                            <button
+                              type="button"
+                              disabled={isSaving || r.status === "rejected"}
+                              onClick={() => act(r.id, "reject")}
+                              className="flex-1 h-8 px-3 rounded-[3px] border border-[#b42318]/20 bg-[#fff1f3] text-[12px] font-semibold text-[#b42318] hover:bg-[#ffe4e8] transition-colors disabled:opacity-60"
+                            >
+                              Reject
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   );

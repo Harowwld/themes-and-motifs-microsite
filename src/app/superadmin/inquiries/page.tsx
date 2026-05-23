@@ -50,6 +50,7 @@ export default function SuperadminInquiriesPage() {
   const [items, setItems] = useState<Inquiry[]>([]);
   const [query, setQuery] = useState("");
   const [savingId, setSavingId] = useState<number | null>(null);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   async function refresh() {
     setLoading(true);
@@ -99,16 +100,21 @@ export default function SuperadminInquiriesPage() {
     }
   }
 
-  async function deleteInquiry(id: number) {
-    if (!window.confirm("Delete this inquiry?")) return;
+  const handleDeleteClick = (id: number) => {
+    setDeletingId(id);
+  };
+
+  const confirmDeleteInquiry = async (id: number) => {
     try {
       await apiFetch<{ ok: boolean }>(`/api/admin/inquiries?id=${encodeURIComponent(String(id))}`, { method: "DELETE" });
       setItems((prev) => prev.filter((x) => x.id !== id));
       toast.success("Inquiry deleted successfully.");
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed to delete inquiry.");
+    } finally {
+      setDeletingId(null);
     }
-  }
+  };
 
   return (
     <div className="grid gap-6">
@@ -197,14 +203,36 @@ export default function SuperadminInquiriesPage() {
                       </select>
                     </div>
 
-                    <div className="px-3 py-3">
-                      <button
-                        type="button"
-                        onClick={() => deleteInquiry(x.id)}
-                        className="h-9 w-full rounded-[3px] border border-[#b42318]/20 bg-[#fff1f3] text-[12px] font-semibold text-[#b42318] hover:bg-[#ffe4e8] transition-colors"
-                      >
-                        Delete
-                      </button>
+                    <div className="px-3 py-3 flex items-center justify-center">
+                      {deletingId === x.id ? (
+                        <div className="flex flex-col gap-1 items-center justify-center h-full text-[11px]">
+                          <span className="font-semibold text-[#b42318]">Confirm?</span>
+                          <div className="flex gap-2">
+                            <button
+                              type="button"
+                              onClick={() => confirmDeleteInquiry(x.id)}
+                              className="text-[#b42318] font-bold hover:underline"
+                            >
+                              Yes
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setDeletingId(null)}
+                              className="text-black/55 hover:underline"
+                            >
+                              No
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteClick(x.id)}
+                          className="h-9 w-full rounded-[3px] border border-[#b42318]/20 bg-[#fff1f3] text-[12px] font-semibold text-[#b42318] hover:bg-[#ffe4e8] transition-colors"
+                        >
+                          Delete
+                        </button>
+                      )}
                     </div>
                   </div>
                 ))}

@@ -94,8 +94,8 @@ export default function MicrositeSettings({ user, supabase }: MicrositeSettingsP
           }
         }
       } catch (err) {
-        console.error("Error loading microsite settings:", err);
-        toast.error("Failed to load your microsite configuration.");
+        console.error("Error loading wedding page settings:", err);
+        toast.error("Failed to load your wedding page configuration.");
       } finally {
         setLoading(false);
       }
@@ -129,10 +129,10 @@ export default function MicrositeSettings({ user, supabase }: MicrositeSettingsP
         }, { onConflict: "user_id" });
 
       if (error) throw error;
-      toast.success("✨ Microsite settings updated successfully!");
+      toast.success("✨ Wedding page settings updated successfully!");
     } catch (err) {
-      console.error("Error saving microsite settings:", err);
-      toast.error("Failed to save microsite settings.");
+      console.error("Error saving wedding page settings:", err);
+      toast.error("Failed to save wedding page settings.");
     } finally {
       setSaving(false);
     }
@@ -214,7 +214,7 @@ export default function MicrositeSettings({ user, supabase }: MicrositeSettingsP
           </div>
           <div>
             <h2 className="text-lg font-bold text-[#2c2c2c] font-[family-name:var(--font-noto-serif)]">
-              Microsite Settings & Customizer
+              Wedding Page Settings & Customizer
             </h2>
             <p className="text-[12px] text-neutral-500 font-[family-name:var(--font-plus-jakarta)] mt-0.5">
               Personalize the public wedding page your guests will see. Configure your story, entourage list, sponsors, and custom welcome letter.
@@ -475,7 +475,7 @@ export default function MicrositeSettings({ user, supabase }: MicrositeSettingsP
                 <button
                   type="button"
                   onClick={handleAddMember}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-1 px-3 py-1.5 bg-[#a68b6a] hover:bg-[#957a5c] text-white text-[11px] font-bold uppercase tracking-wider rounded-lg transition-colors cursor-pointer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-1 px-3 py-1.5 bg-[#a68b6a] hover:bg-[#957a5c] text-white text-[11px] font-bold uppercase tracking-wider rounded-lg transition-colors cursor-pointer whitespace-nowrap"
                 >
                   <Plus size={12} className="stroke-[2.5]" /> Add Member
                 </button>
@@ -571,7 +571,7 @@ export default function MicrositeSettings({ user, supabase }: MicrositeSettingsP
                 <button
                   type="button"
                   onClick={handleAddSponsor}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-1 px-3 py-1.5 bg-[#a68b6a] hover:bg-[#957a5c] text-white text-[11px] font-bold uppercase tracking-wider rounded-lg transition-colors cursor-pointer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-1 px-3 py-1.5 bg-[#a68b6a] hover:bg-[#957a5c] text-white text-[11px] font-bold uppercase tracking-wider rounded-lg transition-colors cursor-pointer whitespace-nowrap"
                 >
                   <Plus size={12} className="stroke-[2.5]" /> Add Sponsor
                 </button>

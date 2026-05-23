@@ -153,7 +153,38 @@ function SignInPageContent() {
 
 export default function SignInPage() {
   return (
-    <React.Suspense fallback={<div className="min-h-screen bg-[#fafafa] flex items-center justify-center"><div className="w-8 h-8 rounded-full border-4 border-[#a67c52] border-t-transparent animate-spin"></div></div>}>
+    <React.Suspense fallback={
+      <div className="min-h-screen bg-[#fafafa]">
+        <div className="mx-auto w-full max-w-3xl px-5 sm:px-8 py-12 animate-pulse">
+          <div className="rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden">
+            <div className="p-7">
+              <div className="h-6 w-32 rounded bg-black/10" />
+              <div className="mt-2 h-4 w-64 rounded bg-black/5" />
+
+              <div className="mt-6 grid gap-4">
+                <div className="grid gap-1.5">
+                  <div className="h-4 w-12 rounded bg-black/5" />
+                  <div className="h-10 rounded-[3px] bg-black/[0.03]" />
+                </div>
+
+                <div className="grid gap-1.5">
+                  <div className="flex justify-between">
+                    <div className="h-4 w-16 rounded bg-black/5" />
+                    <div className="h-3 w-32 rounded bg-black/5" />
+                  </div>
+                  <div className="h-10 rounded-[3px] bg-black/[0.03]" />
+                </div>
+
+                <div className="h-10 rounded-[3px] bg-black/10" />
+
+                <div className="h-4 w-40 rounded bg-black/5" />
+                <div className="h-4 w-48 rounded bg-black/5" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }>
       <SignInPageContent />
     </React.Suspense>
   );

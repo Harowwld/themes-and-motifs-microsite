@@ -135,7 +135,7 @@ export default function RSVPTracker({ guests, onUpdateRSVP }: RSVPTrackerProps) 
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => handleCopyLink(g.id)}
-                      className={`px-2.5 py-1 rounded-md text-[11px] font-bold border transition-colors inline-flex items-center gap-1 cursor-pointer ${
+                      className={`px-2.5 py-1 rounded-md text-[11px] font-bold border active:scale-[0.96] transition-all duration-100 inline-flex items-center gap-1 cursor-pointer ${
                         copiedId === g.id
                           ? "bg-emerald-50 text-emerald-600 border-emerald-200"
                           : "bg-white text-[#a68b6a] border-[#a68b6a]/30 hover:bg-[#a68b6a]/5"
@@ -161,7 +161,7 @@ export default function RSVPTracker({ guests, onUpdateRSVP }: RSVPTrackerProps) 
                           onUpdateRSVP(g.id, "attending");
                           toast.success(`${g.name} marked as attending!`);
                         }}
-                        className="p-1 px-2 rounded-md bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border border-emerald-200/50 hover:border-emerald-200 transition-colors inline-flex items-center gap-0.5 font-bold cursor-pointer"
+                        className="p-1 px-2 rounded-md bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border border-emerald-200/50 hover:border-emerald-200 active:scale-[0.93] transition-all duration-100 inline-flex items-center gap-0.5 font-bold cursor-pointer"
                         title="Simulate Yes"
                       >
                         <Check size={12} strokeWidth={2.5} />
@@ -172,7 +172,7 @@ export default function RSVPTracker({ guests, onUpdateRSVP }: RSVPTrackerProps) 
                           onUpdateRSVP(g.id, "declined");
                           toast.success(`${g.name} marked as declined.`);
                         }}
-                        className="p-1 px-2 rounded-md bg-red-50 hover:bg-red-100 text-red-500 border border-red-200/50 hover:border-red-200 transition-colors inline-flex items-center gap-0.5 font-bold cursor-pointer"
+                        className="p-1 px-2 rounded-md bg-red-50 hover:bg-red-100 text-red-500 border border-red-200/50 hover:border-red-200 active:scale-[0.93] transition-all duration-100 inline-flex items-center gap-0.5 font-bold cursor-pointer"
                         title="Simulate No"
                       >
                         <X size={12} strokeWidth={2.5} />

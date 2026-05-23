@@ -6,6 +6,27 @@ import { createSupabaseBrowserClient } from "@/lib/supabaseBrowser";
 import Link from "next/link";
 import { toast } from "@/lib/toast";
 
+function MomentCardSkeleton() {
+  return (
+    <div className="bg-white border border-black/5 rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between animate-pulse">
+      <div>
+        <div className="aspect-[16/10] bg-black/[0.03] relative" />
+        <div className="p-5 sm:p-6 text-center space-y-4 flex flex-col items-center">
+          <div className="h-8 w-2/3 rounded bg-black/10" />
+          <div className="w-12 h-[1px] bg-neutral-200" />
+          <div className="space-y-2 flex flex-col items-center w-full">
+            <div className="h-4 w-1/2 rounded bg-black/5" />
+            <div className="h-3 w-1/3 rounded bg-black/5" />
+          </div>
+        </div>
+      </div>
+      <div className="px-5 pb-5">
+        <div className="h-10 w-full rounded-xl bg-black/[0.03]" />
+      </div>
+    </div>
+  );
+}
+
 type CoupleProfile = {
   user_id: string;
   groom_nickname: string | null;
@@ -35,7 +56,7 @@ export default function PublicMomentsPage() {
       try {
         // Check current session
         const { data: { session } } = await supabase.auth.getSession();
-        
+
         if (cancelled) return;
         setUser(session?.user);
 
@@ -105,13 +126,7 @@ export default function PublicMomentsPage() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#fafafa] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#a68b6a]"></div>
-      </div>
-    );
-  }
+  // No longer blocking with a circular spinner page; we load skeleton cards inside the standard UI layout.
 
   return (
     <div className="min-h-screen bg-[#fafafa]">
@@ -119,7 +134,7 @@ export default function PublicMomentsPage() {
       <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet" />
 
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 py-12 sm:py-16">
-        
+
         {/* Page Main Brand Header */}
         <div className="text-center max-w-2xl mx-auto mb-10 select-none">
           <span className="text-[#a68b6a] text-xs font-bold uppercase tracking-widest bg-[#a68b6a]/5 px-3 py-1 rounded-full">
@@ -133,27 +148,7 @@ export default function PublicMomentsPage() {
           </p>
         </div>
 
-        {/* Dashboard Shortcut Banner for Active Soon-to-Wed Couples */}
-        {userProfile && (
-          <div className="max-w-3xl mx-auto mb-12 bg-gradient-to-r from-[#a68b6a]/10 to-[#957a5c]/5 border border-[#a68b6a]/20 rounded-2xl p-5 sm:p-6 shadow-sm select-none">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="space-y-1 text-center sm:text-left">
-                <h3 className="font-bold text-[15px] sm:text-[16px] text-neutral-800 font-[family-name:var(--font-plus-jakarta)]">
-                  💍 Welcome back, {userProfile.groom_nickname || "Groom"} & {userProfile.bride_nickname || "Bride"}!
-                </h3>
-                <p className="text-[12px] sm:text-[13px] text-neutral-500">
-                  Manage your wedding registry, principal sponsors, entourage directory, and share moments with guests.
-                </p>
-              </div>
-              <Link
-                href={`/moments/couple/${userProfile.user_id}`}
-                className="px-5 py-2.5 bg-[#a68b6a] text-white text-[12px] font-bold uppercase tracking-wider rounded-xl hover:bg-[#957a5c] transition-all shadow-sm shrink-0"
-              >
-                View Your Microsite
-              </Link>
-            </div>
-          </div>
-        )}
+
 
         {/* Search bar and Filters */}
         <div className="max-w-md mx-auto mb-10 select-none">
@@ -174,7 +169,13 @@ export default function PublicMomentsPage() {
         </div>
 
         {/* Couples directory card grid */}
-        {filteredCouples.length === 0 ? (
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <MomentCardSkeleton key={i} />
+            ))}
+          </div>
+        ) : filteredCouples.length === 0 ? (
           <div className="max-w-md mx-auto text-center border border-black/[0.04] bg-white rounded-2xl p-10 sm:p-12 shadow-sm select-none">
             <span className="text-3xl">🕊️</span>
             <h3 className="text-[16px] font-bold text-neutral-700 font-[family-name:var(--font-noto-serif)] mt-4">
@@ -198,7 +199,7 @@ export default function PublicMomentsPage() {
               const displayNames = couple.groom_nickname && couple.bride_nickname
                 ? `${couple.groom_nickname} & ${couple.bride_nickname}`
                 : couple.groom_nickname || couple.bride_nickname || "Wilson & Diana";
-                
+
               const weddingDateFormatted = formatWeddingDate(couple.wedding_date);
               const displayLoc = couple.location || "Peoria, Illinois";
               const isPremium = couple.is_premium;
@@ -217,7 +218,7 @@ export default function PublicMomentsPage() {
                         className="w-full h-full object-cover group-hover:scale-[1.02] filter brightness-95 transition-transform duration-500"
                         loading="lazy"
                       />
-                      
+
                       {/* Premium ribbon badge */}
                       {isPremium && (
                         <div className="absolute top-3 right-3 bg-gradient-to-r from-amber-500 to-yellow-600 text-white text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full tracking-wider shadow-sm flex items-center gap-1 select-none">
@@ -265,7 +266,7 @@ export default function PublicMomentsPage() {
                       href={`/moments/couple/${couple.user_id}`}
                       className="block w-full text-center py-2.5 border border-[#a68b6a] text-[#a68b6a] text-[11px] sm:text-[12px] font-bold uppercase tracking-wider rounded-xl hover:bg-[#a68b6a] hover:text-white transition-colors duration-300 cursor-pointer shadow-sm hover:shadow font-[family-name:var(--font-plus-jakarta)]"
                     >
-                      Explore Microsite
+                      Explore Wedding
                     </Link>
                   </div>
                 </div>

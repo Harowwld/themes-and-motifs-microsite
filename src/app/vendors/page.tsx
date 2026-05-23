@@ -109,7 +109,7 @@ type AffiliationRow = {
   slug: string;
 };
 
-function VendorsPageSkeleton() {
+export function VendorsPageSkeleton() {
   return (
     <>
       <VendorsSearchBarSkeleton />
