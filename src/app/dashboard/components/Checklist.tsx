@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Trash2, Check } from "lucide-react";
+import { Trash2, Check, Edit2, X } from "lucide-react";
 import { TaskItem } from "../types";
 
 interface ChecklistProps {
@@ -9,6 +9,7 @@ interface ChecklistProps {
   onAddTask: (task: Omit<TaskItem, "id">) => void;
   onToggleTask: (id: string) => void;
   onDeleteTask: (id: string) => void;
+  onUpdateTask?: (id: string, task: Omit<TaskItem, "id">) => void;
 }
 
 const CATEGORIES = [
@@ -23,22 +24,61 @@ const CATEGORIES = [
   "Miscellaneous",
 ];
 
-export default function Checklist({ tasks, onAddTask, onToggleTask, onDeleteTask }: ChecklistProps) {
+export default function Checklist({
+  tasks,
+  onAddTask,
+  onToggleTask,
+  onDeleteTask,
+  onUpdateTask,
+}: ChecklistProps) {
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState(CATEGORIES[0]);
   const [dueDate, setDueDate] = useState("");
   const [filter, setFilter] = useState<"all" | "todo" | "completed">("all");
 
+  // Editing State
+  const [editingTask, setEditingTask] = useState<TaskItem | null>(null);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) return;
-    onAddTask({
+
+    const taskData = {
       title: title.trim(),
       category,
       dueDate: dueDate || new Date().toISOString().split("T")[0],
-      status: "todo",
-    });
+    };
+
+    if (editingTask) {
+      if (onUpdateTask) {
+        onUpdateTask(editingTask.id, {
+          ...taskData,
+          status: editingTask.status,
+        });
+      }
+      setEditingTask(null);
+    } else {
+      onAddTask({
+        ...taskData,
+        status: "todo",
+      });
+    }
+
     setTitle("");
+    setDueDate("");
+  };
+
+  const handleStartEdit = (task: TaskItem) => {
+    setEditingTask(task);
+    setTitle(task.title);
+    setCategory(task.category);
+    setDueDate(task.dueDate ? new Date(task.dueDate).toISOString().split("T")[0] : "");
+  };
+
+  const handleCancelEdit = () => {
+    setEditingTask(null);
+    setTitle("");
+    setCategory(CATEGORIES[0]);
     setDueDate("");
   };
 
@@ -101,9 +141,21 @@ export default function Checklist({ tasks, onAddTask, onToggleTask, onDeleteTask
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Quick Add Task Form */}
         <div className="w-full lg:w-[350px] shrink-0 rounded-xl border border-black/5 bg-white p-6 shadow-sm self-start">
-          <h3 className="text-[15px] font-semibold text-[#2c2c2c] font-[family-name:var(--font-noto-serif)] mb-4">
-            Add Planning Task
-          </h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-[15px] font-semibold text-[#2c2c2c] font-[family-name:var(--font-noto-serif)]">
+              {editingTask ? "Edit Planning Task" : "Add Planning Task"}
+            </h3>
+            {editingTask && (
+              <button
+                type="button"
+                onClick={handleCancelEdit}
+                className="p-1 text-neutral-400 hover:text-neutral-600 rounded-lg cursor-pointer"
+                title="Cancel Edit"
+              >
+                <X size={16} />
+              </button>
+            )}
+          </div>
           <form onSubmit={handleSubmit} className="space-y-3">
             <div>
               <label className="text-[11px] font-bold text-neutral-500 block mb-1">Task Title</label>
@@ -140,12 +192,23 @@ export default function Checklist({ tasks, onAddTask, onToggleTask, onDeleteTask
               />
             </div>
 
-            <button
-              type="submit"
-              className="w-full h-11 bg-[#a68b6a] hover:bg-[#957a5c] text-white text-[13px] font-bold rounded-lg transition-colors font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wider"
-            >
-              Add Task
-            </button>
+            <div className="flex gap-2">
+              {editingTask && (
+                <button
+                  type="button"
+                  onClick={handleCancelEdit}
+                  className="flex-1 h-11 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 text-[13px] font-bold rounded-lg transition-colors font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wider"
+                >
+                  Cancel
+                </button>
+              )}
+              <button
+                type="submit"
+                className="flex-1 h-11 bg-[#a68b6a] hover:bg-[#957a5c] text-white text-[13px] font-bold rounded-lg transition-colors font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wider"
+              >
+                {editingTask ? "Save" : "Add Task"}
+              </button>
+            </div>
           </form>
         </div>
 
@@ -234,13 +297,22 @@ export default function Checklist({ tasks, onAddTask, onToggleTask, onDeleteTask
                       </div>
                     </div>
 
-                    <button
-                      onClick={() => onDeleteTask(t.id)}
-                      className="p-1.5 text-neutral-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all cursor-pointer inline-flex items-center justify-center"
-                      title="Delete task"
-                    >
-                      <Trash2 size={15} />
-                    </button>
+                    <div className="flex items-center gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
+                      <button
+                        onClick={() => handleStartEdit(t)}
+                        className="p-1.5 text-neutral-400 hover:text-[#a68b6a] hover:bg-[#a68b6a]/5 rounded-lg transition-all cursor-pointer inline-flex items-center justify-center"
+                        title="Edit task"
+                      >
+                        <Edit2 size={15} />
+                      </button>
+                      <button
+                        onClick={() => onDeleteTask(t.id)}
+                        className="p-1.5 text-neutral-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all cursor-pointer inline-flex items-center justify-center"
+                        title="Delete task"
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    </div>
                   </div>
                 );
               })}

@@ -5,6 +5,7 @@ import { useRouter, useParams } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabaseBrowser";
 import Link from "next/link";
 import { toast } from "@/lib/toast";
+import { proxiedImageUrl } from "@/lib/imageSizes";
 
 type Moment = {
   id: string;
@@ -53,7 +54,10 @@ type RegistryItem = {
   id: string;
   name: string;
   price: number;
-  image: string;
+  image: string | null;
+  logo?: string | null;
+  vendorName?: string;
+  discount?: number | null;
   contribution: number;
   target: number;
 };
@@ -330,12 +334,7 @@ export default function CoupleMicrositePage() {
   });
 
   // Mock registries data
-  const [registryItems, setRegistryItems] = useState<RegistryItem[]>([
-    { id: "smeg-toast", name: "SMEG 50's Style 2-Slice Toaster", price: 11500, image: "🍞", contribution: 5000, target: 11500 },
-    { id: "kitchenaid-mixer", name: "KitchenAid Artisan Stand Mixer 4.8L", price: 24999, image: "🥣", contribution: 18000, target: 24999 },
-    { id: "dyson-vacuum", name: "Dyson V15 Detect Cordless Vacuum Cleaner", price: 44900, image: "🧹", contribution: 10000, target: 44900 },
-    { id: "le-creuset", name: "Le Creuset Signature Cast Iron Dutch Oven", price: 18500, image: "🍲", contribution: 18500, target: 18500 }
-  ]);
+  const [registryItems, setRegistryItems] = useState<RegistryItem[]>([]);
   const [customCash, setCustomCash] = useState("");
 
   // Static mockup databases for beautiful listing inside tabs
@@ -419,6 +418,62 @@ export default function CoupleMicrositePage() {
     }
   }, [user, userId, filter, typeFilter, supabase]);
 
+  // Fetch dynamic registry items from the database saved_promos
+  const fetchRegistry = useCallback(async () => {
+    if (!userId) return;
+    try {
+      const { data, error } = await supabase
+        .from("saved_promos")
+        .select(`
+          promo_id,
+          target_amount,
+          contribution,
+          created_at,
+          promo:promos (
+            id,
+            title,
+            summary,
+            image_url,
+            discount_percentage,
+            vendor:vendor_id (
+              business_name,
+              logo_url
+            )
+          )
+        `)
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+
+      const formattedItems = (data ?? []).map((item: any) => {
+        const promoRaw = item.promo;
+        let promo = promoRaw;
+        if (Array.isArray(promoRaw)) {
+          promo = promoRaw[0] ?? null;
+        }
+        if (promo && Array.isArray(promo.vendor)) {
+          promo.vendor = promo.vendor[0] ?? null;
+        }
+        return {
+          id: String(item.promo_id),
+          name: promo?.title ?? "Registry Item",
+          price: Number(item.target_amount),
+          image: promo?.image_url ? proxiedImageUrl(promo.image_url) : null,
+          logo: promo?.vendor?.logo_url ? proxiedImageUrl(promo.vendor.logo_url) : null,
+          vendorName: promo?.vendor?.business_name ?? "Marketplace Supplier",
+          discount: promo?.discount_percentage ?? null,
+          contribution: Number(item.contribution),
+          target: Number(item.target_amount)
+        };
+      });
+
+      setRegistryItems(formattedItems);
+    } catch (err) {
+      console.error("Error fetching registry items:", err);
+    }
+  }, [userId, supabase]);
+
   // Auth, Profile checks
   useEffect(() => {
     let cancelled = false;
@@ -458,8 +513,9 @@ export default function CoupleMicrositePage() {
   useEffect(() => {
     if (userId) {
       fetchMoments();
+      fetchRegistry();
     }
-  }, [userId, fetchMoments]);
+  }, [userId, fetchMoments, fetchRegistry]);
 
   // Ticking countdown timer logic
   useEffect(() => {
@@ -535,16 +591,37 @@ export default function CoupleMicrositePage() {
   }, [profile, displayTitle]);
 
 
-  // Gift registry actions
-  const handleContribute = (itemId: string, amount: number) => {
-    setRegistryItems(prev =>
-      prev.map(item =>
-        item.id === itemId
-          ? { ...item, contribution: Math.min(item.target, item.contribution + amount) }
-          : item
-      )
-    );
-    toast.success(`✨ Thank you for your generous contribution of ₱${amount.toLocaleString()}!`);
+  // Gift registry actions - saves contribution to DB
+  const handleContribute = async (itemId: string, amount: number) => {
+    const promoId = parseInt(itemId);
+    if (isNaN(promoId)) return;
+
+    try {
+      const targetItem = registryItems.find(i => i.id === itemId);
+      if (!targetItem) return;
+
+      const newContribution = Math.min(targetItem.target, targetItem.contribution + amount);
+
+      const { error } = await supabase
+        .from("saved_promos")
+        .update({ contribution: newContribution })
+        .eq("user_id", userId)
+        .eq("promo_id", promoId);
+
+      if (error) throw error;
+
+      setRegistryItems(prev =>
+        prev.map(item =>
+          item.id === itemId
+            ? { ...item, contribution: newContribution }
+            : item
+        )
+      );
+      toast.success(`✨ Thank you for your generous contribution of ₱${amount.toLocaleString()}!`);
+    } catch (err) {
+      console.error("Error saving contribution:", err);
+      toast.error("Failed to save contribution.");
+    }
   };
 
   const handleCashGiftSubmit = (e: React.FormEvent) => {
@@ -968,59 +1045,76 @@ export default function CoupleMicrositePage() {
             </div>
 
             {/* Registry Grid List */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
-              {registryItems.map((item) => {
-                const percent = (item.contribution / item.target) * 100;
-                const isFullyFunded = item.contribution >= item.target;
-                return (
-                  <div key={item.id} className="bg-white border border-black/5 rounded-xl p-4 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
-                    <div>
-                      <div className="flex items-center gap-3 mb-3 select-none">
-                        <div className="w-10 h-10 rounded-lg bg-[#a68b6a]/10 text-xl flex items-center justify-center shrink-0">
-                          {item.image}
+            {registryItems.length === 0 ? (
+              <div className="bg-white border border-black/5 rounded-xl p-8 text-center max-w-md mx-auto space-y-3">
+                <span className="text-3xl block">🎁✨</span>
+                <h4 className="font-bold text-[15px] text-neutral-800 font-[family-name:var(--font-plus-jakarta)]">Our Registry is under preparation</h4>
+                <p className="text-[12.5px] text-neutral-400 font-[family-name:var(--font-plus-jakarta)] leading-relaxed">
+                  We are currently choosing our registry items from the Marketplace. Please check back later!
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
+                {registryItems.map((item) => {
+                  const percent = (item.contribution / item.target) * 100;
+                  const isFullyFunded = item.contribution >= item.target;
+                  return (
+                    <div key={item.id} className="bg-white border border-black/5 rounded-xl p-4 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+                      <div>
+                        <div className="flex items-center gap-3 mb-3 select-none">
+                          <div className="w-12 h-12 rounded-lg bg-[#a68b6a]/10 overflow-hidden flex items-center justify-center shrink-0 border border-black/5">
+                            {item.image ? (
+                              <img src={item.image} alt={item.name} className="h-full w-full object-cover" />
+                            ) : (
+                              <span className="text-xl">🎁</span>
+                            )}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            {item.vendorName && (
+                              <span className="text-[10px] font-bold text-[#a68b6a] uppercase tracking-wider block mb-0.5 truncate">{item.vendorName}</span>
+                            )}
+                            <h4 className="font-bold text-[13px] text-neutral-800 truncate font-[family-name:var(--font-plus-jakarta)] leading-tight">{item.name}</h4>
+                            <span className="text-[12px] font-semibold text-[#a68b6a] mt-0.5 block">₱{item.price.toLocaleString()}</span>
+                          </div>
                         </div>
-                        <div className="min-w-0">
-                          <h4 className="font-bold text-[13px] text-neutral-800 truncate font-[family-name:var(--font-plus-jakarta)] leading-tight">{item.name}</h4>
-                          <span className="text-[12px] font-semibold text-[#a68b6a] mt-0.5 block">₱{item.price.toLocaleString()}</span>
+
+                        {/* Funding Progress Bar */}
+                        <div className="space-y-1 mb-4 select-none">
+                          <div className="flex items-center justify-between text-[10px] font-bold uppercase text-neutral-400">
+                            <span>Funded Ratio</span>
+                            <span>₱{item.contribution.toLocaleString()} / ₱{item.target.toLocaleString()}</span>
+                          </div>
+                          <div className="h-1.5 w-full bg-neutral-100 rounded-full overflow-hidden">
+                            <div className="h-full bg-gradient-to-r from-[#a68b6a] to-[#957a5c] transition-all duration-500" style={{ width: `${percent}%` }} />
+                          </div>
                         </div>
                       </div>
 
-                      {/* Funding Progress Bar */}
-                      <div className="space-y-1 mb-4 select-none">
-                        <div className="flex items-center justify-between text-[10px] font-bold uppercase text-neutral-400">
-                          <span>Funded Ratio</span>
-                          <span>₱{item.contribution.toLocaleString()} / ₱{item.target.toLocaleString()}</span>
+                      {isFullyFunded ? (
+                        <span className="w-full text-center py-2 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-lg text-[11px] font-bold uppercase tracking-wider select-none">
+                          ✓ Fully Gifted
+                        </span>
+                      ) : (
+                        <div className="flex gap-2 select-none">
+                          <button
+                            onClick={() => handleContribute(item.id, 1000)}
+                            className="flex-1 py-2 border border-[#a68b6a]/30 text-[#a68b6a] text-[11px] font-bold uppercase tracking-wider rounded-lg hover:bg-[#a68b6a]/5 transition-colors cursor-pointer"
+                          >
+                            + ₱1K
+                          </button>
+                          <button
+                            onClick={() => handleContribute(item.id, 5000)}
+                            className="flex-1 py-2 bg-[#a68b6a] text-white text-[11px] font-bold uppercase tracking-wider rounded-lg hover:bg-[#957a5c] transition-colors cursor-pointer"
+                          >
+                            + ₱5K
+                          </button>
                         </div>
-                        <div className="h-1.5 w-full bg-neutral-100 rounded-full overflow-hidden">
-                          <div className="h-full bg-gradient-to-r from-[#a68b6a] to-[#957a5c] transition-all duration-500" style={{ width: `${percent}%` }} />
-                        </div>
-                      </div>
+                      )}
                     </div>
-
-                    {isFullyFunded ? (
-                      <span className="w-full text-center py-2 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-lg text-[11px] font-bold uppercase tracking-wider select-none">
-                        ✓ Fully Gifted
-                      </span>
-                    ) : (
-                      <div className="flex gap-2 select-none">
-                        <button
-                          onClick={() => handleContribute(item.id, 1000)}
-                          className="flex-1 py-2 border border-[#a68b6a]/30 text-[#a68b6a] text-[11px] font-bold uppercase tracking-wider rounded-lg hover:bg-[#a68b6a]/5 transition-colors cursor-pointer"
-                        >
-                          + ₱1K
-                        </button>
-                        <button
-                          onClick={() => handleContribute(item.id, 5000)}
-                          className="flex-1 py-2 bg-[#a68b6a] text-white text-[11px] font-bold uppercase tracking-wider rounded-lg hover:bg-[#957a5c] transition-colors cursor-pointer"
-                        >
-                          + ₱5K
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         )}
 

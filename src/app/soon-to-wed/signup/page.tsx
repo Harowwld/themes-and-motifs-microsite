@@ -297,32 +297,24 @@ export default function SoonToWedSignupPage() {
         throw signUpErr;
       }
 
-      const user = signUpData.session?.user ?? null;
-      if (!user) {
-        setSuccess("Account created. Please check your email to confirm your account.");
-        setPassword("");
+      // The handle_new_user DB trigger automatically inserts the profile server-side
+      // using the metadata passed to signUp options.data — no client-side upsert needed,
+      // and attempting one would violate RLS since the session JWT doesn't exist yet
+      // when email confirmation is required.
+      if (!signUpData.user) {
+        toast.error("Signup failed — no user returned. Please try again.");
         setSubmitting(false);
         return;
       }
 
-      const { error: upsertErr } = await supabase.from("soon_to_wed_profiles").upsert(
-        {
-          user_id: user.id,
-          bride_nickname: bride,
-          groom_nickname: groom,
-          wedding_date: weddingDate ? weddingDate : null,
-          wedding_date_public: Boolean(weddingDatePublic),
-          wedding_venue_area: venue ? venue : null,
-          wedding_venue_public: Boolean(weddingVenuePublic),
-          location: loc,
-          profile_visibility: profileVisibility,
-        },
-        { onConflict: "user_id" }
-      );
-
-      if (upsertErr) throw upsertErr;
-
       setPassword("");
+
+      // If no session, email confirmation is required — show success and stay on page
+      if (!signUpData.session) {
+        setSuccess("Account created. Please check your email to confirm your account.");
+        setSubmitting(false);
+        return;
+      }
 
       router.replace(returnTo);
     } catch (err: any) {

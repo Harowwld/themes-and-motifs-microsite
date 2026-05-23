@@ -11,6 +11,7 @@ export const metadata: Metadata = {
 import { createSupabaseServerClient } from "../../lib/supabaseServer";
 import FadeInOnView from "../components/FadeInOnView";
 import { proxiedImageUrl } from "../../lib/imageSizes";
+import SavePromoButton from "@/features/promos/components/SavePromoButton";
 
 type Promo = {
   id: number;
@@ -137,17 +138,25 @@ async function PromosList({ query }: { query: string }) {
         const location = vendor?.city ?? vendor?.location_text;
 
         return (
-          <a
+          <div
             key={promo.id}
-            href={`/promos/${promo.id}`}
-            className="rounded-2xl border border-black/5 bg-linear-to-b from-white to-[#fff7ed]/10 shadow-xs hover:border-[#c17a4e]/25 hover:-translate-y-1 hover:shadow-md transition-all duration-300 ease-out overflow-hidden relative flex flex-row items-stretch min-h-[150px]"
+            className="group relative rounded-2xl border border-black/5 bg-linear-to-b from-white to-[#fff7ed]/10 shadow-xs hover:border-[#c17a4e]/25 hover:-translate-y-1 hover:shadow-md transition-all duration-300 ease-out overflow-hidden flex flex-row items-stretch min-h-[150px]"
           >
-            {/* Promo Badge */}
-            <div className="absolute top-0 left-0 z-10">
-              <div className="bg-[#c17a4e] text-white text-[11px] font-bold px-3 py-1 rounded-br-xl">
-                PROMO
-              </div>
+            {/* Save Button */}
+            <div className="absolute top-2.5 right-2.5 z-20">
+              <SavePromoButton promoId={promo.id} />
             </div>
+
+            <a
+              href={`/promos/${promo.id}`}
+              className="flex flex-row items-stretch w-full min-h-[150px] z-10"
+            >
+              {/* Promo Badge */}
+              <div className="absolute top-0 left-0 z-10">
+                <div className="bg-[#c17a4e] text-white text-[11px] font-bold px-3 py-1 rounded-br-xl">
+                  PROMO
+                </div>
+              </div>
 
             {/* Left: Image */}
             <div className="w-28 sm:w-32 shrink-0 relative overflow-hidden self-stretch bg-[#fcfbf9]">
@@ -227,7 +236,8 @@ async function PromosList({ query }: { query: string }) {
                 ) : null}
               </div>
             </div>
-          </a>
+            </a>
+          </div>
         );
       })}
     </div>

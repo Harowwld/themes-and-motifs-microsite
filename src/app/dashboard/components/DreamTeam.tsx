@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Trash2, CheckCircle2, Mail, Compass, Star, Phone } from "lucide-react";
+import { Trash2, CheckCircle2, Mail, Compass, Star, Phone, Edit2, X } from "lucide-react";
 import { DreamVendor } from "../types";
 
 interface DreamTeamProps {
@@ -9,6 +9,7 @@ interface DreamTeamProps {
   onAddVendor: (vendor: Omit<DreamVendor, "id">) => void;
   onUpdateStatus: (id: string, status: DreamVendor["status"]) => void;
   onDeleteVendor: (id: string) => void;
+  onUpdateVendor?: (id: string, vendor: Omit<DreamVendor, "id">) => void;
 }
 
 const CATEGORIES = [
@@ -27,7 +28,13 @@ const CATEGORIES = [
   "Other",
 ];
 
-export default function DreamTeam({ vendors, onAddVendor, onUpdateStatus, onDeleteVendor }: DreamTeamProps) {
+export default function DreamTeam({
+  vendors,
+  onAddVendor,
+  onUpdateStatus,
+  onDeleteVendor,
+  onUpdateVendor,
+}: DreamTeamProps) {
   const [name, setName] = useState("");
   const [category, setCategory] = useState(CATEGORIES[0]);
   const [rating, setRating] = useState("5");
@@ -35,18 +42,55 @@ export default function DreamTeam({ vendors, onAddVendor, onUpdateStatus, onDele
   const [contact, setContact] = useState("");
   const [notes, setNotes] = useState("");
 
+  // Editing State
+  const [editingVendor, setEditingVendor] = useState<DreamVendor | null>(null);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return;
-    onAddVendor({
+
+    const vendorData = {
       name: name.trim(),
       category,
       rating: parseInt(rating) || 5,
       status,
       contact: contact.trim(),
       notes: notes.trim(),
-    });
+    };
+
+    if (editingVendor) {
+      if (onUpdateVendor) {
+        onUpdateVendor(editingVendor.id, vendorData);
+      }
+      setEditingVendor(null);
+    } else {
+      onAddVendor(vendorData);
+    }
+
     setName("");
+    setContact("");
+    setNotes("");
+    setCategory(CATEGORIES[0]);
+    setRating("5");
+    setStatus("prospect");
+  };
+
+  const handleStartEdit = (vendor: DreamVendor) => {
+    setEditingVendor(vendor);
+    setName(vendor.name);
+    setCategory(vendor.category);
+    setRating(vendor.rating.toString());
+    setStatus(vendor.status);
+    setContact(vendor.contact || "");
+    setNotes(vendor.notes || "");
+  };
+
+  const handleCancelEdit = () => {
+    setEditingVendor(null);
+    setName("");
+    setCategory(CATEGORIES[0]);
+    setRating("5");
+    setStatus("prospect");
     setContact("");
     setNotes("");
   };
@@ -93,9 +137,21 @@ export default function DreamTeam({ vendors, onAddVendor, onUpdateStatus, onDele
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Add Vendor Form */}
         <div className="w-full lg:w-[350px] shrink-0 rounded-xl border border-black/5 bg-white p-6 shadow-sm self-start">
-          <h3 className="text-[15px] font-semibold text-[#2c2c2c] font-[family-name:var(--font-noto-serif)] mb-4">
-            Add Supplier Track
-          </h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-[15px] font-semibold text-[#2c2c2c] font-[family-name:var(--font-noto-serif)]">
+              {editingVendor ? "Edit Supplier Track" : "Add Supplier Track"}
+            </h3>
+            {editingVendor && (
+              <button
+                type="button"
+                onClick={handleCancelEdit}
+                className="p-1 text-neutral-400 hover:text-neutral-600 rounded-lg cursor-pointer"
+                title="Cancel Edit"
+              >
+                <X size={16} />
+              </button>
+            )}
+          </div>
           <form onSubmit={handleSubmit} className="space-y-3">
             <div>
               <label className="text-[11px] font-bold text-neutral-500 block mb-1">Supplier / Business Name</label>
@@ -174,12 +230,23 @@ export default function DreamTeam({ vendors, onAddVendor, onUpdateStatus, onDele
               />
             </div>
 
-            <button
-              type="submit"
-              className="w-full h-11 bg-[#a68b6a] hover:bg-[#957a5c] text-white text-[13px] font-bold rounded-lg transition-colors font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wider"
-            >
-              Add Supplier
-            </button>
+            <div className="flex gap-2">
+              {editingVendor && (
+                <button
+                  type="button"
+                  onClick={handleCancelEdit}
+                  className="flex-1 h-11 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 text-[13px] font-bold rounded-lg transition-colors font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wider"
+                >
+                  Cancel
+                </button>
+              )}
+              <button
+                type="submit"
+                className="flex-1 h-11 bg-[#a68b6a] hover:bg-[#957a5c] text-white text-[13px] font-bold rounded-lg transition-colors font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wider"
+              >
+                {editingVendor ? "Save" : "Add Supplier"}
+              </button>
+            </div>
           </form>
         </div>
 
@@ -253,7 +320,15 @@ export default function DreamTeam({ vendors, onAddVendor, onUpdateStatus, onDele
                     )}
                   </div>
 
-                  <div className="text-right mt-4 pt-2 border-t border-black/[0.03]">
+                  <div className="flex items-center justify-end gap-3 mt-4 pt-2 border-t border-black/[0.03]">
+                    <button
+                      onClick={() => handleStartEdit(vendor)}
+                      className="p-1 text-neutral-400 hover:text-[#a68b6a] rounded transition-all cursor-pointer inline-flex items-center gap-1 text-[11px] font-bold"
+                      title="Edit supplier details"
+                    >
+                      <Edit2 size={13} />
+                      <span>Edit</span>
+                    </button>
                     <button
                       onClick={() => onDeleteVendor(vendor.id)}
                       className="p-1 text-neutral-400 hover:text-red-500 rounded transition-all cursor-pointer inline-flex items-center gap-1 text-[11px] font-bold"

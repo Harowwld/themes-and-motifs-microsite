@@ -18,7 +18,8 @@ import {
   Heart,
   FileText,
   Lock,
-  Globe
+  Globe,
+  Gift
 } from "lucide-react";
 
 // Custom tab features
@@ -33,6 +34,7 @@ import RantsReviews from "./components/RantsReviews";
 import Notes from "./components/Notes";
 import PremiumBanner from "./components/PremiumBanner";
 import MicrositeSettings from "./components/MicrositeSettings";
+import GiftRegistry from "./components/GiftRegistry";
 
 type SavedVendor = {
   id: string;
@@ -147,6 +149,7 @@ function LoadingSkeleton() {
 
 const tabNames: Record<string, string> = {
   microsite_settings: "Microsite Settings",
+  gift_registry: "Gift Registry",
   budget_planner: "Budget Planner",
   guest_list: "Guest List Tracker",
   rsvp: "RSVP Manager",
@@ -159,6 +162,7 @@ const tabNames: Record<string, string> = {
 
 const tabDescriptions: Record<string, string> = {
   microsite_settings: "Configure your public microsite page—love story, entourage members, principal and secondary sponsors, and guest welcome message.",
+  gift_registry: "Manage your wedding registry. View and manage items you've added from the marketplace, customize target amounts, and track guest contributions.",
   budget_planner: "Take control of your wedding budget. Log estimates, track payments, and visualize cost distribution seamlessly.",
   guest_list: "Keep a clean record of your guests, their contact information, dietary requirements, and RSVP counts.",
   rsvp: "Monitor RSVP status in real-time, view guest choices, and ensure a precise head count for seating.",
@@ -735,6 +739,125 @@ export default function DashboardPage() {
     }
   };
 
+  // --- Workspace Editing Handlers ---
+  const handleUpdateBudget = async (id: string, item: Omit<BudgetItem, "id">) => {
+    try {
+      const { error } = await supabase
+        .from("wedding_budgets")
+        .update({
+          category: item.category,
+          name: item.name,
+          estimated: item.estimated,
+          actual: item.actual,
+          notes: item.notes,
+        })
+        .eq("id", id)
+        .eq("user_id", user.id);
+
+      if (error) throw error;
+      setBudgetItems((prev) =>
+        prev.map((i) => (i.id === id ? { ...i, ...item } : i))
+      );
+      toast.success("Budget expense updated!");
+    } catch (err) {
+      console.error("Error updating budget item:", err);
+      toast.error("Failed to update budget item.");
+    }
+  };
+
+  const handleUpdateGuest = async (id: string, guest: Omit<Guest, "id">) => {
+    try {
+      const { error } = await supabase
+        .from("wedding_guests")
+        .update({
+          name: guest.name,
+          category: guest.category,
+          email: guest.email,
+          phone: guest.phone,
+          dietary: guest.dietary,
+        })
+        .eq("id", id)
+        .eq("user_id", user.id);
+
+      if (error) throw error;
+      setGuests((prev) =>
+        prev.map((g) => (g.id === id ? { ...g, ...guest } : g))
+      );
+      toast.success("Guest details updated!");
+    } catch (err) {
+      console.error("Error updating guest:", err);
+      toast.error("Failed to update guest details.");
+    }
+  };
+
+  const handleUpdateTable = async (id: string, name: string, capacity: number) => {
+    try {
+      const { error } = await supabase
+        .from("wedding_tables")
+        .update({ name, capacity })
+        .eq("id", id)
+        .eq("user_id", user.id);
+
+      if (error) throw error;
+      setTables((prev) =>
+        prev.map((t) => (t.id === id ? { ...t, name, capacity } : t))
+      );
+      toast.success("Seating table updated!");
+    } catch (err) {
+      console.error("Error updating seating table:", err);
+      toast.error("Failed to update seating table.");
+    }
+  };
+
+  const handleUpdateTask = async (id: string, task: Omit<TaskItem, "id">) => {
+    try {
+      const { error } = await supabase
+        .from("wedding_tasks")
+        .update({
+          title: task.title,
+          category: task.category,
+          due_date: task.dueDate,
+        })
+        .eq("id", id)
+        .eq("user_id", user.id);
+
+      if (error) throw error;
+      setTasks((prev) =>
+        prev.map((t) => (t.id === id ? { ...t, ...task } : t))
+      );
+      toast.success("Task updated!");
+    } catch (err) {
+      console.error("Error updating task:", err);
+      toast.error("Failed to update task details.");
+    }
+  };
+
+  const handleUpdateVendor = async (id: string, vendor: Omit<DreamVendor, "id">) => {
+    try {
+      const { error } = await supabase
+        .from("wedding_dream_suppliers")
+        .update({
+          name: vendor.name,
+          category: vendor.category,
+          rating: vendor.rating,
+          status: vendor.status,
+          contact: vendor.contact,
+          notes: vendor.notes,
+        })
+        .eq("id", id)
+        .eq("user_id", user.id);
+
+      if (error) throw error;
+      setDreamVendors((prev) =>
+        prev.map((v) => (v.id === id ? { ...v, ...vendor } : v))
+      );
+      toast.success("Supplier details updated!");
+    } catch (err) {
+      console.error("Error updating supplier:", err);
+      toast.error("Failed to update supplier details.");
+    }
+  };
+
   // --- Journal Entries Handlers ---
   const handleAddJournal = async (entry: Omit<RantReview, "id" | "date">) => {
     try {
@@ -972,6 +1095,7 @@ export default function DashboardPage() {
                 {[
                   { id: "wedding_tools", label: "Wedding Tools Hub", icon: LayoutDashboard },
                   { id: "microsite_settings", label: "Microsite Settings", icon: Globe },
+                  { id: "gift_registry", label: "Gift Registry", icon: Gift },
                   { id: "budget_planner", label: "Budget Planner", icon: Wallet },
                   { id: "guest_list", label: "Guest List Tracker", icon: Users },
                   { id: "rsvp", label: "RSVP Manager", icon: MailOpen },
@@ -983,7 +1107,7 @@ export default function DashboardPage() {
                 ].map((tab) => {
                   const isSelected = activeTab === tab.id;
                   const Icon = tab.icon;
-                  const isTabPremium = tab.id !== "wedding_tools" && tab.id !== "microsite_settings";
+                  const isTabPremium = tab.id !== "wedding_tools" && tab.id !== "microsite_settings" && tab.id !== "gift_registry";
                   const isLocked = isTabPremium && !isPremium;
                   return (
                     <button
@@ -1015,7 +1139,7 @@ export default function DashboardPage() {
                   transition={{ duration: 0.25, ease: "easeInOut" }}
                 >
                   {(() => {
-                    const isTabPremium = activeTab !== "wedding_tools" && activeTab !== "microsite_settings";
+                    const isTabPremium = activeTab !== "wedding_tools" && activeTab !== "microsite_settings" && activeTab !== "gift_registry";
                     const isLocked = isTabPremium && !isPremium;
 
                     const renderTabContent = () => {
@@ -1261,6 +1385,7 @@ export default function DashboardPage() {
                               onAdd={handleAddBudget}
                               onToggleStatus={handleToggleBudgetStatus}
                               onDelete={handleDeleteBudget}
+                              onUpdate={handleUpdateBudget}
                             />
                           );
                         case "guest_list":
@@ -1271,6 +1396,7 @@ export default function DashboardPage() {
                               onAdd={handleAddGuest}
                               onUpdateRSVP={handleUpdateRSVP}
                               onDelete={handleDeleteGuest}
+                              onUpdateGuest={handleUpdateGuest}
                             />
                           );
                         case "rsvp":
@@ -1288,6 +1414,7 @@ export default function DashboardPage() {
                               onAddTable={handleAddTable}
                               onDeleteTable={handleDeleteTable}
                               onAssignGuest={handleAssignGuest}
+                              onUpdateTable={handleUpdateTable}
                             />
                           );
                         case "checklist":
@@ -1297,6 +1424,7 @@ export default function DashboardPage() {
                               onAddTask={handleAddTask}
                               onToggleTask={handleToggleTask}
                               onDeleteTask={handleDeleteTask}
+                              onUpdateTask={handleUpdateTask}
                             />
                           );
                         case "dream_team":
@@ -1306,6 +1434,7 @@ export default function DashboardPage() {
                               onAddVendor={handleAddVendor}
                               onUpdateStatus={handleUpdateVendorStatus}
                               onDeleteVendor={handleDeleteVendor}
+                              onUpdateVendor={handleUpdateVendor}
                             />
                           );
                         case "rants_reviews":
@@ -1329,6 +1458,13 @@ export default function DashboardPage() {
                           return (
                             <MicrositeSettings
                               user={user}
+                              supabase={supabase}
+                            />
+                          );
+                        case "gift_registry":
+                          return (
+                            <GiftRegistry
+                              userId={user.id}
                               supabase={supabase}
                             />
                           );

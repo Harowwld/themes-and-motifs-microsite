@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Trash2 } from "lucide-react";
+import { Trash2, Edit2, X } from "lucide-react";
 import { BudgetItem } from "../types";
 
 interface BudgetPlannerProps {
@@ -9,6 +9,7 @@ interface BudgetPlannerProps {
   onAdd: (item: Omit<BudgetItem, "id">) => void;
   onToggleStatus: (id: string) => void;
   onDelete: (id: string) => void;
+  onUpdate?: (id: string, item: Omit<BudgetItem, "id">) => void;
 }
 
 const CATEGORIES = [
@@ -24,7 +25,13 @@ const CATEGORIES = [
   "Other",
 ];
 
-export default function BudgetPlanner({ items, onAdd, onToggleStatus, onDelete }: BudgetPlannerProps) {
+export default function BudgetPlanner({
+  items,
+  onAdd,
+  onToggleStatus,
+  onDelete,
+  onUpdate,
+}: BudgetPlannerProps) {
   const [category, setCategory] = useState(CATEGORIES[0]);
   const [name, setName] = useState("");
   const [estimated, setEstimated] = useState("");
@@ -32,17 +39,54 @@ export default function BudgetPlanner({ items, onAdd, onToggleStatus, onDelete }
   const [notes, setNotes] = useState("");
   const [filterCategory, setFilterCategory] = useState("All");
 
+  // Editing State
+  const [editingItem, setEditingItem] = useState<BudgetItem | null>(null);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return;
-    onAdd({
+
+    const itemData = {
       category,
       name: name.trim(),
       estimated: parseFloat(estimated) || 0,
       actual: parseFloat(actual) || 0,
-      status: "pending",
       notes: notes.trim(),
-    });
+    };
+
+    if (editingItem) {
+      if (onUpdate) {
+        onUpdate(editingItem.id, {
+          ...itemData,
+          status: editingItem.status,
+        });
+      }
+      setEditingItem(null);
+    } else {
+      onAdd({
+        ...itemData,
+        status: "pending",
+      });
+    }
+
+    setName("");
+    setEstimated("");
+    setActual("");
+    setNotes("");
+  };
+
+  const handleStartEdit = (item: BudgetItem) => {
+    setEditingItem(item);
+    setCategory(item.category);
+    setName(item.name);
+    setEstimated(item.estimated.toString());
+    setActual(item.actual.toString());
+    setNotes(item.notes || "");
+  };
+
+  const handleCancelEdit = () => {
+    setEditingItem(null);
+    setCategory(CATEGORIES[0]);
     setName("");
     setEstimated("");
     setActual("");
@@ -125,9 +169,21 @@ export default function BudgetPlanner({ items, onAdd, onToggleStatus, onDelete }
 
         {/* Quick Add Expenses Form */}
         <div className="w-full md:w-[350px] shrink-0 rounded-xl border border-black/5 bg-white p-6 shadow-sm">
-          <h3 className="text-[16px] font-semibold text-[#2c2c2c] font-[family-name:var(--font-noto-serif)] mb-4">
-            Add Expense
-          </h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-[16px] font-semibold text-[#2c2c2c] font-[family-name:var(--font-noto-serif)]">
+              {editingItem ? "Edit Expense" : "Add Expense"}
+            </h3>
+            {editingItem && (
+              <button
+                type="button"
+                onClick={handleCancelEdit}
+                className="p-1 text-neutral-400 hover:text-neutral-600 rounded-lg cursor-pointer"
+                title="Cancel Edit"
+              >
+                <X size={16} />
+              </button>
+            )}
+          </div>
           <form onSubmit={handleSubmit} className="space-y-3">
             <div>
               <label className="text-[11px] font-bold text-neutral-500 block mb-1">Category</label>
@@ -192,12 +248,23 @@ export default function BudgetPlanner({ items, onAdd, onToggleStatus, onDelete }
               />
             </div>
 
-            <button
-              type="submit"
-              className="w-full h-11 bg-[#a68b6a] hover:bg-[#957a5c] text-white text-[13px] font-bold rounded-lg transition-colors font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wider"
-            >
-              Add Expense
-            </button>
+            <div className="flex gap-2">
+              {editingItem && (
+                <button
+                  type="button"
+                  onClick={handleCancelEdit}
+                  className="flex-1 h-11 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 text-[13px] font-bold rounded-lg transition-colors font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wider"
+                >
+                  Cancel
+                </button>
+              )}
+              <button
+                type="submit"
+                className="flex-1 h-11 bg-[#a68b6a] hover:bg-[#957a5c] text-white text-[13px] font-bold rounded-lg transition-colors font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wider"
+              >
+                {editingItem ? "Save Changes" : "Add Expense"}
+              </button>
+            </div>
           </form>
         </div>
       </div>
@@ -268,14 +335,23 @@ export default function BudgetPlanner({ items, onAdd, onToggleStatus, onDelete }
                         {item.status}
                       </button>
                     </td>
-                    <td className="py-3.5 text-right">
-                      <button
-                        onClick={() => onDelete(item.id)}
-                        className="p-1.5 text-neutral-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all cursor-pointer inline-flex items-center justify-center"
-                        title="Delete expense"
-                      >
-                        <Trash2 size={15} />
-                      </button>
+                    <td className="py-3.5 text-right font-[family-name:var(--font-plus-jakarta)]">
+                      <div className="flex justify-end gap-1.5 opacity-60 group-hover:opacity-100 transition-opacity">
+                        <button
+                          onClick={() => handleStartEdit(item)}
+                          className="p-1.5 text-neutral-400 hover:text-[#a68b6a] hover:bg-[#a68b6a]/5 rounded-lg transition-all cursor-pointer inline-flex items-center justify-center"
+                          title="Edit expense"
+                        >
+                          <Edit2 size={15} />
+                        </button>
+                        <button
+                          onClick={() => onDelete(item.id)}
+                          className="p-1.5 text-neutral-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all cursor-pointer inline-flex items-center justify-center"
+                          title="Delete expense"
+                        >
+                          <Trash2 size={15} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}

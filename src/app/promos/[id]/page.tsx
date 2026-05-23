@@ -5,6 +5,7 @@ import ShareDeal from "./ShareDeal";
 import PromoCTACard from "./PromoCTACard";
 import PromoQRCode from "../../../components/PromoQRCode";
 import { proxiedImageUrl } from "../../../lib/imageSizes";
+import SavePromoButton from "@/features/promos/components/SavePromoButton";
 
 type Vendor = {
   id: number;
@@ -136,6 +137,10 @@ export default async function PromoDetailPage({ params }: Props) {
 
                   {/* Large Cover Image */}
                   <div className="relative aspect-[3/4] overflow-hidden bg-[#fcfbf9]">
+                    {/* Save Button */}
+                    <div className="absolute top-4 right-4 z-20">
+                      <SavePromoButton promoId={promo.id} />
+                    </div>
                     {coverUrl ? (
                       <img
                         src={coverUrl}

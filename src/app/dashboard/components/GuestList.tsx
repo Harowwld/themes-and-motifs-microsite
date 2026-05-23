@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Trash2 } from "lucide-react";
+import { Trash2, Edit2, X } from "lucide-react";
 import { Guest, WeddingTable } from "../types";
 
 interface GuestListProps {
@@ -10,11 +10,19 @@ interface GuestListProps {
   onAdd: (guest: Omit<Guest, "id">) => void;
   onUpdateRSVP: (id: string, status: Guest["rsvpStatus"]) => void;
   onDelete: (id: string) => void;
+  onUpdateGuest?: (id: string, guest: Omit<Guest, "id">) => void;
 }
 
 const CATEGORIES: Guest["category"][] = ["Family", "Friends", "Work", "Other"];
 
-export default function GuestList({ guests, tables, onAdd, onUpdateRSVP, onDelete }: GuestListProps) {
+export default function GuestList({
+  guests,
+  tables,
+  onAdd,
+  onUpdateRSVP,
+  onDelete,
+  onUpdateGuest,
+}: GuestListProps) {
   const [name, setName] = useState("");
   const [category, setCategory] = useState<Guest["category"]>("Family");
   const [email, setEmail] = useState("");
@@ -23,19 +31,57 @@ export default function GuestList({ guests, tables, onAdd, onUpdateRSVP, onDelet
   const [filterCategory, setFilterCategory] = useState("All");
   const [filterRSVP, setFilterRSVP] = useState("All");
 
+  // Editing State
+  const [editingGuest, setEditingGuest] = useState<Guest | null>(null);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return;
-    onAdd({
+
+    const guestData = {
       name: name.trim(),
       category,
       email: email.trim(),
       phone: phone.trim(),
       dietary: dietary.trim(),
-      rsvpStatus: "pending",
-      tableId: null,
-    });
+    };
+
+    if (editingGuest) {
+      if (onUpdateGuest) {
+        onUpdateGuest(editingGuest.id, {
+          ...guestData,
+          rsvpStatus: editingGuest.rsvpStatus,
+          tableId: editingGuest.tableId,
+        });
+      }
+      setEditingGuest(null);
+    } else {
+      onAdd({
+        ...guestData,
+        rsvpStatus: "pending",
+        tableId: null,
+      });
+    }
+
     setName("");
+    setEmail("");
+    setPhone("");
+    setDietary("");
+  };
+
+  const handleStartEdit = (guest: Guest) => {
+    setEditingGuest(guest);
+    setName(guest.name);
+    setCategory(guest.category);
+    setEmail(guest.email || "");
+    setPhone(guest.phone || "");
+    setDietary(guest.dietary || "");
+  };
+
+  const handleCancelEdit = () => {
+    setEditingGuest(null);
+    setName("");
+    setCategory("Family");
     setEmail("");
     setPhone("");
     setDietary("");
