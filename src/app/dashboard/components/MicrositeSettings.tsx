@@ -454,26 +454,28 @@ export default function MicrositeSettings({ user, supabase }: MicrositeSettingsP
                   />
                 </div>
               </div>
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3 select-none">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex flex-wrap items-center gap-3 select-none">
                   <span className="text-[11px] font-bold uppercase text-neutral-400">Affiliation / Side:</span>
-                  {["general", "bride", "groom"].map((side) => (
-                    <label key={side} className="flex items-center gap-1 cursor-pointer text-xs font-bold text-neutral-600 capitalize">
-                      <input
-                        type="radio"
-                        name="memberSide"
-                        checked={newMember.side === side}
-                        onChange={() => setNewMember({ ...newMember, side: side as any })}
-                        className="text-[#a68b6a] focus:ring-[#a68b6a] border-neutral-300"
-                      />
-                      {side}
-                    </label>
-                  ))}
+                  <div className="flex items-center gap-3">
+                    {["general", "bride", "groom"].map((side) => (
+                      <label key={side} className="flex items-center gap-1 cursor-pointer text-xs font-bold text-neutral-600 capitalize">
+                        <input
+                          type="radio"
+                          name="memberSide"
+                          checked={newMember.side === side}
+                          onChange={() => setNewMember({ ...newMember, side: side as any })}
+                          className="text-[#a68b6a] focus:ring-[#a68b6a] border-neutral-300"
+                        />
+                        {side}
+                      </label>
+                    ))}
+                  </div>
                 </div>
                 <button
                   type="button"
                   onClick={handleAddMember}
-                  className="inline-flex items-center gap-1 px-3 py-1.5 bg-[#a68b6a] hover:bg-[#957a5c] text-white text-[11px] font-bold uppercase tracking-wider rounded-lg transition-colors cursor-pointer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-1 px-3 py-1.5 bg-[#a68b6a] hover:bg-[#957a5c] text-white text-[11px] font-bold uppercase tracking-wider rounded-lg transition-colors cursor-pointer"
                 >
                   <Plus size={12} className="stroke-[2.5]" /> Add Member
                 </button>
@@ -569,7 +571,7 @@ export default function MicrositeSettings({ user, supabase }: MicrositeSettingsP
                 <button
                   type="button"
                   onClick={handleAddSponsor}
-                  className="inline-flex items-center gap-1 px-3 py-1.5 bg-[#a68b6a] hover:bg-[#957a5c] text-white text-[11px] font-bold uppercase tracking-wider rounded-lg transition-colors cursor-pointer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-1 px-3 py-1.5 bg-[#a68b6a] hover:bg-[#957a5c] text-white text-[11px] font-bold uppercase tracking-wider rounded-lg transition-colors cursor-pointer"
                 >
                   <Plus size={12} className="stroke-[2.5]" /> Add Sponsor
                 </button>
