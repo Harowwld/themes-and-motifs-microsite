@@ -7,10 +7,16 @@
   --muted-brown-hover: #957a5c;
   --font-noto-serif: var(--font-noto-serif);
   --font-plus-jakarta: var(--font-plus-jakarta);
+  --font-great-vibes: var(--font-great-vibes); /* fallback handled below */
+  --font-playfair-display: var(--font-playfair-display);
 }
 
 .font-headline {
   font-family: var(--font-noto-serif), Georgia, serif;
+}
+
+.font-cursive {
+  font-family: var(--font-great-vibes), cursive;
 }
 
 @layer base {

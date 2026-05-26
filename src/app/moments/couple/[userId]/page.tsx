@@ -717,7 +717,7 @@ export default function CoupleMicrositePage() {
             : item
         )
       );
-      toast.success(`✨ Thank you for your generous contribution of ₱${amount.toLocaleString()}!`);
+      toast.success(`Thank you for your generous contribution of ₱${amount.toLocaleString()}!`);
     } catch (err) {
       console.error("Error saving contribution:", err);
       toast.error("Failed to save contribution.");
@@ -731,7 +731,7 @@ export default function CoupleMicrositePage() {
       toast.error("Please enter a valid amount.");
       return;
     }
-    toast.success(`✨ Thank you for contributing ₱${amount.toLocaleString()} to our Honeymoon & Home Fund!`);
+    toast.success(`Thank you for contributing ₱${amount.toLocaleString()} to our Honeymoon & Home Fund!`);
     setCustomCash("");
   };
 
@@ -768,7 +768,7 @@ export default function CoupleMicrositePage() {
         throw new Error(data.error || "Failed to submit RSVP");
       }
 
-      toast.success(`🎉 RSVP successfully recorded! Thank you, ${rsvpName}!`);
+      toast.success(`RSVP successfully recorded! Thank you, ${rsvpName}!`);
       setRsvpOpen(false);
       
       // Clear form and states
@@ -793,8 +793,6 @@ export default function CoupleMicrositePage() {
 
   return (
     <div className="min-h-screen bg-[#fafafa]">
-      {/* Import script-style Google fonts dynamically */}
-      <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet" />
 
       <div className="mx-auto w-full max-w-4xl px-4 sm:px-6 py-10 sm:py-14">
         
@@ -815,7 +813,9 @@ export default function CoupleMicrositePage() {
         {isOwner && (!profile?.groom_nickname || !profile?.bride_nickname) && (
           <div className="mb-6 max-w-2xl mx-auto bg-amber-50/80 border border-amber-200/60 rounded-2xl p-5 shadow-[0_1px_3px_rgba(0,0,0,0.02)] select-none">
             <div className="flex gap-4">
-              <span className="text-2xl shrink-0">👋</span>
+              <svg className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
               <div className="space-y-1">
                 <h4 className="font-extrabold text-[14px] text-amber-800 font-[family-name:var(--font-plus-jakarta)]">
                   Personalize Your Wedding Microsite!
@@ -828,9 +828,8 @@ export default function CoupleMicrositePage() {
           </div>
         )}
 
-        {/* Mockup Top Brand Script Header */}
         <div className="text-center mb-6 pt-4">
-          <h1 className="text-[52px] sm:text-[68px] font-normal text-[#2c2c2c] leading-tight select-none" style={{ fontFamily: "'Great Vibes', cursive" }}>
+          <h1 className="text-[52px] sm:text-[68px] font-normal text-[#2c2c2c] leading-tight select-none font-[family-name:var(--font-great-vibes)]" style={{ fontFamily: "var(--font-great-vibes), cursive" }}>
             {displayTitle}
           </h1>
         </div>
@@ -893,7 +892,10 @@ export default function CoupleMicrositePage() {
                 <div className="pt-2 select-none">
                   {timeLeft.isPast ? (
                     <div className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-emerald-50 border border-emerald-100 rounded-full text-emerald-600 text-[12px] font-bold uppercase tracking-wider">
-                      💍 Just Married! 🎉
+                      <svg className="h-3.5 w-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                      </svg>
+                      Just Married!
                     </div>
                   ) : (
                     <div className="inline-flex flex-wrap justify-center gap-3 bg-[#fafafa] border border-black/[0.03] px-5 py-2.5 rounded-xl font-[family-name:var(--font-plus-jakarta)]">
@@ -943,9 +945,11 @@ export default function CoupleMicrositePage() {
             {/* Our Love Story Section under the main card instead of Wedding Moments Feed */}
             <div className="max-w-2xl mx-auto border-t border-black/[0.05] pt-10">
               <div className="bg-white border border-black/5 rounded-2xl p-6 sm:p-10 shadow-sm relative select-none">
-                <span className="absolute top-4 left-6 text-[#a68b6a]/10 text-[80px] leading-none pointer-events-none select-none font-serif">♥</span>
+                <svg className="absolute top-4 left-6 h-20 w-20 text-[#a68b6a]/10 pointer-events-none select-none" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                </svg>
                 <div className="text-center mb-6">
-                  <h3 className="text-[28px] font-normal text-[#2c2c2c] leading-tight select-none font-[family-name:var(--font-noto-serif)]" style={{ fontFamily: "'Great Vibes', cursive" }}>
+                  <h3 className="text-[28px] font-normal text-[#2c2c2c] leading-tight select-none font-[family-name:var(--font-great-vibes)]" style={{ fontFamily: "var(--font-great-vibes), cursive" }}>
                     Our Love Story
                   </h3>
                   <p className="text-[11px] text-neutral-400 font-bold uppercase tracking-widest mt-1 font-[family-name:var(--font-plus-jakarta)]">
@@ -990,7 +994,11 @@ export default function CoupleMicrositePage() {
 
             {entourageList.length === 0 ? (
               <div className="bg-white border border-black/5 rounded-xl p-8 text-center max-w-md mx-auto space-y-3">
-                <span className="text-3xl block">👥</span>
+                <div className="flex justify-center text-[#a68b6a] mb-2">
+                  <svg className="h-10 w-10 stroke-[1.5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                </div>
                 <h4 className="font-bold text-[15px] text-neutral-800 font-[family-name:var(--font-plus-jakarta)]">Entourage party is not yet set</h4>
                 <p className="text-[12.5px] text-neutral-400 font-[family-name:var(--font-plus-jakarta)] leading-relaxed">
                   The couple hasn't added their entourage members yet.
@@ -1035,7 +1043,11 @@ export default function CoupleMicrositePage() {
 
             {sponsorsList.length === 0 ? (
               <div className="bg-white border border-black/5 rounded-xl p-8 text-center max-w-md mx-auto space-y-3">
-                <span className="text-3xl block">✨</span>
+                <div className="flex justify-center text-[#a68b6a] mb-2">
+                  <svg className="h-10 w-10 stroke-[1.5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                  </svg>
+                </div>
                 <h4 className="font-bold text-[15px] text-neutral-800 font-[family-name:var(--font-plus-jakarta)]">Sponsors directory is not yet set</h4>
                 <p className="text-[12.5px] text-neutral-400 font-[family-name:var(--font-plus-jakarta)] leading-relaxed">
                   The couple hasn't listed their wedding sponsors yet.
@@ -1102,7 +1114,7 @@ export default function CoupleMicrositePage() {
                   
                   <div className="pt-6 border-t border-black/[0.04] mt-6">
                     <p className="text-[12px] text-neutral-400 uppercase tracking-widest font-bold">With all our love,</p>
-                    <p className="text-[36px] text-[#a68b6a] leading-none mt-3" style={{ fontFamily: "'Great Vibes', cursive" }}>
+                    <p className="text-[36px] text-[#a68b6a] leading-none mt-3 font-[family-name:var(--font-great-vibes)]" style={{ fontFamily: "var(--font-great-vibes), cursive" }}>
                       {displayTitle}
                     </p>
                   </div>
@@ -1110,7 +1122,11 @@ export default function CoupleMicrositePage() {
               </div>
             ) : (
               <div className="bg-white border border-black/5 rounded-xl p-8 text-center max-w-md mx-auto space-y-3">
-                <span className="text-3xl block">✉️</span>
+                <div className="flex justify-center text-[#a68b6a] mb-2">
+                  <svg className="h-10 w-10 stroke-[1.5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                </div>
                 <h4 className="font-bold text-[15px] text-neutral-800 font-[family-name:var(--font-plus-jakarta)]">Guest welcome message is not yet set</h4>
                 <p className="text-[12.5px] text-neutral-400 font-[family-name:var(--font-plus-jakarta)] leading-relaxed">
                   The couple hasn't written their guest welcome letter yet.
@@ -1135,7 +1151,11 @@ export default function CoupleMicrositePage() {
             {/* Custom Cash Fund Honeymoon Contribution Card */}
             <div className="bg-gradient-to-br from-[#fafafa] to-white border border-[#a68b6a]/15 rounded-xl p-5 shadow-sm max-w-md mx-auto">
               <div className="text-center space-y-1 mb-4 select-none">
-                <span className="text-2xl">✈️🏡</span>
+                <div className="flex justify-center text-[#a68b6a] mb-2">
+                  <svg className="h-8 w-8 stroke-[1.5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                  </svg>
+                </div>
                 <h4 className="font-bold text-[14px] text-neutral-800 font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wider">Honeymoon & Future Home Fund</h4>
                 <p className="text-[11px] text-neutral-400">Contribute a custom gift value securely via bank transfer coordinates</p>
               </div>
@@ -1165,7 +1185,11 @@ export default function CoupleMicrositePage() {
             {/* Registry Grid List */}
             {registryItems.length === 0 ? (
               <div className="bg-white border border-black/5 rounded-xl p-8 text-center max-w-md mx-auto space-y-3">
-                <span className="text-3xl block">🎁✨</span>
+                <div className="flex justify-center text-[#a68b6a] mb-2">
+                  <svg className="h-10 w-10 stroke-[1.5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                  </svg>
+                </div>
                 <h4 className="font-bold text-[15px] text-neutral-800 font-[family-name:var(--font-plus-jakarta)]">Our Registry is under preparation</h4>
                 <p className="text-[12.5px] text-neutral-400 font-[family-name:var(--font-plus-jakarta)] leading-relaxed">
                   We are currently choosing our registry items from the Marketplace. Please check back later!
@@ -1174,7 +1198,7 @@ export default function CoupleMicrositePage() {
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
                 {registryItems.map((item) => {
-                  const percent = (item.contribution / item.target) * 100;
+                  const percent = item.target > 0 ? Math.min((item.contribution / item.target) * 100, 100) : 0;
                   const isFullyFunded = item.contribution >= item.target;
                   return (
                     <div key={item.id} className="bg-white border border-black/5 rounded-xl p-4 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
@@ -1184,7 +1208,9 @@ export default function CoupleMicrositePage() {
                             {item.image ? (
                               <img src={item.image} alt={item.name} className="h-full w-full object-cover" />
                             ) : (
-                              <span className="text-xl">🎁</span>
+                              <svg className="h-6 w-6 text-[#a68b6a]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                              </svg>
                             )}
                           </div>
                           <div className="min-w-0 flex-1">
@@ -1252,7 +1278,11 @@ export default function CoupleMicrositePage() {
             </button>
 
             <div className="text-center mb-6">
-              <span className="text-3xl">💌</span>
+              <div className="flex justify-center text-[#a68b6a] mb-2">
+                <svg className="h-10 w-10 stroke-[1.5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+              </div>
               <h3 className="text-[18px] font-bold text-neutral-800 font-[family-name:var(--font-noto-serif)] mt-2">
                 Join Our Big Day
               </h3>
@@ -1268,7 +1298,11 @@ export default function CoupleMicrositePage() {
               </div>
             ) : totalGuests === 0 ? (
               <div className="text-center py-6 px-4 space-y-4 font-[family-name:var(--font-plus-jakarta)] select-none">
-                <span className="text-4xl block">✨</span>
+                <div className="flex justify-center text-[#a68b6a] mb-2">
+                  <svg className="h-12 w-12 stroke-[1.5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                </div>
                 <h4 className="font-bold text-[15px] text-neutral-800">
                   Guest List Not Yet Set Up
                 </h4>
@@ -1354,7 +1388,7 @@ export default function CoupleMicrositePage() {
                   {/* No results prompt */}
                   {!selectedGuestId && rsvpName.trim().length >= 3 && searchResults.length === 0 && !isSearching && (
                     <p className="text-[11px] text-amber-600 font-medium mt-1 font-[family-name:var(--font-plus-jakarta)] leading-normal">
-                      ⚠ No match found. Enter your full name exactly as written on your invitation.
+                      No match found. Enter your full name exactly as written on your invitation.
                     </p>
                   )}
                   
@@ -1422,7 +1456,10 @@ export default function CoupleMicrositePage() {
 
                 {rsvpStatus === "attending" && selectedGuestTable && (
                   <div className="p-3 rounded-xl border border-[#a68b6a]/20 bg-[#a68b6a]/5 flex items-start gap-2.5">
-                    <span className="text-sm mt-0.5 select-none">📍</span>
+                    <svg className="h-4 w-4 text-[#a68b6a] shrink-0 mt-0.5 select-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
                     <div>
                       <h4 className="text-[10px] font-bold text-neutral-700 font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wider">
                         Your Reception Seating

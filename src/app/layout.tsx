@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
-import { Noto_Serif, Plus_Jakarta_Sans } from "next/font/google";
+import { Noto_Serif, Plus_Jakarta_Sans, Great_Vibes, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import HashAuthRedirect from "../lib/HashAuthRedirect";
 import ScrollContainer from "./components/ScrollContainer";
@@ -18,6 +18,19 @@ const notoSerif = Noto_Serif({
 
 const plusJakarta = Plus_Jakarta_Sans({
   variable: "--font-plus-jakarta",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const greatVibes = Great_Vibes({
+  weight: "400",
+  variable: "--font-great-vibes",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const playfairDisplay = Playfair_Display({
+  variable: "--font-playfair-display",
   subsets: ["latin"],
   display: "swap",
 });
@@ -49,7 +62,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body
-        className={`${notoSerif.variable} ${plusJakarta.variable} antialiased`}
+        className={`${notoSerif.variable} ${plusJakarta.variable} ${greatVibes.variable} ${playfairDisplay.variable} antialiased`}
       >
         <Providers>
           <PageCacheProvider>

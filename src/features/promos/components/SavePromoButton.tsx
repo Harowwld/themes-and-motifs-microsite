@@ -97,7 +97,7 @@ export default function SavePromoButton({ promoId, className = "" }: Props) {
 
         if (error) throw error;
         setSaved(true);
-        toast.success("Added to your Wedding Registry! ✨");
+        toast.success("Added to your Wedding Registry!");
       }
     } catch (err) {
       console.error("Error toggling saved promo:", err);

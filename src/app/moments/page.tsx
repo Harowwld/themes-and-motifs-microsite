@@ -130,8 +130,6 @@ export default function PublicMomentsPage() {
 
   return (
     <div className="min-h-screen bg-[#fafafa]">
-      {/* Import script-style Google fonts dynamically */}
-      <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet" />
 
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 py-12 sm:py-16">
 
@@ -231,8 +229,8 @@ export default function PublicMomentsPage() {
                     <div className="p-5 sm:p-6 text-center space-y-4">
                       {/* Cursive Name banner */}
                       <h3
-                        className="text-[34px] sm:text-[38px] font-normal text-neutral-800 leading-none truncate select-none px-2"
-                        style={{ fontFamily: "'Great Vibes', cursive" }}
+                        className="text-[34px] sm:text-[38px] font-normal text-neutral-800 leading-none truncate select-none px-2 font-[family-name:var(--font-great-vibes)]"
+                        style={{ fontFamily: "var(--font-great-vibes), cursive" }}
                       >
                         {displayNames}
                       </h3>
