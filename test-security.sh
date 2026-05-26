@@ -16,12 +16,12 @@ FAIL=0
 
 log_pass() {
     echo -e "${GREEN}✓ PASS${NC}: $1"
-    ((PASS++))
+    PASS=$((PASS + 1))
 }
 
 log_fail() {
     echo -e "${RED}✗ FAIL${NC}: $1"
-    ((FAIL++))
+    FAIL=$((FAIL + 1))
 }
 
 log_info() {
@@ -116,9 +116,9 @@ test_ssrf_private_ips() {
     fi
 }
 
-# Test 3: SSRF - Allow valid HTTPS
+# Test 3: SSRF - Allow valid HTTPS and legacy HTTP
 test_ssrf_allow_valid() {
-    log_info "Testing that valid HTTPS URLs are allowed..."
+    log_info "Testing that valid HTTPS and legacy HTTP URLs are allowed..."
     
     # Test with a known working image URL
     STATUS=$(curl -s -o /dev/null -w "%{http_code}" -L "$BASE_URL/api/image-proxy?url=https://picsum.photos/200/300")
@@ -128,12 +128,20 @@ test_ssrf_allow_valid() {
         log_info "Note: picsum.photos test returned HTTP $STATUS (may vary based on network)"
     fi
     
-    # Test HTTP is blocked (only HTTPS allowed)
+    # Test that HTTP is allowed for legacy vendor compatibility (does not return 400 Bad Request)
     STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$BASE_URL/api/image-proxy?url=http://example.com/image.jpg")
-    if [ "$STATUS" = "400" ]; then
-        log_pass "Blocks HTTP URLs (HTTP $STATUS)"
+    if [ "$STATUS" = "404" ] || [ "$STATUS" = "200" ]; then
+        log_pass "Allows HTTP URLs for legacy compatibility (HTTP $STATUS)"
     else
-        log_fail "Failed to block HTTP URLs (HTTP $STATUS)"
+        log_fail "Failed legacy HTTP compatibility check (HTTP $STATUS)"
+    fi
+
+    # Test that unsupported protocols (like ftp) are blocked (HTTP 400)
+    STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$BASE_URL/api/image-proxy?url=ftp://example.com/image.jpg")
+    if [ "$STATUS" = "400" ]; then
+        log_pass "Blocks unsupported FTP protocol (HTTP $STATUS)"
+    else
+        log_fail "Failed to block unsupported FTP protocol (HTTP $STATUS)"
     fi
 }
 

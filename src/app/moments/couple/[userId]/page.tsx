@@ -357,6 +357,29 @@ export default function CoupleMicrositePage() {
   const [isSearching, setIsSearching] = useState(false);
   const [selectedGuestId, setSelectedGuestId] = useState<string | null>(null);
   const [selectedGuestTable, setSelectedGuestTable] = useState<string | null>(null);
+  const [totalGuests, setTotalGuests] = useState<number | null>(null);
+  const [checkingGuestlist, setCheckingGuestlist] = useState(false);
+
+  // Check if guest list is empty when the RSVP modal opens
+  useEffect(() => {
+    if (rsvpOpen && userId && totalGuests === null) {
+      async function checkEmpty() {
+        setCheckingGuestlist(true);
+        try {
+          const res = await fetch(`/api/rsvp?userId=${userId}&checkEmpty=true`);
+          const data = await res.json();
+          if (typeof data.totalGuests === "number") {
+            setTotalGuests(data.totalGuests);
+          }
+        } catch (err) {
+          console.error("Error checking empty guestlist:", err);
+        } finally {
+          setCheckingGuestlist(false);
+        }
+      }
+      checkEmpty();
+    }
+  }, [rsvpOpen, userId, totalGuests]);
 
   // Debounced search for guests by name
   useEffect(() => {
@@ -391,7 +414,29 @@ export default function CoupleMicrositePage() {
     setRsvpName(guest.name);
     setRsvpEmail(guest.email || "");
     setRsvpStatus(guest.rsvp_status === "pending" ? "attending" : guest.rsvp_status);
-    setRsvpDietary(guest.dietary || "");
+    
+    // Unpack [Meal: Selection] from dietary field dynamically mapping values/labels
+    const rawDietary = guest.dietary || "";
+    const mealMatch = rawDietary.match(/^\[Meal:\s*([^\]]+)\]/i);
+    if (mealMatch) {
+      const matchVal = mealMatch[1].toLowerCase().trim();
+      if (matchVal === "roasted beef" || matchVal === "beef") {
+        setRsvpMeal("beef");
+      } else if (matchVal === "baked salmon" || matchVal === "fish") {
+        setRsvpMeal("fish");
+      } else if (matchVal === "truffle chicken" || matchVal === "chicken") {
+        setRsvpMeal("chicken");
+      } else if (matchVal === "vegan wellington" || matchVal === "vegetarian") {
+        setRsvpMeal("vegetarian");
+      } else {
+        setRsvpMeal("beef"); // Safe default fallback
+      }
+      setRsvpDietary(rawDietary.replace(/^\[Meal:\s*[^\]]+\]\s*/i, ""));
+    } else {
+      setRsvpMeal("beef"); // default
+      setRsvpDietary(rawDietary);
+    }
+    
     setSelectedGuestTable(guest.wedding_tables?.name || null);
     setSearchResults([]);
   };
@@ -699,6 +744,11 @@ export default function CoupleMicrositePage() {
     }
     setRsvpSubmitting(true);
 
+    // Pack meal selection into dietary restrictions field
+    const packedDietary = rsvpStatus === "attending" && rsvpMeal
+      ? `[Meal: ${rsvpMeal}] ${rsvpDietary}`.trim()
+      : rsvpDietary;
+
     try {
       const response = await fetch("/api/rsvp", {
         method: "POST",
@@ -709,7 +759,7 @@ export default function CoupleMicrositePage() {
           guestId: selectedGuestId,
           rsvpStatus,
           email: rsvpEmail,
-          dietary: rsvpDietary,
+          dietary: packedDietary,
         }),
       });
 
@@ -725,6 +775,7 @@ export default function CoupleMicrositePage() {
       setRsvpName("");
       setRsvpEmail("");
       setRsvpDietary("");
+      setRsvpMeal("beef");
       setSelectedGuestId(null);
       setSearchResults([]);
       setSelectedGuestTable(null);
@@ -1210,164 +1261,188 @@ export default function CoupleMicrositePage() {
               </p>
             </div>
 
-            <form onSubmit={handleRsvpSubmit} className="space-y-4">
-              <div className="relative">
-                <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-400 mb-1.5">
-                  Your Full Name *
-                </label>
+            {checkingGuestlist ? (
+              <div className="flex flex-col items-center justify-center py-12 space-y-3 font-[family-name:var(--font-plus-jakarta)] select-none">
+                <div className="animate-spin rounded-full h-8 w-8 border-2 border-t-transparent border-[#a68b6a]"></div>
+                <p className="text-xs text-neutral-400 font-medium">Checking guest directory...</p>
+              </div>
+            ) : totalGuests === 0 ? (
+              <div className="text-center py-6 px-4 space-y-4 font-[family-name:var(--font-plus-jakarta)] select-none">
+                <span className="text-4xl block">✨</span>
+                <h4 className="font-bold text-[15px] text-neutral-800">
+                  Guest List Not Yet Set Up
+                </h4>
+                <p className="text-[12.5px] text-neutral-400 leading-relaxed max-w-xs mx-auto">
+                  The happy couple has not uploaded their guest list to the system yet. Please reach out to them directly to confirm your RSVP!
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setRsvpOpen(false)}
+                  className="w-full h-10 border border-neutral-200 text-neutral-500 text-[12px] font-bold rounded-lg uppercase tracking-wider hover:bg-neutral-50 transition-all cursor-pointer"
+                >
+                  Close Window
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleRsvpSubmit} className="space-y-4">
                 <div className="relative">
-                  <input
-                    type="text"
-                    required
-                    placeholder="Search your name (e.g. Amelia Watson)"
-                    value={rsvpName}
-                    onChange={(e) => {
-                      setRsvpName(e.target.value);
-                      if (selectedGuestId) {
-                        setSelectedGuestId(null);
-                        setSelectedGuestTable(null);
-                      }
-                    }}
-                    className={`w-full h-10 pl-3 pr-10 border rounded-lg bg-[#fafafa]/50 text-[13px] font-semibold outline-none focus:border-[#a68b6a] focus:bg-white transition-all font-[family-name:var(--font-plus-jakarta)] ${
-                      selectedGuestId ? "border-emerald-500/50 focus:border-emerald-500 bg-emerald-50/10" : "border-black/[0.08]"
-                    }`}
-                  />
-                  {isSearching && (
-                    <div className="absolute right-3 top-2.5">
-                      <div className="animate-spin rounded-full h-5 w-5 border-2 border-t-transparent border-[#a68b6a]"></div>
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-400 mb-1.5">
+                    Your Full Name *
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      required
+                      placeholder="Search your name (e.g. Amelia Watson)"
+                      value={rsvpName}
+                      onChange={(e) => {
+                        setRsvpName(e.target.value);
+                        if (selectedGuestId) {
+                          setSelectedGuestId(null);
+                          setSelectedGuestTable(null);
+                        }
+                      }}
+                      className={`w-full h-10 pl-3 pr-10 border rounded-lg bg-[#fafafa]/50 text-[13px] font-semibold outline-none focus:border-[#a68b6a] focus:bg-white transition-all font-[family-name:var(--font-plus-jakarta)] ${
+                        selectedGuestId ? "border-emerald-500/50 focus:border-emerald-500 bg-emerald-50/10" : "border-black/[0.08]"
+                      }`}
+                    />
+                    {isSearching && (
+                      <div className="absolute right-3 top-2.5">
+                        <div className="animate-spin rounded-full h-5 w-5 border-2 border-t-transparent border-[#a68b6a]"></div>
+                      </div>
+                    )}
+                    {selectedGuestId && !isSearching && (
+                      <div className="absolute right-3 top-2.5 text-emerald-500" title="Invitation Found!">
+                        <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Selected Guest details indicator */}
+                  {selectedGuestId && (
+                    <p className="text-[11px] text-emerald-600 font-bold mt-1 font-[family-name:var(--font-plus-jakarta)]">
+                      ✓ Invitation verified! Please confirm details below.
+                    </p>
+                  )}
+
+                  {/* Dropdown search results */}
+                  {searchResults.length > 0 && (
+                    <div className="absolute left-0 right-0 mt-1 bg-white border border-black/10 rounded-xl shadow-xl max-h-48 overflow-y-auto z-50 p-1.5 space-y-1 animate-fadeIn">
+                      {searchResults.map((guest) => (
+                        <button
+                          key={guest.id}
+                          type="button"
+                          onClick={() => handleSelectGuest(guest)}
+                          className="w-full text-left px-3 py-2 text-xs font-semibold rounded-lg hover:bg-[#a68b6a]/5 hover:text-[#a68b6a] transition-all flex items-center justify-between group"
+                        >
+                          <div>
+                            <span className="text-neutral-800 group-hover:text-[#a68b6a] font-bold">{guest.name}</span>
+                            <span className="text-[9px] uppercase tracking-wider text-neutral-400 bg-neutral-100 px-1.5 py-0.5 rounded ml-2 font-bold group-hover:bg-[#a68b6a]/10 group-hover:text-[#a68b6a]">
+                              {guest.category || "Guest"}
+                            </span>
+                          </div>
+                          <span className="text-[10px] text-neutral-400 font-medium group-hover:text-[#a68b6a]">
+                            Select →
+                          </span>
+                        </button>
+                      ))}
                     </div>
                   )}
-                  {selectedGuestId && !isSearching && (
-                    <div className="absolute right-3 top-2.5 text-emerald-500" title="Invitation Found!">
-                      <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                    </div>
+                  
+                  {/* No results prompt */}
+                  {!selectedGuestId && rsvpName.trim().length >= 3 && searchResults.length === 0 && !isSearching && (
+                    <p className="text-[11px] text-amber-600 font-medium mt-1 font-[family-name:var(--font-plus-jakarta)] leading-normal">
+                      ⚠ No match found. Enter your full name exactly as written on your invitation.
+                    </p>
+                  )}
+                  
+                  {/* Initial guide text */}
+                  {!selectedGuestId && rsvpName.trim().length < 3 && (
+                    <p className="text-[10px] text-neutral-400 font-medium mt-1 font-[family-name:var(--font-plus-jakarta)] leading-normal">
+                      Type at least 3 characters to search the guest list.
+                    </p>
                   )}
                 </div>
 
-                {/* Selected Guest details indicator */}
-                {selectedGuestId && (
-                  <p className="text-[11px] text-emerald-600 font-bold mt-1 font-[family-name:var(--font-plus-jakarta)]">
-                    ✓ Invitation verified! Please confirm details below.
-                  </p>
-                )}
-
-                {/* Dropdown search results */}
-                {searchResults.length > 0 && (
-                  <div className="absolute left-0 right-0 mt-1 bg-white border border-black/10 rounded-xl shadow-xl max-h-48 overflow-y-auto z-50 p-1.5 space-y-1 animate-fadeIn">
-                    {searchResults.map((guest) => (
-                      <button
-                        key={guest.id}
-                        type="button"
-                        onClick={() => handleSelectGuest(guest)}
-                        className="w-full text-left px-3 py-2 text-xs font-semibold rounded-lg hover:bg-[#a68b6a]/5 hover:text-[#a68b6a] transition-all flex items-center justify-between group"
-                      >
-                        <div>
-                          <span className="text-neutral-800 group-hover:text-[#a68b6a] font-bold">{guest.name}</span>
-                          <span className="text-[9px] uppercase tracking-wider text-neutral-400 bg-neutral-100 px-1.5 py-0.5 rounded ml-2 font-bold group-hover:bg-[#a68b6a]/10 group-hover:text-[#a68b6a]">
-                            {guest.category || "Guest"}
-                          </span>
-                        </div>
-                        <span className="text-[10px] text-neutral-400 font-medium group-hover:text-[#a68b6a]">
-                          Select →
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-                
-                {/* No results prompt */}
-                {!selectedGuestId && rsvpName.trim().length >= 3 && searchResults.length === 0 && !isSearching && (
-                  <p className="text-[11px] text-amber-600 font-medium mt-1 font-[family-name:var(--font-plus-jakarta)] leading-normal">
-                    ⚠ No match found. Enter your full name exactly as written on your invitation.
-                  </p>
-                )}
-                
-                {/* Initial guide text */}
-                {!selectedGuestId && rsvpName.trim().length < 3 && (
-                  <p className="text-[10px] text-neutral-400 font-medium mt-1 font-[family-name:var(--font-plus-jakarta)] leading-normal">
-                    Type at least 3 characters to search the guest list.
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-400 mb-1.5">Email Address</label>
-                <input
-                  type="email"
-                  placeholder="e.g. amelia@gmail.com"
-                  value={rsvpEmail}
-                  onChange={(e) => setRsvpEmail(e.target.value)}
-                  className="w-full h-10 px-3 border border-black/[0.08] rounded-lg bg-[#fafafa]/50 text-[13px] font-semibold outline-none focus:border-[#a68b6a] focus:bg-white transition-all font-[family-name:var(--font-plus-jakarta)]"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-400 mb-1.5">Will you attend? *</label>
-                  <select
-                    value={rsvpStatus}
-                    onChange={(e) => setRsvpStatus(e.target.value as any)}
-                    className="w-full h-10 px-2 border border-black/[0.08] rounded-lg bg-[#fafafa]/50 text-[13px] font-semibold outline-none focus:border-[#a68b6a] focus:bg-white transition-all"
-                  >
-                    <option value="attending">Yes, gladly!</option>
-                    <option value="declined">Regretfully, no</option>
-                  </select>
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-400 mb-1.5">Email Address</label>
+                  <input
+                    type="email"
+                    placeholder="e.g. amelia@gmail.com"
+                    value={rsvpEmail}
+                    onChange={(e) => setRsvpEmail(e.target.value)}
+                    className="w-full h-10 px-3 border border-black/[0.08] rounded-lg bg-[#fafafa]/50 text-[13px] font-semibold outline-none focus:border-[#a68b6a] focus:bg-white transition-all font-[family-name:var(--font-plus-jakarta)]"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-400 mb-1.5">Will you attend? *</label>
+                    <select
+                      value={rsvpStatus}
+                      onChange={(e) => setRsvpStatus(e.target.value as any)}
+                      className="w-full h-10 px-2 border border-black/[0.08] rounded-lg bg-[#fafafa]/50 text-[13px] font-semibold outline-none focus:border-[#a68b6a] focus:bg-white transition-all"
+                    >
+                      <option value="attending">Yes, gladly!</option>
+                      <option value="declined">Regretfully, no</option>
+                    </select>
+                  </div>
+
+                  {rsvpStatus === "attending" && (
+                    <div>
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-400 mb-1.5">Meal Choice</label>
+                      <select
+                        value={rsvpMeal}
+                        onChange={(e) => setRsvpMeal(e.target.value)}
+                        className="w-full h-10 px-2 border border-black/[0.08] rounded-lg bg-[#fafafa]/50 text-[13px] font-semibold outline-none focus:border-[#a68b6a] focus:bg-white transition-all"
+                      >
+                        <option value="beef">Roasted Beef</option>
+                        <option value="fish">Baked Salmon</option>
+                        <option value="chicken">Truffle Chicken</option>
+                        <option value="vegetarian">Vegan Wellington</option>
+                      </select>
+                    </div>
+                  )}
                 </div>
 
                 {rsvpStatus === "attending" && (
                   <div>
-                    <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-400 mb-1.5">Meal Choice</label>
-                    <select
-                      value={rsvpMeal}
-                      onChange={(e) => setRsvpMeal(e.target.value)}
-                      className="w-full h-10 px-2 border border-black/[0.08] rounded-lg bg-[#fafafa]/50 text-[13px] font-semibold outline-none focus:border-[#a68b6a] focus:bg-white transition-all"
-                    >
-                      <option value="beef">Roasted Beef</option>
-                      <option value="fish">Baked Salmon</option>
-                      <option value="chicken">Truffle Chicken</option>
-                      <option value="vegetarian">Vegan Wellington</option>
-                    </select>
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-400 mb-1.5">Dietary Restrictions / Allergies</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Peanut allergy, gluten-free"
+                      value={rsvpDietary}
+                      onChange={(e) => setRsvpDietary(e.target.value)}
+                      className="w-full h-10 px-3 border border-black/[0.08] rounded-lg bg-[#fafafa]/50 text-[13px] font-semibold outline-none focus:border-[#a68b6a] focus:bg-white transition-all font-[family-name:var(--font-plus-jakarta)]"
+                    />
                   </div>
                 )}
-              </div>
 
-              {rsvpStatus === "attending" && (
-                <div>
-                  <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-400 mb-1.5">Dietary Restrictions / Allergies</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Peanut allergy, gluten-free"
-                    value={rsvpDietary}
-                    onChange={(e) => setRsvpDietary(e.target.value)}
-                    className="w-full h-10 px-3 border border-black/[0.08] rounded-lg bg-[#fafafa]/50 text-[13px] font-semibold outline-none focus:border-[#a68b6a] focus:bg-white transition-all font-[family-name:var(--font-plus-jakarta)]"
-                  />
-                </div>
-              )}
-
-              {rsvpStatus === "attending" && selectedGuestTable && (
-                <div className="p-3 rounded-xl border border-[#a68b6a]/20 bg-[#a68b6a]/5 flex items-start gap-2.5">
-                  <span className="text-sm mt-0.5 select-none">📍</span>
-                  <div>
-                    <h4 className="text-[10px] font-bold text-neutral-700 font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wider">
-                      Your Reception Seating
-                    </h4>
-                    <p className="text-[12px] text-neutral-500 font-semibold font-[family-name:var(--font-plus-jakarta)] mt-0.5">
-                      You are assigned to <strong className="text-[#a68b6a]">{selectedGuestTable}</strong>.
-                    </p>
+                {rsvpStatus === "attending" && selectedGuestTable && (
+                  <div className="p-3 rounded-xl border border-[#a68b6a]/20 bg-[#a68b6a]/5 flex items-start gap-2.5">
+                    <span className="text-sm mt-0.5 select-none">📍</span>
+                    <div>
+                      <h4 className="text-[10px] font-bold text-neutral-700 font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wider">
+                        Your Reception Seating
+                      </h4>
+                      <p className="text-[12px] text-neutral-500 font-semibold font-[family-name:var(--font-plus-jakarta)] mt-0.5">
+                        You are assigned to <strong className="text-[#a68b6a]">{selectedGuestTable}</strong>.
+                      </p>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              <button
-                type="submit"
-                disabled={rsvpSubmitting}
-                className="w-full h-11 bg-[#a68b6a] text-white text-[12px] font-bold uppercase tracking-wider rounded-lg hover:bg-[#957a5c] transition-colors disabled:opacity-50 cursor-pointer shadow-md"
-              >
-                {rsvpSubmitting ? "Recording response..." : "Submit RSVP Response"}
-              </button>
-            </form>
+                <button
+                  type="submit"
+                  disabled={rsvpSubmitting}
+                  className="w-full h-11 bg-[#a68b6a] text-white text-[12px] font-bold uppercase tracking-wider rounded-lg hover:bg-[#957a5c] transition-colors disabled:opacity-50 cursor-pointer shadow-md"
+                >
+                  {rsvpSubmitting ? "Recording response..." : "Submit RSVP Response"}
+                </button>
+              </form>
+            )}
           </div>
         </div>
       )}

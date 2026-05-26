@@ -8,7 +8,31 @@ export async function GET(request: NextRequest) {
     const userId = searchParams.get("userId");
     const name = searchParams.get("name");
 
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (userId && !uuidRegex.test(userId)) {
+      return NextResponse.json({ error: "Invalid userId format" }, { status: 400 });
+    }
+    if (guestId && !uuidRegex.test(guestId)) {
+      return NextResponse.json({ error: "Invalid guestId format" }, { status: 400 });
+    }
+
     const supabase = createSupabaseAdminClient();
+
+    // If checkEmpty is requested, return total guest count for a given user
+    const checkEmpty = searchParams.get("checkEmpty") === "true";
+    if (userId && checkEmpty) {
+      const { count, error: countError } = await supabase
+        .from("wedding_guests")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", userId);
+
+      if (countError) {
+        console.error("Error checking empty guestlist:", countError);
+        return NextResponse.json({ error: "Failed to check guest list status" }, { status: 500 });
+      }
+
+      return NextResponse.json({ totalGuests: count || 0 });
+    }
 
     // If userId and name are provided, perform a guest search
     if (userId && name) {
@@ -19,8 +43,6 @@ export async function GET(request: NextRequest) {
           name, 
           rsvp_status, 
           dietary, 
-          email, 
-          phone, 
           table_id,
           wedding_tables (
             name
@@ -107,17 +129,41 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid rsvpStatus value" }, { status: 400 });
     }
 
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (guestId && !uuidRegex.test(guestId)) {
+      return NextResponse.json({ error: "Invalid guestId format" }, { status: 400 });
+    }
+
+    if (email && email.length > 255) {
+      return NextResponse.json({ error: "Email parameter too long" }, { status: 400 });
+    }
+    if (phone && phone.length > 50) {
+      return NextResponse.json({ error: "Phone parameter too long" }, { status: 400 });
+    }
+    if (dietary && dietary.length > 1000) {
+      return NextResponse.json({ error: "Dietary restrictions parameter too long" }, { status: 400 });
+    }
+
+    if (email && email.trim() !== "") {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return NextResponse.json({ error: "Invalid email format" }, { status: 400 });
+      }
+    }
+
     const supabase = createSupabaseAdminClient();
 
     // Update guest record securely using Supabase admin/service role client
+    const updatePayload: any = {
+      rsvp_status: rsvpStatus
+    };
+    if (email !== undefined) updatePayload.email = email ?? "";
+    if (phone !== undefined) updatePayload.phone = phone ?? "";
+    if (dietary !== undefined) updatePayload.dietary = dietary ?? "";
+
     const { data: updatedGuest, error: updateError } = await supabase
       .from("wedding_guests")
-      .update({
-        rsvp_status: rsvpStatus,
-        email: email ?? "",
-        phone: phone ?? "",
-        dietary: dietary ?? ""
-      })
+      .update(updatePayload)
       .eq("id", guestId)
       .select()
       .maybeSingle();
