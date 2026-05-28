@@ -270,11 +270,12 @@ export default function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-50 inset-x-0 backdrop-blur-md bg-white/90 supports-backdrop-filter:bg-white/90 border-b border-gray-100">
-      <div className="mx-auto h-16 flex items-center justify-between px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto h-16 grid grid-cols-[20%_60%_20%] items-center px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.4, ease: EASE_OUT }}
+          className="flex items-center justify-start"
         >
           <Link
             className="flex items-center"
@@ -296,52 +297,40 @@ export default function SiteHeader() {
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="hidden sm:flex items-center gap-8 text-[13px] font-medium text-gray-500 font-[family-name:var(--font-plus-jakarta)]"
+          className="hidden sm:flex items-center justify-center gap-8 text-[13px] font-medium text-gray-500 font-[family-name:var(--font-plus-jakarta)]"
         >
           <motion.div variants={itemVariants}>
             <NavLink className="hover:text-[#a68b6a] transition-colors" href="/vendors">
-              Discover
-            </NavLink>
-          </motion.div>
-          <motion.div variants={itemVariants}>
-            <NavLink
-              className="hover:text-[#a68b6a] transition-colors"
-              href="/#featured"
-              onClick={(e) => {
-                e.preventDefault();
-                goToHomeSection("featured");
-              }}
-            >
-              Featured
-            </NavLink>
-          </motion.div>
-          <motion.div variants={itemVariants}>
-            <NavLink className="hover:text-[#a68b6a] transition-colors" href="/vendors/plans">
-              For vendors
+              Vendors
             </NavLink>
           </motion.div>
 
-          {/* Dashboard and Moments for couples */}
-          {mounted && signedIn && isSoonToWed && !isVendor && (
-            <>
-              <motion.div variants={itemVariants}>
-                <NavLink className="hover:text-[#a68b6a] transition-colors" href="/dashboard">
-                  Dashboard
-                </NavLink>
-              </motion.div>
-              <motion.div variants={itemVariants}>
-                <NavLink className="hover:text-[#a68b6a] transition-colors" href="/moments">
-                  Moments
-                </NavLink>
-              </motion.div>
-            </>
+          <motion.div variants={itemVariants}>
+            <NavLink className="hover:text-[#a68b6a] transition-colors" href="/about-us">
+              About us
+            </NavLink>
+          </motion.div>
+
+          <motion.div variants={itemVariants}>
+            <NavLink className="hover:text-[#a68b6a] transition-colors" href="/contact-us">
+              Contact us
+            </NavLink>
+          </motion.div>
+
+          {/* For vendors - do not render for logged in couples */}
+          {mounted && (!signedIn || !isSoonToWed) && (
+            <motion.div variants={itemVariants}>
+              <NavLink className="hover:text-[#a68b6a] transition-colors" href="/vendors/plans">
+                For vendors
+              </NavLink>
+            </motion.div>
           )}
 
-          {/* Dashboard for vendors */}
-          {mounted && isVendor && (
+          {/* Moments for couples (Dashboard is in the floating profile widget) */}
+          {mounted && signedIn && isSoonToWed && !isVendor && (
             <motion.div variants={itemVariants}>
-              <NavLink className="hover:text-[#a68b6a] transition-colors" href="/vendor/dashboard">
-                Dashboard
+              <NavLink className="hover:text-[#a68b6a] transition-colors" href="/moments">
+                Couples
               </NavLink>
             </motion.div>
           )}
@@ -350,7 +339,7 @@ export default function SiteHeader() {
           {mounted && (!signedIn || isVendor) ? (
             <motion.div variants={itemVariants}>
               <NavLink className="hover:text-[#a68b6a] transition-colors" href="/moments">
-                Wedding Moments
+                Couples
               </NavLink>
             </motion.div>
           ) : null}
@@ -360,7 +349,7 @@ export default function SiteHeader() {
           initial={{ opacity: 0, x: 10 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.4, ease: EASE_OUT }}
-          className="flex items-center gap-2"
+          className="flex items-center justify-end gap-3"
         >
           {/* Desktop nav items - Left side for Sign in */}
           {mounted && !signedIn && (
@@ -375,55 +364,22 @@ export default function SiteHeader() {
 
           {/* Desktop nav items - Right side */}
           {mounted && signedIn && (
-            <NavButton
-              disabled={signingOut}
-              onClick={() => void signOut()}
-              className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-md text-[13px] font-medium text-gray-600 hover:text-gray-900 transition-colors disabled:opacity-60 font-[family-name:var(--font-plus-jakarta)]"
-            >
-              {signingOut ? "Signing out.." : "Sign out"}
-            </NavButton>
+            <>
+              <NavLink
+                className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-md text-[13px] font-medium text-gray-600 hover:text-gray-900 transition-colors font-[family-name:var(--font-plus-jakarta)]"
+                href={isVendor ? "/vendor/dashboard" : "/dashboard"}
+              >
+                Dashboard
+              </NavLink>
+              <NavButton
+                disabled={signingOut}
+                onClick={() => void signOut()}
+                className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-md text-[13px] font-medium text-gray-600 hover:text-gray-900 transition-colors disabled:opacity-60 font-[family-name:var(--font-plus-jakarta)]"
+              >
+                {signingOut ? "Signing out.." : "Sign out"}
+              </NavButton>
+            </>
           )}
-
-          {/* Account info for signed in users */}
-          {mounted && signedIn && email && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-md bg-gray-50 border border-gray-200"
-            >
-              <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-              <span className="text-[12px] text-gray-600 font-medium max-w-[120px] truncate" title={email}>
-                {email}
-              </span>
-              {accountType && (
-                <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
-                  accountType === "vendor"
-                    ? "bg-blue-50 text-blue-600 border border-blue-200"
-                    : accountType === "couple"
-                    ? "bg-[#a68b6a]/10 text-[#a68b6a] border border-[#a68b6a]/20"
-                    : accountType === "editor"
-                    ? "bg-purple-50 text-purple-600 border border-purple-200"
-                    : accountType === "superadmin"
-                    ? "bg-[#fff1f3] text-[#b42318] border border-[#b42318]/20"
-                    : "bg-gray-100 text-gray-600 border border-gray-200"
-                }`}>
-                  {accountType === "soon_to_wed" ? "Couple" : accountType.charAt(0).toUpperCase() + accountType.slice(1)}
-                </span>
-              )}
-            </motion.div>
-          )}
-
-          <motion.div whileTap={{ scale: 0.97 }}>
-            <Link
-              href="/vendors"
-              className="hidden sm:inline-flex h-9 items-center justify-center px-4 rounded-md bg-[#a68b6a] text-white text-[13px] font-medium hover:bg-[#957a5c] transition-colors font-[family-name:var(--font-plus-jakarta)]"
-              prefetch={true}
-            >
-              Start Searching
-            </Link>
-          </motion.div>
 
           {/* Mobile menu button */}
           <motion.button
@@ -493,6 +449,32 @@ export default function SiteHeader() {
                 </NavLink>
               </motion.div>
 
+              <motion.div
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.22, duration: 0.3, ease: EASE_OUT }}
+              >
+                <NavLink
+                  className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
+                  href="/about-us"
+                >
+                  About us
+                </NavLink>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.24, duration: 0.3, ease: EASE_OUT }}
+              >
+                <NavLink
+                  className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
+                  href="/contact-us"
+                >
+                  Contact us
+                </NavLink>
+              </motion.div>
+
               {/* Dashboard and Moments for couples */}
               {mounted && signedIn && isSoonToWed && !isVendor && (
                 <>
@@ -517,7 +499,7 @@ export default function SiteHeader() {
                       className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
                       href="/moments"
                     >
-                      Moments
+                      Couples
                     </NavLink>
                   </motion.div>
                 </>
@@ -550,7 +532,7 @@ export default function SiteHeader() {
                     className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
                     href="/moments"
                   >
-                    Wedding Moments
+                    Couples
                   </NavLink>
                 </motion.div>
               ) : null}

@@ -5,6 +5,7 @@ import "./globals.css";
 import HashAuthRedirect from "../lib/HashAuthRedirect";
 import ScrollContainer from "./components/ScrollContainer";
 import BugReportButton from "./components/BugReportButton";
+import ProfileWidget from "./components/ProfileWidget";
 import NavWrapper from "./components/NavWrapper";
 import PageCacheProvider from "./components/PageCacheProvider";
 import { Providers } from "./providers";
@@ -69,6 +70,7 @@ export default function RootLayout({
             <ScrollContainer>
               <HashAuthRedirect />
               <BugReportButton />
+              <ProfileWidget />
               <NavWrapper>{children}</NavWrapper>
             </ScrollContainer>
           </PageCacheProvider>

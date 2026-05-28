@@ -1,4 +1,17 @@
 import React from "react";
+import { 
+  User, 
+  Image as ImageIcon, 
+  Film, 
+  Ticket, 
+  Globe, 
+  Palette, 
+  CheckSquare, 
+  Phone, 
+  ShieldCheck, 
+  Briefcase 
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Vendor, VerificationDocument, Promo, Theme, Affiliation, VendorImage, VendorVideo, VendorSocial } from "../hooks/useSuperadminVendors";
 import { ProfileSection } from "./ProfileSection";
 import { ContactSection } from "./ContactSection";
@@ -106,11 +119,26 @@ export function VendorEditModal({
   saveAll: (closeAfter?: boolean) => Promise<boolean>;
   saveAllAndClose: () => Promise<void>;
 }) {
+  const [activeTab, setActiveTab] = React.useState("photos");
+
   if (!isOpen || !editingVendor) return null;
+
+  const tabs = [
+    { id: "photos", label: "Portfolio Photos", icon: ImageIcon },
+    { id: "promos", label: "Vouchers & Promos", icon: Ticket },
+    { id: "profile", label: "Business Profile", icon: User },
+    { id: "contact", label: "Contact Info", icon: Phone },
+    { id: "adminContact", label: "Admin Contact", icon: ShieldCheck },
+    { id: "verification", label: "Verification", icon: CheckSquare },
+    { id: "videos", label: "Video Highlights", icon: Film },
+    { id: "social", label: "Social Links", icon: Globe },
+    { id: "affiliations", label: "Affiliations & Themes", icon: Palette },
+    { id: "professional", label: "Professional Status", icon: Briefcase },
+  ];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-      <div className="w-full max-w-4xl max-h-[90vh] rounded-[3px] border border-black/10 bg-white shadow-lg my-8 flex flex-col overflow-hidden">
+      <div className="w-full max-w-5xl max-h-[90vh] rounded-[3px] border border-black/10 bg-white shadow-lg my-8 flex flex-col overflow-hidden">
         <div className="px-4 py-3 border-b border-black/5 flex items-center justify-between">
           <div>
             <div className="text-[14px] font-semibold text-[#2c2c2c]">Edit Vendor</div>
@@ -125,53 +153,117 @@ export function VendorEditModal({
           </button>
         </div>
 
-        <div className="p-4 grid gap-6 flex-1 overflow-y-auto overflow-x-hidden">
-          {editLoading && <div className="text-[13px] text-black/60">Loading…</div>}
+        <div className="flex-1 flex overflow-hidden min-h-0">
+          {/* Sidebar Navigation */}
+          <aside className="w-[230px] shrink-0 border-r border-black/5 bg-[#fafafa] p-3 overflow-y-auto space-y-1">
+            <div className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest px-3 mb-2.5">
+              Edit Sections
+            </div>
+            {tabs.map((tab) => {
+              const isSelected = activeTab === tab.id;
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-[4px] text-[13px] font-bold active:scale-[0.98] transition-all duration-200 text-left cursor-pointer ${
+                    isSelected
+                      ? "bg-[#a67c52] text-white shadow-[0_4px_12px_rgba(166,124,82,0.15)]"
+                      : "text-neutral-500 hover:text-[#a67c52] hover:bg-[#a67c52]/5"
+                  }`}
+                >
+                  <Icon size={16} strokeWidth={isSelected ? 2.5 : 2} className={isSelected ? "text-white" : "text-neutral-400"} />
+                  <span className="flex-1 truncate">{tab.label}</span>
+                </button>
+              );
+            })}
+          </aside>
 
-          <PhotosSection 
-            editImages={editImages} 
-            setEditImages={setEditImages} 
-            setEditingPhotoIndex={setEditingPhotoIndex} 
-            setPhotoModalOpen={setPhotoModalOpen} 
-          />
-          <PromosSection 
-            editPromos={editPromos} 
-            showPromoForm={showPromoForm} 
-            setShowPromoForm={setShowPromoForm} 
-            promoForm={promoForm} 
-            setPromoForm={setPromoForm} 
-            editingPromoId={editingPromoId} 
-            resetPromoForm={resetPromoForm} 
-            savePromo={savePromo} 
-            editLoading={editLoading} 
-            togglePromoFeatured={togglePromoFeatured} 
-            startEditPromo={startEditPromo} 
-            setPromoToDelete={setPromoToDelete} 
-            editingVendorId={editingVendor.id} 
-          />
-          <ProfileSection editForm={editForm} setEditForm={setEditForm} />
-          <ContactSection editForm={editForm} setEditForm={setEditForm} setLogoUrlInput={setLogoUrlInput} setLogoModalOpen={setLogoModalOpen} />
-          <AdminContactSection editForm={editForm} setEditForm={setEditForm} />
-          <VerificationSection 
-            editForm={editForm} 
-            setEditForm={setEditForm} 
-            editSubscription={editSubscription} 
-            saveSubscriptionDate={saveSubscriptionDate} 
-            verificationDocuments={verificationDocuments} 
-          />
-          <VideosSection editVideos={editVideos} setEditVideos={setEditVideos} />
-          <SocialLinksSection editSocials={editSocials} setEditSocials={setEditSocials} />
-          <AffiliationsThemesSection 
-            editAffiliations={editAffiliations} 
-            setEditAffiliations={setEditAffiliations} 
-            allAffiliations={allAffiliations} 
-            affiliationInput={affiliationInput} 
-            setAffiliationInput={setAffiliationInput} 
-            editThemes={editThemes} 
-            setEditThemes={setEditThemes} 
-            allThemes={allThemes} 
-          />
-          <ProfessionalStatusSection editForm={editForm} setEditForm={setEditForm} />
+          {/* Interactive Workspace Panel */}
+          <main className="flex-1 p-5 overflow-y-auto overflow-x-hidden min-h-0 bg-white">
+            {editLoading && <div className="text-[13px] text-black/60 mb-4">Loading…</div>}
+            
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeTab}
+                initial={{ opacity: 0, scale: 0.985, y: 6 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.985, y: -6 }}
+                transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+                className="space-y-6"
+              >
+                {(() => {
+                  switch (activeTab) {
+                    case "photos":
+                      return (
+                        <PhotosSection 
+                          editImages={editImages} 
+                          setEditImages={setEditImages} 
+                          setEditingPhotoIndex={setEditingPhotoIndex} 
+                          setPhotoModalOpen={setPhotoModalOpen} 
+                        />
+                      );
+                    case "promos":
+                      return (
+                        <PromosSection 
+                          editPromos={editPromos} 
+                          showPromoForm={showPromoForm} 
+                          setShowPromoForm={setShowPromoForm} 
+                          promoForm={promoForm} 
+                          setPromoForm={setPromoForm} 
+                          editingPromoId={editingPromoId} 
+                          resetPromoForm={resetPromoForm} 
+                          savePromo={savePromo} 
+                          editLoading={editLoading} 
+                          togglePromoFeatured={togglePromoFeatured} 
+                          startEditPromo={startEditPromo} 
+                          setPromoToDelete={setPromoToDelete} 
+                          editingVendorId={editingVendor.id} 
+                        />
+                      );
+                    case "profile":
+                      return <ProfileSection editForm={editForm} setEditForm={setEditForm} />;
+                    case "contact":
+                      return <ContactSection editForm={editForm} setEditForm={setEditForm} setLogoUrlInput={setLogoUrlInput} setLogoModalOpen={setLogoModalOpen} />;
+                    case "adminContact":
+                      return <AdminContactSection editForm={editForm} setEditForm={setEditForm} />;
+                    case "verification":
+                      return (
+                        <VerificationSection 
+                          editForm={editForm} 
+                          setEditForm={setEditForm} 
+                          editSubscription={editSubscription} 
+                          saveSubscriptionDate={saveSubscriptionDate} 
+                          verificationDocuments={verificationDocuments} 
+                        />
+                      );
+                    case "videos":
+                      return <VideosSection editVideos={editVideos} setEditVideos={setEditVideos} />;
+                    case "social":
+                      return <SocialLinksSection editSocials={editSocials} setEditSocials={setEditSocials} />;
+                    case "affiliations":
+                      return (
+                        <AffiliationsThemesSection 
+                          editAffiliations={editAffiliations} 
+                          setEditAffiliations={setEditAffiliations} 
+                          allAffiliations={allAffiliations} 
+                          affiliationInput={affiliationInput} 
+                          setAffiliationInput={setAffiliationInput} 
+                          editThemes={editThemes} 
+                          setEditThemes={setEditThemes} 
+                          allThemes={allThemes} 
+                        />
+                      );
+                    case "professional":
+                      return <ProfessionalStatusSection editForm={editForm} setEditForm={setEditForm} />;
+                    default:
+                      return null;
+                  }
+                })()}
+              </motion.div>
+            </AnimatePresence>
+          </main>
         </div>
 
         <div className="px-4 py-3 border-t border-black/5 flex items-center justify-between">
@@ -207,4 +299,5 @@ export function VendorEditModal({
     </div>
   );
 }
+
 
