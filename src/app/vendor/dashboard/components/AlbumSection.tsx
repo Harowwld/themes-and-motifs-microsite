@@ -30,7 +30,8 @@ export function AlbumSection({
   setRenameAlbumModalOpen,
   setAlbumToRename,
   setRenameAlbumTitle,
-  renameAlbum
+  renameAlbum,
+  isMerged = false
 }: {
   albums: Album[];
   setAlbumModalOpen: (v: boolean) => void;
@@ -61,6 +62,7 @@ export function AlbumSection({
   setAlbumToRename: (v: Album | null) => void;
   setRenameAlbumTitle: (v: string) => void;
   renameAlbum: () => void;
+  isMerged?: boolean;
 }) {
   const [localPhotos, setLocalPhotos] = React.useState<AlbumPhoto[]>([]);
 
@@ -70,93 +72,115 @@ export function AlbumSection({
     }
   }, [albumPhotos, albumEditorOpen]);
 
+  const renderContent = () => (
+    <div className={isMerged ? "" : "p-6"}>
+      {albums.length === 0 ? (
+        <div className="rounded-lg border border-dashed border-black/[0.08] bg-[#fafafa]/50 p-8 text-center">
+          <div className="h-12 w-12 rounded-full bg-white flex items-center justify-center shadow-sm mx-auto mb-4">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#a67c52" strokeWidth="2" className="h-6 w-6">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+              <circle cx="8.5" cy="8.5" r="1.5" />
+              <path d="M21 15l-5-5L5 21" />
+            </svg>
+          </div>
+          <div className="text-[14px] font-semibold text-black/60 mb-1">No albums yet</div>
+          <div className="text-[12px] text-black/40">Create your first album to organize your photos.</div>
+        </div>
+      ) : (
+        <div className="grid gap-4">
+          {albums.map((album) => (
+            <div key={album.id} className="rounded-lg border border-black/[0.04] bg-[#fafafa]/30 p-4 flex items-center justify-between transition-all duration-300 hover:bg-white hover:shadow-md hover:border-black/[0.08]">
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-lg bg-[#a67c52]/10 flex items-center justify-center">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#a67c52" strokeWidth="2" className="h-6 w-6">
+                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+                  </svg>
+                </div>
+                <div>
+                  <div className="text-[14px] font-bold text-[#2c2c2c]">{album.title}</div>
+                  <div className="text-[11px] font-bold text-black/30 uppercase tracking-wider">{album.photo_count} photo{album.photo_count !== 1 ? "s" : ""}</div>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedAlbum(album);
+                    setAlbumEditorOpen(true);
+                    loadAlbumPhotos(album.id);
+                  }}
+                  className="h-9 px-4 rounded-lg bg-white border border-black/[0.08] text-[12px] font-bold text-[#6e4f33] hover:bg-[#fafafa] transition-all duration-300 shadow-sm"
+                >
+                  Manage
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAlbumToRename(album);
+                    setRenameAlbumTitle(album.title);
+                    setRenameAlbumModalOpen(true);
+                  }}
+                  className="h-9 px-4 rounded-lg bg-white border border-black/[0.08] text-[12px] font-bold text-[#6e4f33] hover:bg-[#fafafa] transition-all duration-300 shadow-sm"
+                >
+                  Rename
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAlbumToDelete({ id: album.id, title: album.title });
+                    setDeleteAlbumModalOpen(true);
+                  }}
+                  className="h-9 w-9 rounded-lg border border-red-100 bg-white text-red-400 hover:bg-red-50 hover:text-red-600 transition-all duration-300 flex items-center justify-center shadow-sm"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="h-4 w-4">
+                    <path d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <>
-      <section className="rounded-lg border border-black/[0.08] bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)]">
-        <div className="px-6 py-5 border-b border-black/[0.04] bg-[#fafafa]/30 flex items-center justify-between">
-          <div>
-            <h2 className="font-serif text-[18px] font-semibold tracking-tight text-[#2c2c2c]">Portfolio Albums</h2>
-            <div className="mt-1 text-[12px] text-black/45">Organize your portfolio into curated public albums.</div>
+      {isMerged ? (
+        <div className="flex flex-col gap-6">
+          <div className="flex items-center justify-between pb-4 border-b border-black/[0.03]">
+            <div>
+              <h3 className="font-serif text-[16px] font-bold text-[#2c2c2c]">Photo Albums</h3>
+              <div className="text-[11px] text-black/45">Organize your portfolio into curated public albums.</div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setAlbumModalOpen(true)}
+              className="h-9 px-4 rounded-lg border border-[#a67c52]/30 bg-white text-[12px] font-bold text-[#a67c52] hover:bg-[#a67c52] hover:text-white transition-all duration-300 shadow-sm"
+            >
+              + Create Album
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={() => setAlbumModalOpen(true)}
-            className="h-10 px-5 rounded-lg border border-[#a67c52]/30 bg-white text-[13px] font-bold text-[#a67c52] hover:bg-[#a67c52] hover:text-white transition-all duration-300 shadow-sm"
-          >
-            + Create Album
-          </button>
+          {renderContent()}
         </div>
-
-        <div className="p-6">
-          {albums.length === 0 ? (
-            <div className="rounded-lg border border-dashed border-black/[0.08] bg-[#fafafa]/50 p-8 text-center">
-              <div className="h-12 w-12 rounded-full bg-white flex items-center justify-center shadow-sm mx-auto mb-4">
-                <svg viewBox="0 0 24 24" fill="none" stroke="#a67c52" strokeWidth="2" className="h-6 w-6">
-                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-                  <circle cx="8.5" cy="8.5" r="1.5" />
-                  <path d="M21 15l-5-5L5 21" />
-                </svg>
-              </div>
-              <div className="text-[14px] font-semibold text-black/60 mb-1">No albums yet</div>
-              <div className="text-[12px] text-black/40">Create your first album to organize your photos.</div>
+      ) : (
+        <section className="rounded-lg border border-black/[0.08] bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)]">
+          <div className="px-6 py-5 border-b border-black/[0.04] bg-[#fafafa]/30 flex items-center justify-between">
+            <div>
+              <h2 className="font-serif text-[18px] font-semibold tracking-tight text-[#2c2c2c]">Portfolio Albums</h2>
+              <div className="mt-1 text-[12px] text-black/45">Organize your portfolio into curated public albums.</div>
             </div>
-          ) : (
-            <div className="grid gap-4">
-              {albums.map((album) => (
-                <div key={album.id} className="rounded-lg border border-black/[0.04] bg-[#fafafa]/30 p-4 flex items-center justify-between transition-all duration-300 hover:bg-white hover:shadow-md hover:border-black/[0.08]">
-                  <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-lg bg-[#a67c52]/10 flex items-center justify-center">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="#a67c52" strokeWidth="2" className="h-6 w-6">
-                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
-                      </svg>
-                    </div>
-                    <div>
-                      <div className="text-[14px] font-bold text-[#2c2c2c]">{album.title}</div>
-                      <div className="text-[11px] font-bold text-black/30 uppercase tracking-wider">{album.photo_count} photo{album.photo_count !== 1 ? "s" : ""}</div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSelectedAlbum(album);
-                        setAlbumEditorOpen(true);
-                        loadAlbumPhotos(album.id);
-                      }}
-                      className="h-9 px-4 rounded-lg bg-white border border-black/[0.08] text-[12px] font-bold text-[#6e4f33] hover:bg-[#fafafa] transition-all duration-300 shadow-sm"
-                    >
-                      Manage
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setAlbumToRename(album);
-                        setRenameAlbumTitle(album.title);
-                        setRenameAlbumModalOpen(true);
-                      }}
-                      className="h-9 px-4 rounded-lg bg-white border border-black/[0.08] text-[12px] font-bold text-[#6e4f33] hover:bg-[#fafafa] transition-all duration-300 shadow-sm"
-                    >
-                      Rename
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setAlbumToDelete({ id: album.id, title: album.title });
-                        setDeleteAlbumModalOpen(true);
-                      }}
-                      className="h-9 w-9 rounded-lg border border-red-100 bg-white text-red-400 hover:bg-red-50 hover:text-red-600 transition-all duration-300 flex items-center justify-center shadow-sm"
-                    >
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="h-4 w-4">
-                        <path d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
+            <button
+              type="button"
+              onClick={() => setAlbumModalOpen(true)}
+              className="h-10 px-5 rounded-lg border border-[#a67c52]/30 bg-white text-[13px] font-bold text-[#a67c52] hover:bg-[#a67c52] hover:text-white transition-all duration-300 shadow-sm"
+            >
+              + Create Album
+            </button>
+          </div>
+          {renderContent()}
+        </section>
+      )}
 
       {/* Create Album Modal */}
       {albumModalOpen ? (

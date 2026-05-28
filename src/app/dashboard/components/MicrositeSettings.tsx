@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { toast } from "@/lib/toast";
 import { Globe, Heart, Users, Award, Save, Plus, Trash2, ArrowUp, ArrowDown, Camera, Settings } from "lucide-react";
+import { ImageUploadDropzone } from "@/components/ImageUploadDropzone";
 
 type EntourageMember = {
   name: string;
@@ -247,16 +248,19 @@ export default function MicrositeSettings({ user, supabase }: MicrositeSettingsP
             </div>
             
             <div className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold uppercase text-neutral-400 mb-1.5 font-[family-name:var(--font-plus-jakarta)]">
-                  Microsite Cover Photo URL
-                </label>
-                <input
-                  type="text"
-                  value={profilePhotoUrl}
-                  onChange={(e) => setProfilePhotoUrl(e.target.value)}
-                  className="w-full px-3 py-2 border border-neutral-200 bg-neutral-50/30 rounded-xl text-[13px] text-neutral-700 font-[family-name:var(--font-plus-jakarta)] focus:outline-none focus:ring-1 focus:ring-[#a68b6a] focus:bg-white transition-all"
-                  placeholder="e.g. https://images.unsplash.com/photo-..."
+              <div className="flex flex-col gap-2">
+                <span className="text-xs font-bold uppercase text-neutral-400 mb-1 font-[family-name:var(--font-plus-jakarta)]">
+                  Microsite Cover Photo
+                </span>
+                <ImageUploadDropzone
+                  bucket="user-assets"
+                  folder="profiles"
+                  entityId={user?.id}
+                  label=""
+                  description="Drag and drop or click to select your wedding cover background photo. JPG, PNG, WebP up to 2MB."
+                  onUploadComplete={(res) => setProfilePhotoUrl(res.url)}
+                  existingUrl={profilePhotoUrl}
+                  onClear={() => setProfilePhotoUrl("")}
                 />
                 <p className="text-[10px] text-neutral-400 mt-1 font-[family-name:var(--font-plus-jakarta)]">
                   Leave blank to use our gorgeous default high-resolution wedding cover background.

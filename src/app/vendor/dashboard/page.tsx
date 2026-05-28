@@ -140,7 +140,6 @@ export default function VendorDashboardPage() {
   const tabs = [
     { id: "inquiries", label: "Client Inquiries", icon: MessageCircle },
     { id: "photos", label: "Portfolio Photos", icon: ImageIcon },
-    { id: "albums", label: "Photo Albums", icon: FolderHeart },
     { id: "videos", label: "Video Highlights", icon: Film },
     { id: "promos", label: "Vouchers & Promos", icon: Ticket },
     { id: "reviews", label: "Couple Reviews", icon: Star },
@@ -250,11 +249,8 @@ export default function VendorDashboardPage() {
                             setEditingPhotoIndex={setEditingPhotoIndex}
                             saving={saving}
                             saveImages={saveImages}
-                          />
-                        );
-                      case "albums":
-                        return (
-                          <AlbumSection 
+
+                            // Album properties
                             albums={albums}
                             setAlbumModalOpen={setAlbumModalOpen}
                             setSelectedAlbum={setSelectedAlbum}
@@ -265,17 +261,13 @@ export default function VendorDashboardPage() {
                             albumModalOpen={albumModalOpen}
                             albumTitle={albumTitle}
                             setAlbumTitle={setAlbumTitle}
-                            saving={saving}
                             createAlbum={createAlbum}
                             albumEditorOpen={albumEditorOpen}
                             selectedAlbum={selectedAlbum}
-                            setAlbumEditorOpenState={setAlbumEditorOpen}
                             albumPhotos={albumPhotos}
-                            images={images}
                             saveAlbumPhotos={saveAlbumPhotos}
                             deleteAlbumModalOpen={deleteAlbumModalOpen}
                             albumToDelete={albumToDelete}
-                            setDeleteAlbumModalOpenState={setDeleteAlbumModalOpen}
                             deleteAlbum={deleteAlbum}
                             renameAlbumModalOpen={renameAlbumModalOpen}
                             albumToRename={albumToRename}

@@ -3,6 +3,51 @@ import { Spinner } from "./DashboardSections";
 import { VideoModal } from "./DashboardModals";
 import { VendorVideo } from "../types";
 
+function VideoThumbnail({ url, title }: { url: string; title: string | null }) {
+  const [thumb, setThumb] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (!url) return;
+
+    // YouTube check
+    const ytReg = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const ytMatch = url.match(ytReg);
+    if (ytMatch && ytMatch[2].length === 11) {
+      setThumb(`https://img.youtube.com/vi/${ytMatch[2]}/hqdefault.jpg`);
+      return;
+    }
+
+    // Vimeo check
+    const vimeoReg = /vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/([^\/]*)\/videos\/|album\/(\d+)\/video\/|showcase\/(\d+)\/video\/|)(\d+)/;
+    const vimeoMatch = url.match(vimeoReg);
+    if (vimeoMatch && vimeoMatch[4]) {
+      const vimeoId = vimeoMatch[4];
+      fetch(`https://vimeo.com/api/v2/video/${vimeoId}.json`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data && data[0] && data[0].thumbnail_large) {
+            setThumb(data[0].thumbnail_large);
+          }
+        })
+        .catch((err) => console.error("Error loading Vimeo thumbnail:", err));
+    }
+  }, [url]);
+
+  if (thumb) {
+    return (
+      <img
+        src={thumb}
+        alt={title ?? "Video highlight"}
+        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+      />
+    );
+  }
+
+  return (
+    <div className="absolute inset-0 bg-gradient-to-br from-[#2c2c2c] to-[#1a1a1a]" />
+  );
+}
+
 export function VideoSection({
   videos,
   setVideos,
@@ -33,15 +78,18 @@ export function VideoSection({
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {videos.map((v, idx) => (
             <div key={idx} className="relative aspect-video rounded-lg border border-black/[0.05] overflow-hidden bg-[#2c2c2c] group shadow-sm hover:shadow-lg transition-all duration-300">
-              <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[#2c2c2c] to-[#1a1a1a]">
-                <div className="h-14 w-14 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-sm group-hover:scale-110 transition-transform duration-500">
+              <VideoThumbnail url={v.video_url} title={v.title} />
+              
+              {/* Overlay with Play Button */}
+              <div className="absolute inset-0 flex items-center justify-center bg-black/35 group-hover:bg-black/40 transition-colors duration-300">
+                <div className="h-14 w-14 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-sm group-hover:scale-110 transition-transform duration-500 shadow-lg border border-white/20">
                   <svg viewBox="0 0 24 24" fill="white" className="h-6 w-6 ml-1">
                     <path d="M8 5v14l11-7z" />
                   </svg>
                 </div>
               </div>
               
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent p-4 flex flex-col justify-end">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent p-4 flex flex-col justify-end">
                 <div className="text-white text-[13px] font-bold truncate mb-3">{v.title}</div>
                 <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <button

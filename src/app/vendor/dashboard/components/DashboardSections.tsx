@@ -12,97 +12,97 @@ export function Field({ label, children }: { label: string; children: React.Reac
 export function DashboardSkeleton() {
   return (
     <div className="min-h-screen bg-[#fafafa]">
-      {/* Header Skeleton */}
-      <header className="h-20 bg-white/80 backdrop-blur-md border-b border-black/[0.05] sticky top-0 z-[90] px-6 lg:px-10 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <div className="h-10 w-10 rounded-xl bg-black/5 animate-pulse" />
-          <div className="grid gap-2">
-            <div className="h-4 w-32 rounded bg-black/10 animate-pulse" />
-            <div className="h-3 w-24 rounded bg-black/5 animate-pulse" />
+      <main className="flex-1 flex flex-col min-w-0">
+        <div className="flex-1 p-6 lg:p-10 max-w-7xl mx-auto w-full animate-pulse">
+          
+          {/* Welcome & Live Preview Banner Skeleton */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-6 rounded-2xl bg-white border border-black/[0.06] shadow-[0_8px_30px_rgb(0,0,0,0.02)] mb-2">
+            <div className="flex items-center gap-4">
+              <div className="h-12 w-12 rounded-2xl bg-black/10 shrink-0" />
+              <div className="space-y-2">
+                <div className="h-5 w-44 bg-black/10 rounded" />
+                <div className="h-3 w-32 bg-black/5 rounded mt-0.5" />
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="h-11 w-44 bg-black/5 rounded-xl" />
+              <div className="h-11 w-28 bg-black/5 rounded-xl" />
+            </div>
           </div>
-        </div>
-        <div className="h-10 w-32 rounded-lg bg-black/5 animate-pulse" />
-      </header>
 
-      {/* Main Content Skeleton */}
-      <main className="p-6 lg:p-10 max-w-5xl mx-auto w-full">
-        <div className="grid gap-12">
-          {/* Plan Section Skeleton */}
-          <section className="rounded-lg border border-black/[0.08] bg-white overflow-hidden shadow-sm">
-            <div className="h-12 bg-[#fafafa]/50 border-b border-black/[0.04] flex items-center px-6">
-              <div className="h-3 w-40 rounded bg-black/10 animate-pulse" />
-            </div>
-            <div className="p-6 grid gap-4">
-              <div className="h-4 w-48 rounded bg-black/10 animate-pulse" />
-              <div className="h-16 w-full rounded-lg bg-black/[0.03] animate-pulse" />
-            </div>
-          </section>
-
-          {/* Profile Section Skeleton */}
-          <section className="rounded-lg border border-black/[0.08] bg-white overflow-hidden shadow-sm">
-            <div className="px-6 py-5 border-b border-black/[0.04] bg-[#fafafa]/30">
-              <div className="h-5 w-32 rounded bg-black/10 animate-pulse" />
-              <div className="mt-2 h-3 w-56 rounded bg-black/5 animate-pulse" />
-            </div>
-            <div className="p-6 grid gap-8">
-              <div className="grid gap-6 sm:grid-cols-2">
-                {[1, 2].map((i) => (
-                  <div key={i} className="grid gap-2">
-                    <div className="h-3 w-20 rounded bg-black/10 animate-pulse ml-1" />
-                    <div className="h-11 w-full rounded-lg bg-black/[0.03] animate-pulse" />
-                  </div>
-                ))}
-              </div>
-              
-              <div className="rounded-lg border border-black/[0.06] bg-[#fafafa]/30 p-4 flex gap-6">
-                <div className="h-24 w-24 rounded-lg bg-black/10 animate-pulse shrink-0" />
-                <div className="flex flex-col gap-3 pt-2">
-                  <div className="h-3 w-24 rounded bg-black/10 animate-pulse" />
-                  <div className="h-3 w-48 rounded bg-black/5 animate-pulse" />
-                  <div className="mt-2 h-9 w-32 rounded-lg bg-black/10 animate-pulse" />
+          {/* Unified Workspace Layout Skeleton */}
+          <div className="flex flex-col lg:flex-row gap-8 mt-6">
+            
+            {/* Sidebar Navigation Skeleton */}
+            <aside className="w-full lg:w-[260px] shrink-0 space-y-2">
+              <div className="rounded-2xl border border-black/[0.06] bg-white p-4 shadow-[0_8px_30px_rgba(0,0,0,0.015)] space-y-1.5">
+                <div className="text-[10px] font-bold text-neutral-300 uppercase tracking-widest px-3 mb-2.5">
+                  Vendor Workspace
                 </div>
-              </div>
-
-              <div className="grid gap-2">
-                <div className="h-3 w-28 rounded bg-black/10 animate-pulse ml-1" />
-                <div className="h-32 w-full rounded-lg bg-black/[0.03] animate-pulse" />
-              </div>
-            </div>
-          </section>
-
-          {/* Photos/Videos Skeleton */}
-          <section className="rounded-lg border border-black/[0.08] bg-white overflow-hidden shadow-sm">
-            <div className="px-6 py-5 border-b border-black/[0.04] bg-[#fafafa]/30">
-              <div className="h-5 w-24 rounded bg-black/10 animate-pulse" />
-            </div>
-            <div className="p-6">
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="aspect-square rounded-lg bg-black/[0.03] animate-pulse" />
-                ))}
-              </div>
-            </div>
-          </section>
-          {/* Inquiries Skeleton */}
-          <section className="rounded-lg border border-black/[0.08] bg-white overflow-hidden shadow-sm">
-            <div className="px-6 py-5 border-b border-black/[0.04] bg-[#fafafa]/30">
-              <div className="h-5 w-36 rounded bg-black/10 animate-pulse" />
-            </div>
-            <div className="p-0">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="px-6 py-4 border-b border-black/[0.04] flex items-center justify-between">
-                  <div className="flex gap-4 items-center">
-                    <div className="h-10 w-10 rounded-full bg-black/5 animate-pulse" />
-                    <div className="grid gap-2">
-                      <div className="h-3 w-24 rounded bg-black/10 animate-pulse" />
-                      <div className="h-2 w-32 rounded bg-black/5 animate-pulse" />
+                {[
+                  { label: "Client Inquiries", isFirst: true },
+                  { label: "Portfolio Photos" },
+                  { label: "Video Highlights" },
+                  { label: "Vouchers & Promos" },
+                  { label: "Couple Reviews" },
+                  { label: "Business Profile" },
+                  { label: "Service Categories" },
+                  { label: "Storefront Themes" },
+                  { label: "Social Links" },
+                ].map((tab, i) => {
+                  return (
+                    <div
+                      key={i}
+                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[13px] font-bold ${
+                        tab.isFirst
+                          ? "bg-black/[0.04]"
+                          : "bg-transparent"
+                      }`}
+                    >
+                      <div className="h-4 w-4 rounded bg-black/10 shrink-0" />
+                      <div className="h-4 w-28 bg-black/5 rounded" />
                     </div>
+                  );
+                })}
+              </div>
+            </aside>
+
+            {/* Interactive Workspace Panel Skeleton (Default: Inquiries view) */}
+            <main className="flex-1 min-w-0 space-y-6">
+              <div className="rounded-2xl border border-black/[0.06] bg-white shadow-[0_8px_30px_rgba(0,0,0,0.015)] overflow-hidden">
+                {/* Section Header */}
+                <div className="p-6 border-b border-black/[0.06] flex items-center justify-between">
+                  <div className="space-y-2">
+                    <div className="h-6 w-36 bg-black/10 rounded" />
+                    <div className="h-3.5 w-60 bg-black/5 rounded" />
                   </div>
-                  <div className="h-8 w-20 rounded bg-black/5 animate-pulse" />
                 </div>
-              ))}
-            </div>
-          </section>
+                
+                {/* Content table/list items */}
+                <div className="divide-y divide-black/[0.04]">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="p-6 space-y-4">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex items-center gap-4">
+                          <div className="h-10 w-10 rounded-full bg-black/5 shrink-0" />
+                          <div className="space-y-2">
+                            <div className="h-4 w-32 bg-black/10 rounded" />
+                            <div className="h-3 w-48 bg-black/5 rounded" />
+                          </div>
+                        </div>
+                        <div className="h-8 w-24 bg-black/5 rounded-lg" />
+                      </div>
+                      <div className="space-y-2 pl-14">
+                        <div className="h-3 w-full bg-[#fafafa] rounded" />
+                        <div className="h-3 w-5/6 bg-[#fafafa] rounded" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </main>
+
+          </div>
         </div>
       </main>
     </div>
