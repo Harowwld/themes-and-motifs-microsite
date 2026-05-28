@@ -11,7 +11,10 @@ import {
   MessageCircle, 
   LogOut, 
   ExternalLink,
-  ChevronRight
+  ChevronRight,
+  Palette,
+  Globe,
+  Star
 } from "lucide-react";
 
 import { motion, AnimatePresence } from "framer-motion";
@@ -121,7 +124,8 @@ export default function VendorDashboardPage() {
     saveImages,
     saveVideos,
   } = useVendorDashboard();
-  const [showAdvanced, setShowAdvanced] = React.useState(false);
+  
+  const [activeTab, setActiveTab] = React.useState("inquiries");
   const supabase = React.useMemo(() => createSupabaseBrowserClient(), []);
 
   if (loading) {
@@ -133,14 +137,27 @@ export default function VendorDashboardPage() {
     window.location.href = "/vendor/signin";
   };
 
+  const tabs = [
+    { id: "inquiries", label: "Client Inquiries", icon: MessageCircle },
+    { id: "photos", label: "Portfolio Photos", icon: ImageIcon },
+    { id: "albums", label: "Photo Albums", icon: FolderHeart },
+    { id: "videos", label: "Video Highlights", icon: Film },
+    { id: "promos", label: "Vouchers & Promos", icon: Ticket },
+    { id: "reviews", label: "Couple Reviews", icon: Star },
+    { id: "profile", label: "Business Profile", icon: User },
+    { id: "categories", label: "Service Categories", icon: Tag },
+    { id: "themes", label: "Storefront Themes", icon: Palette },
+    { id: "social", label: "Social Links", icon: Globe },
+  ];
+
   return (
     <div className="min-h-screen bg-[#fafafa]">
-
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0">
-        <div className="flex-1 p-6 lg:p-10 max-w-5xl mx-auto w-full">
+        <div className="flex-1 p-6 lg:p-10 max-w-7xl mx-auto w-full">
+          
           {/* Welcome & Live Preview Banner */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-6 rounded-2xl bg-white border border-black/[0.06] shadow-[0_8px_30px_rgb(0,0,0,0.02)] mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-6 rounded-2xl bg-white border border-black/[0.06] shadow-[0_8px_30px_rgb(0,0,0,0.02)] mb-2">
             <div className="flex items-center gap-4">
               <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-[#a67c52] to-[#8e6a46] flex items-center justify-center text-white shadow-md shadow-[#a67c52]/20 shrink-0">
                 <User size={22} />
@@ -151,205 +168,221 @@ export default function VendorDashboardPage() {
               </div>
             </div>
 
-            <button
-              onClick={() => setIsPreviewOpen(true)}
-              className="h-11 px-6 rounded-xl border border-[#a67c52]/30 bg-white text-[13px] font-black uppercase tracking-wider text-[#a67c52] hover:bg-[#a67c52] hover:text-white transition-all duration-500 shadow-sm hover:shadow-[0_8px_20px_rgba(166,124,82,0.15)] hover:-translate-y-0.5 flex items-center justify-center gap-2"
-            >
-              <ExternalLink size={16} />
-              <span>Live Preview Profile</span>
-            </button>
-          </div>
-
-          <div className="grid gap-8 pb-20">
-            {/* Priority Sections */}
-            <div id="photos">
-              <PhotoSection 
-                images={images}
-                setImages={setImages}
-                photoModalOpen={photoModalOpen}
-                setPhotoModalOpen={setPhotoModalOpen}
-                editingPhotoIndex={editingPhotoIndex}
-                setEditingPhotoIndex={setEditingPhotoIndex}
-                saving={saving}
-                saveImages={saveImages}
-              />
-            </div>
-
-            <div id="albums">
-              <AlbumSection 
-                albums={albums}
-                setAlbumModalOpen={setAlbumModalOpen}
-                setSelectedAlbum={setSelectedAlbum}
-                setAlbumEditorOpen={setAlbumEditorOpen}
-                loadAlbumPhotos={loadAlbumPhotos}
-                setAlbumToDelete={setAlbumToDelete}
-                setDeleteAlbumModalOpen={setDeleteAlbumModalOpen}
-                albumModalOpen={albumModalOpen}
-                albumTitle={albumTitle}
-                setAlbumTitle={setAlbumTitle}
-                saving={saving}
-                createAlbum={createAlbum}
-                albumEditorOpen={albumEditorOpen}
-                selectedAlbum={selectedAlbum}
-                setAlbumEditorOpenState={setAlbumEditorOpen}
-                albumPhotos={albumPhotos}
-                images={images}
-                saveAlbumPhotos={saveAlbumPhotos}
-                deleteAlbumModalOpen={deleteAlbumModalOpen}
-                albumToDelete={albumToDelete}
-                setDeleteAlbumModalOpenState={setDeleteAlbumModalOpen}
-                deleteAlbum={deleteAlbum}
-                renameAlbumModalOpen={renameAlbumModalOpen}
-                albumToRename={albumToRename}
-                renameAlbumTitle={renameAlbumTitle}
-                setRenameAlbumModalOpen={setRenameAlbumModalOpen}
-                setAlbumToRename={setAlbumToRename}
-                setRenameAlbumTitle={setRenameAlbumTitle}
-                renameAlbum={renameAlbum}
-              />
-            </div>
-
-            <div id="videos">
-              <VideoSection 
-                videos={videos}
-                setVideos={setVideos}
-                videoModalOpen={videoModalOpen}
-                setVideoModalOpen={setVideoModalOpen}
-                editingVideoIndex={editingVideoIndex}
-                setEditingVideoIndex={setEditingVideoIndex}
-                saving={saving}
-                saveVideos={saveVideos}
-              />
-            </div>
-
-            <div id="promos">
-              <PromoSection 
-                promos={promos}
-                isPremium={isPremium}
-                setEditingPromoId={setEditingPromoId}
-                setPromoModalOpen={setPromoModalOpen}
-                promoModalOpen={promoModalOpen}
-                editingPromoId={editingPromoId}
-                deletePromo={deletePromo}
-                updatePromo={updatePromo}
-                createPromo={createPromo}
-              />
-            </div>
-
-            <div id="inquiries">
-              <InquirySection 
-                inquiries={inquiries}
-                refreshInquiries={refreshInquiries}
-                saving={saving}
-                updateInquiryStatus={updateInquiryStatus}
-              />
-            </div>
-
-            <div id="reviews">
-              <ReviewsSection 
-                reviews={reviews}
-                saving={saving}
-                saveReviewReply={saveReviewReply}
-              />
-            </div>
-
-            {/* Advanced Toggle - Modern UI UX Pro Max approach */}
-            <div className="py-4 flex flex-col items-center relative">
-              <div className="absolute inset-x-0 top-1/2 h-px bg-gradient-to-r from-transparent via-black/[0.06] to-transparent" />
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setIsPreviewOpen(true)}
+                className="h-11 px-6 rounded-xl border border-[#a67c52]/30 bg-white text-[13px] font-black uppercase tracking-wider text-[#a67c52] hover:bg-[#a67c52] hover:text-white transition-all duration-500 shadow-sm hover:shadow-[0_8px_20px_rgba(166,124,82,0.15)] hover:-translate-y-0.5 flex items-center justify-center gap-2 cursor-pointer font-bold"
+              >
+                <ExternalLink size={16} />
+                <span>Live Preview Profile</span>
+              </button>
               
               <button
-                onClick={() => setShowAdvanced(!showAdvanced)}
-                className="group relative flex items-center gap-4 px-10 py-5 rounded-full bg-white border border-black/[0.05] shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_40px_rgba(166,124,82,0.12)] hover:-translate-y-1.5 transition-all duration-700 ease-[0.22, 1, 0.36, 1] z-10"
+                onClick={handleLogout}
+                className="h-11 px-6 rounded-xl border border-neutral-200 bg-white text-[13px] font-black uppercase tracking-wider text-neutral-500 hover:bg-neutral-50 active:scale-[0.97] transition-all duration-150 flex items-center justify-center gap-2 cursor-pointer font-bold"
               >
-                {/* Background Glow */}
-                <div className="absolute inset-0 rounded-full bg-[#a67c52]/[0.02] group-hover:bg-[#a67c52]/[0.05] transition-colors duration-700" />
-                
-                <div className="relative flex items-center gap-3">
-                  <div className={`flex items-center justify-center w-8 h-8 rounded-full bg-[#a67c52]/10 text-[#a67c52] transition-all duration-700 group-hover:bg-[#a67c52] group-hover:text-white ${showAdvanced ? 'rotate-180' : ''}`}>
-                    <ChevronRight size={18} className="rotate-90" />
-                  </div>
-                  
-                  <div className="flex flex-col items-start">
-                    <span className="text-[13px] font-black uppercase tracking-[0.15em] text-[#a67c52] group-hover:text-[#8e6a46] transition-colors duration-300">
-                      {showAdvanced ? "System Settings" : "Configure Dashboard"}
-                    </span>
-                    <span className="text-[10px] font-bold text-black/30 uppercase tracking-widest mt-0.5">
-                      {showAdvanced ? "Collapse Advanced View" : "Expand Advanced Options"}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Subtle Decorative Element */}
-                <div className="w-1.5 h-1.5 rounded-full bg-[#a67c52]/40 group-hover:scale-150 group-hover:bg-[#a67c52] transition-all duration-700" />
+                <LogOut size={16} />
+                <span>Sign out</span>
               </button>
             </div>
+          </div>
 
-            {/* Advanced Sections */}
-            <AnimatePresence>
-              {showAdvanced && (
+          {/* Unified Workspace Layout */}
+          <div className="flex flex-col lg:flex-row gap-8 mt-6">
+
+            {/* Sidebar Navigation */}
+            <aside className="w-full lg:w-[260px] shrink-0 space-y-2">
+              <div className="rounded-2xl border border-black/[0.06] bg-white p-4 shadow-[0_8px_30px_rgba(0,0,0,0.015)] space-y-1.5">
+                <div className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest px-3 mb-2.5">
+                  Vendor Workspace
+                </div>
+                {tabs.map((tab) => {
+                  const isSelected = activeTab === tab.id;
+                  const Icon = tab.icon;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[13px] font-bold active:scale-[0.98] transition-all duration-200 text-left cursor-pointer ${
+                        isSelected
+                          ? "bg-[#a67c52] text-white shadow-[0_4px_12px_rgba(166,124,82,0.15)]"
+                          : "text-neutral-500 hover:text-[#a67c52] hover:bg-[#a67c52]/5"
+                      }`}
+                    >
+                      <Icon size={16} strokeWidth={isSelected ? 2.5 : 2} className={isSelected ? "text-white" : "text-neutral-400"} />
+                      <span className="flex-1 truncate">{tab.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </aside>
+
+            {/* Interactive Workspace Panel */}
+            <main className="flex-1 min-w-0">
+              <AnimatePresence mode="wait">
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 20 }}
-                  transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                  className="grid gap-8"
+                  key={activeTab}
+                  initial={{ opacity: 0, scale: 0.985, y: 6 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.985, y: -6 }}
+                  transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+                  className="space-y-8"
                 >
-                  <div id="profile">
-                    <ProfileSection 
-                      vendor={vendor}
-                      subscription={subscription}
-                      form={form}
-                      setForm={setForm}
-                      saving={saving}
-                      saveProfile={saveProfile}
-                      saveVerificationDoc={saveVerificationDoc}
-                      saveVerificationDetails={saveVerificationDetails}
-                      images={images}
-                      cropperOpen={cropperOpen}
-                      setCropperOpen={setCropperOpen}
-                      saveCoverCrop={saveCoverCrop}
-                      logoModalOpen={logoModalOpen}
-                      setLogoModalOpen={setLogoModalOpen}
-                      isPremium={isPremium}
-                    />
-                  </div>
-
-                  <div id="themes">
-                    <ThemesSection 
-                      themes={themes}
-                      setThemes={setThemes}
-                      allThemes={allThemes}
-                      saving={saving}
-                      saveThemes={saveThemes}
-                    />
-                  </div>
-
-                  <div id="categories">
-                    <CategoriesSection 
-                      categories={categories}
-                      setCategories={setCategories}
-                      allCategories={allCategories}
-                      saving={saving}
-                      saveCategories={saveCategories}
-                    />
-                  </div>
-
-                  <div id="social">
-                    <SocialSection 
-                      socials={socials}
-                      setSocials={setSocials}
-                      socialPlatformChoices={socialPlatformChoices}
-                      setSocialPlatformChoices={setSocialPlatformChoices}
-                      socialCustomPlatforms={socialCustomPlatforms}
-                      setSocialCustomPlatforms={setSocialCustomPlatforms}
-                      saving={saving}
-                      saveSocials={saveSocials}
-                      isPremium={isPremium}
-                    />
-                  </div>
+                  {(() => {
+                    switch (activeTab) {
+                      case "inquiries":
+                        return (
+                          <InquirySection 
+                            inquiries={inquiries}
+                            refreshInquiries={refreshInquiries}
+                            saving={saving}
+                            updateInquiryStatus={updateInquiryStatus}
+                          />
+                        );
+                      case "photos":
+                        return (
+                          <PhotoSection 
+                            images={images}
+                            setImages={setImages}
+                            photoModalOpen={photoModalOpen}
+                            setPhotoModalOpen={setPhotoModalOpen}
+                            editingPhotoIndex={editingPhotoIndex}
+                            setEditingPhotoIndex={setEditingPhotoIndex}
+                            saving={saving}
+                            saveImages={saveImages}
+                          />
+                        );
+                      case "albums":
+                        return (
+                          <AlbumSection 
+                            albums={albums}
+                            setAlbumModalOpen={setAlbumModalOpen}
+                            setSelectedAlbum={setSelectedAlbum}
+                            setAlbumEditorOpen={setAlbumEditorOpen}
+                            loadAlbumPhotos={loadAlbumPhotos}
+                            setAlbumToDelete={setAlbumToDelete}
+                            setDeleteAlbumModalOpen={setDeleteAlbumModalOpen}
+                            albumModalOpen={albumModalOpen}
+                            albumTitle={albumTitle}
+                            setAlbumTitle={setAlbumTitle}
+                            saving={saving}
+                            createAlbum={createAlbum}
+                            albumEditorOpen={albumEditorOpen}
+                            selectedAlbum={selectedAlbum}
+                            setAlbumEditorOpenState={setAlbumEditorOpen}
+                            albumPhotos={albumPhotos}
+                            images={images}
+                            saveAlbumPhotos={saveAlbumPhotos}
+                            deleteAlbumModalOpen={deleteAlbumModalOpen}
+                            albumToDelete={albumToDelete}
+                            setDeleteAlbumModalOpenState={setDeleteAlbumModalOpen}
+                            deleteAlbum={deleteAlbum}
+                            renameAlbumModalOpen={renameAlbumModalOpen}
+                            albumToRename={albumToRename}
+                            renameAlbumTitle={renameAlbumTitle}
+                            setRenameAlbumModalOpen={setRenameAlbumModalOpen}
+                            setAlbumToRename={setAlbumToRename}
+                            setRenameAlbumTitle={setRenameAlbumTitle}
+                            renameAlbum={renameAlbum}
+                          />
+                        );
+                      case "videos":
+                        return (
+                          <VideoSection 
+                            videos={videos}
+                            setVideos={setVideos}
+                            videoModalOpen={videoModalOpen}
+                            setVideoModalOpen={setVideoModalOpen}
+                            editingVideoIndex={editingVideoIndex}
+                            setEditingVideoIndex={setEditingVideoIndex}
+                            saving={saving}
+                            saveVideos={saveVideos}
+                          />
+                        );
+                      case "promos":
+                        return (
+                          <PromoSection 
+                            promos={promos}
+                            isPremium={isPremium}
+                            setEditingPromoId={setEditingPromoId}
+                            setPromoModalOpen={setPromoModalOpen}
+                            promoModalOpen={promoModalOpen}
+                            editingPromoId={editingPromoId}
+                            deletePromo={deletePromo}
+                            updatePromo={updatePromo}
+                            createPromo={createPromo}
+                          />
+                        );
+                      case "reviews":
+                        return (
+                          <ReviewsSection 
+                            reviews={reviews}
+                            saving={saving}
+                            saveReviewReply={saveReviewReply}
+                          />
+                        );
+                      case "profile":
+                        return (
+                          <ProfileSection 
+                            vendor={vendor}
+                            subscription={subscription}
+                            form={form}
+                            setForm={setForm}
+                            saving={saving}
+                            saveProfile={saveProfile}
+                            saveVerificationDoc={saveVerificationDoc}
+                            saveVerificationDetails={saveVerificationDetails}
+                            images={images}
+                            cropperOpen={cropperOpen}
+                            setCropperOpen={setCropperOpen}
+                            saveCoverCrop={saveCoverCrop}
+                            logoModalOpen={logoModalOpen}
+                            setLogoModalOpen={setLogoModalOpen}
+                            isPremium={isPremium}
+                          />
+                        );
+                      case "themes":
+                        return (
+                          <ThemesSection 
+                            themes={themes}
+                            setThemes={setThemes}
+                            allThemes={allThemes}
+                            saving={saving}
+                            saveThemes={saveThemes}
+                          />
+                        );
+                      case "categories":
+                        return (
+                          <CategoriesSection 
+                            categories={categories}
+                            setCategories={setCategories}
+                            allCategories={allCategories}
+                            saving={saving}
+                            saveCategories={saveCategories}
+                          />
+                        );
+                      case "social":
+                        return (
+                          <SocialSection 
+                            socials={socials}
+                            setSocials={setSocials}
+                            socialPlatformChoices={socialPlatformChoices}
+                            setSocialPlatformChoices={setSocialPlatformChoices}
+                            socialCustomPlatforms={socialCustomPlatforms}
+                            setSocialCustomPlatforms={setSocialCustomPlatforms}
+                            saving={saving}
+                            saveSocials={saveSocials}
+                            isPremium={isPremium}
+                          />
+                        );
+                      default:
+                        return null;
+                    }
+                  })()}
                 </motion.div>
-              )}
-            </AnimatePresence>
+              </AnimatePresence>
+            </main>
+
           </div>
         </div>
       </main>
