@@ -158,8 +158,5 @@ export const IMAGE_PRIORITY = {
 export function proxiedImageUrl(url: string | null | undefined): string | null {
   const u = (url ?? "").trim();
   if (!u) return null;
-  if (u.startsWith("/") || u.startsWith("data:")) return u;
-  if (u.includes(".supabase.co")) return u;
-  // All other absolute URLs → route through proxy
-  return `/api/image-proxy?url=${encodeURIComponent(u)}`;
+  return u;
 }

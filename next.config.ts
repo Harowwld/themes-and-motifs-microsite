@@ -200,16 +200,6 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        // Cache vendor images (proxied)
-        source: "/api/image-proxy",
-        headers: [
-          {
-            key: "Cache-Control",
-            value: "public, max-age=86400, stale-while-revalidate=604800",
-          },
-        ],
-      },
-      {
         // Vendor list API — anonymous users get edge-cached results;
         // Vary: Cookie ensures logged-in users see their own data.
         source: "/api/vendors",
