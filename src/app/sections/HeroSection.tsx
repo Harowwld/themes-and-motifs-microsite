@@ -232,7 +232,7 @@ export default function HeroSection({
     <section className="relative overflow-hidden rounded-xl p-5 sm:p-6 lg:p-8 grid gap-6 sm:gap-8 lg:grid-cols-[1.2fr_0.8fr] items-start shadow-2xl">
       <div aria-hidden className="absolute inset-0 hidden md:block">
         <Image
-          src="https://thepennyslo.com/wp-content/uploads/2024/03/5-The-Penny-San-Luis-Obispo.webp"
+          src="https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/hero/desktop-hero.webp"
           alt="Hero background"
           fill
           priority
