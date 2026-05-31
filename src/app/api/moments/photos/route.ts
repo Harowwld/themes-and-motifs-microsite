@@ -111,6 +111,31 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
+    // Check standard/free tier quota for total photo uploads (10 photos limit)
+    const { data: profile, error: profileError } = await supabase
+      .from("soon_to_wed_profiles")
+      .select("is_premium")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    const isPremium = !!profile?.is_premium;
+
+    if (!isPremium) {
+      const { count, error: photoCountError } = await supabase
+        .from("moment_photos")
+        .select("id, wedding_moments!inner(user_id)", { count: "exact", head: true })
+        .eq("wedding_moments.user_id", user.id);
+
+      if (photoCountError) {
+        console.error("Error querying existing photos count:", photoCountError);
+      } else if (count && count >= 10) {
+        return NextResponse.json(
+          { error: "Free accounts are limited to 10 photos total. Please upgrade to Premium to upload more photos!" },
+          { status: 403 }
+        );
+      }
+    }
+
     // Skip compression in server environment - upload directly
     const compressedFile = file;
 

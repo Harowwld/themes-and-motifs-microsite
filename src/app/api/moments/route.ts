@@ -103,6 +103,32 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid visibility setting" }, { status: 400 });
     }
 
+    // Check standard/free tier quota for photo albums (1 photo album limit)
+    const { data: profile, error: profileError } = await supabase
+      .from("soon_to_wed_profiles")
+      .select("is_premium")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    const isPremium = !!profile?.is_premium;
+
+    if (!isPremium && moment_type === "photo") {
+      const { count, error: countError } = await supabase
+        .from("wedding_moments")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .eq("moment_type", "photo");
+
+      if (countError) {
+        console.error("Error querying existing albums count:", countError);
+      } else if (count && count >= 1) {
+        return NextResponse.json(
+          { error: "Free accounts are limited to 1 photo album. Please upgrade to Premium to upload more albums!" },
+          { status: 403 }
+        );
+      }
+    }
+
     console.log("Inserting moment into database:", {
       user_id: user.id,
       title,

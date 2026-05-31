@@ -1079,38 +1079,23 @@ export default function CoupleMicrositePage() {
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 select-none">
-                
-                {/* Principal Sponsors Column */}
-                <div className="bg-white border border-black/5 rounded-xl p-5 shadow-sm space-y-4">
-                  <h4 className="font-bold text-[14px] text-[#a68b6a] font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wider border-b border-black/[0.04] pb-2">
-                    Principal Sponsors
-                  </h4>
-                  <ul className="space-y-3">
-                    {sponsorsList.filter(s => s.type === "principal").map((sponsor, idx) => (
-                      <li key={idx} className="flex items-center gap-2.5">
-                        <span className="h-1.5 w-1.5 rounded-full bg-[#a68b6a]" />
-                        <span className="text-[13px] font-semibold text-neutral-700">{sponsor.name}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Secondary Sponsors Column */}
-                <div className="bg-white border border-black/5 rounded-xl p-5 shadow-sm space-y-4">
-                  <h4 className="font-bold text-[14px] text-[#a68b6a] font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wider border-b border-black/[0.04] pb-2">
-                    Secondary Sponsors
-                  </h4>
-                  <ul className="space-y-3">
-                    {sponsorsList.filter(s => s.type === "secondary").map((sponsor, idx) => (
-                      <li key={idx} className="flex items-center gap-2.5">
-                        <span className="h-1.5 w-1.5 rounded-full bg-[#a68b6a]" />
-                        <span className="text-[13px] font-semibold text-neutral-700">{sponsor.name}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 select-none">
+                {sponsorsList.map((sponsor, idx) => (
+                  <div key={idx} className="bg-white border border-black/5 rounded-xl p-4 shadow-sm text-center flex flex-col items-center hover:shadow-md transition-all">
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#a68b6a]/15 to-[#a68b6a]/5 border border-[#a68b6a]/20 flex items-center justify-center mb-3">
+                      <span className="text-[#a68b6a] font-black text-lg">
+                        {sponsor.name.split(" ").map(n => n.charAt(0)).join("")}
+                      </span>
+                    </div>
+                    <h4 className="font-bold text-[14px] text-neutral-800 font-[family-name:var(--font-plus-jakarta)] leading-tight">{sponsor.name}</h4>
+                    <p className="text-[11px] text-[#a68b6a] font-bold uppercase tracking-wider mt-1.5">{sponsor.type} Sponsor</p>
+                    <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide mt-2 ${
+                      sponsor.type === "principal" ? "bg-amber-50 text-[#a68b6a]" : "bg-neutral-100 text-neutral-500"
+                    }`}>
+                      {sponsor.type === "principal" ? "Principal" : "Secondary"}
+                    </span>
+                  </div>
+                ))}
               </div>
             )}
           </div>

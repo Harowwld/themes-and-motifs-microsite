@@ -20,7 +20,7 @@ import {
   Lock,
   Globe,
   Gift,
-  Sparkles
+  X
 } from "lucide-react";
 
 // Custom tab features
@@ -37,7 +37,7 @@ import PremiumBanner from "./components/PremiumBanner";
 import MicrositeSettings from "./components/MicrositeSettings";
 import GiftRegistry from "./components/GiftRegistry";
 import AdBanner from "@/components/AdBanner";
-import ManageMoments from "./components/ManageMoments";
+import { MomentPhotoUpload } from "@/components/MomentPhotoUpload";
 
 
 
@@ -151,7 +151,6 @@ function LoadingSkeleton() {
 }
 const tabNames: Record<string, string> = {
   microsite_settings: "Microsite Settings",
-  manage_moments: "Wedding Moments",
   gift_registry: "Gift Registry",
   budget_planner: "Budget Planner",
   guest_list: "Guest List Tracker",
@@ -165,7 +164,6 @@ const tabNames: Record<string, string> = {
 
 const tabDescriptions: Record<string, string> = {
   microsite_settings: "Configure your public microsite page—love story, entourage members, principal and secondary sponsors, and guest welcome message.",
-  manage_moments: "Manage your wedding moments feed—photos, vendor reviews, love stories, and public or private milestones.",
   gift_registry: "Manage your wedding registry. View and manage items you've added from the marketplace, customize target amounts, and track guest contributions.",
   budget_planner: "Take control of your wedding budget. Log estimates, track payments, and visualize cost distribution seamlessly.",
   guest_list: "Keep a clean record of your guests, their contact information, dietary requirements, and RSVP counts.",
@@ -202,6 +200,264 @@ export default function DashboardPage() {
   const [journalEntries, setJournalEntries] = useState<RantReview[]>([]);
   const [notes, setNotes] = useState<NoteItem[]>([]);
   const userId = user?.id ?? "";
+
+  // Edit Moment Modal States
+  const [editingMoment, setEditingMoment] = useState<any | null>(null);
+  const [editMomentTitle, setEditMomentTitle] = useState("");
+  const [editMomentContent, setEditMomentContent] = useState("");
+  const [editMomentVisibility, setEditMomentVisibility] = useState<"public" | "private" | "friends">("private");
+  const [savingMoment, setSavingMoment] = useState(false);
+  const [deletingMomentId, setDeletingMomentId] = useState<string | null>(null);
+  const [newMomentFiles, setNewMomentFiles] = useState<File[]>([]);
+
+  const handleOpenEditMoment = (moment: any) => {
+    setEditingMoment(moment);
+    setEditMomentTitle(moment.title);
+    setEditMomentContent(moment.content ?? "");
+    setEditMomentVisibility(moment.visibility ?? "private");
+    setNewMomentFiles([]);
+  };
+
+  // Add Moment Modal States
+  const [showAddMomentModal, setShowAddMomentModal] = useState(false);
+  const [newMomentTitle, setNewMomentTitle] = useState("");
+  const [newMomentContent, setNewMomentContent] = useState("");
+  const [newMomentType, setNewMomentType] = useState<"photo" | "story" | "milestone" | "review">("photo");
+  const [newMomentVisibility, setNewMomentVisibility] = useState<"public" | "private" | "friends">("private");
+  const [newMomentUploadedFiles, setNewMomentUploadedFiles] = useState<File[]>([]);
+  const [creatingMoment, setCreatingMoment] = useState(false);
+
+  const handleOpenAddMoment = () => {
+    setNewMomentTitle("");
+    setNewMomentContent("");
+    setNewMomentType("photo");
+    setNewMomentVisibility("private");
+    setNewMomentUploadedFiles([]);
+    setShowAddMomentModal(true);
+  };
+
+  const handleCreateMomentSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newMomentTitle.trim()) {
+      toast.error("Please enter a title.");
+      return;
+    }
+
+    if (!isPremium && newMomentType === "photo") {
+      const existingPhotoMoments = recentMoments.filter((m) => m.moment_type === "photo");
+      if (existingPhotoMoments.length >= 1) {
+        toast.error("Free accounts are limited to 1 photo album. Please upgrade to Premium to upload more albums!");
+        return;
+      }
+      const totalPhotosCount = recentMoments.filter((m) => m.moment_type === "photo").reduce((acc, m) => acc + (m.moment_photos?.length ?? 0), 0);
+      if (totalPhotosCount + newMomentUploadedFiles.length > 10) {
+        toast.error(`Free accounts are limited to 10 photos in total. You currently have ${totalPhotosCount} photos and are trying to upload ${newMomentUploadedFiles.length} more. Please upgrade to Premium to upload more photos!`);
+        return;
+      }
+    }
+
+    setCreatingMoment(true);
+    try {
+      const session = await supabase.auth.getSession();
+      const token = session.data.session?.access_token;
+
+      // 1. Create the moment
+      const response = await fetch("/api/moments", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title: newMomentTitle,
+          content: newMomentContent,
+          moment_type: newMomentType,
+          visibility: newMomentVisibility,
+        }),
+      });
+
+      if (!response.ok) {
+        const errJson = await response.json().catch(() => ({}));
+        throw new Error(errJson.error || "Failed to create moment.");
+      }
+
+      const { moment } = await response.json();
+      const momentId = moment.id;
+
+      // 2. Upload photos if selected
+      let newlyUploadedPhotos: any[] = [];
+      if (newMomentUploadedFiles.length > 0) {
+        const photoPromises = newMomentUploadedFiles.map(async (file, index) => {
+          const formData = new FormData();
+          formData.append("momentId", momentId);
+          formData.append("file", file);
+          formData.append("caption", "");
+
+          const photoResponse = await fetch("/api/moments/photos", {
+            method: "POST",
+            headers: {
+              authorization: `Bearer ${token}`,
+            },
+            body: formData,
+          });
+
+          if (!photoResponse.ok) {
+            const errJson = await photoResponse.json().catch(() => ({}));
+            throw new Error(errJson.error || `Failed to upload photo ${index + 1}`);
+          }
+
+          const photoResData = await photoResponse.json();
+          return photoResData.photo;
+        });
+
+        newlyUploadedPhotos = await Promise.all(photoPromises);
+      }
+
+      // Add the new moment to the local state
+      const completedMoment = {
+        ...moment,
+        moment_photos: newlyUploadedPhotos,
+      };
+
+      setRecentMoments((prev) => [completedMoment, ...prev]);
+      toast.success("Moment created successfully!");
+      setShowAddMomentModal(false);
+    } catch (err) {
+      console.error("Error creating moment:", err);
+      toast.error(err instanceof Error ? err.message : "Failed to create moment.");
+    } finally {
+      setCreatingMoment(false);
+    }
+  };
+
+  const handleSaveMomentChanges = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingMoment) return;
+    if (!editMomentTitle.trim()) {
+      toast.error("Please enter a title.");
+      return;
+    }
+
+    if (!isPremium && editingMoment.moment_type === "photo") {
+      const otherPhotoMoments = recentMoments.filter((m) => m.moment_type === "photo" && m.id !== editingMoment.id);
+      const totalPhotosInOtherAlbums = otherPhotoMoments.reduce((acc, m) => acc + (m.moment_photos?.length ?? 0), 0);
+      const currentAlbumPhotosCount = editingMoment.moment_photos?.length ?? 0;
+      const totalPhotosCount = totalPhotosInOtherAlbums + currentAlbumPhotosCount;
+
+      if (totalPhotosCount + newMomentFiles.length > 10) {
+        toast.error(`Free accounts are limited to 10 photos in total. You currently have ${totalPhotosCount} photos and are trying to upload ${newMomentFiles.length} more. Please upgrade to Premium to upload more photos!`);
+        return;
+      }
+    }
+
+    setSavingMoment(true);
+    try {
+      const session = await supabase.auth.getSession();
+      const token = session.data.session?.access_token;
+
+      // 1. Update text metadata fields
+      const res = await fetch(`/api/moments/${editingMoment.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title: editMomentTitle,
+          content: editMomentContent,
+          visibility: editMomentVisibility,
+        }),
+      });
+
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}));
+        throw new Error(errJson.error || "Failed to update moment.");
+      }
+
+      // 2. Upload new files if added
+      let newlyUploadedPhotos: any[] = [];
+      if (newMomentFiles.length > 0) {
+        const photoPromises = newMomentFiles.map(async (file, index) => {
+          const formData = new FormData();
+          formData.append("momentId", editingMoment.id);
+          formData.append("file", file);
+          formData.append("caption", "");
+
+          const photoResponse = await fetch("/api/moments/photos", {
+            method: "POST",
+            headers: {
+              authorization: `Bearer ${token}`,
+            },
+            body: formData,
+          });
+
+          if (!photoResponse.ok) {
+            const errJson = await photoResponse.json().catch(() => ({}));
+            throw new Error(errJson.error || `Failed to upload photo ${index + 1}`);
+          }
+
+          const photoResData = await photoResponse.json();
+          return photoResData.photo;
+        });
+
+        newlyUploadedPhotos = await Promise.all(photoPromises);
+      }
+
+      // 3. Sync changes back into local states
+      setRecentMoments((prev) =>
+        prev.map((m) => {
+          if (m.id === editingMoment.id) {
+            const currentPhotos = m.moment_photos ?? [];
+            return {
+              ...m,
+              title: editMomentTitle,
+              content: editMomentContent,
+              visibility: editMomentVisibility,
+              moment_photos: [...currentPhotos, ...newlyUploadedPhotos]
+            };
+          }
+          return m;
+        })
+      );
+      
+      toast.success("Moment updated successfully!");
+      setEditingMoment(null);
+    } catch (err) {
+      console.error("Error saving moment changes:", err);
+      toast.error("Failed to save changes.");
+    } finally {
+      setSavingMoment(false);
+    }
+  };
+
+  const handleDeleteMoment = async (momentId: string) => {
+    if (!confirm("Are you sure you want to delete this moment?")) return;
+    setDeletingMomentId(momentId);
+    try {
+      const session = await supabase.auth.getSession();
+      const token = session.data.session?.access_token;
+
+      const res = await fetch(`/api/moments/${momentId}`, {
+        method: "DELETE",
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (res.ok) {
+        setRecentMoments((prev) => prev.filter((m) => m.id !== momentId));
+        toast.success("Moment deleted successfully.");
+        setEditingMoment(null);
+      } else {
+        throw new Error("Failed to delete moment.");
+      }
+    } catch (err) {
+      console.error("Error deleting moment:", err);
+      toast.error("Failed to delete moment.");
+    } finally {
+      setDeletingMomentId(null);
+    }
+  };
 
   // Fetch inquiries from database
   const fetchInquiries = useCallback(async () => {
@@ -1178,7 +1434,6 @@ export default function DashboardPage() {
                 {[
                   { id: "wedding_tools", label: "Wedding Tools Hub", icon: LayoutDashboard },
                   { id: "microsite_settings", label: "Wedding Page Settings", icon: Globe },
-                  { id: "manage_moments", label: "Wedding Moments", icon: Sparkles },
                   { id: "gift_registry", label: "Gift Registry", icon: Gift },
                   { id: "budget_planner", label: "Budget Planner", icon: Wallet },
                   { id: "guest_list", label: "Guest List Tracker", icon: Users },
@@ -1191,7 +1446,7 @@ export default function DashboardPage() {
                 ].map((tab) => {
                   const isSelected = activeTab === tab.id;
                   const Icon = tab.icon;
-                  const isTabPremium = tab.id !== "wedding_tools" && tab.id !== "microsite_settings" && tab.id !== "manage_moments" && tab.id !== "gift_registry";
+                  const isTabPremium = tab.id !== "wedding_tools" && tab.id !== "microsite_settings" && tab.id !== "gift_registry";
                   const isLocked = isTabPremium && !isPremium;
                   return (
                     <button
@@ -1223,7 +1478,7 @@ export default function DashboardPage() {
                   transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
                 >
                   {(() => {
-                    const isTabPremium = activeTab !== "wedding_tools" && activeTab !== "microsite_settings" && activeTab !== "manage_moments" && activeTab !== "gift_registry";
+                    const isTabPremium = activeTab !== "wedding_tools" && activeTab !== "microsite_settings" && activeTab !== "gift_registry";
                     const isLocked = isTabPremium && !isPremium;
 
                     const renderTabContent = () => {
@@ -1321,44 +1576,6 @@ export default function DashboardPage() {
                                   )}
                                 </section>
 
-                                {/* Recent Moments Section */}
-                                <section>
-                                  <div className="flex items-center justify-between mb-4">
-                                    <div className="flex items-center gap-2">
-                                      <svg className="h-5 w-5 text-[#a68b6a]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-                                      </svg>
-                                      <h2 className="text-[18px] font-semibold text-[#2c2c2c] font-[family-name:var(--font-noto-serif)]">
-                                        Recent Moments
-                                      </h2>
-                                    </div>
-                                    <a href={user ? `/moments/couple/${user.id}` : "/moments"} className="text-sm text-[#a68b6a] hover:text-[#957a5c] font-medium">View All →</a>
-                                  </div>
-
-                                  {recentMoments.length === 0 ? (
-                                    <div className="rounded-xl border border-black/10 bg-white p-8 text-center">
-                                      <p className="text-[13px] text-neutral-400">No moments yet.</p>
-                                      <a href="/moments/create" className="inline-block mt-4 px-4 py-2 bg-[#a68b6a] text-white text-[12px] font-semibold rounded-lg hover:bg-[#957a5c]">
-                                        Create Your First Moment
-                                      </a>
-                                    </div>
-                                  ) : (
-                                    <div className="grid gap-4">
-                                      {recentMoments.map((moment) => (
-                                        <div key={moment.id} className="rounded-xl border border-black/5 bg-white p-4 hover:shadow-md transition-all">
-                                          <div className="flex items-start justify-between">
-                                            <div>
-                                              <h3 className="font-semibold text-[#2c2c2c] font-[family-name:var(--font-noto-serif)] mb-1">{moment.title}</h3>
-                                              <p className="text-sm text-gray-500 capitalize mb-2">{moment.moment_type}</p>
-                                              <p className="text-xs text-gray-400">{new Date(moment.created_at).toLocaleDateString()}</p>
-                                            </div>
-                                            <a href={`/moments/${moment.id}`} className="text-[#a68b6a] hover:underline text-sm">View details</a>
-                                          </div>
-                                        </div>
-                                      ))}
-                                    </div>
-                                  )}
-                                </section>
 
                                 {/* Active Inquiries Section */}
                                 <section>
@@ -1458,6 +1675,154 @@ export default function DashboardPage() {
                                     </div>
                                   )}
                                 </section>
+
+                                {/* Recent Moments Section (Placed Last) */}
+                                <section>
+                                  <div className="flex items-center justify-between mb-4">
+                                    <div className="flex items-center gap-2">
+                                      <svg className="h-5 w-5 text-[#a68b6a]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                                      </svg>
+                                      <h2 className="text-[18px] font-semibold text-[#2c2c2c] font-[family-name:var(--font-noto-serif)]">
+                                        Recent Moments
+                                      </h2>
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                      <button
+                                        type="button"
+                                        onClick={handleOpenAddMoment}
+                                        className="h-8 px-3 rounded-lg bg-[#a68b6a] text-white text-[11px] font-bold uppercase tracking-wider hover:bg-[#957a5c] transition-colors inline-flex items-center gap-1 cursor-pointer font-[family-name:var(--font-plus-jakarta)]"
+                                      >
+                                        <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                                        </svg>
+                                        <span>Add Moment</span>
+                                      </button>
+                                      <a href={user ? `/moments/couple/${user.id}` : "/moments"} className="text-sm text-[#a68b6a] hover:text-[#957a5c] font-medium font-semibold font-[family-name:var(--font-plus-jakarta)]">View All →</a>
+                                    </div>
+                                  </div>
+
+                                  {recentMoments.length === 0 ? (
+                                    <div className="rounded-xl border border-black/10 bg-white p-8 text-center">
+                                      <p className="text-[13px] text-neutral-400">No moments yet.</p>
+                                      <a href="/moments/create" className="inline-block mt-4 px-4 py-2 bg-[#a68b6a] text-white text-[12px] font-semibold rounded-lg hover:bg-[#957a5c]">
+                                        Create Your First Moment
+                                      </a>
+                                    </div>
+                                  ) : (
+                                    <div className="grid gap-6 md:grid-cols-2">
+                                      {recentMoments.map((moment) => {
+                                        const getMomentIcon = () => {
+                                          switch (moment.moment_type) {
+                                            case "photo":
+                                              return (
+                                                <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                                                </svg>
+                                              );
+                                            case "review":
+                                              return (
+                                                <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                                  <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+                                                </svg>
+                                              );
+                                            case "story":
+                                              return (
+                                                <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+                                                </svg>
+                                              );
+                                            case "milestone":
+                                              return (
+                                                <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+                                                </svg>
+                                              );
+                                            default:
+                                              return null;
+                                          }
+                                        };
+
+                                        return (
+                                          <div key={moment.id} className="bg-white rounded-xl border border-black/5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] hover:shadow-[0_10px_25px_rgba(0,0,0,0.08),0_4px_10px_rgba(0,0,0,0.04)] transition-all duration-300 flex flex-col justify-between">
+                                            {/* Header */}
+                                            <div className="p-4 border-b border-gray-100">
+                                              <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-3">
+                                                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#a68b6a] to-[#957a5c] flex items-center justify-center shrink-0">
+                                                    <span className="text-white font-medium text-sm">
+                                                      {moment.title.charAt(0).toUpperCase()}
+                                                    </span>
+                                                  </div>
+                                                  <div>
+                                                    <h3 className="font-semibold text-[#2c2c2c]">{moment.title}</h3>
+                                                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                                                      <span className="capitalize">{moment.moment_type}</span>
+                                                      <span>•</span>
+                                                      <span>{new Date(moment.created_at).toLocaleDateString()}</span>
+                                                      {moment.visibility === "public" && (
+                                                        <>
+                                                          <span>•</span>
+                                                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-[#ecfdf3] text-[#027a48]">
+                                                            Public
+                                                          </span>
+                                                        </>
+                                                      )}
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                                <div className="flex items-center gap-2 shrink-0">
+                                                  <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-[#a68b6a]/10 text-[#a68b6a]">
+                                                    {getMomentIcon()}
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+
+                                            {/* Content */}
+                                            <div className="p-4 flex-1">
+                                              {moment.content && (
+                                                <p className="text-gray-700 mb-4 whitespace-pre-wrap">{moment.content}</p>
+                                              )}
+
+                                              {moment.moment_photos && moment.moment_photos.length > 0 && (
+                                                <div className="mb-4 space-y-2 -mx-4">
+                                                  {moment.moment_photos.map((photo: any) => (
+                                                    <div key={photo.id} className="px-4">
+                                                      <img
+                                                        src={photo.image_url}
+                                                        alt={photo.caption || "Moment photo"}
+                                                        className="w-full h-auto object-contain rounded-lg"
+                                                        style={{ maxHeight: 'none' }}
+                                                      />
+                                                      {photo.caption && (
+                                                        <p className="text-sm text-gray-600 mt-2">{photo.caption}</p>
+                                                      )}
+                                                    </div>
+                                                  ))}
+                                                </div>
+                                              )}
+                                            </div>
+
+                                            {/* Footer with Edit button only */}
+                                            <div className="px-4 py-3 border-t border-gray-100 flex items-center justify-between">
+                                              <button
+                                                type="button"
+                                                onClick={() => handleOpenEditMoment(moment)}
+                                                className="flex items-center gap-2 text-gray-600 hover:text-[#a68b6a] transition-colors font-bold text-xs uppercase tracking-wider cursor-pointer font-[family-name:var(--font-plus-jakarta)]"
+                                              >
+                                                <svg className="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                                                  <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                </svg>
+                                                <span>Edit Moment</span>
+                                              </button>
+                                            </div>
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                  )}
+                                </section>
                               </div>
                             </div>
                           );
@@ -1551,13 +1916,6 @@ export default function DashboardPage() {
                               supabase={supabase}
                             />
                           );
-                        case "manage_moments":
-                          return (
-                            <ManageMoments
-                              userId={userId}
-                              supabase={supabase}
-                            />
-                          );
                         default:
                           return null;
                       }
@@ -1602,6 +1960,236 @@ export default function DashboardPage() {
 
         </div>
       </div>
+      
+      {/* EDIT MOMENT MODAL */}
+      {editingMoment && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="w-full max-w-lg rounded-2xl border border-black/10 bg-white shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="px-6 py-5 border-b border-black/[0.04] flex items-center justify-between">
+              <div>
+                <h3 className="text-[16px] font-bold text-[#2c2c2c] font-[family-name:var(--font-noto-serif)]">Edit Wedding Moment</h3>
+                <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-wider mt-0.5 font-[family-name:var(--font-plus-jakarta)]">
+                  Type: {editingMoment.moment_type}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditingMoment(null)}
+                className="p-1.5 rounded-lg hover:bg-black/5 text-neutral-400 hover:text-neutral-600 transition-all cursor-pointer"
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <form onSubmit={handleSaveMomentChanges}>
+              <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto">
+                <div>
+                  <label className="block text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-1.5">
+                    Moment Title
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={editMomentTitle}
+                    onChange={(e) => setEditMomentTitle(e.target.value)}
+                    className="w-full h-10 px-3.5 border border-black/[0.08] rounded-xl bg-[#fafafa]/50 text-xs font-semibold outline-none focus:border-[#a68b6a] focus:bg-white transition-all font-[family-name:var(--font-plus-jakarta)]"
+                    placeholder="e.g. Dream Proposal"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-1.5">
+                    Story Content / Details
+                  </label>
+                  <textarea
+                    rows={4}
+                    value={editMomentContent}
+                    onChange={(e) => setEditMomentContent(e.target.value)}
+                    className="w-full p-3.5 border border-black/[0.08] rounded-xl bg-[#fafafa]/50 text-xs font-semibold outline-none focus:border-[#a68b6a] focus:bg-white transition-all font-[family-name:var(--font-plus-jakarta)] leading-relaxed"
+                    placeholder="Write details of this moment..."
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-1.5">
+                    Visibility Mode
+                  </label>
+                  <select
+                    value={editMomentVisibility}
+                    onChange={(e) => setEditMomentVisibility(e.target.value as any)}
+                    className="w-full h-10 px-3 border border-black/[0.08] rounded-xl bg-[#fafafa]/50 text-xs font-semibold outline-none focus:border-[#a68b6a] focus:bg-white transition-all mb-4"
+                  >
+                    <option value="private">Private (Only You)</option>
+                    <option value="public">Public (Everyone)</option>
+                    <option value="friends">Friends & Guests</option>
+                  </select>
+                </div>
+
+                {/* Previews and Image Dropzone */}
+                <div className="space-y-4 pt-3 border-t border-black/[0.03]">
+                  {/* Dropzone for Uploading More Pictures */}
+                  <div>
+                    <label className="block text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-2">
+                      Add New Pictures
+                    </label>
+                    <MomentPhotoUpload
+                      onFilesSelected={(files) => setNewMomentFiles(files)}
+                      maxFiles={10}
+                      acceptedTypes={["image/jpeg", "image/png", "image/webp"]}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="px-6 py-4 bg-neutral-50/50 border-t border-black/[0.03] flex items-center justify-between">
+                <button
+                  type="button"
+                  disabled={savingMoment || deletingMomentId !== null}
+                  onClick={() => handleDeleteMoment(editingMoment.id)}
+                  className="h-9 px-4 rounded-xl bg-red-50 hover:bg-red-100 border border-red-100 text-red-600 text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer inline-flex items-center gap-1.5"
+                >
+                  {deletingMomentId === editingMoment.id ? "Deleting..." : "Delete Moment"}
+                </button>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    disabled={savingMoment || deletingMomentId !== null}
+                    onClick={() => setEditingMoment(null)}
+                    className="h-9 px-4 rounded-xl border border-black/10 bg-white text-xs font-bold text-neutral-500 hover:bg-neutral-50 active:scale-[0.98] transition-all uppercase tracking-wider"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={savingMoment || deletingMomentId !== null}
+                    className="h-9 px-5 rounded-xl bg-[#a68b6a] hover:bg-[#957a5c] text-white text-xs font-bold uppercase tracking-wider shadow-sm hover:shadow active:scale-[0.98] transition-all cursor-pointer"
+                  >
+                    {savingMoment ? "Saving..." : "Save Changes"}
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ADD MOMENT MODAL */}
+      {showAddMomentModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="w-full max-w-lg rounded-2xl border border-black/10 bg-white shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="px-6 py-5 border-b border-black/[0.04] flex items-center justify-between">
+              <div>
+                <h3 className="text-[16px] font-bold text-[#2c2c2c] font-[family-name:var(--font-noto-serif)]">Create New Moment</h3>
+                <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-wider mt-0.5 font-[family-name:var(--font-plus-jakarta)]">
+                  Add details to your wedding feed
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowAddMomentModal(false)}
+                className="p-1.5 rounded-lg hover:bg-black/5 text-neutral-400 hover:text-neutral-600 transition-all cursor-pointer"
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <form onSubmit={handleCreateMomentSubmit}>
+              <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto">
+                <div>
+                  <label className="block text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-1.5">
+                    Moment Title *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={newMomentTitle}
+                    onChange={(e) => setNewMomentTitle(e.target.value)}
+                    className="w-full h-10 px-3.5 border border-black/[0.08] rounded-xl bg-[#fafafa]/50 text-xs font-semibold outline-none focus:border-[#a68b6a] focus:bg-white transition-all font-[family-name:var(--font-plus-jakarta)]"
+                    placeholder="e.g. Dream Proposal"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-1.5">
+                      Moment Type
+                    </label>
+                    <select
+                      value={newMomentType}
+                      onChange={(e) => setNewMomentType(e.target.value as any)}
+                      className="w-full h-10 px-3 border border-black/[0.08] rounded-xl bg-[#fafafa]/50 text-xs font-semibold outline-none focus:border-[#a68b6a] focus:bg-white transition-all"
+                    >
+                      <option value="photo">Photos</option>
+                      <option value="story">Story</option>
+                      <option value="milestone">Milestone</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-1.5">
+                      Visibility Mode
+                    </label>
+                    <select
+                      value={newMomentVisibility}
+                      onChange={(e) => setNewMomentVisibility(e.target.value as any)}
+                      className="w-full h-10 px-3 border border-black/[0.08] rounded-xl bg-[#fafafa]/50 text-xs font-semibold outline-none focus:border-[#a68b6a] focus:bg-white transition-all"
+                    >
+                      <option value="private">Private (Only You)</option>
+                      <option value="public">Public (Everyone)</option>
+                      <option value="friends">Friends & Guests</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-1.5">
+                    Story Content / Details
+                  </label>
+                  <textarea
+                    rows={4}
+                    value={newMomentContent}
+                    onChange={(e) => setNewMomentContent(e.target.value)}
+                    className="w-full p-3.5 border border-black/[0.08] rounded-xl bg-[#fafafa]/50 text-xs font-semibold outline-none focus:border-[#a68b6a] focus:bg-white transition-all font-[family-name:var(--font-plus-jakarta)] leading-relaxed"
+                    placeholder="Write details of this moment..."
+                  />
+                </div>
+
+                {/* Previews and Image Dropzone */}
+                {newMomentType === "photo" && (
+                  <div className="space-y-4 pt-3 border-t border-black/[0.03]">
+                    <div>
+                      <label className="block text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-2">
+                        Upload Pictures
+                      </label>
+                      <MomentPhotoUpload
+                        onFilesSelected={(files) => setNewMomentUploadedFiles(files)}
+                        maxFiles={10}
+                        acceptedTypes={["image/jpeg", "image/png", "image/webp"]}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="px-6 py-4 bg-neutral-50/50 border-t border-black/[0.03] flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  disabled={creatingMoment}
+                  onClick={() => setShowAddMomentModal(false)}
+                  className="h-9 px-4 rounded-xl border border-black/10 bg-white text-xs font-bold text-neutral-500 hover:bg-neutral-50 active:scale-[0.98] transition-all uppercase tracking-wider"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={creatingMoment}
+                  className="h-9 px-5 rounded-xl bg-[#a68b6a] hover:bg-[#957a5c] text-white text-xs font-bold uppercase tracking-wider shadow-sm hover:shadow active:scale-[0.98] transition-all cursor-pointer"
+                >
+                  {creatingMoment ? "Creating..." : "Create Moment"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </>
   );
 }
