@@ -3,11 +3,7 @@
 import { motion } from "framer-motion";
 import { Check, Sparkles } from "lucide-react";
 
-interface PremiumBannerProps {
-  onUpgrade: () => void;
-}
-
-export default function PremiumBanner({ onUpgrade }: PremiumBannerProps) {
+export default function PremiumBanner() {
   const features = [
     { title: "Budget Planner", desc: "Track estimates, actual spends & payment schedules." },
     { title: "Guest List & RSVPs", desc: "Manage categories, dietary needs, and RSVPs in real time." },
@@ -41,18 +37,18 @@ export default function PremiumBanner({ onUpgrade }: PremiumBannerProps) {
           </h2>
           
           <p className="text-[14px] sm:text-[14.5px] text-neutral-500 leading-relaxed font-[family-name:var(--font-plus-jakarta)] mb-8">
-            Upgrade your Soon-to-Wed account today to access advanced wedding administration tools. Plan your seating charts, manage budgets, track RSVP states, and coordinate your Dream Team from a single, polished workspace.
+            Upgrade your Soon-to-Wed account to access advanced wedding administration tools. Plan your seating charts, manage budgets, track RSVP states, and coordinate your Dream Team from a single, polished workspace.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
             <button
-              onClick={onUpgrade}
-              className="w-full sm:w-auto h-12 px-8 bg-[#a68b6a] hover:bg-[#957a5c] text-white text-[13px] font-black rounded-xl active:scale-[0.97] transition-all duration-150 shadow-sm hover:shadow-[0_6px_20px_rgba(166,139,106,0.2)] hover:-translate-y-0.5 font-[family-name:var(--font-plus-jakarta)] uppercase tracking-widest cursor-pointer"
+              disabled
+              className="w-full sm:w-auto h-12 px-8 bg-neutral-100 border border-black/5 text-neutral-400 text-[13px] font-black rounded-xl cursor-not-allowed font-[family-name:var(--font-plus-jakarta)] uppercase tracking-widest"
             >
-              Unlock Premium Workspace
+              Contact Admin to Upgrade
             </button>
             <span className="text-[12px] text-neutral-400 font-bold font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wider">
-              Free during Beta phase
+              Changeable via Admin Only
             </span>
           </div>
         </div>

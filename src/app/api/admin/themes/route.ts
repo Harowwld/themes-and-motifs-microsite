@@ -78,3 +78,65 @@ export async function DELETE(req: Request) {
     return Response.json({ error: e?.message ?? "Unknown error" }, { status });
   }
 }
+
+// POST - create a new theme
+export async function POST(req: Request) {
+  try {
+    await assertAdminOrEditorRequest(req);
+
+    const body = await req.json().catch(() => ({}));
+    const { name, description } = body;
+
+    if (!name || typeof name !== "string" || !name.trim()) {
+      return Response.json({ error: "Theme name is required" }, { status: 400 });
+    }
+
+    const trimmedName = name.trim();
+    // Generate slug: lowercase, replace non-alphanumeric with hyphen, strip duplicate hyphens & leading/trailing hyphens
+    const slug = trimmedName
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+
+    if (!slug) {
+      return Response.json({ error: "Invalid theme name for generating a slug" }, { status: 400 });
+    }
+
+    const supabase = createSupabaseAdminClient();
+
+    // Check if slug already exists to prevent duplicate key errors
+    const { data: existing, error: checkError } = await supabase
+      .from("themes")
+      .select("id")
+      .eq("slug", slug)
+      .maybeSingle();
+
+    if (checkError) {
+      return Response.json({ error: checkError.message }, { status: 500 });
+    }
+
+    if (existing) {
+      return Response.json({ error: `A theme with slug "${slug}" already exists.` }, { status: 400 });
+    }
+
+    const { data: newTheme, error: insertError } = await supabase
+      .from("themes")
+      .insert({
+        name: trimmedName,
+        slug,
+        description: description?.trim() || null,
+      })
+      .select()
+      .single();
+
+    if (insertError) {
+      return Response.json({ error: insertError.message }, { status: 500 });
+    }
+
+    return Response.json({ success: true, theme: newTheme }, { status: 201 });
+  } catch (e: any) {
+    const status = typeof e?.statusCode === "number" ? e.statusCode : 500;
+    return Response.json({ error: e?.message ?? "Unknown error" }, { status });
+  }
+}
+

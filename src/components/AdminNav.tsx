@@ -45,9 +45,9 @@ export function AdminNav({ isSuperadmin, isEditor, email, accountType }: AdminNa
     const active = isActive(href);
     return `relative rounded-[3px] px-3 py-2.5 text-[13px] transition-all flex items-center gap-2 ${
       active
-        ? "bg-[#a67c52]/15 text-[#a67c52] font-bold"
-        : "text-black/75 hover:bg-black/[0.06]"
-    } ${active ? "before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-[4px] before:h-5 before:bg-[#a67c52] before:rounded-r-full" : ""}`;
+        ? "text-[#a68b6a] font-bold"
+        : "text-black/75 hover:text-[#a68b6a] hover:bg-black/[0.04]"
+    } ${active ? "before:absolute before:bottom-0 before:left-1/2 before:-translate-x-1/2 before:w-6 before:h-[3px] before:bg-[#a68b6a] before:rounded-full" : ""}`;
   };
 
   // Nav links group component to keep code DRY and maintainable
@@ -66,9 +66,6 @@ export function AdminNav({ isSuperadmin, isEditor, email, accountType }: AdminNa
       </Link>
       {isSuperadmin && (
         <>
-          <Link className={navLinkClass("/superadmin/registrations")} href="/superadmin/registrations">
-            Registrations
-          </Link>
           <Link className={navLinkClass("/superadmin/claims")} href="/superadmin/claims">
             Claims
           </Link>
@@ -86,6 +83,9 @@ export function AdminNav({ isSuperadmin, isEditor, email, accountType }: AdminNa
           </Link>
           <Link className={navLinkClass("/superadmin/users")} href="/superadmin/users">
             Soon to Weds
+          </Link>
+          <Link className={navLinkClass("/superadmin/events")} href="/superadmin/events">
+            Events Banners
           </Link>
           <Link className={navLinkClass("/superadmin/editors")} href="/superadmin/editors">
             Editors
@@ -105,7 +105,7 @@ export function AdminNav({ isSuperadmin, isEditor, email, accountType }: AdminNa
         <form action="/api/admin/auth/logout" method="post" className="p-1">
           <button
             type="submit"
-            className="h-9 w-full inline-flex items-center justify-center px-4 rounded-[3px] bg-[#a67c52] text-white text-[13px] font-semibold hover:bg-[#8e6a46] transition-colors"
+            className="h-9 w-full inline-flex items-center justify-center px-4 rounded-[3px] bg-[#a68b6a] text-white text-[13px] font-semibold hover:bg-[#957a5c] transition-colors"
           >
             Sign out
           </button>

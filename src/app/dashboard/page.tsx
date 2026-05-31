@@ -19,7 +19,8 @@ import {
   FileText,
   Lock,
   Globe,
-  Gift
+  Gift,
+  Sparkles
 } from "lucide-react";
 
 // Custom tab features
@@ -35,6 +36,10 @@ import Notes from "./components/Notes";
 import PremiumBanner from "./components/PremiumBanner";
 import MicrositeSettings from "./components/MicrositeSettings";
 import GiftRegistry from "./components/GiftRegistry";
+import AdBanner from "@/components/AdBanner";
+import ManageMoments from "./components/ManageMoments";
+
+
 
 type SavedVendor = {
   id: string;
@@ -146,6 +151,7 @@ function LoadingSkeleton() {
 }
 const tabNames: Record<string, string> = {
   microsite_settings: "Microsite Settings",
+  manage_moments: "Wedding Moments",
   gift_registry: "Gift Registry",
   budget_planner: "Budget Planner",
   guest_list: "Guest List Tracker",
@@ -159,6 +165,7 @@ const tabNames: Record<string, string> = {
 
 const tabDescriptions: Record<string, string> = {
   microsite_settings: "Configure your public microsite page—love story, entourage members, principal and secondary sponsors, and guest welcome message.",
+  manage_moments: "Manage your wedding moments feed—photos, vendor reviews, love stories, and public or private milestones.",
   gift_registry: "Manage your wedding registry. View and manage items you've added from the marketplace, customize target amounts, and track guest contributions.",
   budget_planner: "Take control of your wedding budget. Log estimates, track payments, and visualize cost distribution seamlessly.",
   guest_list: "Keep a clean record of your guests, their contact information, dietary requirements, and RSVP counts.",
@@ -1118,21 +1125,19 @@ export default function DashboardPage() {
                   Dashboard
                 </h1>
                 {isPremium ? (
-                  <button
-                    onClick={handleDowngrade}
-                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#a68b6a]/15 text-[#a68b6a] text-[10px] font-black uppercase tracking-wider border border-[#a68b6a]/20 shadow-sm animate-pulse hover:brightness-95 cursor-pointer transition-all"
-                    title="Developer Toggle: Return to standard couple standard tier"
+                  <span
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#a68b6a]/15 text-[#a68b6a] text-[10px] font-black uppercase tracking-wider border border-[#a68b6a]/20 shadow-sm"
+                    title="Premium Workspace Tier"
                   >
                     ✨ Premium Partner
-                  </button>
+                  </span>
                 ) : (
-                  <button
-                    onClick={handleUpgrade}
-                    className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-neutral-100 border border-neutral-200 text-neutral-500 text-[10px] font-bold uppercase tracking-wider hover:bg-neutral-200 cursor-pointer transition-all"
-                    title="Developer Toggle: Upgrade to premium partner tier"
+                  <span
+                    className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-neutral-100 border border-neutral-200 text-neutral-500 text-[10px] font-bold uppercase tracking-wider"
+                    title="Standard Workspace Tier"
                   >
                     Couple Standard
-                  </button>
+                  </span>
                 )}
               </div>
               <p className="mt-1.5 text-[14px] text-neutral-500 font-[family-name:var(--font-plus-jakarta)]">
@@ -1173,6 +1178,7 @@ export default function DashboardPage() {
                 {[
                   { id: "wedding_tools", label: "Wedding Tools Hub", icon: LayoutDashboard },
                   { id: "microsite_settings", label: "Wedding Page Settings", icon: Globe },
+                  { id: "manage_moments", label: "Wedding Moments", icon: Sparkles },
                   { id: "gift_registry", label: "Gift Registry", icon: Gift },
                   { id: "budget_planner", label: "Budget Planner", icon: Wallet },
                   { id: "guest_list", label: "Guest List Tracker", icon: Users },
@@ -1185,7 +1191,7 @@ export default function DashboardPage() {
                 ].map((tab) => {
                   const isSelected = activeTab === tab.id;
                   const Icon = tab.icon;
-                  const isTabPremium = tab.id !== "wedding_tools" && tab.id !== "microsite_settings" && tab.id !== "gift_registry";
+                  const isTabPremium = tab.id !== "wedding_tools" && tab.id !== "microsite_settings" && tab.id !== "manage_moments" && tab.id !== "gift_registry";
                   const isLocked = isTabPremium && !isPremium;
                   return (
                     <button
@@ -1207,6 +1213,7 @@ export default function DashboardPage() {
 
             {/* Dynamic Interactive Workspace Panels */}
             <main className="flex-1 min-w-0">
+              <AdBanner pageContext="dashboard" />
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeTab}
@@ -1216,7 +1223,7 @@ export default function DashboardPage() {
                   transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
                 >
                   {(() => {
-                    const isTabPremium = activeTab !== "wedding_tools" && activeTab !== "microsite_settings" && activeTab !== "gift_registry";
+                    const isTabPremium = activeTab !== "wedding_tools" && activeTab !== "microsite_settings" && activeTab !== "manage_moments" && activeTab !== "gift_registry";
                     const isLocked = isTabPremium && !isPremium;
 
                     const renderTabContent = () => {
@@ -1280,7 +1287,7 @@ export default function DashboardPage() {
                                   </div>
                                 </div>
                               ) : (
-                                <PremiumBanner onUpgrade={handleUpgrade} />
+                                <PremiumBanner />
                               )}
 
                               {/* Standard couples features integrated inside the Workspace Dashboard hub */}
@@ -1540,6 +1547,13 @@ export default function DashboardPage() {
                         case "gift_registry":
                           return (
                             <GiftRegistry
+                              userId={userId}
+                              supabase={supabase}
+                            />
+                          );
+                        case "manage_moments":
+                          return (
+                            <ManageMoments
                               userId={userId}
                               supabase={supabase}
                             />

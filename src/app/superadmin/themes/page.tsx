@@ -68,6 +68,11 @@ export default function SuperadminThemesPage() {
     }
   }
 
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [newDescription, setNewDescription] = useState("");
+  const [adding, setAdding] = useState(false);
+
   const filteredThemes = useMemo(() => {
     const q = search.trim().toLowerCase();
     if (!q) return themes;
@@ -77,6 +82,33 @@ export default function SuperadminThemesPage() {
         t.slug.toLowerCase().includes(q)
     );
   }, [themes, search]);
+
+  async function addTheme(e: React.FormEvent) {
+    e.preventDefault();
+    if (!newName.trim()) {
+      toast.error("Theme name is required.");
+      return;
+    }
+    setAdding(true);
+    try {
+      const res = await apiFetch<{ success: boolean; theme: Theme }>("/api/admin/themes", {
+        method: "POST",
+        body: JSON.stringify({
+          name: newName,
+          description: newDescription,
+        }),
+      });
+      toast.success("Theme added successfully.");
+      setThemes((prev) => [...prev, res.theme].sort((a, b) => a.name.localeCompare(b.name)));
+      setNewName("");
+      setNewDescription("");
+      setShowAddForm(false);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to add theme.");
+    } finally {
+      setAdding(false);
+    }
+  }
 
   // Separate default and custom themes (themes with IDs > 12 are considered custom, matching the initial migration)
   const defaultThemes = filteredThemes.filter((t) => t.id <= 12);
@@ -89,16 +121,78 @@ export default function SuperadminThemesPage() {
           <div>
             <h1 className="text-[22px] font-semibold text-[#2c2c2c]">Theme Management</h1>
             <p className="text-[13px] text-black/50 mt-1">
-              Manage wedding themes. Delete custom themes that are no longer needed.
+              Manage wedding themes. Add new themes or delete custom ones.
             </p>
           </div>
-          <button
-            onClick={() => router.push("/superadmin")}
-            className="h-9 px-4 rounded-[3px] border border-black/10 bg-white text-[13px] font-medium text-black/70 hover:bg-black/[0.02] transition-colors"
-          >
-            Back to Dashboard
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setShowAddForm(!showAddForm)}
+              className="h-9 px-4 rounded-[3px] bg-[#a67c52] hover:bg-[#8e6943] text-white text-[13px] font-medium transition-colors"
+            >
+              {showAddForm ? "Cancel" : "+ Add Theme"}
+            </button>
+            <button
+              onClick={() => router.push("/superadmin")}
+              className="h-9 px-4 rounded-[3px] border border-black/10 bg-white text-[13px] font-medium text-black/70 hover:bg-black/[0.02] transition-colors"
+            >
+              Back to Dashboard
+            </button>
+          </div>
         </div>
+
+        {/* Add Theme Form */}
+        {showAddForm && (
+          <form onSubmit={addTheme} className="mb-6 p-5 rounded-[3px] border border-black/10 bg-white shadow-sm">
+            <h3 className="text-[14px] font-semibold text-[#2c2c2c] mb-4">Create New Theme</h3>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label className="block text-[11px] font-semibold uppercase tracking-wider text-black/50 mb-1">
+                  Theme Name
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={newName}
+                  onChange={(e) => setNewName(e.target.value)}
+                  placeholder="e.g. Classic Romance, Rustic Garden"
+                  className="h-10 w-full rounded-[3px] border border-black/10 bg-white px-3 text-[13px] outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/10"
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] font-semibold uppercase tracking-wider text-black/50 mb-1">
+                  Description (Optional)
+                </label>
+                <input
+                  type="text"
+                  value={newDescription}
+                  onChange={(e) => setNewDescription(e.target.value)}
+                  placeholder="Describe the style tag..."
+                  className="h-10 w-full rounded-[3px] border border-black/10 bg-white px-3 text-[13px] outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/10"
+                />
+              </div>
+            </div>
+            <div className="mt-4 flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowAddForm(false);
+                  setNewName("");
+                  setNewDescription("");
+                }}
+                className="h-8 px-4 rounded-[3px] border border-black/10 bg-white text-[12px] font-medium text-black/70 hover:bg-black/[0.02]"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={adding}
+                className="h-8 px-4 rounded-[3px] bg-[#a67c52] hover:bg-[#8e6943] text-white text-[12px] font-medium transition-colors disabled:opacity-60"
+              >
+                {adding ? "Adding..." : "Save Theme"}
+              </button>
+            </div>
+          </form>
+        )}
 
         {/* Search */}
         <div className="mb-6">
@@ -110,6 +204,7 @@ export default function SuperadminThemesPage() {
             className="h-10 w-full max-w-md rounded-[3px] border border-black/10 bg-white px-3 text-[13px] outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/10"
           />
         </div>
+
 
         {loading ? (
           <div className="grid gap-4">

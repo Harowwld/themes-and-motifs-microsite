@@ -64,13 +64,64 @@ const NavLink = ({
   onClick?: (e: React.MouseEvent) => void;
   className?: string;
   prefetch?: boolean;
-}) => (
-  <motion.div whileTap={{ scale: 0.97 }} transition={{ duration: 0.15, ease: EASE_OUT }}>
-    <Link href={href} onClick={onClick} prefetch={prefetch} className={className}>
-      {children}
-    </Link>
-  </motion.div>
-);
+}) => {
+  const pathname = usePathname();
+  const isActive = href === "/"
+    ? pathname === "/"
+    : href === "/vendors"
+    ? pathname === "/vendors" || (pathname.startsWith("/vendors/") && !pathname.startsWith("/vendors/plans"))
+    : pathname === href || pathname.startsWith(href + "/");
+
+  const isMobile = (className.includes("px-3") || className.includes("py-3")) && !className.includes("hidden");
+
+  if (isMobile) {
+    return (
+      <motion.div whileTap={{ scale: 0.97 }} transition={{ duration: 0.15, ease: EASE_OUT }}>
+        <Link
+          href={href}
+          onClick={onClick}
+          prefetch={prefetch}
+          className={`${className} transition-colors ${
+            isActive
+              ? "text-[#a68b6a] font-semibold bg-[#a68b6a]/5 border-l-2 border-[#a68b6a] pl-2.5"
+              : "text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50"
+          }`}
+        >
+          {children}
+        </Link>
+      </motion.div>
+    );
+  }
+
+  return (
+    <motion.div 
+      whileTap={{ scale: 0.97 }} 
+      transition={{ duration: 0.15, ease: EASE_OUT }}
+      className={`relative py-1 flex flex-col items-center ${
+        className.includes("hidden") ? "hidden sm:flex" : ""
+      }`}
+    >
+      <Link
+        href={href}
+        onClick={onClick}
+        prefetch={prefetch}
+        className={`${className} transition-colors ${isActive ? "text-[#a68b6a] font-semibold" : "text-gray-500 hover:text-[#a68b6a]"}`}
+      >
+        {children}
+      </Link>
+      {isActive && (
+        <motion.div
+          layoutId="activeHeaderUnderline"
+          className={`absolute h-[3px] bg-[#a68b6a] rounded-full ${
+            className.includes("h-9") ? "-bottom-[8px]" : "-bottom-[16px]"
+          }`}
+          style={{ width: "24px" }}
+          transition={{ type: "spring", stiffness: 350, damping: 30 }}
+        />
+      )}
+    </motion.div>
+  );
+};
 
 const NavButton = ({
   children,
@@ -115,6 +166,13 @@ export default function SiteHeader() {
   const [mounted, setMounted] = useState(false);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
+
+  const dashboardHref = useMemo(() => {
+    if (isVendor) return "/vendor/dashboard";
+    if (accountType === "superadmin") return "/superadmin";
+    if (accountType === "editor") return "/editor/dashboard";
+    return "/dashboard";
+  }, [isVendor, accountType]);
 
   useEffect(() => {
     setMounted(true);
@@ -270,7 +328,7 @@ export default function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-50 inset-x-0 backdrop-blur-md bg-white/90 supports-backdrop-filter:bg-white/90 border-b border-gray-100">
-      <div className="mx-auto h-16 grid grid-cols-[20%_60%_20%] items-center px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto h-16 flex items-center justify-between sm:grid sm:grid-cols-[20%_60%_20%] px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
@@ -367,7 +425,7 @@ export default function SiteHeader() {
             <>
               <NavLink
                 className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-md text-[13px] font-medium text-gray-600 hover:text-gray-900 transition-colors font-[family-name:var(--font-plus-jakarta)]"
-                href={isVendor ? "/vendor/dashboard" : "/dashboard"}
+                href={dashboardHref}
               >
                 Dashboard
               </NavLink>
@@ -475,38 +533,8 @@ export default function SiteHeader() {
                 </NavLink>
               </motion.div>
 
-              {/* Dashboard and Moments for couples */}
-              {mounted && signedIn && isSoonToWed && !isVendor && (
-                <>
-                  <motion.div
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.25, duration: 0.3, ease: EASE_OUT }}
-                  >
-                    <NavLink
-                      className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
-                      href="/dashboard"
-                    >
-                      Dashboard
-                    </NavLink>
-                  </motion.div>
-                  <motion.div
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.3, duration: 0.3, ease: EASE_OUT }}
-                  >
-                    <NavLink
-                      className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
-                      href="/moments"
-                    >
-                      Couples
-                    </NavLink>
-                  </motion.div>
-                </>
-              )}
-
-              {/* Dashboard for vendors */}
-              {mounted && isVendor && (
+              {/* Dashboard for all signed-in users */}
+              {mounted && signedIn && (
                 <motion.div
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -514,9 +542,25 @@ export default function SiteHeader() {
                 >
                   <NavLink
                     className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
-                    href="/vendor/dashboard"
+                    href={dashboardHref}
                   >
                     Dashboard
+                  </NavLink>
+                </motion.div>
+              )}
+
+              {/* Moments / Couples tab for couples specifically */}
+              {mounted && signedIn && isSoonToWed && !isVendor && (
+                <motion.div
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.3, duration: 0.3, ease: EASE_OUT }}
+                >
+                  <NavLink
+                    className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
+                    href="/moments"
+                  >
+                    Couples
                   </NavLink>
                 </motion.div>
               )}

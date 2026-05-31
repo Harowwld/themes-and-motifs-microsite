@@ -82,6 +82,45 @@ export default function SuperadminSettingsPage() {
   const [pwConfirm, setPwConfirm] = useState("");
   const [pwSaving, setPwSaving] = useState(false);
 
+  const [globalAdsEnabled, setGlobalAdsEnabled] = useState(true);
+  const [updatingAds, setUpdatingAds] = useState(false);
+
+  async function loadSystemSettings() {
+    try {
+      const data = await apiFetch<{ settings: any[] }>("/api/admin/system-settings");
+      const adsSetting = data.settings?.find((s) => s.key === "global_ads_enabled");
+      if (adsSetting) {
+        const val = adsSetting.value;
+        if (typeof val === "boolean") {
+          setGlobalAdsEnabled(val);
+        } else if (val && typeof val === "object" && typeof val.enabled === "boolean") {
+          setGlobalAdsEnabled(val.enabled);
+        } else {
+          setGlobalAdsEnabled(true);
+        }
+      }
+    } catch (e) {
+      console.error("Failed to load system settings:", e);
+    }
+  }
+
+  async function toggleGlobalAds() {
+    setUpdatingAds(true);
+    const nextVal = !globalAdsEnabled;
+    try {
+      await apiFetch("/api/admin/system-settings", {
+        method: "PATCH",
+        body: JSON.stringify({ key: "global_ads_enabled", value: { enabled: nextVal } }),
+      });
+      setGlobalAdsEnabled(nextVal);
+      toast.success(nextVal ? "Global Sponsored Ads Banners enabled." : "Global Sponsored Ads Banners disabled.");
+    } catch (e: any) {
+      toast.error(e?.message ?? "Failed to update global ads setting.");
+    } finally {
+      setUpdatingAds(false);
+    }
+  }
+
   async function refresh(nextTable?: TableName) {
     const t = nextTable ?? table;
     setLoading(true);
@@ -128,6 +167,7 @@ export default function SuperadminSettingsPage() {
 
   useEffect(() => {
     refresh();
+    loadSystemSettings();
   }, []);
 
   useEffect(() => {
@@ -299,6 +339,35 @@ export default function SuperadminSettingsPage() {
                   {pwSaving ? "Saving…" : "Change password"}
                 </button>
               </div>
+            </div>
+          </section>
+
+          <section className="rounded-[3px] border border-black/10 bg-white overflow-hidden">
+            <div className="px-4 py-3 border-b border-black/5 flex items-center justify-between">
+              <div>
+                <div className="text-[13px] font-semibold text-[#2c2c2c]">Global sponsored ads control</div>
+                <div className="mt-1 text-[12px] text-black/45">Toggle whether the premium auto-rotating sponsored ads banners are displayed on couple dashboards and public microsites.</div>
+              </div>
+            </div>
+            <div className="p-4 flex items-center justify-between bg-[#fffcf5]/50">
+              <div className="flex items-center gap-3">
+                <div className={`h-2.5 w-2.5 rounded-full ${globalAdsEnabled ? "bg-green-500 animate-pulse" : "bg-neutral-300"}`} />
+                <span className="text-[13px] font-medium text-neutral-700">
+                  Global Sponsored Ads Banner is {globalAdsEnabled ? "ENABLED" : "DISABLED"}
+                </span>
+              </div>
+              <button
+                type="button"
+                disabled={updatingAds}
+                onClick={toggleGlobalAds}
+                className={`h-9 px-4 rounded-[3px] font-semibold text-[12px] uppercase tracking-wider transition-all cursor-pointer ${
+                  globalAdsEnabled
+                    ? "bg-[#b42318] hover:bg-[#9a1d14] text-white"
+                    : "bg-[#027a48] hover:bg-[#026039] text-white"
+                } disabled:opacity-60`}
+              >
+                {updatingAds ? "Updating..." : globalAdsEnabled ? "Disable Ads Globally" : "Enable Ads Globally"}
+              </button>
             </div>
           </section>
 

@@ -6,6 +6,8 @@ import { createSupabaseBrowserClient } from "@/lib/supabaseBrowser";
 import Link from "next/link";
 import { toast } from "@/lib/toast";
 import { proxiedImageUrl } from "@/lib/imageSizes";
+import AdBanner from "@/components/AdBanner";
+
 
 function CoupleMicrositeSkeleton() {
   return (
@@ -977,6 +979,29 @@ export default function CoupleMicrositePage() {
               </div>
             </div>
 
+            {/* Wedding Moments Feed */}
+            <div className="max-w-2xl mx-auto border-t border-black/[0.05] pt-10 space-y-6">
+              <div className="text-center mb-6">
+                <h3 className="text-[28px] font-normal text-[#2c2c2c] leading-tight select-none font-[family-name:var(--font-great-vibes)]" style={{ fontFamily: "var(--font-great-vibes), cursive" }}>
+                  Wedding Moments
+                </h3>
+                <p className="text-[11px] text-neutral-400 font-bold uppercase tracking-widest mt-1 font-[family-name:var(--font-plus-jakarta)]">
+                  Memories & Milestones
+                </p>
+              </div>
+
+              <div className="grid gap-6">
+                {moments.map((moment) => (
+                  <MomentCard
+                    key={moment.id}
+                    moment={moment}
+                    onDelete={handleDeleteMoment}
+                    isOwner={isOwner}
+                  />
+                ))}
+              </div>
+            </div>
+
           </div>
         )}
 
@@ -1261,6 +1286,10 @@ export default function CoupleMicrositePage() {
             )}
           </div>
         )}
+
+        <div className="max-w-2xl mx-auto mt-12 border-t border-black/[0.05] pt-10">
+          <AdBanner pageContext="microsite" />
+        </div>
 
       </div>
 

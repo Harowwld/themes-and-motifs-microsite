@@ -19,7 +19,6 @@ export default async function SuperadminPage() {
   // Fetch counts in parallel
   const [
     { count: vendorCount },
-    { count: registrationCount },
     { count: inquiryCount },
     { count: promoCount },
     { count: userCount },
@@ -28,7 +27,6 @@ export default async function SuperadminPage() {
     { data: vendorsData },
   ] = await Promise.all([
     supabase.from("vendors").select("*", { count: "exact", head: true }),
-    supabase.from("vendor_registrations").select("*", { count: "exact", head: true }).eq("status", "submitted"),
     supabase.from("inquiries").select("*", { count: "exact", head: true }),
     supabase.from("promos").select("*", { count: "exact", head: true }).eq("is_active", true),
     supabase.from("users").select("*", { count: "exact", head: true }).eq("role", "soon_to_wed"),
@@ -42,7 +40,6 @@ export default async function SuperadminPage() {
 
   const stats = [
     { label: "Total Vendors", value: vendorCount ?? 0, icon: Store, color: "text-blue-600", bg: "bg-blue-50", href: "/superadmin/vendors" },
-    { label: "Pending Regs", value: registrationCount ?? 0, icon: ClipboardCheck, color: "text-orange-600", bg: "bg-orange-50", href: "/superadmin/registrations" },
     { label: "Total Inquiries", value: inquiryCount ?? 0, icon: MessageSquare, color: "text-purple-600", bg: "bg-purple-50", href: "/superadmin/inquiries" },
     { label: "Active Promos", value: promoCount ?? 0, icon: Ticket, color: "text-green-600", bg: "bg-green-50", href: "/superadmin/promos" },
     { label: "Soon to Weds", value: userCount ?? 0, icon: Users, color: "text-pink-600", bg: "bg-pink-50", href: "/superadmin/users" },
