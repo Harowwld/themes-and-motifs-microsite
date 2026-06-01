@@ -170,11 +170,11 @@ export default function SuperadminInquiriesPage() {
                       {x.vendor?.slug ? (
                         <a
                           className="mt-1 block text-[11px] text-[#6e4f33] hover:underline"
-                          href={`/vendors/${x.vendor.slug}`}
+                          href={`/suppliers/${x.vendor.slug}`}
                           target="_blank"
                           rel="noreferrer"
                         >
-                          /vendors/{x.vendor.slug}
+                          /suppliers/{x.vendor.slug}
                         </a>
                       ) : null}
                     </div>

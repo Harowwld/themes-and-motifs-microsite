@@ -43,7 +43,7 @@ export function PreviewModal({
         
         <div className="flex-1 overflow-hidden relative">
           <iframe
-            src={`/vendors/${vendor.slug}`}
+            src={`/suppliers/${vendor.slug}`}
             className="w-full h-full border-none"
             title="Vendor Preview"
           />

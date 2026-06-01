@@ -144,7 +144,7 @@ export function VendorList({
                     </div>
                     <div className="px-3 py-3">
                       <a
-                        href={`/vendors/${v.slug}`}
+                        href={`/suppliers/${v.slug}`}
                         target="_blank"
                         rel="noreferrer"
                         className="text-[13px] text-[#6e4f33] hover:underline"

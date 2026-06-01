@@ -27,7 +27,7 @@ export default function VendorQRCode({ vendorSlug, vendorName, className = '' }:
     const currentBaseUrl = getBaseUrl();
     setBaseUrl(currentBaseUrl);
 
-    const vendorUrl = `${currentBaseUrl}/vendors/${vendorSlug}`;
+    const vendorUrl = `${currentBaseUrl}/suppliers/${vendorSlug}`;
     
     // Generate QR code
     const generateQR = async () => {
@@ -71,7 +71,7 @@ export default function VendorQRCode({ vendorSlug, vendorName, className = '' }:
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-[14px] font-semibold text-[#2c2c2c] flex items-center gap-2">
           <QrCodeIcon className="h-4 w-4 text-[#a68b6a]" />
-          Share Vendor
+          Share Supplier
         </h3>
         {qrDataUrl && !isLoading && (
           <button
@@ -103,7 +103,7 @@ export default function VendorQRCode({ vendorSlug, vendorName, className = '' }:
               Scan to view<br/>{vendorName}
             </p>
             <p className="mt-1 text-[11px] text-black/40 text-center break-all">
-              {baseUrl}/vendors/{vendorSlug}
+              {baseUrl}/suppliers/{vendorSlug}
             </p>
           </>
         ) : (

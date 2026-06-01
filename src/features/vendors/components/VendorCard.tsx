@@ -106,7 +106,7 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight, featured }: 
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.4, ease: EASE_OUT }}
-      href={`/vendors/${encodeURIComponent(vendor.slug)}`}
+      href={`/suppliers/${encodeURIComponent(vendor.slug)}`}
       className={`group relative overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-shadow hover:shadow-2xl ${fixedHeight ? 'h-[200px] sm:h-[240px] flex flex-col' : 'block'}`}
       aria-label={`View ${vendor.business_name}`}
       onMouseEnter={() => {

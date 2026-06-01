@@ -18,7 +18,7 @@ import VendorPhotosCarousel from "./VendorPhotosCarousel";
 import ClaimVendorButton from "./ClaimVendorButton";
 import VendorContactCTA from "./VendorContactCTA";
 import SaveVendorCTA from "./SaveVendorCTA";
-import VendorReviewForm from "../../../app/vendors/[slug]/VendorReviewForm";
+import VendorReviewForm from "../../../app/suppliers/[slug]/VendorReviewForm";
 import VendorQRCode from "../../../components/VendorQRCode";
 
 
@@ -125,7 +125,7 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
                   <a
                     key={c.id}
                     className="inline-flex items-center rounded-full border border-[#a68b6a]/25 bg-white px-3.5 py-1.5 text-[12px] font-medium text-[#6e4f33] hover:bg-[#fffaf5] transition-[transform,background-color,box-shadow,border-color] duration-200 ease-out hover:-translate-y-[1px] active:scale-[0.96] shadow-sm hover:shadow-md"
-                    href={`/vendors?category=${encodeURIComponent(c.slug)}`}
+                    href={`/suppliers?category=${encodeURIComponent(c.slug)}`}
                   >
                     {c.name}
                   </a>
@@ -577,7 +577,7 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
                     <a
                       key={t.id}
                       className="inline-flex items-center rounded-full border border-purple-200 bg-purple-50/50 px-3 py-1.5 text-[12px] font-medium text-purple-700 hover:bg-purple-50 hover:-translate-y-[1px] active:scale-[0.96] shadow-sm hover:shadow-md transition-[transform,background-color,box-shadow] duration-200 ease-out"
-                      href={`/vendors?theme=${encodeURIComponent(t.slug)}`}
+                      href={`/suppliers?theme=${encodeURIComponent(t.slug)}`}
                     >
                       <SparklesIcon className="h-3 w-3 mr-1" />
                       {t.name}

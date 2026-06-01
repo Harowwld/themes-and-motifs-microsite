@@ -179,7 +179,7 @@ export default async function PromoDetailPage({ params }: Props) {
                     {/* Vendor link */}
                     {vendor ? (
                       <a
-                        href={`/vendors/${vendor.slug}`}
+                        href={`/suppliers/${vendor.slug}`}
                         className="inline-flex items-center gap-2 text-[13px] font-semibold text-[#a67c52] hover:text-[#8e6a46] hover:underline"
                       >
                         {vendor.logo_url ? (
@@ -251,9 +251,9 @@ export default async function PromoDetailPage({ params }: Props) {
                 {/* Vendor Mini Card */}
                 {vendor ? (
                   <div className="rounded-2xl border border-black/10 bg-white p-5 shadow-sm hover:shadow-md transition-shadow duration-300">
-                    <h4 className="text-[13px] font-semibold text-black/50 uppercase tracking-wide mb-3">About the Vendor</h4>
+                    <h4 className="text-[13px] font-semibold text-black/50 uppercase tracking-wide mb-3">About the Supplier</h4>
 
-                    <a href={`/vendors/${vendor.slug}`} className="flex items-center gap-3 group">
+                    <a href={`/suppliers/${vendor.slug}`} className="flex items-center gap-3 group">
                       <div className="h-14 w-14 rounded-xl border border-black/10 bg-[#fcfbf9] overflow-hidden flex items-center justify-center shrink-0 shadow-sm">
                         {vendor.logo_url ? (
                           <img
@@ -280,7 +280,7 @@ export default async function PromoDetailPage({ params }: Props) {
                     ) : null}
 
                     <a
-                      href={`/vendors/${vendor.slug}`}
+                      href={`/suppliers/${vendor.slug}`}
                       className="mt-4 inline-flex items-center text-[13px] font-semibold text-[#6e4f33] hover:underline"
                     >
                       View full profile →

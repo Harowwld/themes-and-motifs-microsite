@@ -55,16 +55,15 @@ export default function PromoCTACard({
               Get more info by email
             </button>
           ) : null}
-
           {vendorSlug ? (
             <a
-              href={`/vendors/${vendorSlug}`}
+              href={`/suppliers/${vendorSlug}`}
               className="flex h-11 items-center justify-center gap-2 rounded-xl border-2 border-[#a67c52] text-[#a67c52] text-[14px] font-semibold hover:bg-[#a67c52] hover:text-white hover:-translate-y-[1px] active:scale-[0.97] hover:shadow-sm transition-[transform,background-color,color,border-color,box-shadow] duration-200 ease-out bg-white"
             >
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              View Vendor Profile
+              View Supplier Profile
             </a>
           ) : null}
         </div>

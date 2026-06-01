@@ -98,7 +98,7 @@ export default function VendorReviewForm({ vendorId, vendorSlug }: Props) {
   }, [supabase]);
 
   const goToSignIn = () => {
-    const returnTo = `/vendors/${encodeURIComponent(vendorSlug)}`;
+    const returnTo = `/suppliers/${encodeURIComponent(vendorSlug)}`;
     router.push(`/signin?returnTo=${encodeURIComponent(returnTo)}`);
   };
 

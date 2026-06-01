@@ -32,7 +32,7 @@ export default function PageCacheProvider({
     }
 
     // Preload common assets for frequently visited page types
-    if (pathname.startsWith("/vendors/")) {
+    if (pathname.startsWith("/suppliers/")) {
       // Preload vendor detail assets if user is browsing vendors
       preloadVendorAssets();
     }

@@ -156,7 +156,7 @@ export default function SaveVendorCTA({ vendorId, vendorSlug }: Props) {
                 <button
                   type="button"
                   onClick={() => {
-                    const returnTo = `/vendors/${encodeURIComponent(vendorSlug)}`;
+                    const returnTo = `/suppliers/${encodeURIComponent(vendorSlug)}`;
                     router.push(`/signin?returnTo=${encodeURIComponent(returnTo)}`);
                   }}
                   className="h-9 px-4 rounded-xl border border-[#a67c52] bg-white text-[12px] font-semibold text-[#6e4f33] hover:bg-[#fffaf5] hover:-translate-y-[1px] active:scale-[0.97] hover:shadow-sm transition-[transform,background-color,box-shadow] duration-200 ease-out"
@@ -166,7 +166,7 @@ export default function SaveVendorCTA({ vendorId, vendorSlug }: Props) {
                 <button
                   type="button"
                   onClick={() => {
-                    const returnTo = `/vendors/${encodeURIComponent(vendorSlug)}`;
+                    const returnTo = `/suppliers/${encodeURIComponent(vendorSlug)}`;
                     router.push(`/soon-to-wed/signup?returnTo=${encodeURIComponent(returnTo)}`);
                   }}
                   className="h-9 px-4 rounded-xl bg-[#a67c52] text-white text-[12px] font-semibold hover:bg-[#8e6a46] hover:-translate-y-[1px] active:scale-[0.97] hover:shadow-sm transition-[transform,background-color,box-shadow] duration-200 ease-out"

@@ -59,7 +59,7 @@ function VendorCard({
       whileHover={{ y: -4, scale: 1.01 }}
       whileTap={{ scale: 0.98 }}
       key={`${vendor.id}-${index}`}
-      href={`/vendors/${encodeURIComponent(vendor.slug)}`}
+      href={`/suppliers/${encodeURIComponent(vendor.slug)}`}
       className="group block rounded-2xl relative aspect-[3/4] shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-xl transition-shadow duration-500 flex-shrink-0 w-[280px] sm:w-[calc((100%-48px)/3)] bg-white border border-gray-50 overflow-hidden"
     >
       <div className="absolute inset-0">

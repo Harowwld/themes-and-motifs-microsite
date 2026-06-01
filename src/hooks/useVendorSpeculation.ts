@@ -38,7 +38,7 @@ export function useVendorSpeculation(vendorSlug: string) {
       prerender: [
         {
           source: "list",
-          urls: [`/vendors/${encodeURIComponent(vendorSlug)}`],
+          urls: [`/suppliers/${encodeURIComponent(vendorSlug)}`],
           eagerness: "immediate",
         },
       ],

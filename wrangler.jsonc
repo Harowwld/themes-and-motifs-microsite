@@ -15,7 +15,7 @@
 		"NEXT_PUBLIC_SUPABASE_URL": "https://tedsezmxctrgghyabjjb.supabase.co",
 		"NEXT_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRlZHNlem14Y3RyZ2doeWFiampiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEyNzY2NTcsImV4cCI6MjA4Njg1MjY1N30.fmf7gZgasAG7IQTIPAw3vCC6Ql8JlvFLzIpe1152_UI",
 		"SUPABASE_REST_URL": "https://tedsezmxctrgghyabjjb.supabase.co/rest/v1/",
-		"NEXT_PUBLIC_SITE_URL": "https://themes-and-motifs.harolddelapena-11.workers.dev"
+		"NEXT_PUBLIC_SITE_URL": "https://reviews.themesnmotifs.com"
 		// SMTP credentials have been moved to Supabase Edge Function Secrets.
 		// Set them via: supabase secrets set SMTP_HOST=... SMTP_PORT=... SMTP_USER=... SMTP_PASS=... SMTP_FROM=...
 	},

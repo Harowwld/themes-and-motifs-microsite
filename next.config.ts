@@ -216,6 +216,22 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+
+  // 301 Permanent Redirects from vendors to suppliers for SEO and Nice Marketing
+  async redirects() {
+    return [
+      {
+        source: "/vendors",
+        destination: "/suppliers",
+        permanent: true,
+      },
+      {
+        source: "/vendors/:path+",
+        destination: "/suppliers/:path+",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

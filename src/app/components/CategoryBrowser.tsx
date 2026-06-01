@@ -88,7 +88,7 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
   }, [searchParams?.get("category")]);
 
   const prefetchCategory = (slug: string) => {
-    router.prefetch(`/vendors?category=${encodeURIComponent(slug)}`);
+    router.prefetch(`/suppliers?category=${encodeURIComponent(slug)}`);
   };
 
   const items = useMemo(() => {
@@ -107,10 +107,10 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
     e.preventDefault();
     if (isActive) {
       setPendingCategory(null);
-      router.push("/vendors", { scroll: false });
+      router.push("/suppliers", { scroll: false });
     } else {
       setPendingCategory(slug.trim().toLowerCase());
-      router.push(`/vendors?category=${encodeURIComponent(slug)}`, { scroll: false });
+      router.push(`/suppliers?category=${encodeURIComponent(slug)}`, { scroll: false });
       // Auto-collapse when expanded to show results
       if (expanded) {
         setExpanded(false);
@@ -201,7 +201,7 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
                     key={c.id}
                     whileHover={{ y: -2, scale: 1.02 }}
                     whileTap={{ scale: 0.97 }}
-                    href={`/vendors?category=${encodeURIComponent(c.slug)}`}
+                    href={`/suppliers?category=${encodeURIComponent(c.slug)}`}
                     onClick={(e) => handleCategoryClick(e, c.slug, isActive)}
                     onMouseEnter={() => !isActive && prefetchCategory(c.slug)}
                     data-category-slug={c.slug}
@@ -257,7 +257,7 @@ export default function CategoryBrowser({ categories }: { categories: Category[]
                       key={c.id}
                       whileHover={{ y: -2, scale: 1.02 }}
                       whileTap={{ scale: 0.97 }}
-                      href={`/vendors?category=${encodeURIComponent(c.slug)}`}
+                      href={`/suppliers?category=${encodeURIComponent(c.slug)}`}
                       onClick={(e) => handleCategoryClick(e, c.slug, isActive)}
                       onMouseEnter={() => !isActive && prefetchCategory(c.slug)}
                       data-category-slug={c.slug}

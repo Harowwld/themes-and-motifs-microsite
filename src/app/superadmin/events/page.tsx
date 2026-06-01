@@ -520,7 +520,7 @@ export default function SuperadminEventsPage() {
                     value={formData.registration_url}
                     onChange={(e) => setFormData({ ...formData, registration_url: e.target.value })}
                     className="h-10 rounded-[3px] border border-black/10 px-3 text-[12px] outline-none focus:border-[#a67c52]"
-                    placeholder="e.g. /vendors or externallink..."
+                    placeholder="e.g. /suppliers or externallink..."
                   />
                 </label>
 

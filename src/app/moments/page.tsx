@@ -20,9 +20,6 @@ function MomentCardSkeleton() {
           </div>
         </div>
       </div>
-      <div className="px-5 pb-5">
-        <div className="h-10 w-full rounded-xl bg-black/[0.03]" />
-      </div>
     </div>
   );
 }
@@ -134,7 +131,7 @@ export default function PublicMomentsPage() {
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 py-12 sm:py-16">
 
         {/* Page Main Brand Header */}
-        <div className="text-center max-w-2xl mx-auto mb-10 select-none">
+        <div className="text-center max-w-2xl mx-auto mb-10 select-none animate-fade-in-up">
           <span className="text-[#a68b6a] text-xs font-bold uppercase tracking-widest bg-[#a68b6a]/5 px-3 py-1 rounded-full">
             Themes & Motifs Directory
           </span>
@@ -149,7 +146,7 @@ export default function PublicMomentsPage() {
 
 
         {/* Search bar and Filters */}
-        <div className="max-w-md mx-auto mb-10 select-none">
+        <div className="max-w-md mx-auto mb-10 select-none animate-fade-in-up [animation-delay:100ms]">
           <div className="relative">
             <span className="absolute left-3.5 top-3 text-neutral-400">
               <svg className="h-4.5 w-4.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
@@ -170,11 +167,17 @@ export default function PublicMomentsPage() {
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {Array.from({ length: 6 }).map((_, i) => (
-              <MomentCardSkeleton key={i} />
+              <div
+                key={i}
+                className="animate-fade-in-up"
+                style={{ animationDelay: `${i * 60}ms` }}
+              >
+                <MomentCardSkeleton />
+              </div>
             ))}
           </div>
         ) : filteredCouples.length === 0 ? (
-          <div className="max-w-md mx-auto text-center border border-black/[0.04] bg-white rounded-2xl p-10 sm:p-12 shadow-sm select-none">
+          <div className="max-w-md mx-auto text-center border border-black/[0.04] bg-white rounded-2xl p-10 sm:p-12 shadow-sm select-none animate-fade-in-up">
             <span className="text-3xl">🕊️</span>
             <h3 className="text-[16px] font-bold text-neutral-700 font-[family-name:var(--font-noto-serif)] mt-4">
               No couples found
@@ -193,7 +196,7 @@ export default function PublicMomentsPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-            {filteredCouples.map((couple) => {
+            {filteredCouples.map((couple, index) => {
               const displayNames = couple.groom_nickname && couple.bride_nickname
                 ? `${couple.groom_nickname} & ${couple.bride_nickname}`
                 : couple.groom_nickname || couple.bride_nickname || "Wilson & Diana";
@@ -203,9 +206,11 @@ export default function PublicMomentsPage() {
               const isPremium = couple.is_premium;
 
               return (
-                <div
+                <Link
                   key={couple.user_id}
-                  className="bg-white border border-black/5 rounded-2xl overflow-hidden hover:shadow-[0_15px_30px_rgba(0,0,0,0.06),0_4px_12px_rgba(0,0,0,0.03)] transition-all duration-300 flex flex-col justify-between group"
+                  href={`/moments/couple/${couple.user_id}`}
+                  style={{ animationDelay: `${index * 50}ms` }}
+                  className="bg-white border border-black/5 rounded-2xl overflow-hidden hover:shadow-[0_20px_40px_rgba(0,0,0,0.06),0_1px_3px_rgba(0,0,0,0.02)] active:scale-[0.985] transition-[transform,box-shadow] duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] flex flex-col justify-between group cursor-pointer animate-fade-in-up"
                 >
                   <div>
                     {/* Visual Card Frame */}
@@ -213,7 +218,7 @@ export default function PublicMomentsPage() {
                       <img
                         src={couple.profile_photo_url || "https://images.unsplash.com/photo-1583939003579-730e3918a45a?q=80&w=600"}
                         alt="Wedding Couple Frame"
-                        className="w-full h-full object-cover group-hover:scale-[1.02] filter brightness-95 transition-transform duration-500"
+                        className="w-full h-full object-cover group-hover:scale-[1.03] filter brightness-95 transition-transform duration-[600ms] ease-[cubic-bezier(0.23,1,0.32,1)]"
                         loading="lazy"
                       />
 
@@ -257,21 +262,12 @@ export default function PublicMomentsPage() {
                       </div>
                     </div>
                   </div>
-
-                  {/* Card Button */}
-                  <div className="px-5 pb-5 select-none">
-                    <Link
-                      href={`/moments/couple/${couple.user_id}`}
-                      className="block w-full text-center py-2.5 border border-[#a68b6a] text-[#a68b6a] text-[11px] sm:text-[12px] font-bold uppercase tracking-wider rounded-xl hover:bg-[#a68b6a] hover:text-white transition-colors duration-300 cursor-pointer shadow-sm hover:shadow font-[family-name:var(--font-plus-jakarta)]"
-                    >
-                      Explore Wedding
-                    </Link>
-                  </div>
-                </div>
+                </Link>
               );
             })}
           </div>
-        )}
+        )
+      }
 
       </div>
     </div>

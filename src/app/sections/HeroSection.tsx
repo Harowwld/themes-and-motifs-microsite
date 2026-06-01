@@ -205,7 +205,7 @@ export default function HeroSection({
     params.set("scroll", "results");
     params.set("from", "landing");
     const qs = params.toString();
-    router.push(`/vendors${qs ? `?${qs}` : ""}`);
+    router.push(`/suppliers${qs ? `?${qs}` : ""}`);
   };
 
   const containerVariants = {
@@ -290,7 +290,7 @@ export default function HeroSection({
           variants={itemVariants}
           className="mt-3 sm:mt-4 max-w-xl text-[14px] sm:text-[15px] lg:text-[16px] leading-6 sm:leading-7 text-white/75 font-[family-name:var(--font-plus-jakarta)]"
         >
-          Plan with confidence—connect with verified vendors across the Philippines, with real couple reviews and exclusive offers.
+          Plan with confidence—connect with verified suppliers across the Philippines, with real couple reviews and exclusive offers.
         </motion.p>
 
         <motion.div
@@ -303,16 +303,16 @@ export default function HeroSection({
             style={{ backgroundColor: 'var(--muted-brown)' }}
             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--muted-brown-hover)'}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--muted-brown)'}
-            href="/vendors"
+            href="/suppliers"
           >
-            Discover vendors
+            Discover suppliers
           </motion.a>
           <motion.a
             whileTap={{ scale: 0.97 }}
             className="h-12 inline-flex items-center justify-center px-6 rounded-md border border-white/30 bg-white/10 backdrop-blur-sm text-white text-[14px] sm:text-[15px] font-medium hover:bg-white/20 transition-colors shadow-lg touch-manipulation"
-            href="/vendors/plans"
+            href="/suppliers/plans"
           >
-            Be a verified vendor
+            Be a verified supplier
           </motion.a>
         </motion.div>
 

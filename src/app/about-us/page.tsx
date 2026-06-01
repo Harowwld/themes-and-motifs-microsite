@@ -119,10 +119,10 @@ export default function AboutUsPage() {
               <div className="flex flex-wrap items-center gap-4 pt-6">
                 <Link
                   id="about-us-vendors-btn"
-                  href="/vendors"
+                  href="/suppliers"
                   className="inline-flex h-10 items-center justify-center rounded-lg bg-[#a68b6a] px-6 text-[14px] font-medium text-white hover:bg-[#957a5c] transition-colors shadow-sm"
                 >
-                  Browse Verified Vendors
+                  Browse Verified Suppliers
                 </Link>
                 <Link
                   id="about-us-contact-btn"

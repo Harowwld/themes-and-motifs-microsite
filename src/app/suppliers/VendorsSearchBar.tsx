@@ -76,7 +76,7 @@ function buildHref({
   if (sort !== "rating") params.set("vendorsSort", sort);
   params.set("scroll", "results");
   const qs = params.toString();
-  return `/vendors${qs ? `?${qs}` : ""}`;
+  return `/suppliers${qs ? `?${qs}` : ""}`;
 }
 
 export default function VendorsSearchBar({

@@ -68,8 +68,8 @@ const NavLink = ({
   const pathname = usePathname();
   const isActive = href === "/"
     ? pathname === "/"
-    : href === "/vendors"
-    ? pathname === "/vendors" || (pathname.startsWith("/vendors/") && !pathname.startsWith("/vendors/plans"))
+    : href === "/suppliers"
+    ? pathname === "/suppliers" || (pathname.startsWith("/suppliers/") && !pathname.startsWith("/suppliers/plans"))
     : pathname === href || pathname.startsWith(href + "/");
 
   const isMobile = (className.includes("px-3") || className.includes("py-3")) && !className.includes("hidden");
@@ -358,8 +358,8 @@ export default function SiteHeader() {
           className="hidden sm:flex items-center justify-center gap-8 text-[13px] font-medium text-gray-500 font-[family-name:var(--font-plus-jakarta)]"
         >
           <motion.div variants={itemVariants}>
-            <NavLink className="hover:text-[#a68b6a] transition-colors" href="/vendors">
-              Vendors
+            <NavLink className="hover:text-[#a68b6a] transition-colors" href="/suppliers">
+              Suppliers
             </NavLink>
           </motion.div>
 
@@ -375,11 +375,11 @@ export default function SiteHeader() {
             </NavLink>
           </motion.div>
 
-          {/* For vendors - do not render for logged in couples */}
+          {/* For suppliers - do not render for logged in couples */}
           {mounted && (!signedIn || !isSoonToWed) && (
             <motion.div variants={itemVariants}>
-              <NavLink className="hover:text-[#a68b6a] transition-colors" href="/vendors/plans">
-                For vendors
+              <NavLink className="hover:text-[#a68b6a] transition-colors" href="/suppliers/plans">
+                For suppliers
               </NavLink>
             </motion.div>
           )}
@@ -473,7 +473,7 @@ export default function SiteHeader() {
               >
                 <NavLink
                   className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
-                  href="/vendors"
+                  href="/suppliers"
                 >
                   Discover
                 </NavLink>
@@ -501,9 +501,9 @@ export default function SiteHeader() {
               >
                 <NavLink
                   className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
-                  href="/vendors/plans"
+                  href="/suppliers/plans"
                 >
-                  For vendors
+                  For suppliers
                 </NavLink>
               </motion.div>
 
@@ -643,7 +643,7 @@ export default function SiteHeader() {
                 >
                   <NavLink
                     className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-[#a68b6a] hover:text-[#957a5c] hover:bg-gray-50 transition-colors"
-                    href="/vendors"
+                    href="/suppliers"
                   >
                     Start Searching
                   </NavLink>
@@ -673,7 +673,7 @@ export default function SiteHeader() {
               >
                 <Link
                   className="flex items-center justify-center mt-3 px-3 py-3 rounded-md bg-[#a68b6a] text-white text-[14px] font-medium hover:bg-[#957a5c] transition-colors shadow-sm"
-                  href="/vendors"
+                  href="/suppliers"
                   prefetch={true}
                 >
                   Start searching

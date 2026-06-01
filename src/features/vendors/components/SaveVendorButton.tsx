@@ -63,7 +63,7 @@ export default function SaveVendorButton({ vendorId, vendorSlug, className = "" 
 
   const toggleSave = async () => {
     if (!signedIn) {
-      const returnTo = `/vendors/${encodeURIComponent(vendorSlug)}`;
+      const returnTo = `/suppliers/${encodeURIComponent(vendorSlug)}`;
       router.push(`/signin?returnTo=${encodeURIComponent(returnTo)}`);
       return;
     }

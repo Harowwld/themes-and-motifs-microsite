@@ -85,7 +85,7 @@ function VendorCard({ vendor, onRemove }: { vendor: SavedVendor["vendor"]; onRem
         </svg>
       </button>
 
-      <a href={`/vendors/${encodeURIComponent(vendor.slug)}`} className="block">
+      <a href={`/suppliers/${encodeURIComponent(vendor.slug)}`} className="block">
         <div className="h-32 bg-gradient-to-br from-[#a68b6a]/10 to-white relative" />
         <div className="relative px-4 pb-4">
           <div className="relative -mt-10 mb-2 flex items-end justify-between">
@@ -1562,8 +1562,8 @@ export default function DashboardPage() {
                                   {savedVendors.length === 0 ? (
                                     <div className="rounded-xl border border-black/10 bg-white p-8 text-center">
                                       <p className="text-[13px] text-neutral-400">No saved vendors yet.</p>
-                                      <a href="/vendors" className="inline-block mt-4 px-4 py-2 bg-[#a68b6a] text-white text-[12px] font-semibold rounded-lg hover:bg-[#957a5c]">
-                                        Browse Vendors
+                                      <a href="/suppliers" className="inline-block mt-4 px-4 py-2 bg-[#a68b6a] text-white text-[12px] font-semibold rounded-lg hover:bg-[#957a5c]">
+                                        Browse Suppliers
                                       </a>
                                     </div>
                                   ) : (

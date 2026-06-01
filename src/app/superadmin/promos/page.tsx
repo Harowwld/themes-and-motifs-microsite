@@ -152,11 +152,11 @@ export default function SuperadminPromosPage() {
                         {p.vendors?.slug ? (
                           <a
                             className="mt-1 block text-[11px] text-[#6e4f33] hover:underline"
-                            href={`/vendors/${p.vendors.slug}`}
+                            href={`/suppliers/${p.vendors.slug}`}
                             target="_blank"
                             rel="noreferrer"
                           >
-                            /vendors/{p.vendors.slug}
+                            /suppliers/{p.vendors.slug}
                           </a>
                         ) : null}
                       </div>
