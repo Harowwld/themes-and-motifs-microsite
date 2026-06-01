@@ -1443,7 +1443,7 @@ export default function DashboardPage() {
                   { id: "dream_team", label: "Dream Supplier Team", icon: Award },
                   { id: "rants_reviews", label: "Rants & Reviews Log", icon: Heart },
                   { id: "notes", label: "Planning Notebook", icon: FileText },
-                ].map((tab) => {
+                ].filter((tab) => tab.id !== "rsvp" || isPremium).map((tab) => {
                   const isSelected = activeTab === tab.id;
                   const Icon = tab.icon;
                   const isTabPremium = tab.id !== "wedding_tools" && tab.id !== "microsite_settings" && tab.id !== "gift_registry";

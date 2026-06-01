@@ -169,6 +169,8 @@ export default function SuperadminReviewsPage() {
                         <option value="published">published</option>
                         <option value="pending">pending</option>
                         <option value="flagged">flagged</option>
+                        <option value="archived">archived</option>
+                        <option value="deactivated">deactivated</option>
                         <option value="removed">removed</option>
                       </select>
                     </div>

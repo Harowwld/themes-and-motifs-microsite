@@ -51,7 +51,7 @@ export async function PATCH(req: Request) {
     }
 
     const patch: Record<string, any> = {};
-    for (const k of ["role", "is_active", "email_verified"]) {
+    for (const k of ["role", "is_active", "is_archived"]) {
       if (k in (body ?? {})) patch[k] = (body as any)[k];
     }
 

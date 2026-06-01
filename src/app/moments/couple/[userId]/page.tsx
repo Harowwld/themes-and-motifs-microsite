@@ -926,14 +926,16 @@ export default function CoupleMicrositePage() {
               </div>
 
               {/* RSVP Mockup pill outline button */}
-              <div className="mb-6 select-none">
-                <button
-                  onClick={() => setRsvpOpen(true)}
-                  className="px-8 py-2.5 border border-[#a68b6a] text-[#a68b6a] text-[13px] font-bold rounded-full uppercase tracking-widest hover:bg-[#a68b6a] hover:text-white transition-all duration-300 cursor-pointer shadow-sm hover:shadow"
-                >
-                  RSVP
-                </button>
-              </div>
+              {profile?.is_premium && (
+                <div className="mb-6 select-none">
+                  <button
+                    onClick={() => setRsvpOpen(true)}
+                    className="px-8 py-2.5 border border-[#a68b6a] text-[#a68b6a] text-[13px] font-bold rounded-full uppercase tracking-widest hover:bg-[#a68b6a] hover:text-white transition-all duration-300 cursor-pointer shadow-sm hover:shadow"
+                  >
+                    RSVP
+                  </button>
+                </div>
+              )}
 
               {/* Invitation Subtext */}
               <div className="text-center max-w-md border-t border-black/[0.04] pt-5">

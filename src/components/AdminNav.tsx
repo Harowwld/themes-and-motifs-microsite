@@ -75,6 +75,9 @@ export function AdminNav({ isSuperadmin, isEditor, email, accountType }: AdminNa
           <Link className={navLinkClass("/superadmin/reviews")} href="/superadmin/reviews">
             Reviews
           </Link>
+          <Link className={navLinkClass("/superadmin/posts")} href="/superadmin/posts">
+            Posts
+          </Link>
           <Link className={navLinkClass("/superadmin/verification-documents")} href="/superadmin/verification-documents">
             Verification docs
           </Link>

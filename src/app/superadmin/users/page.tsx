@@ -187,14 +187,14 @@ export default function SuperadminUsersPage() {
           </div>
 
           <div className="rounded-[3px] border border-black/10 overflow-hidden">
-            <div className="grid grid-cols-[1.5fr_1.2fr_1.3fr_110px_110px_110px_90px] gap-0 bg-[#fcfbf9] text-[11px] font-semibold text-black/55 border-b border-black/5">
+            <div className="grid grid-cols-[1.4fr_1.1fr_1.2fr_130px_90px_100px_130px] gap-0 bg-[#fcfbf9] text-[11px] font-semibold text-black/55 border-b border-black/5">
               <div className="px-3 py-2">User</div>
               <div className="px-3 py-2">Couple Nicknames</div>
               <div className="px-3 py-2">Wedding Details</div>
-              <div className="px-3 py-2">Active</div>
+              <div className="px-3 py-2">Status</div>
               <div className="px-3 py-2">Verified</div>
               <div className="px-3 py-2">Premium</div>
-              <div className="px-3 py-2"></div>
+              <div className="px-3 py-2 text-right pr-6">Actions</div>
             </div>
 
             {loading ? (
@@ -225,8 +225,30 @@ export default function SuperadminUsersPage() {
                     ? `${weddingDate} (${location})`
                     : weddingDate || location || "Not set";
 
+                  // Extract precise active/archived state
+                  const isActive = Boolean(x.is_active);
+                  const isArchived = Boolean(x.is_archived);
+                  let statusBadge = (
+                    <span className="inline-flex items-center rounded-[3px] border border-[#027a48]/20 bg-[#ecfdf3] px-2 py-0.5 text-[10px] font-semibold text-[#027a48]">
+                      Active
+                    </span>
+                  );
+                  if (isArchived) {
+                    statusBadge = (
+                      <span className="inline-flex items-center rounded-[3px] border border-[#b54708]/20 bg-[#fff7ed] px-2 py-0.5 text-[10px] font-semibold text-[#b54708]">
+                        Archived
+                      </span>
+                    );
+                  } else if (!isActive) {
+                    statusBadge = (
+                      <span className="inline-flex items-center rounded-[3px] border border-black/10 bg-black/[0.04] px-2 py-0.5 text-[10px] font-semibold text-black/50">
+                        Deactivated
+                      </span>
+                    );
+                  }
+
                   return (
-                    <div key={x.id} className="grid grid-cols-[1.5fr_1.2fr_1.3fr_110px_110px_110px_90px] items-center">
+                    <div key={x.id} className="grid grid-cols-[1.4fr_1.1fr_1.2fr_130px_90px_100px_130px] items-center">
                       <div className="px-3 py-3">
                         <div className="text-[13px] font-semibold text-[#2c2c2c] truncate">{String(x.email ?? "")}</div>
                         <div className="mt-1 text-[10px] text-black/45 select-all">{x.id}</div>
@@ -243,33 +265,51 @@ export default function SuperadminUsersPage() {
                           <div className="mt-1 text-[10px] text-black/45 truncate">{profile.wedding_venue_area}</div>
                         )}
                       </div>
-                      <div className="px-3 py-3">
-                        <button
-                          type="button"
-                          disabled={isSaving}
-                          onClick={() => patchUser(x.id, { is_active: !Boolean((x as any).is_active) })}
-                          className={`h-8 w-full rounded-[3px] border text-[11px] font-semibold transition-colors disabled:opacity-60 ${
-                            (x as any).is_active
-                              ? "border-[#027a48]/20 bg-[#ecfdf3] text-[#027a48] hover:bg-[#d1fadf]"
-                              : "border-black/10 bg-white text-black/60 hover:bg-black/5"
-                          }`}
-                        >
-                          {(x as any).is_active ? "Active" : "Inactive"}
-                        </button>
+                      <div className="px-3 py-3 flex flex-col gap-1 items-start">
+                        {statusBadge}
+                        <div className="flex gap-1 mt-1">
+                          {isArchived ? (
+                            <button
+                              type="button"
+                              disabled={isSaving}
+                              onClick={() => patchUser(x.id, { is_archived: false, is_active: true })}
+                              className="text-[9px] font-bold text-[#a67c52] hover:underline"
+                            >
+                              Restore
+                            </button>
+                          ) : (
+                            <>
+                              <button
+                                type="button"
+                                disabled={isSaving}
+                                onClick={() => patchUser(x.id, { is_active: !isActive })}
+                                className="text-[9px] font-bold text-[#a67c52] hover:underline"
+                              >
+                                {isActive ? "Deactivate" : "Activate"}
+                              </button>
+                              <span className="text-[9px] text-black/20">|</span>
+                              <button
+                                type="button"
+                                disabled={isSaving}
+                                onClick={() => patchUser(x.id, { is_archived: true, is_active: false })}
+                                className="text-[9px] font-bold text-[#a67c52] hover:underline"
+                              >
+                                Archive
+                              </button>
+                            </>
+                          )}
+                        </div>
                       </div>
                       <div className="px-3 py-3">
-                        <button
-                          type="button"
-                          disabled={isSaving}
-                          onClick={() => patchUser(x.id, { email_verified: !Boolean((x as any).email_verified) })}
-                          className={`h-8 w-full rounded-[3px] border text-[11px] font-semibold transition-colors disabled:opacity-60 ${
-                            (x as any).email_verified
-                              ? "border-[#027a48]/20 bg-[#ecfdf3] text-[#027a48] hover:bg-[#d1fadf]"
-                              : "border-black/10 bg-white text-black/60 hover:bg-black/5"
-                          }`}
-                        >
-                          {(x as any).email_verified ? "Verified" : "Unverified"}
-                        </button>
+                        {x.email_verified ? (
+                          <span className="inline-flex items-center rounded-[3px] border border-[#027a48]/20 bg-[#ecfdf3] px-2.5 py-0.5 text-[10px] font-semibold text-[#027a48]">
+                            Verified
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center rounded-[3px] border border-black/10 bg-white px-2.5 py-0.5 text-[10px] font-semibold text-black/60">
+                            Unverified
+                          </span>
+                        )}
                       </div>
                       <div className="px-3 py-3">
                         <button
@@ -285,7 +325,7 @@ export default function SuperadminUsersPage() {
                           {profile?.is_premium ? "Premium" : "Standard"}
                         </button>
                       </div>
-                      <div className="px-3 py-3 flex flex-col gap-1 items-center">
+                      <div className="px-3 py-3 flex flex-col gap-1 items-end pr-6">
                         <button
                           type="button"
                           onClick={() => openEditModal(x)}
@@ -448,7 +488,9 @@ export default function SuperadminUsersPage() {
                 />
                 <div className="grid">
                   <span className="text-[11px] font-bold text-[#b54708]">Premium Couple Account</span>
-                  <span className="text-[9px] text-[#b54708]/80 mt-0.5">Enables premium couple workspace features and layouts.</span>
+                  <span className="text-[9px] text-[#b54708]/80 mt-0.5">
+                    Enables premium couple workspace features and layouts. (Gateway ready: automated tagging is pending integration, manual override active).
+                  </span>
                 </div>
               </label>
 

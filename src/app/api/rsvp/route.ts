@@ -18,6 +18,19 @@ export async function GET(request: NextRequest) {
 
     const supabase = createSupabaseAdminClient();
 
+    // Enforce is_premium check on userId requests
+    if (userId) {
+      const { data: profile } = await supabase
+        .from("soon_to_wed_profiles")
+        .select("is_premium")
+        .eq("user_id", userId)
+        .maybeSingle();
+
+      if (!profile || !profile.is_premium) {
+        return NextResponse.json({ error: "RSVP features are only available to Premium couples." }, { status: 403 });
+      }
+    }
+
     // If checkEmpty is requested, return total guest count for a given user
     const checkEmpty = searchParams.get("checkEmpty") === "true";
     if (userId && checkEmpty) {
@@ -78,6 +91,17 @@ export async function GET(request: NextRequest) {
 
     if (!guest) {
       return NextResponse.json({ error: "Guest not found" }, { status: 404 });
+    }
+
+    // Enforce is_premium check on guestId requests
+    const { data: guestProfile } = await supabase
+      .from("soon_to_wed_profiles")
+      .select("is_premium")
+      .eq("user_id", guest.user_id)
+      .maybeSingle();
+
+    if (!guestProfile || !guestProfile.is_premium) {
+      return NextResponse.json({ error: "RSVP features are only available to Premium couples." }, { status: 403 });
     }
 
     // 2. Fetch table name if guest has table assigned
@@ -152,6 +176,27 @@ export async function POST(request: NextRequest) {
     }
 
     const supabase = createSupabaseAdminClient();
+
+    // Verify if the guest belongs to a premium soon-to-wed couple
+    const { data: guest, error: guestError } = await supabase
+      .from("wedding_guests")
+      .select("user_id")
+      .eq("id", guestId)
+      .maybeSingle();
+
+    if (guestError || !guest) {
+      return NextResponse.json({ error: "Guest not found" }, { status: 404 });
+    }
+
+    const { data: profile } = await supabase
+      .from("soon_to_wed_profiles")
+      .select("is_premium")
+      .eq("user_id", guest.user_id)
+      .maybeSingle();
+
+    if (!profile || !profile.is_premium) {
+      return NextResponse.json({ error: "RSVP features are only available to Premium couples." }, { status: 403 });
+    }
 
     // Update guest record securely using Supabase admin/service role client
     const updatePayload: any = {
