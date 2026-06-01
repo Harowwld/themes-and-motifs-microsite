@@ -1274,7 +1274,6 @@ export default function DashboardPage() {
                   { label: "Wedding Page Settings", icon: Globe },
                   { label: "Gift Registry", icon: Gift },
                   { label: "Guest List Tracker", icon: Users },
-                  { label: "RSVP Manager", icon: MailOpen },
                   { label: "Table Seating Chart", icon: Grid },
                   { label: "Task Checklist", icon: CheckSquare },
                   { label: "Dream Supplier Team", icon: Award },

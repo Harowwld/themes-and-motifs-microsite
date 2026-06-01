@@ -43,9 +43,6 @@ function CoupleMicrositeSkeleton() {
               <div className="h-10 w-48 rounded-xl bg-[#fafafa] border border-black/[0.03]" />
             </div>
 
-            {/* RSVP button */}
-            <div className="h-10 w-28 rounded-full bg-black/10" />
-
             {/* Subtext */}
             <div className="w-full border-t border-black/[0.04] pt-5 flex flex-col items-center space-y-2">
               <div className="h-3 w-5/6 rounded bg-black/5" />
