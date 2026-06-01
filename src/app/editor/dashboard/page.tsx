@@ -139,7 +139,7 @@ export default function EditorDashboardPage() {
           <div className="p-7">
             <div className="text-[18px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">Editor Dashboard</div>
             <div className="mt-2 text-[13px] text-black/60">
-              Welcome! You have editor access. Go to <a href="/superadmin/vendors" className="text-[#a67c52] hover:underline">Superadmin Vendors</a> to manage vendors.
+              Welcome! You have editor access. Go to <a href="/superadmin/suppliers" className="text-[#a67c52] hover:underline">Superadmin Suppliers</a> to manage suppliers.
             </div>
             <button
               onClick={signOut}

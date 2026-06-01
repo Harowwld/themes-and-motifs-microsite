@@ -47,7 +47,7 @@ export async function prefetchVendorData(vendorSlug: string) {
   await queryClient.prefetchQuery({
     queryKey: ["vendor", vendorSlug],
     queryFn: async () => {
-      const res = await fetch(`/api/vendors?slug=${encodeURIComponent(vendorSlug)}`);
+      const res = await fetch(`/api/suppliers?slug=${encodeURIComponent(vendorSlug)}`);
       if (!res.ok) throw new Error("Failed to fetch vendor");
       return res.json();
     },
@@ -62,7 +62,7 @@ export async function prefetchVendorsList() {
   await queryClient.prefetchQuery({
     queryKey: ["vendors", "list"],
     queryFn: async () => {
-      const res = await fetch("/api/vendors");
+      const res = await fetch("/api/suppliers");
       if (!res.ok) throw new Error("Failed to fetch vendors");
       return res.json();
     },
@@ -78,7 +78,7 @@ export async function prefetchCategories() {
   await queryClient.prefetchQuery({
     queryKey: ["categories"],
     queryFn: async () => {
-      const res = await fetch("/api/vendors?limit=1"); // categories come from SSR, but keep client copy fresh
+      const res = await fetch("/api/suppliers?limit=1"); // categories come from SSR, but keep client copy fresh
       if (!res.ok) throw new Error("Failed to fetch categories");
       return res.json();
     },
@@ -95,7 +95,7 @@ export async function prefetchFeaturedVendors() {
   await queryClient.prefetchQuery({
     queryKey: ["vendors", "featured"],
     queryFn: async () => {
-      const res = await fetch("/api/vendors?limit=6");
+      const res = await fetch("/api/suppliers?limit=6");
       if (!res.ok) throw new Error("Failed to fetch featured vendors");
       return res.json();
     },

@@ -200,9 +200,9 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        // Vendor list API — anonymous users get edge-cached results;
+        // Supplier list API — anonymous users get edge-cached results;
         // Vary: Cookie ensures logged-in users see their own data.
-        source: "/api/vendors",
+        source: "/api/suppliers",
         headers: [
           {
             key: "Cache-Control",

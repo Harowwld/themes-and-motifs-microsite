@@ -28,7 +28,7 @@ export function useSmartPrefetch() {
       await queryClient.prefetchQuery({
         queryKey: ["vendor", vendorSlug],
         queryFn: async () => {
-          const res = await fetch(`/api/vendors?slug=${encodeURIComponent(vendorSlug)}`, {
+          const res = await fetch(`/api/suppliers?slug=${encodeURIComponent(vendorSlug)}`, {
             priority: "low",
           });
           if (!res.ok) throw new Error("Failed to fetch vendor");
@@ -58,7 +58,7 @@ export function useSmartPrefetch() {
       await queryClient.prefetchQuery({
         queryKey: cacheKey,
         queryFn: async () => {
-          const res = await fetch(`/api/vendors?${params.toString()}`, {
+          const res = await fetch(`/api/suppliers?${params.toString()}`, {
             priority: "low",
           });
           if (!res.ok) throw new Error("Failed to fetch vendors");

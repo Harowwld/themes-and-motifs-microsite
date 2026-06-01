@@ -39,7 +39,7 @@ export default async function SuperadminPage() {
   const newestVendors = (vendorsData as any[]) ?? [];
 
   const stats = [
-    { label: "Total Vendors", value: vendorCount ?? 0, icon: Store, color: "text-blue-600", bg: "bg-blue-50", href: "/superadmin/vendors" },
+    { label: "Total Suppliers", value: vendorCount ?? 0, icon: Store, color: "text-blue-600", bg: "bg-blue-50", href: "/superadmin/suppliers" },
     { label: "Total Inquiries", value: inquiryCount ?? 0, icon: MessageSquare, color: "text-purple-600", bg: "bg-purple-50", href: "/superadmin/inquiries" },
     { label: "Active Promos", value: promoCount ?? 0, icon: Ticket, color: "text-green-600", bg: "bg-green-50", href: "/superadmin/promos" },
     { label: "Soon to Weds", value: userCount ?? 0, icon: Users, color: "text-pink-600", bg: "bg-pink-50", href: "/superadmin/users" },
@@ -102,7 +102,7 @@ export default async function SuperadminPage() {
 
         <div className="rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden h-fit self-start">
           <div className="px-5 py-4 border-b border-black/5 bg-gray-50/50">
-            <div className="text-[14px] font-semibold text-[#2c2c2c]">Newest Vendors</div>
+            <div className="text-[14px] font-semibold text-[#2c2c2c]">Newest Suppliers</div>
           </div>
           <div className="p-0">
             {newestVendors.length > 0 ? (
@@ -113,18 +113,18 @@ export default async function SuperadminPage() {
                       <span className="text-[13px] font-semibold text-[#2c2c2c]">{v.business_name}</span>
                       <span className="text-[11px] text-black/40">{v.city || "No location"}</span>
                     </div>
-                    <Link href={`/superadmin/vendors?id=${v.id}`} className="p-2 rounded-[3px] hover:bg-black/5 text-[#a67c52]">
+                    <Link href={`/superadmin/suppliers?id=${v.id}`} className="p-2 rounded-[3px] hover:bg-black/5 text-[#a67c52]">
                       <ArrowRight size={14} />
                     </Link>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="p-8 text-center text-[12px] text-black/40">No vendors found</div>
+              <div className="p-8 text-center text-[12px] text-black/40">No suppliers found</div>
             )}
             <div className="p-3 bg-gray-50/50 border-t border-black/5">
-              <Link href="/superadmin/vendors" className="text-[12px] font-semibold text-[#a67c52] hover:underline flex items-center gap-1">
-                Manage all vendors <ArrowRight size={12} />
+              <Link href="/superadmin/suppliers" className="text-[12px] font-semibold text-[#a67c52] hover:underline flex items-center gap-1">
+                Manage all suppliers <ArrowRight size={12} />
               </Link>
             </div>
           </div>

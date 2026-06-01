@@ -61,8 +61,8 @@ export default function AdminLoginPage() {
             .maybeSingle();
           
           if (editorData) {
-            // User is an editor, redirect to vendors page (editors don't have dashboard access)
-            router.replace("/superadmin/vendors");
+            // User is an editor, redirect to suppliers page (editors don't have dashboard access)
+            router.replace("/superadmin/suppliers");
             return;
           }
           

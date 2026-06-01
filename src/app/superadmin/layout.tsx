@@ -65,7 +65,7 @@ export default async function SuperadminLayout({ children }: { children: React.R
   const pathname = headerList.get("x-pathname") || "";
 
   if (user.isEditor && !user.isSuperadmin) {
-    const EDITOR_ALLOWED_PATHS = ["/superadmin/promos", "/superadmin/vendors"];
+    const EDITOR_ALLOWED_PATHS = ["/superadmin/promos", "/superadmin/suppliers"];
     const isAllowed = EDITOR_ALLOWED_PATHS.some((path) => pathname.startsWith(path));
     if (!isAllowed) {
       redirect("/admin/login");

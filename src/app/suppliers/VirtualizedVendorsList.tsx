@@ -49,7 +49,7 @@ async function fetchVendors(
   params.set("page", String(page));
   params.set("limit", String(limit));
 
-  const res = await fetch(`/api/vendors?${params.toString()}`);
+  const res = await fetch(`/api/suppliers?${params.toString()}`);
   if (!res.ok) {
     const body = (await res.json().catch(() => null)) as { error?: string } | null;
     throw new Error(body?.error || `Request failed (${res.status})`);
@@ -131,7 +131,7 @@ export default function VirtualizedVendorsList({
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h2 className="text-[18px] sm:text-[20px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">
-            Vendors
+            Suppliers
           </h2>
           <p className="mt-2 text-[13px] text-black/55 max-w-xl font-[family-name:var(--font-plus-jakarta)]">
             Browse suppliers — keep scrolling to load more.
@@ -146,7 +146,7 @@ export default function VirtualizedVendorsList({
       {allVendors.length === 0 ? (
         <div className="mt-8 rounded-[3px] border border-black/10 bg-white shadow-sm p-6">
           <div className="text-[13px] font-semibold text-[#2c2c2c] font-[family-name:var(--font-plus-jakarta)]">
-            No vendors found
+            No suppliers found
           </div>
           <div className="mt-1 text-[13px] text-black/55 font-[family-name:var(--font-plus-jakarta)]">
             Try changing filters or check back later.
@@ -172,7 +172,7 @@ export default function VirtualizedVendorsList({
       {isError && (
         <div className="py-6 text-center">
           <div className="text-[13px] font-semibold text-[#b42318] mb-3">
-            {error instanceof Error ? error.message : "Failed to load vendors"}
+            {error instanceof Error ? error.message : "Failed to load suppliers"}
           </div>
           <button
             type="button"
@@ -201,7 +201,7 @@ export default function VirtualizedVendorsList({
             onClick={() => fetchNextPage()}
             className="inline-flex items-center justify-center px-6 h-10 rounded-md bg-[#a68b6a] text-white text-sm font-medium hover:bg-[#957a5c] transition-colors shadow-sm"
           >
-            Load more vendors
+            Load more suppliers
           </button>
         </div>
       )}

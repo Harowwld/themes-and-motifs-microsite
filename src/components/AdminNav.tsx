@@ -58,8 +58,8 @@ export function AdminNav({ isSuperadmin, isEditor, email, accountType }: AdminNa
           Analytics
         </Link>
       )}
-      <Link className={navLinkClass("/superadmin/vendors")} href="/superadmin/vendors">
-        Vendors
+      <Link className={navLinkClass("/superadmin/suppliers")} href="/superadmin/suppliers">
+        Suppliers
       </Link>
       <Link className={navLinkClass("/superadmin/promos")} href="/superadmin/promos">
         Promos
