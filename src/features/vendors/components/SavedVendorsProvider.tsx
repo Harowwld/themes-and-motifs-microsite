@@ -39,12 +39,21 @@ export default function SavedVendorsProvider({ children }: SavedVendorsProviderP
     }
 
     try {
-      const res = await fetch("/api/saved-vendors", {
+      const res = await fetch("/api/saved-suppliers", {
         headers: { authorization: `Bearer ${token}` },
       });
 
+      if (res.status === 401) {
+        // Session token has expired or is invalid. Reset state silently.
+        setSavedVendorIds(new Set());
+        setIsLoading(false);
+        return;
+      }
+
       if (!res.ok) {
-        throw new Error("Failed to fetch saved vendors");
+        const errText = await res.text().catch(() => "");
+        console.error("SavedVendorsProvider API error:", res.status, errText);
+        throw new Error(`Failed to fetch saved vendors: ${res.status} - ${errText}`);
       }
 
       const data = await res.json();

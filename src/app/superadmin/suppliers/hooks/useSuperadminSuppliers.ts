@@ -129,7 +129,7 @@ async function apiFetch<T>(url: string, init?: RequestInit): Promise<T> {
   return json as T;
 }
 
-export function useSuperadminVendors() {
+export function useSuperadminSuppliers() {
   const [loading, setLoading] = useState(true);
   const [savingId, setSavingId] = useState<number | null>(null);
 
@@ -212,7 +212,7 @@ export function useSuperadminVendors() {
     setLoading(true);
     try {
       const q = searchQuery !== undefined ? searchQuery.trim() : query.trim();
-      const url = q ? `/api/admin/vendors?limit=100&offset=0&q=${encodeURIComponent(q)}` : "/api/admin/vendors?limit=100&offset=0";
+      const url = q ? `/api/admin/suppliers?limit=100&offset=0&q=${encodeURIComponent(q)}` : "/api/admin/suppliers?limit=100&offset=0";
       const res = await apiFetch<{ vendors: Vendor[]; plans: Plan[] }>(url);
       setVendors(res.vendors ?? []);
       setPlans(res.plans ?? []);
@@ -231,8 +231,8 @@ export function useSuperadminVendors() {
       const q = query.trim();
       const currentOffset = vendors.length;
       const url = q 
-        ? `/api/admin/vendors?limit=100&offset=${currentOffset}&q=${encodeURIComponent(q)}` 
-        : `/api/admin/vendors?limit=100&offset=${currentOffset}`;
+        ? `/api/admin/suppliers?limit=100&offset=${currentOffset}&q=${encodeURIComponent(q)}` 
+        : `/api/admin/suppliers?limit=100&offset=${currentOffset}`;
       
       const res = await apiFetch<{ vendors: Vendor[] }>(url);
       const newVendors = res.vendors ?? [];
@@ -259,7 +259,7 @@ export function useSuperadminVendors() {
   async function patchVendor(id: number, patch: Partial<Pick<Vendor, "is_active" | "is_featured" | "plan_id">>) {
     setSavingId(id);
     try {
-      const res = await apiFetch<{ vendor: Vendor }>("/api/admin/vendors", {
+      const res = await apiFetch<{ vendor: Vendor }>("/api/admin/suppliers", {
         method: "PATCH",
         body: JSON.stringify({ id, ...patch }),
       });
@@ -299,8 +299,8 @@ export function useSuperadminVendors() {
             dti_doc_url?: string | null;
             tin?: string | null;
           } | null;
-        }>(`/api/admin/vendors/${vendor.id}`),
-        apiFetch<{ promos: Promo[] }>(`/api/admin/vendors/${vendor.id}/promos`),
+        }>(`/api/admin/suppliers/${vendor.id}`),
+        apiFetch<{ promos: Promo[] }>(`/api/admin/suppliers/${vendor.id}/promos`),
       ]);
 
       const v = res.vendor;
@@ -422,7 +422,7 @@ export function useSuperadminVendors() {
     }
 
     try {
-      const res = await apiFetch<{ vendor: Vendor }>(`/api/admin/vendors/${editingVendor.id}`, {
+      const res = await apiFetch<{ vendor: Vendor }>(`/api/admin/suppliers/${editingVendor.id}`, {
         method: "PATCH",
         body: JSON.stringify({
           business_name: editForm.business_name,
@@ -486,7 +486,7 @@ export function useSuperadminVendors() {
         cleaned[0].is_cover = true;
       }
 
-      await apiFetch<{ images: VendorImage[] }>(`/api/admin/vendors/${editingVendor.id}/images`, {
+      await apiFetch<{ images: VendorImage[] }>(`/api/admin/suppliers/${editingVendor.id}/images`, {
         method: "PUT",
         body: JSON.stringify({ images: cleaned }),
       });
@@ -513,7 +513,7 @@ export function useSuperadminVendors() {
           display_order: idx + 1,
         }));
 
-      await apiFetch<{ videos: VendorVideo[] }>(`/api/admin/vendors/${editingVendor.id}/videos`, {
+      await apiFetch<{ videos: VendorVideo[] }>(`/api/admin/suppliers/${editingVendor.id}/videos`, {
         method: "PUT",
         body: JSON.stringify({ videos: cleaned }),
       });
@@ -544,7 +544,7 @@ export function useSuperadminVendors() {
           dti_doc_url?: string | null;
           tin?: string | null;
         } | null;
-      }>(`/api/admin/vendors/${editingVendor.id}/subscription`, {
+      }>(`/api/admin/suppliers/${editingVendor.id}/subscription`, {
         method: "PATCH",
         body: JSON.stringify(payload),
       });
@@ -562,7 +562,7 @@ export function useSuperadminVendors() {
     try {
       const cleaned = editSocials.filter((s) => s.platform.trim() && s.url.trim());
 
-      await apiFetch<{ socials: VendorSocial[] }>(`/api/admin/vendors/${editingVendor.id}/socials`, {
+      await apiFetch<{ socials: VendorSocial[] }>(`/api/admin/suppliers/${editingVendor.id}/socials`, {
         method: "PUT",
         body: JSON.stringify({ socials: cleaned }),
       });
@@ -585,7 +585,7 @@ export function useSuperadminVendors() {
         affiliations: VendorAffiliation[];
         allAffiliations: Affiliation[];
         created: Affiliation[];
-      }>(`/api/admin/vendors/${editingVendor.id}/affiliations`, {
+      }>(`/api/admin/suppliers/${editingVendor.id}/affiliations`, {
         method: "PUT",
         body: JSON.stringify({ affiliations: editAffiliations }),
       });
@@ -617,7 +617,7 @@ export function useSuperadminVendors() {
         themes: VendorTheme[];
         allThemes: Theme[];
         created: Theme[];
-      }>(`/api/admin/vendors/${editingVendor.id}/themes`, {
+      }>(`/api/admin/suppliers/${editingVendor.id}/themes`, {
         method: "PUT",
         body: JSON.stringify({ themes: editThemes.map((t) => ({ id: t.id, name: t.name, slug: t.slug })) }),
       });
@@ -721,7 +721,7 @@ export function useSuperadminVendors() {
 
     try {
       if (editingPromoId) {
-        const res = await apiFetch<{ promo: Promo }>(`/api/admin/vendors/${editingVendor.id}/promos`, {
+        const res = await apiFetch<{ promo: Promo }>(`/api/admin/suppliers/${editingVendor.id}/promos`, {
           method: "PATCH",
           body: JSON.stringify({
             promo_id: editingPromoId,
@@ -737,7 +737,7 @@ export function useSuperadminVendors() {
         });
         setEditPromos((prev) => prev.map((p) => (p.id === editingPromoId ? res.promo : p)));
       } else {
-        const res = await apiFetch<{ promo: Promo }>(`/api/admin/vendors/${editingVendor.id}/promos`, {
+        const res = await apiFetch<{ promo: Promo }>(`/api/admin/suppliers/${editingVendor.id}/promos`, {
           method: "POST",
           body: JSON.stringify({
             title: promoForm.title.trim(),
@@ -767,7 +767,7 @@ export function useSuperadminVendors() {
     setEditLoading(true);
 
     try {
-      await apiFetch<{ ok: boolean }>(`/api/admin/vendors/${editingVendor.id}/promos?promo_id=${promoToDelete}`, {
+      await apiFetch<{ ok: boolean }>(`/api/admin/suppliers/${editingVendor.id}/promos?promo_id=${promoToDelete}`, {
         method: "DELETE",
       });
       setEditPromos((prev) => prev.filter((p) => p.id !== promoToDelete));
@@ -788,7 +788,7 @@ export function useSuperadminVendors() {
     setEditLoading(true);
 
     try {
-      const res = await apiFetch<{ promo: Promo }>(`/api/admin/vendors/${editingVendor.id}/promos`, {
+      const res = await apiFetch<{ promo: Promo }>(`/api/admin/suppliers/${editingVendor.id}/promos`, {
         method: "PATCH",
         body: JSON.stringify({
           promo_id: promo.id,

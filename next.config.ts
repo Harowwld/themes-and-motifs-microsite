@@ -230,6 +230,21 @@ const nextConfig: NextConfig = {
         destination: "/suppliers/:path+",
         permanent: true,
       },
+      {
+        source: "/api/saved-vendors",
+        destination: "/api/saved-suppliers",
+        permanent: true,
+      },
+      {
+        source: "/api/vendors",
+        destination: "/api/suppliers",
+        permanent: true,
+      },
+      {
+        source: "/api/vendors/:path+",
+        destination: "/api/suppliers/:path+",
+        permanent: true,
+      },
     ];
   },
 };

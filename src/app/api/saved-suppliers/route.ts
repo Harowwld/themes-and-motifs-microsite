@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServerClient } from "@/lib/supabaseServer";
 import { createSupabaseAdminClient } from "@/lib/supabaseAdmin";
+import { attachCoverImages } from "@/features/vendors/coverImages.server";
 
 async function getUserFromRequest(request: NextRequest) {
   const auth = request.headers.get("authorization") ?? "";
@@ -47,20 +48,37 @@ export async function GET(request: NextRequest) {
           starting_price,
           price_range,
           document_verified,
-          plan:plan_id(name)
+          plan:plans(name)
         )
       `)
       .eq("user_id", user.id)
       .order("created_at", { ascending: false });
 
     if (fetchError) {
-      console.error("Error fetching saved vendors:", fetchError);
-      return NextResponse.json({ error: "Failed to fetch saved vendors" }, { status: 500 });
+      console.error("Error fetching saved suppliers:", fetchError);
+      return NextResponse.json({ error: "Failed to fetch saved suppliers" }, { status: 500 });
     }
 
-    return NextResponse.json({ savedVendors: savedVendors ?? [] });
+    // Attach cover images dynamically using the helper function
+    const rawVendors = (savedVendors ?? []).map((sv) => {
+      const v = sv.vendor;
+      return Array.isArray(v) ? v[0] : v;
+    }).filter(Boolean);
+    const vendorsWithCover = await attachCoverImages(supabase, rawVendors as any);
+
+    const processedSavedVendors = (savedVendors ?? []).map((sv) => {
+      const vendorObj: any = Array.isArray(sv.vendor) ? sv.vendor[0] : sv.vendor;
+      const vendorId = vendorObj?.id;
+      const vendorWithCover = vendorsWithCover.find((v) => v.id === vendorId);
+      return {
+        ...sv,
+        vendor: vendorWithCover ?? vendorObj,
+      };
+    });
+
+    return NextResponse.json({ savedVendors: processedSavedVendors });
   } catch (error) {
-    console.error("Error in GET /api/saved-vendors:", error);
+    console.error("Error in GET /api/saved-suppliers:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
@@ -78,6 +96,20 @@ export async function POST(request: NextRequest) {
 
     const supabase = createSupabaseServerClient(token);
 
+    // Verify user is a Soon-to-Wed account, not a vendor or admin
+    const { data: coupleProfile, error: profileCheckError } = await supabase
+      .from("soon_to_wed_profiles")
+      .select("user_id")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (profileCheckError || !coupleProfile) {
+      return NextResponse.json(
+        { error: "Only Soon-to-Wed accounts can save suppliers to their shortlist." },
+        { status: 403 }
+      );
+    }
+
     const body = await request.json();
     const { vendorId } = body;
 
@@ -92,7 +124,7 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (vendorCheckError || !vendor) {
-      return NextResponse.json({ error: "Vendor not found" }, { status: 404 });
+      return NextResponse.json({ error: "Supplier not found" }, { status: 404 });
     }
 
     const { data: savedVendor, error: saveError } = await supabase
@@ -108,15 +140,15 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (saveError) {
-      console.error("Error saving vendor:", saveError);
-      return NextResponse.json({ error: "Failed to save vendor" }, { status: 500 });
+      console.error("Error saving supplier:", saveError);
+      return NextResponse.json({ error: "Failed to save supplier" }, { status: 500 });
     }
 
     await supabase.rpc("increment_save_count", { vendor_id: vendorId });
 
-    return NextResponse.json({ savedVendor, message: "Vendor saved successfully" });
+    return NextResponse.json({ savedVendor, message: "Supplier saved successfully" });
   } catch (error) {
-    console.error("Error in POST /api/saved-vendors:", error);
+    console.error("Error in POST /api/saved-suppliers:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
@@ -148,15 +180,15 @@ export async function DELETE(request: NextRequest) {
       .eq("vendor_id", Number(vendorId));
 
     if (deleteError) {
-      console.error("Error removing saved vendor:", deleteError);
-      return NextResponse.json({ error: "Failed to remove saved vendor" }, { status: 500 });
+      console.error("Error removing saved supplier:", deleteError);
+      return NextResponse.json({ error: "Failed to remove saved supplier" }, { status: 500 });
     }
 
     await supabase.rpc("decrement_save_count", { vendor_id: Number(vendorId) });
 
-    return NextResponse.json({ message: "Vendor removed from saved list" });
+    return NextResponse.json({ message: "Supplier removed from saved list" });
   } catch (error) {
-    console.error("Error in DELETE /api/saved-vendors:", error);
+    console.error("Error in DELETE /api/saved-suppliers:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
@@ -189,13 +221,13 @@ export async function PATCH(request: NextRequest) {
       .maybeSingle();
 
     if (checkError && checkError.code !== "PGRST116") {
-      console.error("Error checking saved vendor:", checkError);
+      console.error("Error checking saved supplier:", checkError);
       return NextResponse.json({ error: "Failed to check saved status" }, { status: 500 });
     }
 
     return NextResponse.json({ isSaved: !!savedVendor });
   } catch (error) {
-    console.error("Error in PATCH /api/saved-vendors:", error);
+    console.error("Error in PATCH /api/saved-suppliers:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

@@ -12,7 +12,7 @@ import {
   Briefcase 
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Vendor, VerificationDocument, Promo, Theme, Affiliation, VendorImage, VendorVideo, VendorSocial } from "../hooks/useSuperadminVendors";
+import { Vendor, VerificationDocument, Promo, Theme, Affiliation, VendorImage, VendorVideo, VendorSocial } from "../hooks/useSuperadminSuppliers";
 import { ProfileSection } from "./ProfileSection";
 import { ContactSection } from "./ContactSection";
 import { AdminContactSection } from "./AdminContactSection";

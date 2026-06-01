@@ -1,6 +1,6 @@
 import React from "react";
 import { proxiedImageUrl } from "@/lib/imageSizes";
-import { VerificationDocument } from "../hooks/useSuperadminVendors";
+import { VerificationDocument } from "../hooks/useSuperadminSuppliers";
 
 export function VerificationSection({
   editForm,

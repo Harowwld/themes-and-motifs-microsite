@@ -134,11 +134,10 @@ export default function SavePromoButton({ promoId, className = "" }: Props) {
         {saving ? (
           <motion.svg
             key="loading"
-            initial={{ opacity: 0, rotate: 0 }}
-            animate={{ opacity: 1, rotate: 360 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-            className="h-4 w-4"
+            className="h-4 w-4 animate-spin"
             viewBox="0 0 24 24"
             fill="none"
           >

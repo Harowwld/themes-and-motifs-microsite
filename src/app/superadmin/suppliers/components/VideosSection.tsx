@@ -1,5 +1,5 @@
 import React from "react";
-import { VendorVideo } from "../hooks/useSuperadminVendors";
+import { VendorVideo } from "../hooks/useSuperadminSuppliers";
 
 export function VideosSection({
   editVideos,

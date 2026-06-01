@@ -49,6 +49,7 @@ type SavedVendor = {
     business_name: string;
     slug: string;
     logo_url: string | null;
+    cover_image_url: string | null;
     cover_focus_x: number | null;
     cover_focus_y: number | null;
     cover_zoom: number | null;
@@ -65,12 +66,19 @@ type SavedVendor = {
 
 function VendorCard({ vendor, onRemove }: { vendor: SavedVendor["vendor"]; onRemove: () => void }) {
   const logoUrl = proxiedImageUrl(vendor.logo_url);
+  const coverUrl = proxiedImageUrl(vendor.cover_image_url);
   const location = vendor.city ?? vendor.location_text;
   const rating = vendor.average_rating ?? 0;
   const reviews = vendor.review_count ?? 0;
 
   const planName = String(vendor.plan?.name ?? "").trim().toLowerCase();
   const isPremium = planName.includes("premium");
+
+  const focusX = Number.isFinite(Number(vendor.cover_focus_x)) ? Number(vendor.cover_focus_x) : 50;
+  const focusY = Number.isFinite(Number(vendor.cover_focus_y)) ? Number(vendor.cover_focus_y) : 50;
+  const coverObjectPosition = `${Math.max(0, Math.min(100, focusX))}% ${Math.max(0, Math.min(100, focusY))}%`;
+  const zoomRaw = Number.isFinite(Number(vendor.cover_zoom)) ? Number(vendor.cover_zoom) : 1;
+  const coverZoom = Math.max(1, Math.min(3, zoomRaw));
 
   return (
     <div className="group relative rounded-xl border border-black/5 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] overflow-hidden hover:shadow-[0_10px_25px_rgba(0,0,0,0.08),0_4px_10px_rgba(0,0,0,0.04)] transition-all duration-300">
@@ -86,7 +94,23 @@ function VendorCard({ vendor, onRemove }: { vendor: SavedVendor["vendor"]; onRem
       </button>
 
       <a href={`/suppliers/${encodeURIComponent(vendor.slug)}`} className="block">
-        <div className="h-32 bg-gradient-to-br from-[#a68b6a]/10 to-white relative" />
+        <div className="h-32 bg-gradient-to-br from-[#a68b6a]/10 to-white relative overflow-hidden">
+          {coverUrl ? (
+            <img
+              src={coverUrl}
+              alt=""
+              className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+              style={{
+                objectPosition: coverObjectPosition,
+                transformOrigin: coverObjectPosition,
+                transform: `scale(${coverZoom})`
+              }}
+              loading="lazy"
+              referrerPolicy="no-referrer"
+            />
+          ) : null}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent" />
+        </div>
         <div className="relative px-4 pb-4">
           <div className="relative -mt-10 mb-2 flex items-end justify-between">
             <div className="h-20 w-20 rounded-2xl border-4 border-white bg-[#fcfbf9] shadow-lg overflow-hidden flex items-center justify-center shrink-0 -ml-1">
@@ -514,7 +538,7 @@ export default function DashboardPage() {
 
   const fetchSavedVendors = useCallback(async (token: string) => {
     try {
-      const res = await fetch("/api/saved-vendors", {
+      const res = await fetch("/api/saved-suppliers", {
         headers: {
           authorization: `Bearer ${token}`,
         },
@@ -523,8 +547,8 @@ export default function DashboardPage() {
       if (data.error) throw new Error(data.error);
       setSavedVendors(data.savedVendors ?? []);
     } catch (err) {
-      console.error("Error fetching saved vendors:", err);
-      toast.error(err instanceof Error ? err.message : "Failed to load saved vendors");
+      console.error("Error fetching saved suppliers:", err);
+      toast.error(err instanceof Error ? err.message : "Failed to load saved suppliers");
     }
   }, []);
 
@@ -591,17 +615,17 @@ export default function DashboardPage() {
   const handleRemove = async (vendorId: number) => {
     const token = (await supabase.auth.getSession()).data.session?.access_token ?? "";
     try {
-      await fetch(`/api/saved-vendors?vendorId=${vendorId}`, {
+      await fetch(`/api/saved-suppliers?vendorId=${vendorId}`, {
         method: "DELETE",
         headers: {
           authorization: `Bearer ${token}`,
         },
       });
       setSavedVendors((prev) => prev.filter((sv) => sv.vendor.id !== vendorId));
-      toast.success("Vendor removed from saved.");
+      toast.success("Supplier removed from saved.");
     } catch (err) {
-      console.error("Error removing vendor:", err);
-      toast.error("Failed to remove vendor from saved.");
+      console.error("Error removing supplier:", err);
+      toast.error("Failed to remove supplier from saved.");
     }
   };
 
@@ -1569,7 +1593,7 @@ export default function DashboardPage() {
                                   ) : (
                                     <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                                       {savedVendors.map((sv) => (
-                                        <VendorCard key={sv.id} vendor={sv.vendor} onRemove={() => handleRemove(sv.vendor.id)} />
+                                        <VendorCard key={sv.vendor.id} vendor={sv.vendor} onRemove={() => handleRemove(sv.vendor.id)} />
                                       ))}
                                     </div>
                                   )}

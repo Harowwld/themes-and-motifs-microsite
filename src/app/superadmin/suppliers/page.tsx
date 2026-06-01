@@ -6,7 +6,7 @@ import PhotoModal from "@/components/PhotoModal";
 import { ImageUploadDropzone } from "@/components/ImageUploadDropzone";
 import { proxiedImageUrl } from "@/lib/imageSizes";
 
-import { useSuperadminVendors } from "./hooks/useSuperadminVendors";
+import { useSuperadminSuppliers } from "./hooks/useSuperadminSuppliers";
 import { VendorList } from "./components/VendorList";
 import { VendorEditModal } from "./components/VendorEditModal";
 
@@ -82,7 +82,7 @@ export default function SuperadminVendorsPage() {
     confirmDeletePromo,
     togglePromoFeatured,
     handleCropSave,
-  } = useSuperadminVendors();
+  } = useSuperadminSuppliers();
 
   return (
     <div className="grid gap-6">

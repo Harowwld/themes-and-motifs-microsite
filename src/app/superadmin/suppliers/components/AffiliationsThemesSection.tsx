@@ -1,5 +1,5 @@
 import React from "react";
-import { Affiliation, Theme } from "../hooks/useSuperadminVendors";
+import { Affiliation, Theme } from "../hooks/useSuperadminSuppliers";
 
 export function AffiliationsThemesSection({
   editAffiliations,

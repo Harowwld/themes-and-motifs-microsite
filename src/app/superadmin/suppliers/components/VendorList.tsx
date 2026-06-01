@@ -1,5 +1,5 @@
 import React from "react";
-import { Vendor, Plan } from "../hooks/useSuperadminVendors";
+import { Vendor, Plan } from "../hooks/useSuperadminSuppliers";
 
 function Badge({ children }: { children: React.ReactNode }) {
   return (
@@ -74,7 +74,7 @@ export function VendorList({
   return (
     <div className="rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden">
       <div className="px-6 py-5 border-b border-black/5">
-        <div className="text-[18px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">Vendors</div>
+        <div className="text-[18px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">Suppliers</div>
         <div className="mt-1 text-[12px] text-black/45">Activate, feature, and assign plans.</div>
       </div>
 
@@ -101,7 +101,7 @@ export function VendorList({
         <div className="rounded-[3px] border border-black/10 overflow-hidden">
           <div className="grid grid-cols-[70px_1.6fr_1.1fr_120px_120px_1fr] gap-0 bg-[#fcfbf9] text-[11px] font-semibold text-black/55 border-b border-black/5">
             <div className="px-3 py-2">ID</div>
-            <div className="px-3 py-2">Vendor</div>
+            <div className="px-3 py-2">Supplier</div>
             <div className="px-3 py-2">Slug</div>
             <div className="px-3 py-2">Active</div>
             <div className="px-3 py-2">Featured</div>

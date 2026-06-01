@@ -1,6 +1,6 @@
 import React from "react";
 import { ImageUploadDropzone } from "@/components/ImageUploadDropzone";
-import { Promo } from "../hooks/useSuperadminVendors";
+import { Promo } from "../hooks/useSuperadminSuppliers";
 
 export function PromosSection({
   editPromos,

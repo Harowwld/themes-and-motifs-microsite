@@ -1123,11 +1123,17 @@ export default function CoupleMicrositePage() {
                   <p className="font-bold text-neutral-800 text-[15px] sm:text-[16px] mb-4">Dear Family and Friends,</p>
                   <p className="whitespace-pre-line text-neutral-600 leading-relaxed">{profile.our_message}</p>
                   
-                  <div className="pt-6 border-t border-black/[0.04] mt-6">
+                  <div className="pt-6 border-t border-black/[0.04] mt-6 flex flex-col items-center">
                     <p className="text-[12px] text-neutral-400 uppercase tracking-widest font-bold">With all our love,</p>
                     <p className="text-[36px] text-[#a68b6a] leading-none mt-3 font-[family-name:var(--font-great-vibes)]" style={{ fontFamily: "var(--font-great-vibes), cursive" }}>
                       {displayTitle}
                     </p>
+                    <img
+                      src="https://themesnmotifs.com/wp-content/uploads/elementor/thumbs/T_M-Logo-1-qzxx62xvcaywvxz23bwwe4nm1tu4exw9i42ghzw8g6.png"
+                      alt="Themes & Motifs"
+                      className="h-6 w-auto mt-4 opacity-65 select-none pointer-events-none"
+                      referrerPolicy="no-referrer"
+                    />
                   </div>
                 </div>
               </div>

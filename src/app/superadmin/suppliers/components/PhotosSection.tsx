@@ -1,6 +1,6 @@
 import React from "react";
 import { proxiedImageUrl } from "@/lib/imageSizes";
-import { VendorImage } from "../hooks/useSuperadminVendors";
+import { VendorImage } from "../hooks/useSuperadminSuppliers";
 
 export function PhotosSection({
   editImages,

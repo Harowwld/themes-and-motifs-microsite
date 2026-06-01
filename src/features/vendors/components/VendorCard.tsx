@@ -72,14 +72,17 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight, featured }: 
 
     try {
       if (isSaved) {
-        const res = await fetch(`/api/saved-vendors?vendorId=${vendor.id}`, {
+        const res = await fetch(`/api/saved-suppliers?vendorId=${vendor.id}`, {
           method: "DELETE",
           headers: { authorization: `Bearer ${token}` },
         });
-        if (!res.ok) throw new Error("Failed to remove vendor.");
-        toast.success("Vendor removed from your list.");
+        if (!res.ok) {
+          const errData = await res.json().catch(() => null);
+          throw new Error(errData?.error ?? "Failed to remove supplier.");
+        }
+        toast.success("Supplier removed from your list.");
       } else {
-        const res = await fetch("/api/saved-vendors", {
+        const res = await fetch("/api/saved-suppliers", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -87,8 +90,11 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight, featured }: 
           },
           body: JSON.stringify({ vendorId: vendor.id }),
         });
-        if (!res.ok) throw new Error("Failed to save vendor.");
-        toast.success("Vendor saved to your list.");
+        if (!res.ok) {
+          const errData = await res.json().catch(() => null);
+          throw new Error(errData?.error ?? "Failed to save supplier.");
+        }
+        toast.success("Supplier saved to your list.");
       }
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Failed to update saved vendor.");
@@ -137,11 +143,10 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight, featured }: 
             {isLoading ? (
               <motion.svg
                 key="loading"
-                initial={{ opacity: 0, rotate: 0 }}
-                animate={{ opacity: 1, rotate: 360 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-                className="h-4 w-4"
+                className="h-4 w-4 animate-spin"
                 viewBox="0 0 24 24"
                 fill="none"
               >

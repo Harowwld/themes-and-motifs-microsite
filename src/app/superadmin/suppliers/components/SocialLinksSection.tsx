@@ -1,5 +1,5 @@
 import React from "react";
-import { VendorSocial } from "../hooks/useSuperadminVendors";
+import { VendorSocial } from "../hooks/useSuperadminSuppliers";
 
 export function SocialLinksSection({
   editSocials,
