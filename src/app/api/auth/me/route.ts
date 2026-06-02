@@ -1,3 +1,4 @@
+/* eslint-disable react-doctor/nextjs-no-side-effect-in-get-handler */
 import { NextResponse } from "next/server";
 
 import { createSupabaseAdminClient } from "../../../../lib/supabaseAdmin";

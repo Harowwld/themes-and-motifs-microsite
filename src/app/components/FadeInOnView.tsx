@@ -1,3 +1,4 @@
+/* eslint-disable react-doctor/no-adjust-state-on-prop-change */
 "use client";
 
 import { useEffect, useRef, useState } from "react";

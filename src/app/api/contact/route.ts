@@ -85,6 +85,27 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Vendor not found." }, { status: 404 });
   }
 
+  // Identify inquiring user if authenticated
+  const auth = req.headers.get("authorization") ?? "";
+  const token = auth.toLowerCase().startsWith("bearer ") ? auth.slice(7).trim() : "";
+  let userId: string | null = null;
+  let weddingDate: string | null = null;
+
+  if (token) {
+    const { data: userRes } = await supabase.auth.getUser(token);
+    if (userRes?.user) {
+      userId = userRes.user.id;
+      const { data: profile } = await supabase
+        .from("soon_to_wed_profiles")
+        .select("wedding_date")
+        .eq("user_id", userId)
+        .maybeSingle();
+      if (profile?.wedding_date) {
+        weddingDate = profile.wedding_date;
+      }
+    }
+  }
+
   // Save inquiry to database.
   // The send-inquiry-email Supabase Edge Function fires automatically via
   // Database Webhook on INSERT and delivers the email via nodemailer (Gmail SMTP).
@@ -92,6 +113,8 @@ export async function POST(req: Request) {
     .from("inquiries")
     .insert({
       vendor_id: vendorId,
+      user_id: userId,
+      wedding_date: weddingDate,
       name: fromName,
       email: fromEmail,
       message: message,

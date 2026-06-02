@@ -19,21 +19,12 @@ export default function PromoQRCode({
 }: PromoQRCodeProps) {
   const [qrDataUrl, setQrDataUrl] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
-  const [baseUrl, setBaseUrl] = useState<string>('');
+  const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
 
   useEffect(() => {
-    // Get the current base URL dynamically
-    const getBaseUrl = () => {
-      if (typeof window !== 'undefined') {
-        return window.location.origin;
-      }
-      return '';
-    };
+    if (!baseUrl) return;
 
-    const currentBaseUrl = getBaseUrl();
-    setBaseUrl(currentBaseUrl);
-
-    const promoUrl = `${currentBaseUrl}/promos/${promoId}`;
+    const promoUrl = `${baseUrl}/promos/${promoId}`;
     
     // Generate QR code
     const generateQR = async () => {
@@ -56,10 +47,8 @@ export default function PromoQRCode({
       }
     };
 
-    if (currentBaseUrl) {
-      generateQR();
-    }
-  }, [promoId]);
+    generateQR();
+  }, [promoId, baseUrl]);
 
   const downloadQR = () => {
     if (!qrDataUrl) return;

@@ -1,0 +1,195 @@
+React Doctor v0.2.16
+
+✔ Select projects › themes-and-motifs
+  
+
+  Bugs › 16 errors
+  Security › 2 errors
+
+  18 issues
+
+  ✗ Bugs: Hook called conditionally ×5
+    Learn more: https://www.react.doctor/docs/rules/react-doctor/rules-of-hooks
+    → Call hooks at the top level of a React function component
+    or a custom Hook.
+
+    src/features/vendors/components/VendorPhotosCarousel.tsx:257
+    ┌──────────────────────────────────────────────────────────────┐
+    │   256 |                                                      │
+    │ > 257 |   const openLightbox = useCallback(                  │
+    │       |                        ^                             │
+    │   258 |     (idx: number) => {                               │
+    └──────────────────────────────────────────────────────────────┘
+
+    src/features/vendors/components/VendorPhotosCarousel.tsx:266
+    ┌──────────────────────────────────────────────────────────────┐
+    │   265 |                                                      │
+    │ > 266 |   const goPrev = useCallback(() => {                 │
+    │       |                  ^                                   │
+    │   267 |     setLightboxIndex((i) => (i - 1 + displayedImage[0m… │
+    └──────────────────────────────────────────────────────────────┘
+
+    src/features/vendors/components/VendorPhotosCarousel.tsx:270
+    ┌──────────────────────────────────────────────────────────────┐
+    │   269 |                                                      │
+    │ > 270 |   const goNext = useCallback(() => {                 │
+    │       |                  ^                                   │
+    │   271 |     setLightboxIndex((i) => (i + 1) % displayedImag[0m… │
+    └──────────────────────────────────────────────────────────────┘
+
+    src/features/vendors/components/VendorPhotosCarousel.tsx:274
+    ┌──────────────────────────────────────────────────────────────┐
+    │   273 |                                                      │
+    │ > 274 |   const closeLightbox = useCallback(() => {          │
+    │       |                         ^                            │
+    │   275 |     setIsLightboxOpen(false);                        │
+    └──────────────────────────────────────────────────────────────┘
+
+    src/features/vendors/components/VendorPhotosCarousel.tsx:279
+    ┌──────────────────────────────────────────────────────────────┐
+    │   278 |                                                      │
+    │ > 279 |   useEffect(() => {                                  │
+    │       |   ^                                                  │
+    │   280 |     if (!isLightboxOpen) return;                     │
+    └──────────────────────────────────────────────────────────────┘
+
+  ✗ Security: Side effect in GET handler ×2
+    Learn more: https://www.react.doctor/docs/rules/react-doctor/nextjs-no-side-effect-in-get-handler
+    → GET requests can be prefetched and are open to CSRF. Move
+    the side effect to a POST handler.
+
+    src/app/api/admin/auth/logout/route.ts:88
+    ┌──────────────────────────────────────────────────────────────┐
+    │   87 |                                                       │
+    │ > 88 | export async function GET(req: Request) {             │
+    │      | ^                                                     │
+    │   89 |   try {                                               │
+    └──────────────────────────────────────────────────────────────┘
+
+    src/app/api/auth/me/route.ts:42
+    ┌──────────────────────────────────────────────────────────────┐
+    │   41 |                                                       │
+    │ > 42 | export async function GET(req: Request) {             │
+    │      | ^                                                     │
+    │   43 |   try {                                               │
+    └──────────────────────────────────────────────────────────────┘
+
+  ✗ Bugs: Effect dependency recreated every render
+    Learn more: https://www.react.doctor/docs/rules/react-doctor/no-effect-with-fresh-deps
+    → Move the value inside the hook body and depend on its
+    simple inputs instead, or wrap it in useMemo / useCallback
+    so it stays the same between renders.
+
+    src/hooks/useMultiImageUpload.ts:154
+    ┌──────────────────────────────────────────────────────────────┐
+    │   153 |     return results;                                  │
+    │ > 154 |   }, [uploadFile]);                                  │
+    │       |       ^                                              │
+    │   155 |                                                      │
+    └──────────────────────────────────────────────────────────────┘
+
+  ✗ Bugs: State synced to a prop inside an effect ×9
+    Learn more: https://www.react.doctor/docs/rules/react-doctor/no-adjust-state-on-prop-change
+    → Adjust the state inline during render with a `prev`-prop
+    comparison (`if (prop !== prevProp) { setPrevProp(prop);
+    setX(...); }`), or refactor to remove the duplicated state.
+    Routing the adjustment through a useEffect forces an extra
+    render with a stale UI between the two commits. See
+    https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes
+
+    src/app/components/FadeInOnView.tsx:38
+    ┌──────────────────────────────────────────────────────────────┐
+    │   37 |     if (reduce) {                                     │
+    │ > 38 |       setVisible(true);                               │
+    │      |       ^                                               │
+    │   39 |       return;                                         │
+    └──────────────────────────────────────────────────────────────┘
+
+    src/app/components/FadeInOnView.tsx:60
+    ┌──────────────────────────────────────────────────────────────┐
+    │   59 |                                                       │
+    │ > 60 |     obs.observe(el);                                  │
+    │      |     ^                                                 │
+    │   61 |     return () => obs.disconnect();                    │
+    └──────────────────────────────────────────────────────────────┘
+
+    src/app/dashboard/components/RantsReviews.tsx:68
+    ┌──────────────────────────────────────────────────────────────┐
+    │   67 |       setSelectedVendor(preselectedVendorName);       │
+    │ > 68 |       setType("review");                              │
+    │      |       ^                                               │
+    │   69 |     }                                                 │
+    └──────────────────────────────────────────────────────────────┘
+
+    src/app/superadmin/settings/page.tsx:572
+    ┌──────────────────────────────────────────────────────────────┐
+    │   571 |     }                                                │
+    │ > 572 |     setValues(next);                                 │
+    │       |     ^                                                │
+    │   573 |   }, [row.id, table]);                               │
+    └──────────────────────────────────────────────────────────────┘
+
+    src/app/vendor/dashboard/components/DashboardModals.tsx:132
+    ┌──────────────────────────────────────────────────────────────┐
+    │   131 |     setZoom(clampZoom(Number(promo?.image_zoom ?? 1[0m… │
+    │ > 132 |     setCropperOpen(false);                           │
+    │       |     ^                                                │
+    │   133 |   }, [promo, open]);                                 │
+    └──────────────────────────────────────────────────────────────┘
+
+    src/features/vendors/components/VendorPhotosCarousel.tsx:210-211
+    ┌──────────────────────────────────────────────────────────────┐
+    │   209 |     if (!currentIsVideo) {                           │
+    │ > 210 |       setUserInteractedWithVideo(false);             │
+    │ > 211 |       setIsVideoPlaying(false);                      │
+    │   212 |     }                                                │
+    └──────────────────────────────────────────────────────────────┘
+
+    src/components/PromoQRCode.tsx:34
+    ┌──────────────────────────────────────────────────────────────┐
+    │   33 |     const currentBaseUrl = getBaseUrl();              │
+    │ > 34 |     setBaseUrl(currentBaseUrl);                       │
+    │      |     ^                                                 │
+    │   35 |                                                       │
+    └──────────────────────────────────────────────────────────────┘
+
+    src/components/VendorQRCode.tsx:28
+    ┌──────────────────────────────────────────────────────────────┐
+    │   27 |     const currentBaseUrl = getBaseUrl();              │
+    │ > 28 |     setBaseUrl(currentBaseUrl);                       │
+    │      |     ^                                                 │
+    │   29 |                                                       │
+    └──────────────────────────────────────────────────────────────┘
+
+  ✗ Bugs: Component defined inside another component
+    Learn more: https://www.react.doctor/docs/rules/react-doctor/no-nested-component-definition
+    → Move to a separate file or to module scope above the
+    parent component
+
+    src/components/AdminNav.tsx:53
+    ┌──────────────────────────────────────────────────────────────┐
+    │   52 |   // Nav links group component to keep code DRY and [0m… │
+    │ > 53 |   const NavLinks = () => (                            │
+    │      |         ^                                             │
+    │   54 |     <nav className="p-2 grid gap-1">                  │
+    └──────────────────────────────────────────────────────────────┘
+
+  ┌─────┐  88 / 100 Great
+  │ ◠ ◠ │  ████████████████████████████████████████████▓▓▓▓▓▓
+  │  ▽  │  React Doctor (https://react.doctor)
+  └─────┘
+
+  You could improve +11% by fixing the top 3 issues
+  Full diagnostics written to /var/folders/lr/vf0yxtqj0lv5f0rq_g5d8xqc0000gn/T/react-doctor-14355adf-08d9-4587-a2ca-0cba9eb9d1ec
+
+  ────────────────────────────────────────────────────────────
+
+  Share: https://react.doctor/share?p=themes-and-motifs&s=88&e=18&f=11
+  Tell others how you did on socials
+
+  Docs: https://www.react.doctor/docs
+  Learn more about fixing issues, setting up CI/CD, and configuring rules with a config file
+
+  GitHub: https://github.com/millionco/react-doctor
+  Report issues and star the repository!
+

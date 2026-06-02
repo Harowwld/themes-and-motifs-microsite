@@ -13,21 +13,12 @@ interface VendorQRCodeProps {
 export default function VendorQRCode({ vendorSlug, vendorName, className = '' }: VendorQRCodeProps) {
   const [qrDataUrl, setQrDataUrl] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
-  const [baseUrl, setBaseUrl] = useState<string>('');
+  const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
 
   useEffect(() => {
-    // Get the current base URL dynamically
-    const getBaseUrl = () => {
-      if (typeof window !== 'undefined') {
-        return window.location.origin;
-      }
-      return '';
-    };
+    if (!baseUrl) return;
 
-    const currentBaseUrl = getBaseUrl();
-    setBaseUrl(currentBaseUrl);
-
-    const vendorUrl = `${currentBaseUrl}/suppliers/${vendorSlug}`;
+    const vendorUrl = `${baseUrl}/suppliers/${vendorSlug}`;
     
     // Generate QR code
     const generateQR = async () => {
@@ -50,10 +41,8 @@ export default function VendorQRCode({ vendorSlug, vendorName, className = '' }:
       }
     };
 
-    if (currentBaseUrl) {
-      generateQR();
-    }
-  }, [vendorSlug]);
+    generateQR();
+  }, [vendorSlug, baseUrl]);
 
   const downloadQR = () => {
     if (!qrDataUrl) return;

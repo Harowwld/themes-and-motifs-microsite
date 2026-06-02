@@ -14,7 +14,8 @@ import {
   ChevronRight,
   Palette,
   Globe,
-  Star
+  Star,
+  BarChart3
 } from "lucide-react";
 
 import { motion, AnimatePresence } from "framer-motion";
@@ -30,6 +31,7 @@ import { AlbumSection } from "./components/AlbumSection";
 import { PromoSection } from "./components/PromoSection";
 import { InquirySection } from "./components/InquirySection";
 import { ReviewsSection } from "./components/ReviewsSection";
+import { AnalyticsSection } from "./components/AnalyticsSection";
 import { PreviewModal } from "./components/PreviewModal";
 import { createSupabaseBrowserClient } from "../../../lib/supabaseBrowser";
 
@@ -139,6 +141,7 @@ export default function VendorDashboardPage() {
 
   const tabs = [
     { id: "inquiries", label: "Client Inquiries", icon: MessageCircle },
+    { id: "analytics", label: "Storefront Analytics", icon: BarChart3 },
     { id: "photos", label: "Portfolio Photos", icon: ImageIcon },
     { id: "videos", label: "Video Highlights", icon: Film },
     { id: "promos", label: "Vouchers & Promos", icon: Ticket },
@@ -236,6 +239,15 @@ export default function VendorDashboardPage() {
                             refreshInquiries={refreshInquiries}
                             saving={saving}
                             updateInquiryStatus={updateInquiryStatus}
+                          />
+                        );
+                      case "analytics":
+                        return (
+                          <AnalyticsSection 
+                            vendor={vendor}
+                            inquiries={inquiries}
+                            reviews={reviews}
+                            isPremium={isPremium}
                           />
                         );
                       case "photos":

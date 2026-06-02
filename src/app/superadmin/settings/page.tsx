@@ -557,9 +557,13 @@ function SettingsRow({
   onSave: (patch: Record<string, any>) => void;
 }) {
   const fields = TABLE_FIELDS[table];
+  const [prevRowId, setPrevRowId] = useState<number | null>(null);
+  const [prevTable, setPrevTable] = useState<TableName | null>(null);
   const [values, setValues] = useState<Record<string, string>>({});
 
-  useEffect(() => {
+  if (row.id !== prevRowId || table !== prevTable) {
+    setPrevRowId(row.id);
+    setPrevTable(table);
     const next: Record<string, string> = {};
     for (const f of fields) {
       const v = (row as any)[f.key];
@@ -570,7 +574,7 @@ function SettingsRow({
       }
     }
     setValues(next);
-  }, [row.id, table]);
+  }
 
   const inputClass =
     "h-9 w-full rounded-[3px] border border-black/10 bg-white px-2 text-[12px] text-black/70 outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15";

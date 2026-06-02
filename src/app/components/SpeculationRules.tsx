@@ -35,11 +35,8 @@ export default function SpeculationRules() {
   };
 
   return (
-    <script
-      type="speculationrules"
-      dangerouslySetInnerHTML={{
-        __html: JSON.stringify(speculationRules),
-      }}
-    />
+    <script type="speculationrules">
+      {JSON.stringify(speculationRules)}
+    </script>
   );
 }

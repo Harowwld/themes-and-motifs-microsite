@@ -234,7 +234,7 @@ export default function PublicMomentsPage() {
                     <div className="p-5 sm:p-6 text-center space-y-4">
                       {/* Cursive Name banner */}
                       <h3
-                        className="text-[34px] sm:text-[38px] font-normal text-neutral-800 leading-none truncate select-none px-2 font-[family-name:var(--font-great-vibes)]"
+                        className="text-[34px] sm:text-[38px] font-normal text-neutral-800 leading-normal select-none py-2 px-4 font-[family-name:var(--font-great-vibes)]"
                         style={{ fontFamily: "var(--font-great-vibes), cursive" }}
                       >
                         {displayNames}

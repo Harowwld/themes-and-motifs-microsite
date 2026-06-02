@@ -68,7 +68,7 @@ export function useMultiImageUpload(options: UseMultiImageUploadOptions) {
     );
   }, []);
 
-  const uploadFile = async (uploadItem: MultiUploadState): Promise<{ url: string; caption: string; storagePath: string } | null> => {
+  const uploadFile = useCallback(async (uploadItem: MultiUploadState): Promise<{ url: string; caption: string; storagePath: string } | null> => {
     const { id, file } = uploadItem;
 
     try {
@@ -135,7 +135,7 @@ export function useMultiImageUpload(options: UseMultiImageUploadOptions) {
       );
       return null;
     }
-  };
+  }, [options.maxSizeMB, options.folder, options.entityId, options.bucket]);
 
   const startUploads = useCallback(async (ids?: string[]) => {
     // We use the latest ref value to avoid closure staleness in the for loop

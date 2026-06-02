@@ -85,7 +85,7 @@ export default function SoonToWedSignInPage() {
       <div className="mx-auto w-full max-w-3xl px-5 sm:px-8 py-12">
         <div className="rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden">
           <div className="p-7">
-            <div className="text-[18px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">Soon-to-wed sign in</div>
+            <div className="text-[18px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">Sign in</div>
             <div className="mt-2 text-[13px] text-black/60">Use your email and password to sign in.</div>
 
             {resetSuccess ? (

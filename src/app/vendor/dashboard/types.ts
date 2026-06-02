@@ -29,6 +29,10 @@ export type VendorProfile = {
   document_verified: string | null;
   average_rating?: number | null;
   review_count?: number | null;
+  view_count?: number | null;
+  save_count?: number | null;
+  click_count?: number | null;
+  inquiry_count?: number | null;
   plan?: { id: number; name: string } | { id: number; name: string }[] | null;
   year_established?: string | null;
 };

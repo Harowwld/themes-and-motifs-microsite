@@ -66,10 +66,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Logo is required" }, { status: 400 });
   }
 
-  if (!creditCardNumber) {
-    return NextResponse.json({ error: "Credit/debit card number is required" }, { status: 400 });
-  }
-
   const tin = (body.tin ?? "").trim();
   if (!tin) {
     return NextResponse.json({ error: "TIN # is required" }, { status: 400 });

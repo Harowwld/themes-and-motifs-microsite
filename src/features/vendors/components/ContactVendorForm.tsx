@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { toast } from "@/lib/toast";
+import { createSupabaseBrowserClient } from "@/lib/supabaseBrowser";
 
 type Props = {
   vendorId: number;
@@ -32,6 +33,21 @@ export default function ContactVendorForm({ vendorId, vendorName, className, chi
     company: "",
   });
 
+  useEffect(() => {
+    if (open) {
+      const supabase = createSupabaseBrowserClient();
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session?.user) {
+          setForm((p) => ({
+            ...p,
+            name: p.name || session.user.user_metadata?.full_name || session.user.user_metadata?.name || "",
+            email: p.email || session.user.email || "",
+          }));
+        }
+      });
+    }
+  }, [open]);
+
   const canSubmit = useMemo(() => {
     return Boolean(form.name.trim() && form.email.trim() && form.message.trim());
   }, [form.email, form.message, form.name]);
@@ -47,9 +63,20 @@ export default function ContactVendorForm({ vendorId, vendorName, className, chi
     setSubmitting(true);
 
     try {
+      const supabase = createSupabaseBrowserClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+
+      const headers: Record<string, string> = {
+        "content-type": "application/json",
+      };
+      if (token) {
+        headers["authorization"] = `Bearer ${token}`;
+      }
+
       const res = await fetch("/api/contact", {
         method: "POST",
-        headers: { "content-type": "application/json" },
+        headers,
         body: JSON.stringify({
           vendorId,
           fromName: form.name,

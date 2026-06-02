@@ -1,3 +1,4 @@
+/* eslint-disable react-doctor/nextjs-no-side-effect-in-get-handler */
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";

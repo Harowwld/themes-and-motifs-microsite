@@ -76,7 +76,7 @@ test_ssrf_private_ips() {
     log_info "Testing SSRF protection (blocking private IPs)..."
     
     # Test localhost
-    STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$BASE_URL/api/image-proxy?url=https://127.0.0.1/secret")
+    STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$BASE_URL/api/image-cache?url=https://127.0.0.1/secret")
     if [ "$STATUS" = "400" ]; then
         log_pass "Blocks 127.0.0.1 (HTTP $STATUS)"
     else
@@ -84,7 +84,7 @@ test_ssrf_private_ips() {
     fi
     
     # Test 10.x.x.x
-    STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$BASE_URL/api/image-proxy?url=https://10.0.0.1/secret")
+    STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$BASE_URL/api/image-cache?url=https://10.0.0.1/secret")
     if [ "$STATUS" = "400" ]; then
         log_pass "Blocks 10.0.0.1 (HTTP $STATUS)"
     else
@@ -92,7 +92,7 @@ test_ssrf_private_ips() {
     fi
     
     # Test 192.168.x.x
-    STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$BASE_URL/api/image-proxy?url=https://192.168.1.1/secret")
+    STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$BASE_URL/api/image-cache?url=https://192.168.1.1/secret")
     if [ "$STATUS" = "400" ]; then
         log_pass "Blocks 192.168.1.1 (HTTP $STATUS)"
     else
@@ -100,7 +100,7 @@ test_ssrf_private_ips() {
     fi
     
     # Test AWS metadata
-    STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$BASE_URL/api/image-proxy?url=https://169.254.169.254/latest/meta-data/")
+    STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$BASE_URL/api/image-cache?url=https://169.254.169.254/latest/meta-data/")
     if [ "$STATUS" = "400" ]; then
         log_pass "Blocks AWS metadata endpoint (HTTP $STATUS)"
     else
@@ -108,7 +108,7 @@ test_ssrf_private_ips() {
     fi
     
     # Test localhost hostname
-    STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$BASE_URL/api/image-proxy?url=https://localhost/admin")
+    STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$BASE_URL/api/image-cache?url=https://localhost/admin")
     if [ "$STATUS" = "400" ]; then
         log_pass "Blocks localhost hostname (HTTP $STATUS)"
     else
@@ -121,7 +121,7 @@ test_ssrf_allow_valid() {
     log_info "Testing that valid HTTPS and legacy HTTP URLs are allowed..."
     
     # Test with a known working image URL
-    STATUS=$(curl -s -o /dev/null -w "%{http_code}" -L "$BASE_URL/api/image-proxy?url=https://picsum.photos/200/300")
+    STATUS=$(curl -s -o /dev/null -w "%{http_code}" -L "$BASE_URL/api/image-cache?url=https://picsum.photos/200/300")
     if [ "$STATUS" = "200" ]; then
         log_pass "Allows valid HTTPS images (HTTP $STATUS)"
     else
@@ -129,7 +129,7 @@ test_ssrf_allow_valid() {
     fi
     
     # Test that HTTP is allowed for legacy vendor compatibility (does not return 400 Bad Request)
-    STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$BASE_URL/api/image-proxy?url=http://example.com/image.jpg")
+    STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$BASE_URL/api/image-cache?url=http://example.com/image.jpg")
     if [ "$STATUS" = "404" ] || [ "$STATUS" = "200" ]; then
         log_pass "Allows HTTP URLs for legacy compatibility (HTTP $STATUS)"
     else
@@ -137,7 +137,7 @@ test_ssrf_allow_valid() {
     fi
 
     # Test that unsupported protocols (like ftp) are blocked (HTTP 400)
-    STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$BASE_URL/api/image-proxy?url=ftp://example.com/image.jpg")
+    STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$BASE_URL/api/image-cache?url=ftp://example.com/image.jpg")
     if [ "$STATUS" = "400" ]; then
         log_pass "Blocks unsupported FTP protocol (HTTP $STATUS)"
     else
@@ -154,7 +154,7 @@ test_sql_injection() {
     
     # Test 1: Try SQL injection via vendor search parameter
     # This should not cause a database error
-    RESPONSE=$(curl -s "$BASE_URL/vendors?q=%' OR 1=1 --" || true)
+    RESPONSE=$(curl -s "$BASE_URL/suppliers?q=%' OR 1=1 --" || true)
     if echo "$RESPONSE" | grep -qi "error"; then
         log_info "Search returned results or error (check if app handles this)"
     else
@@ -188,7 +188,7 @@ test_error_sanitization() {
     log_info "Testing error message sanitization..."
     
     # Hit an endpoint that might error
-    RESPONSE=$(curl -s "$BASE_URL/api/admin/vendors" || true)
+    RESPONSE=$(curl -s "$BASE_URL/api/admin/suppliers" || true)
     
     # Should not contain raw error messages like "supabase" or internal details
     if echo "$RESPONSE" | grep -qi "supabase.*error\|database.*error"; then

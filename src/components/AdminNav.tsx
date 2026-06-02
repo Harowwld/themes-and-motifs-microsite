@@ -13,27 +13,15 @@ interface AdminNavProps {
   accountType: "superadmin" | "editor" | null;
 }
 
-export function AdminNav({ isSuperadmin, isEditor, email, accountType }: AdminNavProps) {
-  const pathname = usePathname();
-  const [isOpen, setIsOpen] = useState(false);
+interface NavLinksProps {
+  isSuperadmin: boolean;
+  isEditor: boolean;
+  email: string | null;
+  accountType: "superadmin" | "editor" | null;
+  pathname: string;
+}
 
-  // Close the mobile menu on path changes
-  useEffect(() => {
-    setIsOpen(false);
-  }, [pathname]);
-
-  // Lock body scroll when mobile menu is open
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isOpen]);
-
+function NavLinks({ isSuperadmin, isEditor, email, accountType, pathname }: NavLinksProps) {
   const isActive = (href: string) => {
     if (href === "/superadmin") {
       return pathname === href || pathname === "/superadmin/";
@@ -49,8 +37,7 @@ export function AdminNav({ isSuperadmin, isEditor, email, accountType }: AdminNa
       } ${active ? "before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-[3px] before:h-5 before:bg-[#a68b6a] before:rounded-r-full" : ""}`;
   };
 
-  // Nav links group component to keep code DRY and maintainable
-  const NavLinks = () => (
+  return (
     <nav className="p-2 grid gap-1">
       {isSuperadmin && (
         <Link className={navLinkClass("/superadmin")} href="/superadmin">
@@ -119,6 +106,28 @@ export function AdminNav({ isSuperadmin, isEditor, email, accountType }: AdminNa
       )}
     </nav>
   );
+}
+
+export function AdminNav({ isSuperadmin, isEditor, email, accountType }: AdminNavProps) {
+  const pathname = usePathname();
+  const [isOpen, setIsOpen] = useState(false);
+
+  // Close the mobile menu on path changes
+  useEffect(() => {
+    setIsOpen(false);
+  }, [pathname]);
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
 
   return (
     <>
@@ -210,7 +219,13 @@ export function AdminNav({ isSuperadmin, isEditor, email, accountType }: AdminNa
         )}
 
         <div className="flex-1 overflow-y-auto">
-          <NavLinks />
+          <NavLinks
+            isSuperadmin={isSuperadmin}
+            isEditor={isEditor}
+            email={email}
+            accountType={accountType}
+            pathname={pathname}
+          />
         </div>
       </div>
 
@@ -249,7 +264,13 @@ export function AdminNav({ isSuperadmin, isEditor, email, accountType }: AdminNa
           </div>
         )}
 
-        <NavLinks />
+        <NavLinks
+          isSuperadmin={isSuperadmin}
+          isEditor={isEditor}
+          email={email}
+          accountType={accountType}
+          pathname={pathname}
+        />
       </aside>
     </>
   );

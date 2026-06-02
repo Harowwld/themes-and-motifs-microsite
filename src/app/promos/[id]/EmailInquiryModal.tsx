@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { toast } from "../../../lib/toast";
+import { createSupabaseBrowserClient } from "../../../lib/supabaseBrowser";
 
 interface EmailInquiryModalProps {
   isOpen: boolean;
@@ -27,6 +28,18 @@ export default function EmailInquiryModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
+  useEffect(() => {
+    if (isOpen) {
+      const supabase = createSupabaseBrowserClient();
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session?.user) {
+          setName((n) => n || session.user.user_metadata?.full_name || session.user.user_metadata?.name || "");
+          setEmail((e) => e || session.user.email || "");
+        }
+      });
+    }
+  }, [isOpen]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!vendorEmail) {
@@ -43,9 +56,18 @@ export default function EmailInquiryModal({
         return;
       }
 
+      const supabase = createSupabaseBrowserClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
       const response = await fetch("/api/promos/inquiry", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({
           vendorId,
           vendorEmail,

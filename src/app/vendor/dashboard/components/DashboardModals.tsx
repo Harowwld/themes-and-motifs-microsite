@@ -117,7 +117,12 @@ export function PromoModal({
   const [zoom, setZoom] = useState(() => clampZoom(Number(promo?.image_zoom ?? 1)));
   const [cropperOpen, setCropperOpen] = useState(false);
 
-  useEffect(() => {
+  const [prevPromo, setPrevPromo] = useState<VendorPromo | null>(null);
+  const [prevOpen, setPrevOpen] = useState(false);
+
+  if (promo !== prevPromo || open !== prevOpen) {
+    setPrevPromo(promo);
+    setPrevOpen(open);
     setTitle(promo?.title ?? "");
     setSummary(promo?.summary ?? "");
     setTerms(promo?.terms ?? "");
@@ -130,7 +135,7 @@ export function PromoModal({
     setFocusY(clampPct(Number(promo?.image_focus_y ?? 50)));
     setZoom(clampZoom(Number(promo?.image_zoom ?? 1)));
     setCropperOpen(false);
-  }, [promo, open]);
+  }
 
   if (!open) return null;
 

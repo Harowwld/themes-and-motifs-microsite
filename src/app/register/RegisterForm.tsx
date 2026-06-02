@@ -47,7 +47,6 @@ type FormState = {
   x: string;
   pinterest: string;
   youtube: string;
-  creditCardNumber: string;
   agreeToTerms: boolean;
   yearEstablished: string;
 };
@@ -79,33 +78,11 @@ const initialState: FormState = {
   x: "",
   pinterest: "",
   youtube: "",
-  creditCardNumber: "",
   agreeToTerms: false,
   yearEstablished: "",
 };
 
-function isValidCreditCard(cardNumber: string): boolean {
-  const digits = cardNumber.replace(/\D/g, "");
-  if (digits.length < 13 || digits.length > 19) return false;
-  let sum = 0;
-  let isEven = false;
-  for (let i = digits.length - 1; i >= 0; i--) {
-    let digit = parseInt(digits[i], 10);
-    if (isEven) {
-      digit *= 2;
-      if (digit > 9) digit -= 9;
-    }
-    sum += digit;
-    isEven = !isEven;
-  }
-  return sum % 10 === 0;
-}
 
-function formatCardNumber(value: string): string {
-  const digits = value.replace(/\D/g, "").slice(0, 16);
-  const groups = digits.match(/.{1,4}/g) || [];
-  return groups.join(" ");
-}
 
 export default function RegisterForm({ categories, regions, cities, plans, affiliations, preselectedPlan }: Props) {
   const router = useRouter();
@@ -119,7 +96,6 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-  const [cardTouched, setCardTouched] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Set<string>>(new Set());
   const [showSecondaryCategoryMenu, setShowSecondaryCategoryMenu] = useState(false);
 
@@ -184,8 +160,6 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
     if (form.description.trim().length > 500) errors.add("description");
     if (!form.coverPhotoUrl.trim()) errors.add("coverPhotoUrl");
     if (!form.logoUrl.trim()) errors.add("logoUrl");
-    if (!form.creditCardNumber.trim()) errors.add("creditCardNumber");
-    if (form.creditCardNumber.trim() && !isValidCreditCard(form.creditCardNumber.trim())) errors.add("creditCardNumber");
     if (!form.adminEmail.trim()) errors.add("adminEmail");
     if (!form.adminPhone.trim()) errors.add("adminPhone");
     if (!form.agreeToTerms) errors.add("agreeToTerms");
@@ -235,7 +209,6 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
             secondaryCategorySlugs: form.secondaryCategorySlugs,
             cover_photo_url: form.coverPhotoUrl,
             logo_url: form.logoUrl,
-            credit_card_number: form.creditCardNumber.trim() || null,
             social: {
               facebook: form.facebook,
               instagram: form.instagram,
@@ -709,45 +682,7 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
 
       </div>
       
-      <Field id="field-creditCardNumber" label="Credit/Debit card number" required>
-        <div className="grid gap-1">
-          <div className="relative">
-            <input
-              type="text"
-              className={`h-11 w-full rounded-lg border px-3 text-[14px] pr-10 font-[family-name:var(--font-plus-jakarta)] ${
-                fieldErrors.has("creditCardNumber")
-                  ? "border-red-500 bg-red-50"
-                  : cardTouched
-                    ? isValidCreditCard(form.creditCardNumber)
-                      ? "border-green-500 bg-green-50"
-                      : "border-red-500 bg-red-50"
-                    : "border-black/10"
-              }`}
-              value={form.creditCardNumber}
-              onChange={(e) => set("creditCardNumber", formatCardNumber(e.target.value))}
-              onBlur={() => setCardTouched(true)}
-              placeholder="1234 5678 9012 3456"
-              maxLength={19}
-            />
-            {cardTouched && form.creditCardNumber.trim() && (
-              <span className="absolute right-3 top-1/2 -translate-y-1/2">
-                {isValidCreditCard(form.creditCardNumber) ? (
-                  <svg className="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                ) : (
-                  <svg className="h-5 w-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                )}
-              </span>
-            )}
-          </div>
-          {cardTouched && form.creditCardNumber.trim() && !isValidCreditCard(form.creditCardNumber) && (
-            <span className="text-[11px] text-red-600 font-[family-name:var(--font-plus-jakarta)]">Invalid card number. Please check and try again.</span>
-          )}
-        </div>
-      </Field>
+
 
       <div className="grid gap-1">
         <label id="field-agreeToTerms" className="flex items-start gap-3 text-[14px] text-black/70 font-[family-name:var(--font-plus-jakarta)]">

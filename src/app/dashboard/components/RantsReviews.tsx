@@ -61,13 +61,15 @@ export default function RantsReviews({
   const [mood, setMood] = useState(MOODS[0].emoji);
   const [rating, setRating] = useState("5");
   const [selectedVendor, setSelectedVendor] = useState("");
+  const [prevPreselectedVendorName, setPrevPreselectedVendorName] = useState<string | null>(null);
 
-  useEffect(() => {
+  if (preselectedVendorName !== prevPreselectedVendorName) {
+    setPrevPreselectedVendorName(preselectedVendorName);
     if (preselectedVendorName) {
       setSelectedVendor(preselectedVendorName);
       setType("review");
     }
-  }, [preselectedVendorName]);
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

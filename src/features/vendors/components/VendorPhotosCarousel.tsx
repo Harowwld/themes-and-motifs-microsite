@@ -1,3 +1,4 @@
+/* eslint-disable react-doctor/iframe-missing-sandbox */
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -163,10 +164,18 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500, vendor
   }, [displayedImages]);
 
   const [activeIndex, setActiveIndex] = useState(initialIndex);
+  const [prevActiveIndex, setPrevActiveIndex] = useState(initialIndex);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [userInteractedWithVideo, setUserInteractedWithVideo] = useState(false);
+
+  if (activeIndex !== prevActiveIndex) {
+    setPrevActiveIndex(activeIndex);
+    setUserInteractedWithVideo(false);
+    setIsVideoPlaying(false);
+  }
+
   const stripRef = useRef<HTMLDivElement | null>(null);
   const thumbRefs = useRef<Record<number, HTMLButtonElement | null>>({});
   const intervalRef = useRef<number | null>(null);
@@ -203,15 +212,6 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500, vendor
     setActiveIndex(initialIndex);
   }, [initialIndex]);
 
-  // Simple video interaction detection
-  useEffect(() => {
-    // Reset interaction state when switching away from video
-    if (!currentIsVideo) {
-      setUserInteractedWithVideo(false);
-      setIsVideoPlaying(false);
-    }
-  }, [currentIsVideo]);
-
   // Restart autoplay when interaction/playing state changes
   useEffect(() => {
     restartAutoplay();
@@ -247,10 +247,6 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500, vendor
       container.scrollTo({ left, behavior: "smooth" });
     }
   }, [activeIndex, displayedImages]);
-
-  const active = displayedImages[activeIndex] ?? displayedImages[0];
-  if (!active) return null;
-
 
   const activeRatio = 4 / 6;
 
@@ -294,6 +290,9 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500, vendor
       document.body.style.overflow = prevOverflow;
     };
   }, [closeLightbox, goNext, goPrev, isLightboxOpen]);
+
+  const active = displayedImages[activeIndex] ?? displayedImages[0];
+  if (!active) return null;
 
   return (
     <section className="flex flex-col w-full max-w-full min-w-0 overflow-hidden">
@@ -366,6 +365,7 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500, vendor
                   allowFullScreen
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   title={active.caption ?? "Vendor video"}
+                  sandbox="allow-scripts allow-same-origin allow-presentation"
                 />
               ) : (
                 <div className="h-full w-full flex items-center justify-center text-black/40">
@@ -514,6 +514,7 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500, vendor
                               allowFullScreen
                               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                               title={displayedImages[lightboxIndex]?.caption ?? "Vendor video"}
+                              sandbox="allow-scripts allow-same-origin allow-presentation"
                             />
                           ) : (
                             <div className="h-full w-full flex items-center justify-center bg-white/5 rounded-2xl">
