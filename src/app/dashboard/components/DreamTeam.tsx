@@ -10,6 +10,8 @@ interface DreamTeamProps {
   onUpdateStatus: (id: string, status: DreamVendor["status"]) => void;
   onDeleteVendor: (id: string) => void;
   onUpdateVendor?: (id: string, vendor: Omit<DreamVendor, "id">) => void;
+  onNavigateToTab?: (tabId: string, vendorName?: string) => void;
+  savedVendors?: any[];
 }
 
 const CATEGORIES = [
@@ -34,6 +36,8 @@ export default function DreamTeam({
   onUpdateStatus,
   onDeleteVendor,
   onUpdateVendor,
+  onNavigateToTab,
+  savedVendors = [],
 }: DreamTeamProps) {
   const [name, setName] = useState("");
   const [category, setCategory] = useState(CATEGORIES[0]);
@@ -153,16 +157,53 @@ export default function DreamTeam({
             )}
           </div>
           <form onSubmit={handleSubmit} className="space-y-3">
+            {savedVendors.length === 0 && (
+              <div className="rounded-lg border border-amber-200/50 bg-amber-50/50 p-3 text-[11px] text-[#6e4f33] leading-relaxed select-none mb-2">
+                <div className="mb-2">
+                  💡 <strong>Instruction:</strong> Please browse suppliers and save a vendor first. Only saved vendors can be added to your Dream Supplier Team.
+                </div>
+                <a
+                  href="/suppliers"
+                  className="inline-flex items-center justify-center px-2.5 py-1 bg-[#a68b6a] text-white hover:bg-[#957a5c] rounded text-[10px] font-bold transition-colors uppercase tracking-wider"
+                >
+                  Browse Suppliers →
+                </a>
+              </div>
+            )}
             <div>
               <label className="text-[11px] font-bold text-neutral-500 block mb-1">Supplier / Business Name</label>
-              <input
-                type="text"
-                required
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="e.g. Grand Venue Plaza"
-                className="h-10 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-3 text-[13px] outline-none focus:border-[#a68b6a] focus:bg-white transition-all font-[family-name:var(--font-plus-jakarta)]"
-              />
+              {editingVendor ? (
+                <input
+                  type="text"
+                  disabled
+                  value={name}
+                  className="h-10 w-full rounded-lg border border-black/[0.08] bg-neutral-50 px-3 text-[13px] text-neutral-500 font-[family-name:var(--font-plus-jakarta)]"
+                />
+              ) : (
+                <div className="space-y-1">
+                  <select
+                    required
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="h-10 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-3 text-[13px] outline-none focus:border-[#a68b6a] focus:bg-white transition-all font-[family-name:var(--font-plus-jakarta)]"
+                  >
+                    <option value="">-- Select a Saved Vendor --</option>
+                    {savedVendors.map((sv) => (
+                      <option key={sv.vendor.id} value={sv.vendor.business_name}>
+                        {sv.vendor.business_name}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="flex justify-end">
+                    <a
+                      href="/suppliers"
+                      className="text-[10px] text-[#a68b6a] hover:underline font-bold tracking-tight inline-flex items-center gap-0.5"
+                    >
+                      Browse & save more suppliers →
+                    </a>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div>
@@ -321,6 +362,13 @@ export default function DreamTeam({
                   </div>
 
                   <div className="flex items-center justify-end gap-3 mt-4 pt-2 border-t border-black/[0.03]">
+                    <button
+                      onClick={() => onNavigateToTab?.("rants_reviews", vendor.name)}
+                      className="p-1 text-[#a68b6a] hover:underline rounded transition-all cursor-pointer inline-flex items-center gap-1 text-[11px] font-bold mr-auto"
+                      title="Write or view private journal entry for this supplier"
+                    >
+                      <span>Journal Log</span>
+                    </button>
                     <button
                       onClick={() => handleStartEdit(vendor)}
                       className="p-1 text-neutral-400 hover:text-[#a68b6a] rounded transition-all cursor-pointer inline-flex items-center gap-1 text-[11px] font-bold"

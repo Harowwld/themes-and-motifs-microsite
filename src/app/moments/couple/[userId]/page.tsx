@@ -90,7 +90,37 @@ type Moment = {
 type EntourageMember = {
   name: string;
   role: string;
-  side: "bride" | "groom" | "general";
+  side: string;
+  color?: string;
+};
+
+const COLOR_PRESETS = [
+  { id: "rose", name: "Rose (Bride)", bgColor: "bg-rose-50", borderColor: "border-rose-200", dotColor: "bg-rose-500", textColor: "text-rose-600" },
+  { id: "blue", name: "Blue (Groom)", bgColor: "bg-blue-50", borderColor: "border-blue-200", dotColor: "bg-blue-500", textColor: "text-blue-600" },
+  { id: "amber", name: "Gold", bgColor: "bg-amber-50", borderColor: "border-amber-200", dotColor: "bg-amber-500", textColor: "text-amber-700" },
+  { id: "emerald", name: "Emerald", bgColor: "bg-emerald-50", borderColor: "border-emerald-200", dotColor: "bg-emerald-500", textColor: "text-emerald-700" },
+  { id: "purple", name: "Purple", bgColor: "bg-purple-50", borderColor: "border-purple-200", dotColor: "bg-purple-500", textColor: "text-purple-700" },
+  { id: "indigo", name: "Indigo", bgColor: "bg-indigo-50", borderColor: "border-indigo-200", dotColor: "bg-indigo-500", textColor: "text-indigo-700" },
+  { id: "neutral", name: "Gray", bgColor: "bg-neutral-100", borderColor: "border-neutral-200", dotColor: "bg-neutral-500", textColor: "text-neutral-600" },
+];
+
+const getTagColorClass = (color?: string, side?: string) => {
+  if (color) {
+    const preset = COLOR_PRESETS.find(p => p.id === color);
+    if (preset) {
+      return `${preset.bgColor} ${preset.textColor} border ${preset.borderColor}`;
+    }
+  }
+
+  // Fallback to side-based matching
+  const lowerSide = (side || "").toLowerCase();
+  if (lowerSide === "bride" || lowerSide === "bride's side") {
+    return "bg-rose-50 text-rose-600 border border-rose-100";
+  }
+  if (lowerSide === "groom" || lowerSide === "groom's side") {
+    return "bg-blue-50 text-blue-600 border border-blue-100";
+  }
+  return "bg-neutral-100 text-neutral-500 border border-neutral-200/40";
 };
 
 type Sponsor = {
@@ -795,18 +825,7 @@ export default function CoupleMicrositePage() {
 
       <div className="mx-auto w-full max-w-4xl px-4 sm:px-6 py-10 sm:py-14">
         
-        {/* Back button */}
-        <div className="mb-6 select-none max-w-2xl mx-auto">
-          <Link
-            href="/moments"
-            className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-neutral-400 hover:text-neutral-600 transition-colors"
-          >
-            <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-            </svg>
-            Back to Public Couples Feed
-          </Link>
-        </div>
+
 
         {/* Setup notice banner for logged in owners with empty profile names */}
         {isOwner && (!profile?.groom_nickname || !profile?.bride_nickname) && (
@@ -937,7 +956,13 @@ export default function CoupleMicrositePage() {
               {/* Invitation Subtext */}
               <div className="text-center max-w-md border-t border-black/[0.04] pt-5">
                 <p className="text-[13px] sm:text-[14px] text-neutral-500 font-[family-name:var(--font-plus-jakarta)] leading-relaxed italic">
-                  We joyfully invite you to attend our wedding ceremony! Reception and dancing to follow.
+                  {profile?.groom_nickname && profile?.groom_last_name && profile?.bride_nickname && profile?.bride_last_name ? (
+                    <>
+                      We, <strong className="not-italic text-neutral-700 font-bold">{profile.groom_nickname} {profile.groom_last_name}</strong> and <strong className="not-italic text-neutral-700 font-bold">{profile.bride_nickname} {profile.bride_last_name}</strong>, joyfully invite you to attend our wedding ceremony! Reception and dancing to follow.
+                    </>
+                  ) : (
+                    "We joyfully invite you to attend our wedding ceremony! Reception and dancing to follow."
+                  )}
                 </p>
               </div>
 
@@ -1041,13 +1066,13 @@ export default function CoupleMicrositePage() {
                     </div>
                     <h4 className="font-bold text-[14px] text-neutral-800 font-[family-name:var(--font-plus-jakarta)] leading-tight">{member.name}</h4>
                     <p className="text-[11px] text-[#a68b6a] font-bold uppercase tracking-wider mt-1.5">{member.role}</p>
-                    <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide mt-2 ${
-                      member.side === "bride" ? "bg-rose-50 text-rose-600" :
-                      member.side === "groom" ? "bg-blue-50 text-blue-600" :
-                      "bg-neutral-100 text-neutral-500"
-                    }`}>
-                      {member.side === "general" ? "Attendant" : `${member.side}'s side`}
-                    </span>
+                    {member.side && (
+                      <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide mt-2 ${
+                        getTagColorClass(member.color, member.side)
+                      }`}>
+                        {member.side}
+                      </span>
+                    )}
                   </div>
                 ))}
               </div>

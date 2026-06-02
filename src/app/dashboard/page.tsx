@@ -20,7 +20,8 @@ import {
   Lock,
   Globe,
   Gift,
-  X
+  X,
+  Calendar
 } from "lucide-react";
 
 // Custom tab features
@@ -36,6 +37,7 @@ import Notes from "./components/Notes";
 import PremiumBanner from "./components/PremiumBanner";
 import MicrositeSettings from "./components/MicrositeSettings";
 import GiftRegistry from "./components/GiftRegistry";
+import EventRegistration from "./components/EventRegistration";
 import AdBanner from "@/components/AdBanner";
 import { MomentPhotoUpload } from "@/components/MomentPhotoUpload";
 
@@ -176,6 +178,7 @@ function LoadingSkeleton() {
 const tabNames: Record<string, string> = {
   microsite_settings: "Microsite Settings",
   gift_registry: "Gift Registry",
+  event_registration: "Event Registration",
   budget_planner: "Budget Planner",
   guest_list: "Guest List Tracker",
   rsvp: "RSVP Manager",
@@ -189,6 +192,7 @@ const tabNames: Record<string, string> = {
 const tabDescriptions: Record<string, string> = {
   microsite_settings: "Configure your public microsite page—love story, entourage members, principal and secondary sponsors, and guest welcome message.",
   gift_registry: "Manage your wedding registry. View and manage items you've added from the marketplace, customize target amounts, and track guest contributions.",
+  event_registration: "Register for upcoming Themes & Motifs bridal fairs and wedding expos to get free entry passes.",
   budget_planner: "Take control of your wedding budget. Log estimates, track payments, and visualize cost distribution seamlessly.",
   guest_list: "Keep a clean record of your guests, their contact information, dietary requirements, and RSVP counts.",
   rsvp: "Monitor RSVP status in real-time, view guest choices, and ensure a precise head count for seating.",
@@ -213,6 +217,7 @@ export default function DashboardPage() {
   // Premium tier controls
   const [isPremium, setIsPremium] = useState(false);
   const [activeTab, setActiveTab] = useState("wedding_tools");
+  const [preselectedVendorName, setPreselectedVendorName] = useState<string | null>(null);
   const [confettiBurst, setConfettiBurst] = useState(false);
 
   // Modular Premium States
@@ -1144,7 +1149,7 @@ export default function DashboardPage() {
   };
 
   // --- Journal Entries Handlers ---
-  const handleAddJournal = async (entry: Omit<RantReview, "id" | "date">) => {
+  const handleAddJournal = async (entry: Omit<RantReview, "id" | "date">, vendorId?: number) => {
     try {
       const { data, error } = await supabase
         .from("wedding_journal")
@@ -1161,6 +1166,37 @@ export default function DashboardPage() {
         .single();
 
       if (error) throw error;
+
+      let publicPublished = false;
+      if (entry.type === "review" && vendorId) {
+        try {
+          const { data: sessionData } = await supabase.auth.getSession();
+          const token = sessionData.session?.access_token ?? "";
+          if (token) {
+            const pubRes = await fetch("/api/reviews", {
+              method: "POST",
+              headers: {
+                "content-type": "application/json",
+                authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({
+                vendorId: vendorId,
+                rating: entry.rating || 5,
+                reviewText: entry.content,
+              }),
+            });
+            if (pubRes.ok) {
+              publicPublished = true;
+            } else {
+              const errJson = await pubRes.json().catch(() => null);
+              console.warn("Public review sync response error:", errJson);
+            }
+          }
+        } catch (pubErr) {
+          console.error("Failed to cross-publish public review:", pubErr);
+        }
+      }
+
       setJournalEntries((prev) => [
         {
           id: data.id,
@@ -1173,7 +1209,12 @@ export default function DashboardPage() {
         },
         ...prev,
       ]);
-      toast.success("Journal entry recorded securely!");
+
+      if (publicPublished) {
+        toast.success("Journal entry recorded and published to supplier's public profile!");
+      } else {
+        toast.success("Journal entry recorded securely!");
+      }
     } catch (err) {
       console.error("Error adding journal entry:", err);
       toast.error("Failed to record entry.");
@@ -1458,6 +1499,7 @@ export default function DashboardPage() {
                   { id: "wedding_tools", label: "Wedding Tools Hub", icon: LayoutDashboard },
                   { id: "microsite_settings", label: "Wedding Page Settings", icon: Globe },
                   { id: "gift_registry", label: "Gift Registry", icon: Gift },
+                  { id: "event_registration", label: "Event Registration", icon: Calendar },
                   { id: "budget_planner", label: "Budget Planner", icon: Wallet },
                   { id: "guest_list", label: "Guest List Tracker", icon: Users },
                   { id: "rsvp", label: "RSVP Manager", icon: MailOpen },
@@ -1469,7 +1511,7 @@ export default function DashboardPage() {
                 ].filter((tab) => tab.id !== "rsvp" || isPremium).map((tab) => {
                   const isSelected = activeTab === tab.id;
                   const Icon = tab.icon;
-                  const isTabPremium = tab.id !== "wedding_tools" && tab.id !== "microsite_settings" && tab.id !== "gift_registry";
+                  const isTabPremium = tab.id !== "wedding_tools" && tab.id !== "microsite_settings" && tab.id !== "gift_registry" && tab.id !== "event_registration";
                   const isLocked = isTabPremium && !isPremium;
                   return (
                     <button
@@ -1501,7 +1543,7 @@ export default function DashboardPage() {
                   transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
                 >
                   {(() => {
-                    const isTabPremium = activeTab !== "wedding_tools" && activeTab !== "microsite_settings" && activeTab !== "gift_registry";
+                    const isTabPremium = activeTab !== "wedding_tools" && activeTab !== "microsite_settings" && activeTab !== "gift_registry" && activeTab !== "event_registration";
                     const isLocked = isTabPremium && !isPremium;
 
                     const renderTabContent = () => {
@@ -1906,6 +1948,11 @@ export default function DashboardPage() {
                               onUpdateStatus={handleUpdateVendorStatus}
                               onDeleteVendor={handleDeleteVendor}
                               onUpdateVendor={handleUpdateVendor}
+                              onNavigateToTab={(tabId, vendorName) => {
+                                setActiveTab(tabId);
+                                if (vendorName) setPreselectedVendorName(vendorName);
+                              }}
+                              savedVendors={savedVendors}
                             />
                           );
                         case "rants_reviews":
@@ -1914,6 +1961,9 @@ export default function DashboardPage() {
                               entries={journalEntries}
                               onAddEntry={handleAddJournal}
                               onDeleteEntry={handleDeleteJournal}
+                              vendors={savedVendors.map((sv) => sv.vendor)}
+                              preselectedVendorName={preselectedVendorName}
+                              onClearPreselected={() => setPreselectedVendorName(null)}
                             />
                           );
                         case "notes":
@@ -1937,6 +1987,12 @@ export default function DashboardPage() {
                             <GiftRegistry
                               userId={userId}
                               supabase={supabase}
+                            />
+                          );
+                        case "event_registration":
+                          return (
+                            <EventRegistration
+                              userId={userId}
                             />
                           );
                         default:

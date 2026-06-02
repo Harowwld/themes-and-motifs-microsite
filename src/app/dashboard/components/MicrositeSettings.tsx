@@ -8,7 +8,37 @@ import { ImageUploadDropzone } from "@/components/ImageUploadDropzone";
 type EntourageMember = {
   name: string;
   role: string;
-  side: "bride" | "groom" | "general";
+  side: string;
+  color?: string;
+};
+
+const COLOR_PRESETS = [
+  { id: "rose", name: "Rose (Bride)", bgColor: "bg-rose-50", borderColor: "border-rose-200", dotColor: "bg-rose-500", textColor: "text-rose-600" },
+  { id: "blue", name: "Blue (Groom)", bgColor: "bg-blue-50", borderColor: "border-blue-200", dotColor: "bg-blue-500", textColor: "text-blue-600" },
+  { id: "amber", name: "Gold", bgColor: "bg-amber-50", borderColor: "border-amber-200", dotColor: "bg-amber-500", textColor: "text-amber-700" },
+  { id: "emerald", name: "Emerald", bgColor: "bg-emerald-50", borderColor: "border-emerald-200", dotColor: "bg-emerald-500", textColor: "text-emerald-700" },
+  { id: "purple", name: "Purple", bgColor: "bg-purple-50", borderColor: "border-purple-200", dotColor: "bg-purple-500", textColor: "text-purple-700" },
+  { id: "indigo", name: "Indigo", bgColor: "bg-indigo-50", borderColor: "border-indigo-200", dotColor: "bg-indigo-500", textColor: "text-indigo-700" },
+  { id: "neutral", name: "Gray", bgColor: "bg-neutral-100", borderColor: "border-neutral-200", dotColor: "bg-neutral-500", textColor: "text-neutral-600" },
+];
+
+const getTagColorClass = (color?: string, side?: string) => {
+  if (color) {
+    const preset = COLOR_PRESETS.find(p => p.id === color);
+    if (preset) {
+      return `${preset.bgColor} ${preset.textColor} border ${preset.borderColor}`;
+    }
+  }
+
+  // Fallback to side-based matching
+  const lowerSide = (side || "").toLowerCase();
+  if (lowerSide === "bride" || lowerSide === "bride's side") {
+    return "bg-rose-50 text-rose-600 border border-rose-100";
+  }
+  if (lowerSide === "groom" || lowerSide === "groom's side") {
+    return "bg-blue-50 text-blue-600 border border-blue-100";
+  }
+  return "bg-neutral-100 text-neutral-500 border border-neutral-200/40";
 };
 
 type Sponsor = {
@@ -32,9 +62,12 @@ export default function MicrositeSettings({ user, supabase }: MicrositeSettingsP
   const [sponsors, setSponsors] = useState<Sponsor[]>([]);
 
   // Newly wired fields
+  // Newly wired fields
   const [profilePhotoUrl, setProfilePhotoUrl] = useState("");
   const [brideNickname, setBrideNickname] = useState("");
+  const [brideLastName, setBrideLastName] = useState("");
   const [groomNickname, setGroomNickname] = useState("");
+  const [groomLastName, setGroomLastName] = useState("");
   const [weddingDate, setWeddingDate] = useState("");
   const [weddingDatePublic, setWeddingDatePublic] = useState(false);
   const [weddingVenueArea, setWeddingVenueArea] = useState("");
@@ -46,7 +79,8 @@ export default function MicrositeSettings({ user, supabase }: MicrositeSettingsP
   const [newMember, setNewMember] = useState<EntourageMember>({
     name: "",
     role: "",
-    side: "general",
+    side: "",
+    color: "",
   });
 
   // Local state for adding new sponsor
@@ -63,7 +97,7 @@ export default function MicrositeSettings({ user, supabase }: MicrositeSettingsP
         setLoading(true);
         const { data, error } = await supabase
           .from("soon_to_wed_profiles")
-          .select("our_story_text, entourage, sponsors, our_message, profile_photo_url, bride_nickname, groom_nickname, wedding_date, wedding_date_public, wedding_venue_area, wedding_venue_public, location, profile_visibility")
+          .select("our_story_text, entourage, sponsors, our_message, profile_photo_url, bride_nickname, bride_last_name, groom_nickname, groom_last_name, wedding_date, wedding_date_public, wedding_venue_area, wedding_venue_public, location, profile_visibility")
           .eq("user_id", user.id)
           .maybeSingle();
 
@@ -74,7 +108,9 @@ export default function MicrositeSettings({ user, supabase }: MicrositeSettingsP
           setOurMessage(data.our_message || "");
           setProfilePhotoUrl(data.profile_photo_url || "");
           setBrideNickname(data.bride_nickname || "");
+          setBrideLastName(data.bride_last_name || "");
           setGroomNickname(data.groom_nickname || "");
+          setGroomLastName(data.groom_last_name || "");
           setWeddingDate(data.wedding_date || "");
           setWeddingDatePublic(!!data.wedding_date_public);
           setWeddingVenueArea(data.wedding_venue_area || "");
@@ -120,7 +156,9 @@ export default function MicrositeSettings({ user, supabase }: MicrositeSettingsP
           sponsors: sponsors,
           profile_photo_url: profilePhotoUrl || null,
           bride_nickname: brideNickname || null,
+          bride_last_name: brideLastName || null,
           groom_nickname: groomNickname || null,
+          groom_last_name: groomLastName || null,
           wedding_date: weddingDate || null,
           wedding_date_public: weddingDatePublic,
           wedding_venue_area: weddingVenueArea || null,
@@ -146,7 +184,7 @@ export default function MicrositeSettings({ user, supabase }: MicrositeSettingsP
       return;
     }
     setEntourage((prev) => [...prev, { ...newMember }]);
-    setNewMember({ name: "", role: "", side: "general" });
+    setNewMember({ name: "", role: "", side: "", color: "" });
   };
 
   // Remove entourage member
@@ -267,10 +305,10 @@ export default function MicrositeSettings({ user, supabase }: MicrositeSettingsP
                 </p>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold uppercase text-neutral-400 mb-1.5 font-[family-name:var(--font-plus-jakarta)]">
-                    Bride Nickname
+                    Bride Nickname / First Name
                   </label>
                   <input
                     type="text"
@@ -282,7 +320,22 @@ export default function MicrositeSettings({ user, supabase }: MicrositeSettingsP
                 </div>
                 <div>
                   <label className="block text-xs font-bold uppercase text-neutral-400 mb-1.5 font-[family-name:var(--font-plus-jakarta)]">
-                    Groom Nickname
+                    Bride Last Name
+                  </label>
+                  <input
+                    type="text"
+                    value={brideLastName}
+                    onChange={(e) => setBrideLastName(e.target.value)}
+                    className="w-full px-3 py-2 border border-neutral-200 bg-neutral-50/30 rounded-xl text-[13px] text-neutral-700 font-[family-name:var(--font-plus-jakarta)] focus:outline-none focus:ring-1 focus:ring-[#a68b6a] focus:bg-white transition-all"
+                    placeholder="e.g. Smith"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold uppercase text-neutral-400 mb-1.5 font-[family-name:var(--font-plus-jakarta)]">
+                    Groom Nickname / First Name
                   </label>
                   <input
                     type="text"
@@ -290,6 +343,18 @@ export default function MicrositeSettings({ user, supabase }: MicrositeSettingsP
                     onChange={(e) => setGroomNickname(e.target.value)}
                     className="w-full px-3 py-2 border border-neutral-200 bg-neutral-50/30 rounded-xl text-[13px] text-neutral-700 font-[family-name:var(--font-plus-jakarta)] focus:outline-none focus:ring-1 focus:ring-[#a68b6a] focus:bg-white transition-all"
                     placeholder="e.g. Mark"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase text-neutral-400 mb-1.5 font-[family-name:var(--font-plus-jakarta)]">
+                    Groom Last Name
+                  </label>
+                  <input
+                    type="text"
+                    value={groomLastName}
+                    onChange={(e) => setGroomLastName(e.target.value)}
+                    className="w-full px-3 py-2 border border-neutral-200 bg-neutral-50/30 rounded-xl text-[13px] text-neutral-700 font-[family-name:var(--font-plus-jakarta)] focus:outline-none focus:ring-1 focus:ring-[#a68b6a] focus:bg-white transition-all"
+                    placeholder="e.g. Miller"
                   />
                 </div>
               </div>
@@ -436,7 +501,7 @@ export default function MicrositeSettings({ user, supabase }: MicrositeSettingsP
 
             {/* Form to Add Member */}
             <div className="bg-neutral-50/40 p-4 rounded-xl border border-black/[0.03] space-y-3">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                   <label className="block text-[11px] font-bold uppercase text-neutral-400 mb-1">Name</label>
                   <input
@@ -457,25 +522,41 @@ export default function MicrositeSettings({ user, supabase }: MicrositeSettingsP
                     placeholder="e.g. Maid of Honor"
                   />
                 </div>
-              </div>
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="flex flex-wrap items-center gap-3 select-none">
-                  <span className="text-[11px] font-bold uppercase text-neutral-400">Affiliation / Side:</span>
-                  <div className="flex items-center gap-3">
-                    {["general", "bride", "groom"].map((side) => (
-                      <label key={side} className="flex items-center gap-1 cursor-pointer text-xs font-bold text-neutral-600 capitalize">
-                        <input
-                          type="radio"
-                          name="memberSide"
-                          checked={newMember.side === side}
-                          onChange={() => setNewMember({ ...newMember, side: side as any })}
-                          className="text-[#a68b6a] focus:ring-[#a68b6a] border-neutral-300"
-                        />
-                        {side}
-                      </label>
-                    ))}
-                  </div>
+                <div>
+                  <label className="block text-[11px] font-bold uppercase text-neutral-400 mb-1">Affiliation / Side</label>
+                  <input
+                    type="text"
+                    value={newMember.side}
+                    onChange={(e) => setNewMember({ ...newMember, side: e.target.value })}
+                    className="w-full px-2.5 py-1.5 border border-neutral-200 bg-white rounded-lg text-xs font-semibold text-neutral-600 focus:outline-none focus:ring-1 focus:ring-[#a68b6a]"
+                    placeholder="e.g. Bride's side"
+                  />
                 </div>
+              </div>
+              <div className="flex flex-col gap-1.5 pt-1">
+                <label className="block text-[11px] font-bold uppercase text-neutral-400">Tag Color Choice</label>
+                <div className="flex flex-wrap gap-2 items-center">
+                  {COLOR_PRESETS.map((preset) => (
+                    <button
+                      key={preset.id}
+                      type="button"
+                      onClick={() => setNewMember({ ...newMember, color: preset.id })}
+                      className={`w-6 h-6 rounded-full border flex items-center justify-center transition-all ${preset.bgColor} ${preset.borderColor} ${
+                        newMember.color === preset.id || (!newMember.color && preset.id === "neutral")
+                          ? "ring-2 ring-offset-1 ring-[#a68b6a] scale-110"
+                          : "hover:scale-105"
+                      }`}
+                      title={preset.name}
+                    >
+                      <span className={`w-2 h-2 rounded-full ${preset.dotColor}`} />
+                    </button>
+                  ))}
+                  <span className="text-[10px] text-neutral-400 ml-1 italic font-semibold font-[family-name:var(--font-plus-jakarta)]">
+                    {newMember.color ? COLOR_PRESETS.find(p => p.id === newMember.color)?.name : "Default (Auto-matched)"}
+                  </span>
+                </div>
+              </div>
+              <div className="flex justify-end pt-1">
                 <button
                   type="button"
                   onClick={handleAddMember}
@@ -496,15 +577,41 @@ export default function MicrositeSettings({ user, supabase }: MicrositeSettingsP
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
                         <span className="font-semibold text-neutral-700 text-xs truncate">{member.name}</span>
-                        <span className={`text-[8px] px-1 rounded font-bold uppercase tracking-wider ${
-                          member.side === "bride" ? "bg-rose-50 text-rose-600" :
-                          member.side === "groom" ? "bg-blue-50 text-blue-600" :
-                          "bg-neutral-100 text-neutral-500"
-                        }`}>
-                          {member.side}
-                        </span>
+                        {member.side && (
+                          <span className={`text-[8px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider ${
+                            getTagColorClass(member.color, member.side)
+                          }`}>
+                            {member.side}
+                          </span>
+                        )}
                       </div>
                       <p className="text-[10px] text-neutral-400 mt-0.5">{member.role}</p>
+                      
+                      {/* Inline color editor */}
+                      <div className="flex items-center gap-1.5 mt-2 pt-1.5 border-t border-black/[0.02]">
+                        <span className="text-[9px] text-neutral-400 font-semibold uppercase tracking-wider font-[family-name:var(--font-plus-jakarta)]">Color:</span>
+                        <div className="flex gap-1">
+                          {COLOR_PRESETS.map((preset) => (
+                            <button
+                              key={preset.id}
+                              type="button"
+                              onClick={() => {
+                                const updated = [...entourage];
+                                updated[idx] = { ...member, color: preset.id };
+                                setEntourage(updated);
+                              }}
+                              className={`w-3.5 h-3.5 rounded-full border transition-all ${preset.bgColor} ${preset.borderColor} ${
+                                member.color === preset.id || (!member.color && preset.id === "neutral")
+                                  ? "ring-1 ring-offset-0.5 ring-[#a68b6a] scale-110"
+                                  : "hover:scale-105"
+                              }`}
+                              title={preset.name}
+                            >
+                              <span className={`w-1 h-1 rounded-full opacity-60 ${preset.dotColor}`} />
+                            </button>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                     <div className="flex items-center gap-1 shrink-0">
                       <button

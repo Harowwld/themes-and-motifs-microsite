@@ -66,11 +66,12 @@ const NavLink = ({
   prefetch?: boolean;
 }) => {
   const pathname = usePathname();
-  const isActive = href === "/"
+  const cleanHref = href.split("?")[0];
+  const isActive = cleanHref === "/"
     ? pathname === "/"
-    : href === "/suppliers"
+    : cleanHref === "/suppliers"
     ? pathname === "/suppliers" || (pathname.startsWith("/suppliers/") && !pathname.startsWith("/suppliers/plans"))
-    : pathname === href || pathname.startsWith(href + "/");
+    : pathname === cleanHref || pathname.startsWith(cleanHref + "/");
 
   const isMobile = (className.includes("px-3") || className.includes("py-3")) && !className.includes("hidden");
 
@@ -358,6 +359,12 @@ export default function SiteHeader() {
           className="hidden sm:flex items-center justify-center gap-8 text-[13px] font-medium text-gray-500 font-[family-name:var(--font-plus-jakarta)]"
         >
           <motion.div variants={itemVariants}>
+            <NavLink className="hover:text-[#a68b6a] transition-colors" href="/?home=true">
+              Home
+            </NavLink>
+          </motion.div>
+
+          <motion.div variants={itemVariants}>
             <NavLink className="hover:text-[#a68b6a] transition-colors" href="/suppliers">
               Suppliers
             </NavLink>
@@ -466,6 +473,18 @@ export default function SiteHeader() {
             className="sm:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-100 shadow-lg overflow-hidden"
           >
             <nav className="px-4 py-4 space-y-1">
+              <motion.div
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.05, duration: 0.3, ease: EASE_OUT }}
+              >
+                <NavLink
+                  className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
+                  href="/?home=true"
+                >
+                  Home
+                </NavLink>
+              </motion.div>
               <motion.div
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}

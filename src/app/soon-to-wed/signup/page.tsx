@@ -31,7 +31,9 @@ export default function SoonToWedSignupPage() {
 
   const [email, setEmail] = useState("");
   const [brideNickname, setBrideNickname] = useState("");
+  const [brideLastName, setBrideLastName] = useState("");
   const [groomNickname, setGroomNickname] = useState("");
+  const [groomLastName, setGroomLastName] = useState("");
   const [weddingDate, setWeddingDate] = useState("");
   const [weddingDatePublic, setWeddingDatePublic] = useState(false);
   const [weddingVenueArea, setWeddingVenueArea] = useState("");
@@ -41,137 +43,7 @@ export default function SoonToWedSignupPage() {
   const [password, setPassword] = useState("");
   const [agreeTerms, setAgreeTerms] = useState(false);
 
-  const [regions, setRegions] = useState<{ id: number; name: string }[]>([]);
-  const [cities, setCities] = useState<{ id: number; name: string; region_id: number }[]>([]);
-  const [selectedRegionId, setSelectedRegionId] = useState<string>("");
-  const [loadingLocations, setLoadingLocations] = useState(true);
 
-  useEffect(() => {
-    let cancelled = false;
-    async function loadLocations() {
-      try {
-        const [
-          { data: regionRows },
-          { data: cityRowsPart1 },
-          { data: cityRowsPart2 }
-        ] = await Promise.all([
-          supabase.from("regions").select("id, name, parent_id").order("name", { ascending: true }).limit(2000),
-          supabase.from("cities").select("id, name, region_id").order("name", { ascending: true }).range(0, 999),
-          supabase.from("cities").select("id, name, region_id").order("name", { ascending: true }).range(1000, 1999),
-        ]);
-
-        if (cancelled) return;
-
-        const allRegions = (regionRows ?? []) as { id: number; name: string; parent_id: number | null }[];
-        const filteredRegions = allRegions.filter((r) => r.parent_id == null).map((r) => ({ id: r.id, name: r.name }));
-        const loadedCities = [
-          ...(cityRowsPart1 ?? []),
-          ...(cityRowsPart2 ?? [])
-        ] as { id: number; name: string; region_id: number }[];
-
-        setRegions(filteredRegions);
-        setCities(loadedCities);
-      } catch (err) {
-        console.error("Failed to load locations:", err);
-      } finally {
-        if (!cancelled) {
-          setLoadingLocations(false);
-        }
-      }
-    }
-    void loadLocations();
-    return () => {
-      cancelled = true;
-    };
-  }, [supabase]);
-
-  const [showRegionDropdown, setShowRegionDropdown] = useState(false);
-  const [showCityDropdown, setShowCityDropdown] = useState(false);
-
-  const regionRef = useRef<HTMLDivElement>(null);
-  const cityRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (regionRef.current && !regionRef.current.contains(e.target as Node)) {
-        setShowRegionDropdown(false);
-      }
-      if (cityRef.current && !cityRef.current.contains(e.target as Node)) {
-        setShowCityDropdown(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const cityOptions = useMemo(() => {
-    if (!selectedRegionId) return cities;
-    return cities.filter((c) => c.region_id === Number(selectedRegionId));
-  }, [cities, selectedRegionId]);
-
-  const matchingRegions = useMemo(() => {
-    const term = location.trim().toLowerCase();
-    if (!term) return regions;
-    return regions.filter((r) => r.name.toLowerCase().includes(term));
-  }, [regions, location]);
-
-  const isValidRegion = useMemo(() => {
-    if (!location.trim()) return true;
-    return regions.some((r) => r.name.toLowerCase() === location.toLowerCase());
-  }, [regions, location]);
-
-  const matchingCities = useMemo(() => {
-    const term = weddingVenueArea.trim().toLowerCase();
-    if (!term) return cityOptions;
-    return cities.filter((c) => c.name.toLowerCase().includes(term));
-  }, [cities, cityOptions, weddingVenueArea]);
-
-  const isValidCity = useMemo(() => {
-    if (!weddingVenueArea.trim()) return true;
-    return cities.some((c) => c.name.toLowerCase() === weddingVenueArea.toLowerCase());
-  }, [cities, weddingVenueArea]);
-
-  const handleLocationChange = (val: string) => {
-    setLocation(val);
-    const match = regions.find((r) => r.name.toLowerCase() === val.trim().toLowerCase());
-    if (match) {
-      setSelectedRegionId(String(match.id));
-      setLocation(match.name);
-      setWeddingVenueArea("");
-    } else {
-      setSelectedRegionId("");
-    }
-  };
-
-  const selectRegion = (id: number, name: string) => {
-    setSelectedRegionId(String(id));
-    setLocation(name);
-    setWeddingVenueArea("");
-    setShowRegionDropdown(false);
-  };
-
-  const handleVenueChange = (val: string) => {
-    setWeddingVenueArea(val);
-    const match = cities.find((c) => c.name.toLowerCase() === val.trim().toLowerCase());
-    if (match) {
-      setWeddingVenueArea(match.name);
-      if (match.region_id && String(match.region_id) !== selectedRegionId) {
-        setSelectedRegionId(String(match.region_id));
-        const regName = regions.find((r) => r.id === match.region_id)?.name ?? "";
-        setLocation(regName);
-      }
-    }
-  };
-
-  const selectCity = (name: string, regionId: number) => {
-    setWeddingVenueArea(name);
-    if (regionId && String(regionId) !== selectedRegionId) {
-      setSelectedRegionId(String(regionId));
-      const regName = regions.find((r) => r.id === regionId)?.name ?? "";
-      setLocation(regName);
-    }
-    setShowCityDropdown(false);
-  };
 
   useEffect(() => {
     let cancelled = false;
@@ -199,7 +71,9 @@ export default function SoonToWedSignupPage() {
     const e1 = email.trim();
 
     const bride = brideNickname.trim();
+    const brideLast = brideLastName.trim();
     const groom = groomNickname.trim();
+    const groomLast = groomLastName.trim();
     const venue = weddingVenueArea.trim();
     const loc = location.trim();
 
@@ -229,31 +103,31 @@ export default function SoonToWedSignupPage() {
     }
 
     if (!bride) {
-      toast.error("Nickname of bride is required.");
+      toast.error("First name / nickname of bride is required.");
+      setSubmitting(false);
+      return;
+    }
+
+    if (!brideLast) {
+      toast.error("Last name of bride is required.");
       setSubmitting(false);
       return;
     }
 
     if (!groom) {
-      toast.error("Nickname of groom is required.");
+      toast.error("First name / nickname of groom is required.");
+      setSubmitting(false);
+      return;
+    }
+
+    if (!groomLast) {
+      toast.error("Last name of groom is required.");
       setSubmitting(false);
       return;
     }
 
     if (!loc) {
-      toast.error("Location is required.");
-      setSubmitting(false);
-      return;
-    }
-
-    if (!regions.some(r => r.name.toLowerCase() === loc.toLowerCase())) {
-      toast.error("Please select a location from our records.");
-      setSubmitting(false);
-      return;
-    }
-
-    if (venue && !cities.some(c => c.name.toLowerCase() === venue.toLowerCase())) {
-      toast.error("Please select a wedding venue area from our records.");
+      toast.error("Wedding or reception area is required.");
       setSubmitting(false);
       return;
     }
@@ -277,7 +151,9 @@ export default function SoonToWedSignupPage() {
         options: {
           data: {
             bride_nickname: bride,
+            bride_last_name: brideLast,
             groom_nickname: groom,
+            groom_last_name: groomLast,
             wedding_date: weddingDate ? weddingDate : null,
             wedding_date_public: Boolean(weddingDatePublic),
             wedding_venue_area: venue ? venue : null,
@@ -363,25 +239,47 @@ export default function SoonToWedSignupPage() {
                 />
               </label>
 
-              <label className="grid gap-1.5">
-                <span className="text-[12px] font-semibold text-black/55">Nickname of Bride</span>
-                <input
-                  value={brideNickname}
-                  onChange={(e) => setBrideNickname(e.target.value)}
-                  className="h-10 rounded-[3px] border border-black/10 bg-white px-3 text-[14px] text-[#2c2c2c] placeholder:text-black/35 outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15"
-                  placeholder="e.g. Jen"
-                />
-              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <label className="grid gap-1.5">
+                  <span className="text-[12px] font-semibold text-black/55">Nickname / First Name of Bride</span>
+                  <input
+                    value={brideNickname}
+                    onChange={(e) => setBrideNickname(e.target.value)}
+                    className="h-10 rounded-[3px] border border-black/10 bg-white px-3 text-[14px] text-[#2c2c2c] placeholder:text-black/35 outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15"
+                    placeholder="e.g. Jen"
+                  />
+                </label>
+                <label className="grid gap-1.5">
+                  <span className="text-[12px] font-semibold text-black/55">Last Name of Bride</span>
+                  <input
+                    value={brideLastName}
+                    onChange={(e) => setBrideLastName(e.target.value)}
+                    className="h-10 rounded-[3px] border border-black/10 bg-white px-3 text-[14px] text-[#2c2c2c] placeholder:text-black/35 outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15"
+                    placeholder="e.g. Smith"
+                  />
+                </label>
+              </div>
 
-              <label className="grid gap-1.5">
-                <span className="text-[12px] font-semibold text-black/55">Nickname of Groom</span>
-                <input
-                  value={groomNickname}
-                  onChange={(e) => setGroomNickname(e.target.value)}
-                  className="h-10 rounded-[3px] border border-black/10 bg-white px-3 text-[14px] text-[#2c2c2c] placeholder:text-black/35 outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15"
-                  placeholder="e.g. Mark"
-                />
-              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <label className="grid gap-1.5">
+                  <span className="text-[12px] font-semibold text-black/55">Nickname / First Name of Groom</span>
+                  <input
+                    value={groomNickname}
+                    onChange={(e) => setGroomNickname(e.target.value)}
+                    className="h-10 rounded-[3px] border border-black/10 bg-white px-3 text-[14px] text-[#2c2c2c] placeholder:text-black/35 outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15"
+                    placeholder="e.g. Mark"
+                  />
+                </label>
+                <label className="grid gap-1.5">
+                  <span className="text-[12px] font-semibold text-black/55">Last Name of Groom</span>
+                  <input
+                    value={groomLastName}
+                    onChange={(e) => setGroomLastName(e.target.value)}
+                    className="h-10 rounded-[3px] border border-black/10 bg-white px-3 text-[14px] text-[#2c2c2c] placeholder:text-black/35 outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15"
+                    placeholder="e.g. Miller"
+                  />
+                </label>
+              </div>
 
               <label className="grid gap-1.5">
                 <span className="text-[12px] font-semibold text-black/55">Date of Wedding</span>
@@ -402,80 +300,27 @@ export default function SoonToWedSignupPage() {
                 Make wedding date public
               </label>
 
-              <div className="grid gap-1.5 relative" ref={regionRef}>
-                <span className="text-[12px] font-semibold text-black/55">Location (based on ceremony venue)</span>
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={location}
-                    onChange={(e) => handleLocationChange(e.target.value)}
-                    onFocus={() => setShowRegionDropdown(true)}
-                    placeholder={loadingLocations ? "Loading locations..." : "Type or select location"}
-                    disabled={loadingLocations}
-                    className={`h-10 w-full rounded-[3px] border px-3 text-[14px] outline-none focus:ring-2 transition-all ${
-                      !isValidRegion
-                        ? "border-red-500 bg-red-50/50 text-red-900 focus:border-red-500 focus:ring-red-100"
-                        : "border-black/10 bg-white text-[#2c2c2c] focus:border-[#a67c52]/50 focus:ring-[#a67c52]/15"
-                    }`}
-                  />
-                  {loadingLocations && (
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[12px] text-black/40">Loading...</span>
-                  )}
-                </div>
-                {showRegionDropdown && matchingRegions.length > 0 && (
-                  <div className="absolute top-[calc(100%+4px)] left-0 z-50 w-full max-h-60 overflow-y-auto rounded-[3px] border border-black/10 bg-white shadow-lg py-1">
-                    {matchingRegions.map((r) => (
-                      <button
-                        key={r.id}
-                        type="button"
-                        onClick={() => selectRegion(r.id, r.name)}
-                        className="w-full px-3 py-2 text-left text-[14px] text-[#2c2c2c] hover:bg-black/5 transition-colors font-medium"
-                      >
-                        {r.name}
-                      </button>
-                    ))}
-                  </div>
-                )}
-                {!isValidRegion && (
-                  <span className="text-[11px] text-red-600 font-medium">This location is not in our records.</span>
-                )}
-              </div>
+              <label className="grid gap-1.5">
+                <span className="text-[12px] font-semibold text-black/55">Wedding or Reception Area</span>
+                <input
+                  type="text"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  placeholder="e.g. Peoria, Illinois"
+                  className="h-10 rounded-[3px] border border-black/10 bg-white px-3 text-[14px] text-[#2c2c2c] placeholder:text-black/35 outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15"
+                />
+              </label>
 
-              <div className="grid gap-1.5 relative" ref={cityRef}>
-                <span className="text-[12px] font-semibold text-black/55">Venue of Wedding (Area)</span>
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={weddingVenueArea}
-                    onChange={(e) => handleVenueChange(e.target.value)}
-                    onFocus={() => setShowCityDropdown(true)}
-                    placeholder={loadingLocations ? "Loading venue areas..." : "Type or select venue area"}
-                    disabled={loadingLocations}
-                    className={`h-10 w-full rounded-[3px] border px-3 text-[14px] outline-none focus:ring-2 transition-all ${
-                      !isValidCity
-                        ? "border-red-500 bg-red-50/50 text-red-900 focus:border-red-500 focus:ring-red-100"
-                        : "border-black/10 bg-white text-[#2c2c2c] focus:border-[#a67c52]/50 focus:ring-[#a67c52]/15"
-                    }`}
-                  />
-                </div>
-                {showCityDropdown && matchingCities.length > 0 && (
-                  <div className="absolute top-[calc(100%+4px)] left-0 z-50 w-full max-h-60 overflow-y-auto rounded-[3px] border border-black/10 bg-white shadow-lg py-1">
-                    {matchingCities.map((c) => (
-                      <button
-                        key={c.id}
-                        type="button"
-                        onClick={() => selectCity(c.name, c.region_id)}
-                        className="w-full px-3 py-2 text-left text-[14px] text-[#2c2c2c] hover:bg-black/5 transition-colors font-medium"
-                      >
-                        {c.name}
-                      </button>
-                    ))}
-                  </div>
-                )}
-                {!isValidCity && (
-                  <span className="text-[11px] text-red-600 font-medium">This venue area is not in our records.</span>
-                )}
-              </div>
+              <label className="grid gap-1.5">
+                <span className="text-[12px] font-semibold text-black/55">Name of the Venue</span>
+                <input
+                  type="text"
+                  value={weddingVenueArea}
+                  onChange={(e) => setWeddingVenueArea(e.target.value)}
+                  placeholder="e.g. St. Jude Cathedral"
+                  className="h-10 rounded-[3px] border border-black/10 bg-white px-3 text-[14px] text-[#2c2c2c] placeholder:text-black/35 outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15"
+                />
+              </label>
 
               <label className="flex items-center gap-2 text-[13px] text-black/70">
                 <input

@@ -1,13 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Lock, Trash2, Star, Flame, Heart, AlertCircle, AlertTriangle, CloudRain, Sparkles, HelpCircle, Smile } from "lucide-react";
-import { RantReview } from "../types";
+import { RantReview, DreamVendor } from "../types";
 
 interface RantsReviewsProps {
   entries: RantReview[];
-  onAddEntry: (entry: Omit<RantReview, "id" | "date">) => void;
+  onAddEntry: (entry: Omit<RantReview, "id" | "date">, vendorId?: number) => void;
   onDeleteEntry: (id: string) => void;
+  vendors?: any[];
+  preselectedVendorName?: string | null;
+  onClearPreselected?: () => void;
 }
 
 const MOODS = [
@@ -44,25 +47,54 @@ const getMoodIcon = (mood: string, size = 14) => {
   }
 };
 
-export default function RantsReviews({ entries, onAddEntry, onDeleteEntry }: RantsReviewsProps) {
+export default function RantsReviews({
+  entries,
+  onAddEntry,
+  onDeleteEntry,
+  vendors = [],
+  preselectedVendorName = null,
+  onClearPreselected,
+}: RantsReviewsProps) {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [type, setType] = useState<RantReview["type"]>("rant");
   const [mood, setMood] = useState(MOODS[0].emoji);
   const [rating, setRating] = useState("5");
+  const [selectedVendor, setSelectedVendor] = useState("");
+
+  useEffect(() => {
+    if (preselectedVendorName) {
+      setSelectedVendor(preselectedVendorName);
+      setType("review");
+    }
+  }, [preselectedVendorName]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !content.trim()) return;
+
+    const finalTitle = selectedVendor
+      ? `[${selectedVendor}] ${title.trim()}`
+      : title.trim();
+
+    const matchedVendor = selectedVendor
+      ? vendors.find((v: any) => (v.business_name || v.name) === selectedVendor)
+      : null;
+
     onAddEntry({
-      title: title.trim(),
+      title: finalTitle,
       content: content.trim(),
       type,
       mood,
       rating: type === "review" ? parseInt(rating) : undefined,
-    });
+    }, matchedVendor?.id ? Number(matchedVendor.id) : undefined);
+    
     setTitle("");
     setContent("");
+    setSelectedVendor("");
+    if (onClearPreselected) {
+      onClearPreselected();
+    }
   };
 
   return (
@@ -113,20 +145,38 @@ export default function RantsReviews({ entries, onAddEntry, onDeleteEntry }: Ran
             </div>
 
             {type === "review" && (
-              <div>
-                <label className="text-[11px] font-bold text-neutral-500 block mb-1">Rating</label>
-                <select
-                  value={rating}
-                  onChange={(e) => setRating(e.target.value)}
-                  className="h-10 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-3 text-[13px] outline-none focus:border-[#a68b6a] focus:bg-white transition-all font-[family-name:var(--font-plus-jakarta)]"
-                >
-                  <option value="5">5 Stars (Outstanding)</option>
-                  <option value="4">4 Stars (Great)</option>
-                  <option value="3">3 Stars (Neutral)</option>
-                  <option value="2">2 Stars (Underwhelming)</option>
-                  <option value="1">1 Star (Terrible)</option>
-                </select>
-              </div>
+              <>
+                <div>
+                  <label className="text-[11px] font-bold text-neutral-500 block mb-1">Select Supplier (Optional)</label>
+                  <select
+                    value={selectedVendor}
+                    onChange={(e) => setSelectedVendor(e.target.value)}
+                    className="h-10 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-3 text-[13px] outline-none focus:border-[#a68b6a] focus:bg-white transition-all font-[family-name:var(--font-plus-jakarta)]"
+                  >
+                    <option value="">-- No linked supplier --</option>
+                    {vendors.map((v: any) => (
+                      <option key={v.id} value={v.business_name || v.name}>
+                        {v.business_name || v.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-[11px] font-bold text-neutral-500 block mb-1">Rating</label>
+                  <select
+                    value={rating}
+                    onChange={(e) => setRating(e.target.value)}
+                    className="h-10 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-3 text-[13px] outline-none focus:border-[#a68b6a] focus:bg-white transition-all font-[family-name:var(--font-plus-jakarta)]"
+                  >
+                    <option value="5">5 Stars (Outstanding)</option>
+                    <option value="4">4 Stars (Great)</option>
+                    <option value="3">3 Stars (Neutral)</option>
+                    <option value="2">2 Stars (Underwhelming)</option>
+                    <option value="1">1 Star (Terrible)</option>
+                  </select>
+                </div>
+              </>
             )}
 
             <div>
@@ -196,6 +246,9 @@ export default function RantsReviews({ entries, onAddEntry, onDeleteEntry }: Ran
             <div className="space-y-4 max-h-[550px] overflow-y-auto pr-1">
               {entries.map((entry) => {
                 const isRant = entry.type === "rant";
+                const titleMatch = entry.title.match(/^\[(.*?)\]\s*(.*)$/);
+                const vendorTag = titleMatch ? titleMatch[1] : null;
+                const displayTitle = titleMatch ? titleMatch[2] : entry.title;
                 return (
                   <div
                     key={entry.id}
@@ -215,15 +268,22 @@ export default function RantsReviews({ entries, onAddEntry, onDeleteEntry }: Ran
                         </div>
                         <div>
                           <h4 className="font-bold text-[14px] text-neutral-800 font-[family-name:var(--font-plus-jakarta)] leading-tight">
-                            {entry.title}
+                            {displayTitle}
                           </h4>
-                          <span className={`inline-block text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded border mt-1.5 ${
-                            isRant
-                              ? "bg-rose-50 text-rose-600 border-rose-100"
-                              : "bg-amber-50 text-amber-600 border-amber-100"
-                          }`}>
-                            {entry.type}
-                          </span>
+                          <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
+                            <span className={`inline-block text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded border ${
+                              isRant
+                                ? "bg-rose-50 text-rose-600 border-rose-100"
+                                : "bg-amber-50 text-amber-600 border-amber-100"
+                            }`}>
+                              {entry.type}
+                            </span>
+                            {vendorTag && (
+                              <span className="inline-block text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded border bg-neutral-50 text-neutral-600 border-neutral-200">
+                                🔑 {vendorTag}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
                       <button

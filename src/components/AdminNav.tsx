@@ -43,11 +43,10 @@ export function AdminNav({ isSuperadmin, isEditor, email, accountType }: AdminNa
 
   const navLinkClass = (href: string) => {
     const active = isActive(href);
-    return `relative rounded-[3px] px-3 py-2.5 text-[13px] transition-all flex items-center gap-2 ${
-      active
-        ? "text-[#a68b6a] font-bold"
+    return `relative rounded-[3px] px-3 py-2.5 text-[13px] transition-all flex items-center gap-2 ${active
+        ? "text-[#a68b6a] font-bold bg-[#a68b6a]/[0.08]"
         : "text-black/75 hover:text-[#a68b6a] hover:bg-black/[0.04]"
-    } ${active ? "before:absolute before:bottom-0 before:left-1/2 before:-translate-x-1/2 before:w-6 before:h-[3px] before:bg-[#a68b6a] before:rounded-full" : ""}`;
+      } ${active ? "before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-[3px] before:h-5 before:bg-[#a68b6a] before:rounded-r-full" : ""}`;
   };
 
   // Nav links group component to keep code DRY and maintainable
@@ -78,9 +77,6 @@ export function AdminNav({ isSuperadmin, isEditor, email, accountType }: AdminNa
           <Link className={navLinkClass("/superadmin/posts")} href="/superadmin/posts">
             Posts
           </Link>
-          <Link className={navLinkClass("/superadmin/verification-documents")} href="/superadmin/verification-documents">
-            Verification docs
-          </Link>
           <Link className={navLinkClass("/superadmin/themes")} href="/superadmin/themes">
             Themes
           </Link>
@@ -89,6 +85,9 @@ export function AdminNav({ isSuperadmin, isEditor, email, accountType }: AdminNa
           </Link>
           <Link className={navLinkClass("/superadmin/events")} href="/superadmin/events">
             Events Banners
+          </Link>
+          <Link className={navLinkClass("/superadmin/registrations")} href="/superadmin/registrations">
+            Event Registrations
           </Link>
           <Link className={navLinkClass("/superadmin/editors")} href="/superadmin/editors">
             Editors
@@ -145,11 +144,10 @@ export function AdminNav({ isSuperadmin, isEditor, email, accountType }: AdminNa
 
         {/* Small account badge/indicator */}
         {email && (
-          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
-            accountType === "superadmin"
+          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${accountType === "superadmin"
               ? "bg-[#fff1f3] text-[#b42318] border border-[#b42318]/20"
               : "bg-purple-50 text-purple-600 border border-purple-200"
-          }`}>
+            }`}>
             {accountType === "superadmin" ? "Admin" : "Editor"}
           </span>
         )}
@@ -157,17 +155,16 @@ export function AdminNav({ isSuperadmin, isEditor, email, accountType }: AdminNa
 
       {/* 2. Mobile Drawer Overlay */}
       {isOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/40 z-[999] lg:hidden animate-in fade-in duration-200"
           onClick={() => setIsOpen(false)}
         />
       )}
 
       {/* 3. Mobile Drawer Panel */}
-      <div 
-        className={`fixed top-0 left-0 bottom-0 w-[280px] bg-white z-[1000] shadow-2xl flex flex-col lg:hidden transition-transform duration-300 ease-out transform ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+      <div
+        className={`fixed top-0 left-0 bottom-0 w-[280px] bg-white z-[1000] shadow-2xl flex flex-col lg:hidden transition-transform duration-300 ease-out transform ${isOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
         style={{ visibility: isOpen ? "visible" : "hidden" }}
       >
         <div className="flex items-center justify-between px-5 py-4 border-b border-black/5">
@@ -201,11 +198,10 @@ export function AdminNav({ isSuperadmin, isEditor, email, accountType }: AdminNa
             </div>
             {accountType && (
               <div className="mt-2">
-                <span className={`inline-flex text-[10px] font-semibold px-2 py-0.5 rounded-full ${
-                  accountType === "superadmin"
+                <span className={`inline-flex text-[10px] font-semibold px-2 py-0.5 rounded-full ${accountType === "superadmin"
                     ? "bg-[#fff1f3] text-[#b42318] border border-[#b42318]/20"
                     : "bg-purple-50 text-purple-600 border border-purple-200"
-                }`}>
+                  }`}>
                   {accountType.charAt(0).toUpperCase() + accountType.slice(1)}
                 </span>
               </div>
@@ -242,11 +238,10 @@ export function AdminNav({ isSuperadmin, isEditor, email, accountType }: AdminNa
             </div>
             {accountType && (
               <div className="mt-2">
-                <span className={`inline-flex text-[10px] font-semibold px-2 py-0.5 rounded-full ${
-                  accountType === "superadmin"
+                <span className={`inline-flex text-[10px] font-semibold px-2 py-0.5 rounded-full ${accountType === "superadmin"
                     ? "bg-[#fff1f3] text-[#b42318] border border-[#b42318]/20"
                     : "bg-purple-50 text-purple-600 border border-purple-200"
-                }`}>
+                  }`}>
                   {accountType.charAt(0).toUpperCase() + accountType.slice(1)}
                 </span>
               </div>

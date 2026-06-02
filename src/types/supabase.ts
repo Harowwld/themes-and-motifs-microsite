@@ -773,9 +773,11 @@ export type Database = {
       }
       soon_to_wed_profiles: {
         Row: {
+          bride_last_name: string | null
           bride_nickname: string | null
           budget_range: string | null
           created_at: string
+          groom_last_name: string | null
           groom_nickname: string | null
           is_premium: boolean | null
           location: string | null
@@ -792,9 +794,11 @@ export type Database = {
           wedding_venue_public: boolean | null
         }
         Insert: {
+          bride_last_name?: string | null
           bride_nickname?: string | null
           budget_range?: string | null
           created_at?: string
+          groom_last_name?: string | null
           groom_nickname?: string | null
           is_premium?: boolean | null
           location?: string | null
@@ -811,9 +815,11 @@ export type Database = {
           wedding_venue_public?: boolean | null
         }
         Update: {
+          bride_last_name?: string | null
           bride_nickname?: string | null
           budget_range?: string | null
           created_at?: string
+          groom_last_name?: string | null
           groom_nickname?: string | null
           is_premium?: boolean | null
           location?: string | null
