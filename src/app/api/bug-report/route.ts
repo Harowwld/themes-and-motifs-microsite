@@ -19,9 +19,9 @@ export async function POST(req: Request) {
   }
 
   // Redis-backed rate limiting — persists across Cloudflare Worker isolates & cold starts
-  const { allowed } = await checkRateLimit(req, "bugreport", { requests: 3, window: 60 });
+  const { allowed } = await checkRateLimit(req, "bugreport", RATE_LIMITS.BUG_REPORT);
   if (!allowed) {
-    return NextResponse.json({ error: "Too many requests. Please try again in a minute." }, { status: 429 });
+    return NextResponse.json({ error: "Too many requests. Please try again in 15 minutes." }, { status: 429 });
   }
 
   const message = String(body.message ?? "").trim();

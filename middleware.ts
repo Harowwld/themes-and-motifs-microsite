@@ -40,6 +40,8 @@ export async function middleware(req: NextRequest) {
       configKey = "ADMIN";
     } else if (pathname.startsWith("/vendor")) {
       configKey = "VENDOR_API";
+    } else if (pathname === "/api/bug-report") {
+      configKey = "BUG_REPORT";
     } else if (req.method !== "GET") {
       configKey = "DEFAULT_WRITE";
     }

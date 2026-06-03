@@ -33,7 +33,11 @@ export const RATE_LIMITS = {
   // Admin operations
   ADMIN: { requests: 60, window: 60 },
   VENDOR_API: { requests: 60, window: 60 },
+  
+  // Bug reporting
+  BUG_REPORT: { requests: 3, window: 900 },
 };
+
 
 // Generate rate limit key
 function getKey(identifier: string, endpoint: string): string {
