@@ -55,6 +55,7 @@ function SelectMenu({
 
   useEffect(() => {
     if (!open) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setMenuRect(null);
       return;
     }
@@ -242,7 +243,7 @@ export default function HeroSection({
       </div>
       <div aria-hidden className="absolute inset-0 md:hidden">
         <Image
-          src="/sandy-millar-8vaQKYnawHw-unsplash.jpg"
+          src="/hero-bg.jpg"
           alt="Hero background mobile"
           fill
           priority
@@ -269,7 +270,7 @@ export default function HeroSection({
           className="inline-flex items-center gap-2 rounded-[999px] border border-white/20 bg-white/10 backdrop-blur-sm px-3 py-1 text-[11px] sm:text-[12px] font-medium text-white shadow-sm font-[family-name:var(--font-plus-jakarta)]"
         >
           <span className="h-1.5 w-1.5 rounded-full bg-white/60 animate-pulse" aria-hidden />
-          Enjoy browsing. Start booking.
+          25 Years of Wedding Excellence
         </motion.div>
 
         <motion.h1
@@ -283,7 +284,7 @@ export default function HeroSection({
           variants={itemVariants}
           className="mt-2 text-lg sm:text-xl block text-white/80 italic leading-snug"
         >
-          From the Philippines' most trusted wedding platform.
+          Verified Suppliers • Real Couple Reviews • Nationwide Network
         </motion.p>
 
         <motion.p
@@ -295,24 +296,31 @@ export default function HeroSection({
 
         <motion.div
           variants={itemVariants}
-          className="mt-5 sm:mt-6 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center"
+          className="mt-5 sm:mt-6 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center flex-wrap"
         >
           <motion.a
             whileTap={{ scale: 0.97 }}
-            className="h-12 inline-flex items-center justify-center px-6 rounded-md text-white text-[14px] sm:text-[15px] font-medium transition-colors shadow-lg touch-manipulation"
+            className="h-11 sm:h-12 inline-flex items-center justify-center px-5 sm:px-6 rounded-md text-white text-[14px] sm:text-[15px] font-medium transition-colors shadow-lg touch-manipulation"
             style={{ backgroundColor: 'var(--muted-brown)' }}
             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--muted-brown-hover)'}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--muted-brown)'}
-            href="/suppliers"
+            href="/promos"
           >
-            Discover suppliers
+            Unlock Great Deals
           </motion.a>
           <motion.a
             whileTap={{ scale: 0.97 }}
-            className="h-12 inline-flex items-center justify-center px-6 rounded-md border border-white/30 bg-white/10 backdrop-blur-sm text-white text-[14px] sm:text-[15px] font-medium hover:bg-white/20 transition-colors shadow-lg touch-manipulation"
-            href="/suppliers/plans"
+            className="h-11 sm:h-12 inline-flex items-center justify-center px-5 sm:px-6 rounded-md border border-white/30 bg-white/10 backdrop-blur-sm text-white text-[14px] sm:text-[15px] font-medium hover:bg-white/20 transition-colors shadow-lg touch-manipulation"
+            href="/suppliers"
           >
-            Be a verified supplier
+            Read Reviews
+          </motion.a>
+          <motion.a
+            whileTap={{ scale: 0.97 }}
+            className="h-11 sm:h-12 inline-flex items-center justify-center px-5 sm:px-6 rounded-md border border-white/30 bg-white/10 backdrop-blur-sm text-white text-[14px] sm:text-[15px] font-medium hover:bg-white/20 transition-colors shadow-lg touch-manipulation"
+            href="/moments"
+          >
+            Start Planning
           </motion.a>
         </motion.div>
 

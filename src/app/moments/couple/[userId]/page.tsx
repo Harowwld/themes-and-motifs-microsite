@@ -92,6 +92,7 @@ type EntourageMember = {
   role: string;
   side: string;
   color?: string;
+  photo_url?: string;
 };
 
 const COLOR_PRESETS = [
@@ -125,6 +126,10 @@ const getTagColorClass = (color?: string, side?: string) => {
 
 type Sponsor = {
   name: string;
+  role: string;
+  side: string;
+  color?: string;
+  photo_url?: string;
   type: "principal" | "secondary";
 };
 
@@ -746,7 +751,10 @@ export default function CoupleMicrositePage() {
             : item
         )
       );
-      toast.success(`Thank you for your generous contribution of ₱${amount.toLocaleString()}!`);
+      toast.success("Redirecting to secure payment gateway...");
+      setTimeout(() => {
+        toast.success(`Thank you for your generous contribution of ₱${amount.toLocaleString()}!`);
+      }, 1500);
     } catch (err) {
       console.error("Error saving contribution:", err);
       toast.error("Failed to save contribution.");
@@ -760,8 +768,11 @@ export default function CoupleMicrositePage() {
       toast.error("Please enter a valid amount.");
       return;
     }
-    toast.success(`Thank you for contributing ₱${amount.toLocaleString()} to our Honeymoon & Home Fund!`);
-    setCustomCash("");
+    toast.success("Redirecting to secure payment gateway...");
+    setTimeout(() => {
+      toast.success(`Thank you for contributing ₱${amount.toLocaleString()} to our Honeymoon & Home Fund!`);
+      setCustomCash("");
+    }, 1500);
   };
 
   // RSVP Form handler
@@ -847,7 +858,7 @@ export default function CoupleMicrositePage() {
         )}
 
         <div className="text-center mb-6 pt-4">
-          <h1 className="text-[52px] sm:text-[68px] font-normal text-[#2c2c2c] leading-tight select-none font-[family-name:var(--font-great-vibes)]" style={{ fontFamily: "var(--font-great-vibes), cursive" }}>
+          <h1 className="text-[52px] sm:text-[68px] font-normal text-[#2c2c2c] leading-tight select-none font-[family-name:var(--font-playfair-display)]" style={{ fontFamily: "var(--font-playfair-display), serif" }}>
             {displayTitle}
           </h1>
         </div>
@@ -887,7 +898,6 @@ export default function CoupleMicrositePage() {
             {/* The exact main layout card from the mockup */}
             <div className="bg-white border border-black/5 rounded-2xl p-4 sm:p-6 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] max-w-2xl mx-auto flex flex-col items-center">
               
-              {/* Couple Main Portrait Frame */}
               <div className="w-full aspect-[4/3] rounded-xl overflow-hidden mb-6 bg-neutral-100 relative group">
                 <img
                   src={profile?.profile_photo_url || "https://images.unsplash.com/photo-1583939003579-730e3918a45a?q=80&w=1200"}
@@ -895,6 +905,20 @@ export default function CoupleMicrositePage() {
                   className="w-full h-full object-cover select-none filter brightness-95 group-hover:scale-[1.01] transition-transform duration-700"
                   loading="eager"
                 />
+                {isOwner && (
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    <button
+                      onClick={() => router.push("/dashboard?tab=microsite_settings")}
+                      className="px-6 py-2.5 bg-white/90 text-neutral-800 text-[13px] font-bold rounded-full shadow-lg hover:bg-white hover:scale-105 transition-all duration-300 flex items-center gap-2"
+                    >
+                      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                      Replace Picture
+                    </button>
+                  </div>
+                )}
               </div>
 
               {/* Peoria, Illinois and Date Section */}
@@ -1036,7 +1060,7 @@ export default function CoupleMicrositePage() {
           <div className="max-w-2xl mx-auto space-y-8 animate-fadeIn">
             <div className="text-center max-w-md mx-auto">
               <h3 className="text-[20px] font-bold text-neutral-800 font-[family-name:var(--font-noto-serif)]">
-                The Wedding Party
+                The Wedding Entourage
               </h3>
               <p className="text-[12px] text-neutral-400 font-[family-name:var(--font-plus-jakarta)] mt-1">
                 Meet the family and beloved friends supporting our big union
@@ -1050,7 +1074,7 @@ export default function CoupleMicrositePage() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                   </svg>
                 </div>
-                <h4 className="font-bold text-[15px] text-neutral-800 font-[family-name:var(--font-plus-jakarta)]">Entourage party is not yet set</h4>
+                <h4 className="font-bold text-[15px] text-neutral-800 font-[family-name:var(--font-plus-jakarta)]">Entourage is not yet set</h4>
                 <p className="text-[12.5px] text-neutral-400 font-[family-name:var(--font-plus-jakarta)] leading-relaxed">
                   The couple hasn't added their entourage members yet.
                 </p>
@@ -1059,10 +1083,14 @@ export default function CoupleMicrositePage() {
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 select-none">
                 {entourageList.map((member, idx) => (
                   <div key={idx} className="bg-white border border-black/5 rounded-xl p-4 shadow-sm text-center flex flex-col items-center hover:shadow-md transition-all">
-                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#a68b6a]/15 to-[#a68b6a]/5 border border-[#a68b6a]/20 flex items-center justify-center mb-3">
-                      <span className="text-[#a68b6a] font-black text-lg">
-                        {member.name.split(" ").map(n => n.charAt(0)).join("")}
-                      </span>
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#a68b6a]/15 to-[#a68b6a]/5 border border-[#a68b6a]/20 flex items-center justify-center mb-3 overflow-hidden">
+                      {member.photo_url ? (
+                        <img src={member.photo_url} alt={member.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-[#a68b6a] font-black text-lg">
+                          {member.name.split(" ").map(n => n.charAt(0)).join("")}
+                        </span>
+                      )}
                     </div>
                     <h4 className="font-bold text-[14px] text-neutral-800 font-[family-name:var(--font-plus-jakarta)] leading-tight">{member.name}</h4>
                     <p className="text-[11px] text-[#a68b6a] font-bold uppercase tracking-wider mt-1.5">{member.role}</p>
@@ -1108,17 +1136,23 @@ export default function CoupleMicrositePage() {
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 select-none">
                 {sponsorsList.map((sponsor, idx) => (
                   <div key={idx} className="bg-white border border-black/5 rounded-xl p-4 shadow-sm text-center flex flex-col items-center hover:shadow-md transition-all">
-                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#a68b6a]/15 to-[#a68b6a]/5 border border-[#a68b6a]/20 flex items-center justify-center mb-3">
-                      <span className="text-[#a68b6a] font-black text-lg">
-                        {sponsor.name.split(" ").map(n => n.charAt(0)).join("")}
-                      </span>
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#a68b6a]/15 to-[#a68b6a]/5 border border-[#a68b6a]/20 flex items-center justify-center mb-3 overflow-hidden">
+                      {sponsor.photo_url ? (
+                        <img src={sponsor.photo_url} alt={sponsor.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-[#a68b6a] font-black text-lg">
+                          {sponsor.name.split(" ").map(n => n.charAt(0)).join("")}
+                        </span>
+                      )}
                     </div>
                     <h4 className="font-bold text-[14px] text-neutral-800 font-[family-name:var(--font-plus-jakarta)] leading-tight">{sponsor.name}</h4>
-                    <p className="text-[11px] text-[#a68b6a] font-bold uppercase tracking-wider mt-1.5">{sponsor.type} Sponsor</p>
+                    <p className="text-[11px] text-[#a68b6a] font-bold uppercase tracking-wider mt-1.5">
+                      {sponsor.role || `${sponsor.type} Sponsor`}
+                    </p>
                     <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide mt-2 ${
-                      sponsor.type === "principal" ? "bg-amber-50 text-[#a68b6a]" : "bg-neutral-100 text-neutral-500"
+                      getTagColorClass(sponsor.color, sponsor.side || sponsor.type)
                     }`}>
-                      {sponsor.type === "principal" ? "Principal" : "Secondary"}
+                      {sponsor.side || (sponsor.type === "principal" ? "Principal" : "Secondary")}
                     </span>
                   </div>
                 ))}
@@ -1150,15 +1184,17 @@ export default function CoupleMicrositePage() {
                   
                   <div className="pt-6 border-t border-black/[0.04] mt-6 flex flex-col items-center">
                     <p className="text-[12px] text-neutral-400 uppercase tracking-widest font-bold">With all our love,</p>
-                    <p className="text-[36px] text-[#a68b6a] leading-none mt-3 font-[family-name:var(--font-great-vibes)]" style={{ fontFamily: "var(--font-great-vibes), cursive" }}>
-                      {displayTitle}
-                    </p>
-                    <img
-                      src="https://themesnmotifs.com/wp-content/uploads/elementor/thumbs/T_M-Logo-1-qzxx62xvcaywvxz23bwwe4nm1tu4exw9i42ghzw8g6.png"
-                      alt="Themes & Motifs"
-                      className="h-6 w-auto mt-4 opacity-65 select-none pointer-events-none"
-                      referrerPolicy="no-referrer"
-                    />
+                    <div className="flex items-center justify-center gap-3 mt-3">
+                      <p className="text-[36px] text-[#a68b6a] leading-none font-[family-name:var(--font-playfair-display)]" style={{ fontFamily: "var(--font-playfair-display), serif" }}>
+                        {displayTitle}
+                      </p>
+                      <img
+                        src="https://themesnmotifs.com/wp-content/uploads/elementor/thumbs/T_M-Logo-1-qzxx62xvcaywvxz23bwwe4nm1tu4exw9i42ghzw8g6.png"
+                        alt="Themes & Motifs"
+                        className="h-6 w-auto opacity-65 select-none pointer-events-none"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1234,8 +1270,13 @@ export default function CoupleMicrositePage() {
                 </div>
                 <h4 className="font-bold text-[15px] text-neutral-800 font-[family-name:var(--font-plus-jakarta)]">Our Registry is under preparation</h4>
                 <p className="text-[12.5px] text-neutral-400 font-[family-name:var(--font-plus-jakarta)] leading-relaxed">
-                  We are currently choosing our registry items from the Marketplace. Please check back later!
+                  We are currently choosing our registry items from the Marketplace.
                 </p>
+                <div className="pt-2">
+                  <Link href="/promos" className="inline-flex items-center justify-center px-5 py-2.5 bg-[#a68b6a] text-white text-[12px] font-bold uppercase tracking-wider rounded-xl shadow-md hover:shadow-lg hover:bg-[#957a5c] transition-all">
+                    Browse The Wedding Marketplace
+                  </Link>
+                </div>
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
@@ -1304,10 +1345,31 @@ export default function CoupleMicrositePage() {
           </div>
         )}
 
-        <div className="max-w-2xl mx-auto mt-12 border-t border-black/[0.05] pt-10">
+      </div>
+
+      <div className="w-full border-t border-black/[0.05] bg-[#fafafa] mt-8 py-10 px-4 sm:px-6 overflow-hidden flex justify-center">
+        <div className="w-full max-w-[1400px]">
           <AdBanner pageContext="microsite" />
         </div>
+      </div>
 
+      {/* Footer with QR Code */}
+      <div className="w-full border-t border-black/[0.05] bg-white py-12 px-4 sm:px-6">
+        <div className="max-w-4xl mx-auto flex flex-col items-center justify-center text-center space-y-4">
+          <div className="p-3 bg-white border border-black/[0.08] shadow-sm rounded-xl">
+            <img 
+              src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(`https://themesnmotifs.com/moments/couple/${userId}`)}`} 
+              alt="Scan to view our microsite"
+              className="w-24 h-24 sm:w-28 sm:h-28"
+            />
+          </div>
+          <h4 className="text-[15px] font-bold text-neutral-800 font-[family-name:var(--font-plus-jakarta)]">
+            Scan to View Our Microsite
+          </h4>
+          <p className="text-[13px] text-neutral-500 max-w-sm font-[family-name:var(--font-plus-jakarta)]">
+            Share this QR code with your family and friends so they can easily access your wedding details, stories, and registry.
+          </p>
+        </div>
       </div>
 
       {/* Simulated Interactive RSVP Form Modal */}

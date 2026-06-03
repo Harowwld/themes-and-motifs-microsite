@@ -21,7 +21,9 @@ export function ProfileSection({
   saveCoverCrop,
   logoModalOpen,
   setLogoModalOpen,
-  isPremium
+  isPremium,
+  regions,
+  cities
 }: {
   vendor: VendorProfile | null;
   subscription: any;
@@ -30,7 +32,7 @@ export function ProfileSection({
   saving: boolean;
   saveProfile: () => void;
   saveVerificationDoc: (url: string) => void;
-  saveVerificationDetails: (secUrl: string, dtiUrl: string, expiryDate: string | null, tin: string | null) => Promise<boolean>;
+  saveVerificationDetails: (secUrl: string, dtiUrl: string, birUrl: string, mayorsPermitUrl: string, expiryDate: string | null, tin: string | null) => Promise<boolean>;
   images: VendorImage[];
   cropperOpen: boolean;
   setCropperOpen: (v: boolean) => void;
@@ -38,9 +40,13 @@ export function ProfileSection({
   logoModalOpen: boolean;
   setLogoModalOpen: (v: boolean) => void;
   isPremium: boolean;
+  regions?: {id: number, name: string}[];
+  cities?: {id: number, name: string, region_id: number}[];
 }) {
   const [secUrl, setSecUrl] = React.useState(subscription?.sec_doc_url || "");
   const [dtiUrl, setDtiUrl] = React.useState(subscription?.dti_doc_url || "");
+  const [birUrl, setBirUrl] = React.useState((subscription as any)?.bir_doc_url || "");
+  const [mayorsPermitUrl, setMayorsPermitUrl] = React.useState((subscription as any)?.mayors_permit_url || "");
   const [expiryDate, setExpiryDate] = React.useState(
     subscription?.expiry_date ? new Date(subscription.expiry_date).toISOString().split('T')[0] : ""
   );
@@ -50,6 +56,8 @@ export function ProfileSection({
     if (subscription) {
       setSecUrl(subscription.sec_doc_url || "");
       setDtiUrl(subscription.dti_doc_url || "");
+      setBirUrl((subscription as any).bir_doc_url || "");
+      setMayorsPermitUrl((subscription as any).mayors_permit_url || "");
       setExpiryDate(subscription.expiry_date ? new Date(subscription.expiry_date).toISOString().split('T')[0] : "");
       setTin(subscription.tin || "");
     }
@@ -82,7 +90,7 @@ export function ProfileSection({
           <div>
             <div className="text-[13px] font-bold text-[#2c2c2c] uppercase tracking-wider">Business Verification</div>
             <div className="text-[12px] text-black/45 mt-1">
-              Upload your official business credentials to verify your legitimacy and activate professional status badges on your public profile. **Only one document (either SEC Certificate or DTI Registration) is required** to save, along with an optional expiration date.
+              Upload your official business credentials to verify your legitimacy and activate professional status badges on your public profile. **Only one document (SEC Certificate, DTI Registration, BIR Form 2303, or Mayor's Permit) is required** to save, along with an optional expiration date.
             </div>
           </div>
 
@@ -107,6 +115,28 @@ export function ProfileSection({
                 onUploadComplete={(res) => setDtiUrl(res.url)}
                 existingUrl={dtiUrl}
                 onClear={() => setDtiUrl("")}
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <span className="text-[11px] font-bold uppercase tracking-widest text-black/40">BIR Form 2303</span>
+              <ImageUploadDropzone
+                bucket="vendor-assets"
+                folder="verifications"
+                label="Upload BIR Form 2303"
+                onUploadComplete={(res) => setBirUrl(res.url)}
+                existingUrl={birUrl}
+                onClear={() => setBirUrl("")}
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <span className="text-[11px] font-bold uppercase tracking-widest text-black/40">Mayor's Permit</span>
+              <ImageUploadDropzone
+                bucket="vendor-assets"
+                folder="verifications"
+                label="Upload Mayor's Permit"
+                onUploadComplete={(res) => setMayorsPermitUrl(res.url)}
+                existingUrl={mayorsPermitUrl}
+                onClear={() => setMayorsPermitUrl("")}
               />
             </div>
           </div>
@@ -137,8 +167,8 @@ export function ProfileSection({
               <button 
                 type="button" 
                 onClick={() => {
-                  if (!secUrl.trim() && !dtiUrl.trim()) {
-                    toast.error("Please upload at least one document (SEC Certificate or DTI Registration).");
+                  if (!secUrl.trim() && !dtiUrl.trim() && !birUrl.trim() && !mayorsPermitUrl.trim()) {
+                    toast.error("Please upload at least one document (SEC Certificate, DTI Registration, BIR Form 2303, or Mayor's Permit).");
                     return;
                   }
                   if (!expiryDate || !expiryDate.trim()) {
@@ -149,7 +179,7 @@ export function ProfileSection({
                     toast.error("Please provide your TIN.");
                     return;
                   }
-                  void saveVerificationDetails(secUrl, dtiUrl, expiryDate, tin);
+                  void saveVerificationDetails(secUrl, dtiUrl, birUrl, mayorsPermitUrl, expiryDate, tin);
                 }} 
                 disabled={saving} 
                 className="h-11 px-8 rounded-lg bg-[#a67c52] text-white text-[13px] font-bold shadow-[0_4px_12px_rgba(166,124,82,0.3)] hover:bg-[#8e6a46] hover:shadow-[0_6px_16px_rgba(166,124,82,0.4)] transition-all duration-300 disabled:opacity-60 disabled:shadow-none w-full md:w-auto"
@@ -174,7 +204,7 @@ export function ProfileSection({
             <input className="h-11 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-4 text-[13px] transition-all duration-200 focus:border-[#a67c52] focus:bg-white focus:ring-4 focus:ring-[#a67c52]/10 outline-none" value={form.business_name} onChange={(e) => setForm((p: any) => ({ ...p, business_name: e.target.value }))} />
           </Field>
 
-          <Field label="What Makes Us Unique">
+          <Field label="Why Trust Us">
             <div className="relative">
               <textarea
                 className="min-h-32 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-4 py-3 text-[13px] pr-14 leading-relaxed transition-all duration-200 focus:border-[#a67c52] focus:bg-white focus:ring-4 focus:ring-[#a67c52]/10 outline-none resize-none"
@@ -189,10 +219,43 @@ export function ProfileSection({
 
           <div className="grid gap-6 sm:grid-cols-3">
             <Field label="Region">
-              <input className="h-11 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-4 text-[13px] transition-all duration-200 focus:border-[#a67c52] focus:bg-white focus:ring-4 focus:ring-[#a67c52]/10 outline-none" value={form.location_text} onChange={(e) => setForm((p: any) => ({ ...p, location_text: e.target.value }))} />
+              {regions ? (
+                <select 
+                  className="h-11 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-4 text-[13px] transition-all duration-200 focus:border-[#a67c52] focus:bg-white focus:ring-4 focus:ring-[#a67c52]/10 outline-none" 
+                  value={form.location_text} 
+                  onChange={(e) => {
+                    setForm((p: any) => ({ ...p, location_text: e.target.value, city: "" }));
+                  }}
+                >
+                  <option value="">Select Region</option>
+                  {regions.map((r) => (
+                    <option key={r.id} value={r.name}>{r.name}</option>
+                  ))}
+                </select>
+              ) : (
+                <input className="h-11 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-4 text-[13px] transition-all duration-200 focus:border-[#a67c52] focus:bg-white focus:ring-4 focus:ring-[#a67c52]/10 outline-none" value={form.location_text} onChange={(e) => setForm((p: any) => ({ ...p, location_text: e.target.value }))} />
+              )}
             </Field>
             <Field label="City/Wedding Center">
-              <input className="h-11 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-4 text-[13px] transition-all duration-200 focus:border-[#a67c52] focus:bg-white focus:ring-4 focus:ring-[#a67c52]/10 outline-none" value={form.city} onChange={(e) => setForm((p: any) => ({ ...p, city: e.target.value }))} />
+              {cities && regions ? (
+                <select 
+                  className="h-11 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-4 text-[13px] transition-all duration-200 focus:border-[#a67c52] focus:bg-white focus:ring-4 focus:ring-[#a67c52]/10 outline-none" 
+                  value={form.city} 
+                  onChange={(e) => setForm((p: any) => ({ ...p, city: e.target.value }))}
+                  disabled={!form.location_text}
+                >
+                  <option value="">Select City</option>
+                  {(() => {
+                    const selectedRegion = regions.find(r => r.name === form.location_text);
+                    if (!selectedRegion) return null;
+                    return cities.filter(c => c.region_id === selectedRegion.id).map((c) => (
+                      <option key={c.id} value={c.name}>{c.name}</option>
+                    ));
+                  })()}
+                </select>
+              ) : (
+                <input className="h-11 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-4 text-[13px] transition-all duration-200 focus:border-[#a67c52] focus:bg-white focus:ring-4 focus:ring-[#a67c52]/10 outline-none" value={form.city} onChange={(e) => setForm((p: any) => ({ ...p, city: e.target.value }))} />
+              )}
             </Field>
             <Field label="Year Established *">
               <input type="number" min="1800" max="2100" className="h-11 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-4 text-[13px] transition-all duration-200 focus:border-[#a67c52] focus:bg-white focus:ring-4 focus:ring-[#a67c52]/10 outline-none" value={form.year_established} onChange={(e) => setForm((p: any) => ({ ...p, year_established: e.target.value }))} placeholder="e.g. 2015" required />
@@ -204,7 +267,14 @@ export function ProfileSection({
             </div>
           </div>
 
-          <div className="grid gap-6 sm:grid-cols-3">
+          <div className="my-8 border-t border-black/[0.04]" />
+          
+          <h3 className="font-serif text-[16px] font-semibold text-[#2c2c2c] mb-6 flex items-center gap-2">
+            <div className="h-8 w-1 bg-[#a67c52] rounded-full" />
+            Contact Info <span className="text-[11px] font-sans font-bold uppercase tracking-widest text-[#a67c52] ml-auto">Public</span>
+          </h3>
+
+          <div className="grid gap-6 sm:grid-cols-3 mb-8">
             <Field label="Public contact email">
               <input className="h-11 w-full rounded-lg border border-black/[0.08] px-4 text-[13px] bg-[#fafafa] text-black/40 cursor-not-allowed" value={vendor?.contact_email ?? ""} disabled />
             </Field>
@@ -324,7 +394,7 @@ export function ProfileSection({
           <div className="bg-[#fafafa]/50 rounded-lg p-6 border border-black/[0.03]">
             <h3 className="font-serif text-[16px] font-semibold text-[#2c2c2c] mb-6 flex items-center gap-2">
               <div className="h-8 w-1 bg-[#a67c52] rounded-full" />
-              Admin & Contact Info <span className="text-[11px] font-sans font-bold uppercase tracking-widest text-black/30 ml-auto">Internal Use Only</span>
+              Admin Contact <span className="text-[11px] font-sans font-bold uppercase tracking-widest text-black/30 ml-auto">Internal Use Only</span>
             </h3>
             
             <div className="grid gap-6 sm:grid-cols-2 mb-6">

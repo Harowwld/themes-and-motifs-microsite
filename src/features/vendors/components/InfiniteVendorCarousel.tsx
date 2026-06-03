@@ -118,7 +118,7 @@ function VendorCard({
                   <span className="inline-flex items-center justify-center h-5 w-5 shrink-0" aria-label="Verified">
                     <div className="relative h-full w-full">
                       <Image
-                        src="/cropped-vecteezy_verification-badge-set-guaranteed-stamp-or-verified-badge_23900241.svg"
+                        src="/verified-badge.svg"
                         alt="Verified"
                         fill
                         sizes="20px"

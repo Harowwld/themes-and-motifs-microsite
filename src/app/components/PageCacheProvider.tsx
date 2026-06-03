@@ -50,7 +50,7 @@ function preloadVendorAssets() {
     requestIdleCallback(() => {
       // Preload common vendor detail images/styles
       const preloadLinks = [
-        { rel: "prefetch", href: "/cropped-vecteezy_verification-badge-set-guaranteed-stamp-or-verified-badge_23900241.svg" },
+        { rel: "prefetch", href: "/verified-badge.svg" },
         { rel: "prefetch", href: "/gold-10-year-badge.svg" },
       ];
 

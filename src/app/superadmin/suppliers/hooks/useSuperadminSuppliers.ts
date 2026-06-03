@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { toast } from "@/lib/toast";
+import { createSupabaseBrowserClient } from "@/lib/supabaseBrowser";
 
 export type Plan = { id: number; name: string };
 
@@ -46,6 +47,7 @@ export type VendorImage = {
   focus_x?: number | null;
   focus_y?: number | null;
   zoom?: number | null;
+  theme_id?: number | null;
 };
 
 export type VendorVideo = {
@@ -139,6 +141,10 @@ export function useSuperadminSuppliers() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
 
+  const supabase = useMemo(() => createSupabaseBrowserClient(), []);
+  const [regions, setRegions] = useState<{id: number, name: string}[]>([]);
+  const [cities, setCities] = useState<{id: number, name: string, region_id: number}[]>([]);
+
   // Edit modal state
   const [editingVendor, setEditingVendor] = useState<Vendor | null>(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
@@ -217,6 +223,17 @@ export function useSuperadminSuppliers() {
       setVendors(res.vendors ?? []);
       setPlans(res.plans ?? []);
       setHasMore((res.vendors ?? []).length === 100);
+
+      if (regions.length === 0) {
+        Promise.all([
+          supabase.from("regions").select("id,name").is("parent_id", null).order("name", { ascending: true }).limit(200),
+          supabase.from("cities").select("id,name,region_id").order("name", { ascending: true }).range(0, 999),
+          supabase.from("cities").select("id,name,region_id").order("name", { ascending: true }).range(1000, 1999)
+        ]).then(([regionsRes, cities1Res, cities2Res]) => {
+          setRegions(regionsRes.data ?? []);
+          setCities([...(cities1Res.data ?? []), ...(cities2Res.data ?? [])]);
+        });
+      }
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed to load vendors.");
     } finally {
@@ -341,11 +358,12 @@ export function useSuperadminSuppliers() {
         focus_x: img.focus_x ?? 50,
         focus_y: img.focus_y ?? 50,
         zoom: img.zoom ?? 1,
+        theme_id: (img as any).theme_id ?? null,
       }));
       setEditImages(
         normalizedImgs.length > 0
           ? normalizedImgs
-          : [{ image_url: "", caption: "", is_cover: true, display_order: 1, focus_x: 50, focus_y: 50, zoom: 1 }]
+          : [{ image_url: "", caption: "", is_cover: true, display_order: 1, focus_x: 50, focus_y: 50, zoom: 1, theme_id: null }]
       );
 
       const normalizedVideos = (res.videos ?? []).map((v, idx) => ({
@@ -479,6 +497,7 @@ export function useSuperadminSuppliers() {
           focus_x: i.focus_x ?? 50,
           focus_y: i.focus_y ?? 50,
           zoom: i.zoom ?? 1,
+          theme_id: i.theme_id ?? null,
         }));
 
       const hasCover = cleaned.some((i) => i.is_cover);
@@ -851,6 +870,8 @@ export function useSuperadminSuppliers() {
     editThemes,
     setEditThemes,
     allThemes,
+    regions,
+    cities,
     verificationDocuments,
     editPromos,
     promoForm,

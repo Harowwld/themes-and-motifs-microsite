@@ -22,9 +22,11 @@ export function VerificationSection({
     setLocalTin(editSubscription?.tin || "");
   }, [editSubscription?.tin]);
 
-  const getDocTypeLabel = (url: string, type: 'sec' | 'dti' | 'legacy') => {
+  const getDocTypeLabel = (url: string, type: 'sec' | 'dti' | 'bir' | 'mayors_permit' | 'legacy') => {
     if (type === 'sec') return "SEC Certificate";
     if (type === 'dti') return "DTI Registration";
+    if (type === 'bir') return "BIR Form 2303";
+    if (type === 'mayors_permit') return "Mayor's Permit";
     return "Verification Document";
   };
 
@@ -33,7 +35,7 @@ export function VerificationSection({
     return url.toLowerCase().split('?')[0].endsWith('.pdf');
   };
 
-  const renderDocPreview = (url: string | null | undefined, type: 'sec' | 'dti' | 'legacy') => {
+  const renderDocPreview = (url: string | null | undefined, type: 'sec' | 'dti' | 'bir' | 'mayors_permit' | 'legacy') => {
     if (!url) return null;
 
     const label = getDocTypeLabel(url, type);
@@ -148,11 +150,13 @@ export function VerificationSection({
       <div className="grid gap-4">
         <span className="text-[11px] font-bold uppercase tracking-widest text-black/40 block">Verification Documents</span>
         
-        {editSubscription?.sec_doc_url || editSubscription?.dti_doc_url || editSubscription?.verification_doc_url ? (
+        {editSubscription?.sec_doc_url || editSubscription?.dti_doc_url || editSubscription?.bir_doc_url || editSubscription?.mayors_permit_url || editSubscription?.verification_doc_url ? (
           <div className="grid gap-4 sm:grid-cols-2">
             {renderDocPreview(editSubscription?.sec_doc_url, 'sec')}
             {renderDocPreview(editSubscription?.dti_doc_url, 'dti')}
-            {!editSubscription?.sec_doc_url && !editSubscription?.dti_doc_url && renderDocPreview(editSubscription?.verification_doc_url, 'legacy')}
+            {renderDocPreview(editSubscription?.bir_doc_url, 'bir')}
+            {renderDocPreview(editSubscription?.mayors_permit_url, 'mayors_permit')}
+            {!editSubscription?.sec_doc_url && !editSubscription?.dti_doc_url && !editSubscription?.bir_doc_url && !editSubscription?.mayors_permit_url && renderDocPreview(editSubscription?.verification_doc_url, 'legacy')}
           </div>
         ) : (
           <div className="text-[12px] text-black/40 italic p-4 rounded-xl border border-dashed border-black/10 text-center">

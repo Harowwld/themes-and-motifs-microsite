@@ -41,9 +41,9 @@ export function DashboardSkeleton() {
                 </div>
                 {[
                   { label: "Client Inquiries", isFirst: true },
-                  { label: "Portfolio Photos" },
+                  { label: "Photos / Themes" },
                   { label: "Video Highlights" },
-                  { label: "Vouchers & Promos" },
+                  { label: "Exclusive Deals" },
                   { label: "Couple Reviews" },
                   { label: "Business Profile" },
                   { label: "Service Categories" },

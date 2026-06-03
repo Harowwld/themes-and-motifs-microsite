@@ -46,6 +46,7 @@ export type VendorImage = {
   is_cover: boolean | null;
   display_order: number | null;
   media_type?: 'image' | 'video';
+  theme_id?: number | null;
 };
 
 export type Theme = { id: number; name: string; slug: string };

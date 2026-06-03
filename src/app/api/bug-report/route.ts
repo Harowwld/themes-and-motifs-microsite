@@ -27,19 +27,22 @@ export async function POST(req: Request) {
   const message = String(body.message ?? "").trim();
   const url = String(body.url ?? "").trim();
 
-  let fromName = "Anonymous";
+  let fromName = "";
   try {
     const authHeader = req.headers.get("authorization") ?? "";
     const token = authHeader.toLowerCase().startsWith("bearer ") ? authHeader.slice(7).trim() : "";
-    if (token) {
-      const supabase = createSupabaseAdminClient();
-      const { data: { user } } = await supabase.auth.getUser(token);
-      if (user?.email) {
-        fromName = user.email;
-      }
+    if (!token) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+    const supabase = createSupabaseAdminClient();
+    const { data: { user } } = await supabase.auth.getUser(token);
+    if (!user || !user.email) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    fromName = user.email;
   } catch (authError) {
     console.error("Failed to get user from session:", authError);
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   if (!message) {

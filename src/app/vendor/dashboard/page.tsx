@@ -56,6 +56,8 @@ export default function VendorDashboardPage() {
     allThemes,
     categories,
     allCategories,
+    regions,
+    cities,
     albums,
     selectedAlbum,
     albumPhotos,
@@ -142,9 +144,9 @@ export default function VendorDashboardPage() {
   const tabs = [
     { id: "inquiries", label: "Client Inquiries", icon: MessageCircle },
     { id: "analytics", label: "Storefront Analytics", icon: BarChart3 },
-    { id: "photos", label: "Portfolio Photos", icon: ImageIcon },
+    { id: "photos", label: "Photos / Themes", icon: ImageIcon },
     { id: "videos", label: "Video Highlights", icon: Film },
-    { id: "promos", label: "Vouchers & Promos", icon: Ticket },
+    { id: "promos", label: "Exclusive Deals", icon: Ticket },
     { id: "reviews", label: "Couple Reviews", icon: Star },
     { id: "profile", label: "Business Profile", icon: User },
     { id: "categories", label: "Service Categories", icon: Tag },
@@ -343,6 +345,8 @@ export default function VendorDashboardPage() {
                             logoModalOpen={logoModalOpen}
                             setLogoModalOpen={setLogoModalOpen}
                             isPremium={isPremium}
+                            regions={regions}
+                            cities={cities}
                           />
                         );
                       case "themes":

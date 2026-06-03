@@ -6,6 +6,8 @@ export function ProfileSection({
 }: {
   editForm: any;
   setEditForm: (v: any) => void;
+  regions?: {id: number, name: string}[];
+  cities?: {id: number, name: string, region_id: number}[];
 }) {
   return (
     <section className="grid gap-4">
@@ -32,7 +34,7 @@ export function ProfileSection({
       </div>
 
       <label className="grid gap-1.5">
-        <span className="text-[12px] font-semibold text-black/55">What Makes Us Unique</span>
+        <span className="text-[12px] font-semibold text-black/55">Why Trust Us</span>
         <div className="relative">
           <textarea
             value={editForm.description}
@@ -48,20 +50,51 @@ export function ProfileSection({
       <div className="grid gap-4 sm:grid-cols-3">
         <label className="grid gap-1.5">
           <span className="text-[12px] font-semibold text-black/55">Region</span>
-          <input
-            value={editForm.location_text}
-            onChange={(e) => setEditForm((f: any) => ({ ...f, location_text: e.target.value }))}
-            className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]"
-            placeholder="e.g., Makati, Metro Manila"
-          />
+          {regions && regions.length > 0 ? (
+            <select
+              value={editForm.location_text}
+              onChange={(e) => setEditForm((f: any) => ({ ...f, location_text: e.target.value, city: "" }))}
+              className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px] bg-white outline-none"
+            >
+              <option value="">Select Region</option>
+              {regions.map((r) => (
+                <option key={r.id} value={r.name}>{r.name}</option>
+              ))}
+            </select>
+          ) : (
+            <input
+              value={editForm.location_text}
+              onChange={(e) => setEditForm((f: any) => ({ ...f, location_text: e.target.value }))}
+              className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]"
+              placeholder="e.g., Makati, Metro Manila"
+            />
+          )}
         </label>
         <label className="grid gap-1.5">
           <span className="text-[12px] font-semibold text-black/55">City</span>
-          <input
-            value={editForm.city}
-            onChange={(e) => setEditForm((f: any) => ({ ...f, city: e.target.value }))}
-            className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]"
-          />
+          {cities && regions && regions.length > 0 ? (
+            <select
+              value={editForm.city}
+              onChange={(e) => setEditForm((f: any) => ({ ...f, city: e.target.value }))}
+              className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px] bg-white outline-none"
+              disabled={!editForm.location_text}
+            >
+              <option value="">Select City</option>
+              {(() => {
+                const selectedRegion = regions.find(r => r.name === editForm.location_text);
+                if (!selectedRegion) return null;
+                return cities.filter(c => c.region_id === selectedRegion.id).map((c) => (
+                  <option key={c.id} value={c.name}>{c.name}</option>
+                ));
+              })()}
+            </select>
+          ) : (
+            <input
+              value={editForm.city}
+              onChange={(e) => setEditForm((f: any) => ({ ...f, city: e.target.value }))}
+              className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]"
+            />
+          )}
         </label>
         <label className="grid gap-1.5">
           <span className="text-[12px] font-semibold text-black/55">Year Established <span className="text-red-500">*</span></span>

@@ -334,7 +334,7 @@ export default function SiteHeader() {
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.4, ease: EASE_OUT }}
-          className="flex items-center justify-start"
+          className="flex items-center justify-start gap-2 sm:gap-3"
         >
           <Link
             className="flex items-center"
@@ -343,13 +343,22 @@ export default function SiteHeader() {
             prefetch={true}
           >
             <img
-              src="https://themesnmotifs.com/wp-content/uploads/elementor/thumbs/T_M-Logo-1-qzxx62xvcaywvxz23bwwe4nm1tu4exw9i42ghzw8g6.png"
+              src="/logo.png"
               alt="Themes & Motifs"
-              className="h-7 sm:h-8 w-auto"
+              className="h-10 sm:h-12 w-auto"
               loading="eager"
               referrerPolicy="no-referrer"
             />
           </Link>
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.1, duration: 0.3, ease: EASE_OUT }}
+          >
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold tracking-[0.2em] uppercase bg-gradient-to-br from-[#a68b6a]/15 to-[#a68b6a]/5 text-[#8a7256] border border-[#a68b6a]/20 shadow-sm shadow-[#a68b6a]/5 ring-1 ring-white/50 backdrop-blur-sm">
+              Beta
+            </span>
+          </motion.div>
         </motion.div>
 
         <motion.nav
@@ -358,56 +367,58 @@ export default function SiteHeader() {
           animate="visible"
           className="hidden sm:flex items-center justify-center gap-8 text-[13px] font-medium text-gray-500 font-[family-name:var(--font-plus-jakarta)]"
         >
-          <motion.div variants={itemVariants}>
-            <NavLink className="hover:text-[#a68b6a] transition-colors" href="/?home=true">
-              Home
-            </NavLink>
-          </motion.div>
-
-          <motion.div variants={itemVariants}>
-            <NavLink className="hover:text-[#a68b6a] transition-colors" href="/suppliers">
-              Suppliers
-            </NavLink>
-          </motion.div>
-
-          <motion.div variants={itemVariants}>
-            <NavLink className="hover:text-[#a68b6a] transition-colors" href="/about-us">
-              About us
-            </NavLink>
-          </motion.div>
-
-          <motion.div variants={itemVariants}>
-            <NavLink className="hover:text-[#a68b6a] transition-colors" href="/contact-us">
-              Contact us
-            </NavLink>
-          </motion.div>
-
-          {/* For suppliers - do not render for logged in couples */}
-          {mounted && (!signedIn || !isSoonToWed) && (
-            <motion.div variants={itemVariants}>
-              <NavLink className="hover:text-[#a68b6a] transition-colors" href="/suppliers/plans">
-                For suppliers
-              </NavLink>
-            </motion.div>
+          {mounted && isVendor ? (
+            <>
+              <motion.div variants={itemVariants}>
+                <NavLink className="hover:text-[#a68b6a] transition-colors" href="/contact-us">
+                  Contact Us
+                </NavLink>
+              </motion.div>
+              <motion.div variants={itemVariants}>
+                <NavLink className="hover:text-[#a68b6a] transition-colors" href="/watchlist">
+                  Watchlist
+                </NavLink>
+              </motion.div>
+              <motion.div variants={itemVariants}>
+                <NavLink className="hover:text-[#a68b6a] transition-colors" href="/suppliers/plans">
+                  For Vendors
+                </NavLink>
+              </motion.div>
+              <motion.div variants={itemVariants}>
+                <NavLink className="hover:text-[#a68b6a] transition-colors" href="/growth-ambassadors">
+                  Growth Ambassadors
+                </NavLink>
+              </motion.div>
+            </>
+          ) : (
+            <>
+              <motion.div variants={itemVariants}>
+                <NavLink className="hover:text-[#a68b6a] transition-colors" href="/?home=true">
+                  Home
+                </NavLink>
+              </motion.div>
+              <motion.div variants={itemVariants}>
+                <NavLink className="hover:text-[#a68b6a] transition-colors" href="/moments">
+                  Banns
+                </NavLink>
+              </motion.div>
+              <motion.div variants={itemVariants}>
+                <NavLink className="hover:text-[#a68b6a] transition-colors" href="/promos">
+                  The Wedding Marketplace
+                </NavLink>
+              </motion.div>
+              <motion.div variants={itemVariants}>
+                <NavLink className="hover:text-[#a68b6a] transition-colors" href="/why-trust-us">
+                  Why Trust Us
+                </NavLink>
+              </motion.div>
+              <motion.div variants={itemVariants}>
+                <NavLink className="hover:text-[#a68b6a] transition-colors" href="/about-us">
+                  About Us
+                </NavLink>
+              </motion.div>
+            </>
           )}
-
-          {/* Moments for couples (Dashboard is in the floating profile widget) */}
-          {mounted && signedIn && isSoonToWed && !isVendor && (
-            <motion.div variants={itemVariants}>
-              <NavLink className="hover:text-[#a68b6a] transition-colors" href="/moments">
-                Couples
-              </NavLink>
-            </motion.div>
-          )}
-
-          {/* Public Moments for non-couples */}
-          {mounted && (!signedIn || isVendor) ? (
-            <motion.div variants={itemVariants}>
-              <NavLink className="hover:text-[#a68b6a] transition-colors" href="/moments">
-                Couples
-              </NavLink>
-            </motion.div>
-          ) : null}
         </motion.nav>
 
         <motion.div
@@ -473,134 +484,60 @@ export default function SiteHeader() {
             className="sm:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-100 shadow-lg overflow-hidden"
           >
             <nav className="px-4 py-4 space-y-1">
-              <motion.div
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.05, duration: 0.3, ease: EASE_OUT }}
-              >
-                <NavLink
-                  className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
-                  href="/?home=true"
-                >
-                  Home
-                </NavLink>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.1, duration: 0.3, ease: EASE_OUT }}
-              >
-                <NavLink
-                  className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
-                  href="/suppliers"
-                >
-                  Discover
-                </NavLink>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.15, duration: 0.3, ease: EASE_OUT }}
-              >
-                <NavLink
-                  className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
-                  href="/#featured"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    goToHomeSection("featured");
-                  }}
-                >
-                  Featured
-                </NavLink>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.2, duration: 0.3, ease: EASE_OUT }}
-              >
-                <NavLink
-                  className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
-                  href="/suppliers/plans"
-                >
-                  For suppliers
-                </NavLink>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.22, duration: 0.3, ease: EASE_OUT }}
-              >
-                <NavLink
-                  className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
-                  href="/about-us"
-                >
-                  About us
-                </NavLink>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.24, duration: 0.3, ease: EASE_OUT }}
-              >
-                <NavLink
-                  className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
-                  href="/contact-us"
-                >
-                  Contact us
-                </NavLink>
-              </motion.div>
-
-              {/* Dashboard for all signed-in users */}
-              {mounted && signedIn && (
-                <motion.div
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.25, duration: 0.3, ease: EASE_OUT }}
-                >
-                  <NavLink
-                    className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
-                    href={dashboardHref}
-                  >
-                    Dashboard
-                  </NavLink>
-                </motion.div>
+              {mounted && isVendor ? (
+                <>
+                  <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.05, duration: 0.3, ease: EASE_OUT }}>
+                    <NavLink className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors" href="/contact-us">
+                      Contact Us
+                    </NavLink>
+                  </motion.div>
+                  <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1, duration: 0.3, ease: EASE_OUT }}>
+                    <NavLink className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors" href="/watchlist">
+                      Watchlist
+                    </NavLink>
+                  </motion.div>
+                  <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.15, duration: 0.3, ease: EASE_OUT }}>
+                    <NavLink className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors" href="/suppliers/plans">
+                      For Vendors
+                    </NavLink>
+                  </motion.div>
+                  <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2, duration: 0.3, ease: EASE_OUT }}>
+                    <NavLink className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors" href="/growth-ambassadors">
+                      Growth Ambassadors
+                    </NavLink>
+                  </motion.div>
+                </>
+              ) : (
+                <>
+                  <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.05, duration: 0.3, ease: EASE_OUT }}>
+                    <NavLink className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors" href="/?home=true">
+                      Home
+                    </NavLink>
+                  </motion.div>
+                  <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1, duration: 0.3, ease: EASE_OUT }}>
+                    <NavLink className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors" href="/moments">
+                      Banns
+                    </NavLink>
+                  </motion.div>
+                  <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.15, duration: 0.3, ease: EASE_OUT }}>
+                    <NavLink className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors" href="/promos">
+                      The Wedding Marketplace
+                    </NavLink>
+                  </motion.div>
+                  <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2, duration: 0.3, ease: EASE_OUT }}>
+                    <NavLink className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors" href="/why-trust-us">
+                      Why Trust Us
+                    </NavLink>
+                  </motion.div>
+                  <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.25, duration: 0.3, ease: EASE_OUT }}>
+                    <NavLink className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors" href="/about-us">
+                      About Us
+                    </NavLink>
+                  </motion.div>
+                </>
               )}
 
-              {/* Moments / Couples tab for couples specifically */}
-              {mounted && signedIn && isSoonToWed && !isVendor && (
-                <motion.div
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.3, duration: 0.3, ease: EASE_OUT }}
-                >
-                  <NavLink
-                    className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
-                    href="/moments"
-                  >
-                    Couples
-                  </NavLink>
-                </motion.div>
-              )}
-
-              {/* Public Moments for non-couples */}
-              {mounted && (!signedIn || isVendor) ? (
-                <motion.div
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.25, duration: 0.3, ease: EASE_OUT }}
-                >
-                  <NavLink
-                    className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
-                    href="/moments"
-                  >
-                    Couples
-                  </NavLink>
-                </motion.div>
-              ) : null}
-
-              <motion.div
+              {/* Dashboard for all signed-in users */}<motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.35 }}
@@ -662,7 +599,7 @@ export default function SiteHeader() {
                 >
                   <NavLink
                     className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-[#a68b6a] hover:text-[#957a5c] hover:bg-gray-50 transition-colors"
-                    href="/suppliers"
+                    href="/promos"
                   >
                     Start Searching
                   </NavLink>
@@ -692,7 +629,7 @@ export default function SiteHeader() {
               >
                 <Link
                   className="flex items-center justify-center mt-3 px-3 py-3 rounded-md bg-[#a68b6a] text-white text-[14px] font-medium hover:bg-[#957a5c] transition-colors shadow-sm"
-                  href="/suppliers"
+                  href="/promos"
                   prefetch={true}
                 >
                   Start searching

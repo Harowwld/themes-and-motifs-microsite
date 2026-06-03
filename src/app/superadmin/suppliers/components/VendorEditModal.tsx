@@ -33,6 +33,8 @@ export function VendorEditModal({
   setEditForm,
   editSubscription,
   saveSubscriptionDate,
+  regions,
+  cities,
   verificationDocuments,
   editImages,
   setEditImages,
@@ -80,6 +82,8 @@ export function VendorEditModal({
   setEditForm: (v: any) => void;
   editSubscription: any;
   saveSubscriptionDate: (date: string | null, tin?: string | null) => void;
+  regions: any[];
+  cities: any[];
   verificationDocuments: VerificationDocument[];
   editImages: VendorImage[];
   setEditImages: (v: any) => void;
@@ -124,8 +128,8 @@ export function VendorEditModal({
   if (!isOpen || !editingVendor) return null;
 
   const tabs = [
-    { id: "photos", label: "Portfolio Photos", icon: ImageIcon },
-    { id: "promos", label: "Vouchers & Promos", icon: Ticket },
+    { id: "photos", label: "Photos / Themes", icon: ImageIcon },
+    { id: "promos", label: "Exclusive Deals", icon: Ticket },
     { id: "profile", label: "Business Profile", icon: User },
     { id: "contact", label: "Contact Info", icon: Phone },
     { id: "adminContact", label: "Admin Contact", icon: ShieldCheck },
@@ -141,8 +145,8 @@ export function VendorEditModal({
       <div className="w-full max-w-5xl max-h-[90vh] rounded-[3px] border border-black/10 bg-white shadow-lg my-8 flex flex-col overflow-hidden">
         <div className="px-4 py-3 border-b border-black/5 flex items-center justify-between">
           <div>
-            <div className="text-[14px] font-semibold text-[#2c2c2c]">Edit Vendor</div>
-            <div className="text-[12px] text-black/45">{editingVendor.business_name}</div>
+            <div className="text-[12px] font-medium text-black/45">Edit Vendor</div>
+            <div className="text-[16px] font-bold text-[#2c2c2c]">{editingVendor.business_name}</div>
           </div>
           <button
             type="button"
@@ -223,7 +227,7 @@ export function VendorEditModal({
                         />
                       );
                     case "profile":
-                      return <ProfileSection editForm={editForm} setEditForm={setEditForm} />;
+                      return <ProfileSection editForm={editForm} setEditForm={setEditForm} regions={regions} cities={cities} />;
                     case "contact":
                       return <ContactSection editForm={editForm} setEditForm={setEditForm} setLogoUrlInput={setLogoUrlInput} setLogoModalOpen={setLogoModalOpen} />;
                     case "adminContact":

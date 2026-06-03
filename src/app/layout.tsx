@@ -40,7 +40,7 @@ export const metadata: Metadata = {
   title: "Themes & Motifs | Wedding Vendor Directory",
   description: "Discover curated wedding vendors, themes, and motifs for your perfect celebration",
   icons: {
-    icon: "/Adobe Express - file.png",
+    icon: "/favicon.png",
   },
   other: {
     // Preconnect to Google Fonts CDN for faster font loading

@@ -10,6 +10,7 @@ type EntourageMember = {
   role: string;
   side: string;
   color?: string;
+  photo_url?: string;
 };
 
 const COLOR_PRESETS = [
@@ -43,6 +44,10 @@ const getTagColorClass = (color?: string, side?: string) => {
 
 type Sponsor = {
   name: string;
+  role: string;
+  side: string;
+  color?: string;
+  photo_url?: string;
   type: "principal" | "secondary";
 };
 
@@ -81,11 +86,16 @@ export default function MicrositeSettings({ user, supabase }: MicrositeSettingsP
     role: "",
     side: "",
     color: "",
+    photo_url: "",
   });
 
   // Local state for adding new sponsor
   const [newSponsor, setNewSponsor] = useState<Sponsor>({
     name: "",
+    role: "",
+    side: "",
+    color: "",
+    photo_url: "",
     type: "principal",
   });
 
@@ -184,7 +194,7 @@ export default function MicrositeSettings({ user, supabase }: MicrositeSettingsP
       return;
     }
     setEntourage((prev) => [...prev, { ...newMember }]);
-    setNewMember({ name: "", role: "", side: "", color: "" });
+    setNewMember({ name: "", role: "", side: "", color: "", photo_url: "" });
   };
 
   // Remove entourage member
@@ -212,7 +222,7 @@ export default function MicrositeSettings({ user, supabase }: MicrositeSettingsP
       return;
     }
     setSponsors((prev) => [...prev, { ...newSponsor }]);
-    setNewSponsor({ name: "", type: "principal" });
+    setNewSponsor({ name: "", role: "", side: "", color: "", photo_url: "", type: "principal" });
   };
 
   // Remove sponsor
@@ -532,6 +542,19 @@ export default function MicrositeSettings({ user, supabase }: MicrositeSettingsP
                     placeholder="e.g. Bride's side"
                   />
                 </div>
+                <div className="sm:col-span-3">
+                  <label className="block text-[11px] font-bold uppercase text-neutral-400 mb-1">Photo (Optional)</label>
+                  <ImageUploadDropzone
+                    bucket="user-assets"
+                    folder="entourage"
+                    entityId={user?.id}
+                    label=""
+                    description="Upload member photo"
+                    onUploadComplete={(res) => setNewMember({ ...newMember, photo_url: res.url })}
+                    existingUrl={newMember.photo_url}
+                    onClear={() => setNewMember({ ...newMember, photo_url: "" })}
+                  />
+                </div>
               </div>
               <div className="flex flex-col gap-1.5 pt-1">
                 <label className="block text-[11px] font-bold uppercase text-neutral-400">Tag Color Choice</label>
@@ -587,6 +610,13 @@ export default function MicrositeSettings({ user, supabase }: MicrositeSettingsP
                       </div>
                       <p className="text-[10px] text-neutral-400 mt-0.5">{member.role}</p>
                       
+                      {/* Photo Thumbnail */}
+                      {member.photo_url && (
+                        <div className="mt-1.5">
+                          <img src={member.photo_url} alt="Entourage" className="h-8 w-8 rounded-full object-cover border border-black/5" />
+                        </div>
+                      )}
+
                       {/* Inline color editor */}
                       <div className="flex items-center gap-1.5 mt-2 pt-1.5 border-t border-black/[0.02]">
                         <span className="text-[9px] text-neutral-400 font-semibold uppercase tracking-wider font-[family-name:var(--font-plus-jakarta)]">Color:</span>
@@ -653,17 +683,36 @@ export default function MicrositeSettings({ user, supabase }: MicrositeSettingsP
               </h3>
             </div>
 
-            {/* Form to Add Sponsor */}
             <div className="bg-neutral-50/40 p-4 rounded-xl border border-black/[0.03] space-y-3">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-[11px] font-bold uppercase text-neutral-400 mb-1">Sponsor Name</label>
+                  <label className="block text-[11px] font-bold uppercase text-neutral-400 mb-1">Name</label>
                   <input
                     type="text"
                     value={newSponsor.name}
                     onChange={(e) => setNewSponsor({ ...newSponsor, name: e.target.value })}
                     className="w-full px-2.5 py-1.5 border border-neutral-200 bg-white rounded-lg text-xs font-semibold text-neutral-600 focus:outline-none focus:ring-1 focus:ring-[#a68b6a]"
                     placeholder="e.g. Mr. Edward Harrison"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-bold uppercase text-neutral-400 mb-1">Role / Designation</label>
+                  <input
+                    type="text"
+                    value={newSponsor.role}
+                    onChange={(e) => setNewSponsor({ ...newSponsor, role: e.target.value })}
+                    className="w-full px-2.5 py-1.5 border border-neutral-200 bg-white rounded-lg text-xs font-semibold text-neutral-600 focus:outline-none focus:ring-1 focus:ring-[#a68b6a]"
+                    placeholder="e.g. Ninong / Principal Sponsor"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-bold uppercase text-neutral-400 mb-1">Affiliation / Side</label>
+                  <input
+                    type="text"
+                    value={newSponsor.side}
+                    onChange={(e) => setNewSponsor({ ...newSponsor, side: e.target.value })}
+                    className="w-full px-2.5 py-1.5 border border-neutral-200 bg-white rounded-lg text-xs font-semibold text-neutral-600 focus:outline-none focus:ring-1 focus:ring-[#a68b6a]"
+                    placeholder="e.g. Bride's side"
                   />
                 </div>
                 <div>
@@ -677,8 +726,44 @@ export default function MicrositeSettings({ user, supabase }: MicrositeSettingsP
                     <option value="secondary">Secondary Sponsor</option>
                   </select>
                 </div>
+                <div className="sm:col-span-2">
+                  <label className="block text-[11px] font-bold uppercase text-neutral-400 mb-1">Photo (Optional)</label>
+                  <ImageUploadDropzone
+                    bucket="user-assets"
+                    folder="sponsors"
+                    entityId={user?.id}
+                    label=""
+                    description="Upload sponsor photo"
+                    onUploadComplete={(res) => setNewSponsor({ ...newSponsor, photo_url: res.url })}
+                    existingUrl={newSponsor.photo_url}
+                    onClear={() => setNewSponsor({ ...newSponsor, photo_url: "" })}
+                  />
+                </div>
               </div>
-              <div className="flex items-center justify-end">
+              <div className="flex flex-col gap-1.5 pt-1">
+                <label className="block text-[11px] font-bold uppercase text-neutral-400">Tag Color Choice</label>
+                <div className="flex flex-wrap gap-2 items-center">
+                  {COLOR_PRESETS.map((preset) => (
+                    <button
+                      key={preset.id}
+                      type="button"
+                      onClick={() => setNewSponsor({ ...newSponsor, color: preset.id })}
+                      className={`w-6 h-6 rounded-full border flex items-center justify-center transition-all ${preset.bgColor} ${preset.borderColor} ${
+                        newSponsor.color === preset.id || (!newSponsor.color && preset.id === "neutral")
+                          ? "ring-2 ring-offset-1 ring-[#a68b6a] scale-110"
+                          : "hover:scale-105"
+                      }`}
+                      title={preset.name}
+                    >
+                      <span className={`w-2 h-2 rounded-full ${preset.dotColor}`} />
+                    </button>
+                  ))}
+                  <span className="text-[10px] text-neutral-400 ml-1 italic font-semibold font-[family-name:var(--font-plus-jakarta)]">
+                    {newSponsor.color ? COLOR_PRESETS.find(p => p.id === newSponsor.color)?.name : "Default (Auto-matched)"}
+                  </span>
+                </div>
+              </div>
+              <div className="flex justify-end pt-1">
                 <button
                   type="button"
                   onClick={handleAddSponsor}
@@ -697,12 +782,55 @@ export default function MicrositeSettings({ user, supabase }: MicrositeSettingsP
                 sponsors.map((sponsor, idx) => (
                   <div key={idx} className="flex items-center justify-between p-3 bg-[#fafafa] border border-black/[0.03] rounded-xl hover:border-neutral-200 transition-all select-none">
                     <div className="min-w-0">
-                      <span className="font-semibold text-neutral-700 text-xs truncate">{sponsor.name}</span>
-                      <span className={`ml-2 text-[8px] px-1 rounded font-bold uppercase tracking-wider ${
-                        sponsor.type === "principal" ? "bg-amber-50 text-amber-700 border border-amber-200/40" : "bg-neutral-100 text-neutral-600"
-                      }`}>
-                        {sponsor.type}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-neutral-700 text-xs truncate">{sponsor.name}</span>
+                        {sponsor.side && (
+                          <span className={`text-[8px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider ${
+                            getTagColorClass(sponsor.color, sponsor.side)
+                          }`}>
+                            {sponsor.side}
+                          </span>
+                        )}
+                        <span className={`ml-2 text-[8px] px-1 rounded font-bold uppercase tracking-wider ${
+                          sponsor.type === "principal" ? "bg-amber-50 text-amber-700 border border-amber-200/40" : "bg-neutral-100 text-neutral-600"
+                        }`}>
+                          {sponsor.type}
+                        </span>
+                      </div>
+                      <p className="text-[10px] text-neutral-400 mt-0.5">{sponsor.role}</p>
+
+                      {/* Photo Thumbnail */}
+                      {sponsor.photo_url && (
+                        <div className="mt-1.5">
+                          <img src={sponsor.photo_url} alt="Sponsor" className="h-8 w-8 rounded-full object-cover border border-black/5" />
+                        </div>
+                      )}
+
+                      {/* Inline color editor */}
+                      <div className="flex items-center gap-1.5 mt-2 pt-1.5 border-t border-black/[0.02]">
+                        <span className="text-[9px] text-neutral-400 font-semibold uppercase tracking-wider font-[family-name:var(--font-plus-jakarta)]">Color:</span>
+                        <div className="flex gap-1">
+                          {COLOR_PRESETS.map((preset) => (
+                            <button
+                              key={preset.id}
+                              type="button"
+                              onClick={() => {
+                                const updated = [...sponsors];
+                                updated[idx] = { ...sponsor, color: preset.id };
+                                setSponsors(updated);
+                              }}
+                              className={`w-3.5 h-3.5 rounded-full border transition-all ${preset.bgColor} ${preset.borderColor} ${
+                                sponsor.color === preset.id || (!sponsor.color && preset.id === "neutral")
+                                  ? "ring-1 ring-offset-0.5 ring-[#a68b6a] scale-110"
+                                  : "hover:scale-105"
+                              }`}
+                              title={preset.name}
+                            >
+                              <span className={`w-1 h-1 rounded-full opacity-60 ${preset.dotColor}`} />
+                            </button>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                     <div className="flex items-center gap-1 shrink-0">
                       <button

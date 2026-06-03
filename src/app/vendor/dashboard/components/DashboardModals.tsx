@@ -316,7 +316,8 @@ export function PhotoModal({
   isNew,
   onCancel,
   onSave,
-  onDelete
+  onDelete,
+  themes
 }: {
   open: boolean;
   photo: VendorImage | null;
@@ -324,20 +325,24 @@ export function PhotoModal({
   onCancel: () => void;
   onSave: (photos: VendorImage[]) => void;
   onDelete?: () => void;
+  themes?: {id: number, name: string}[];
 }) {
   const [imageUrl, setImageUrl] = useState(photo?.image_url ?? "");
   const [caption, setCaption] = useState(photo?.caption ?? "");
   const [isCover, setIsCover] = useState(photo?.is_cover ?? false);
+  const [themeId, setThemeId] = useState<number | null>((photo as any)?.theme_id ?? null);
 
   useEffect(() => {
     if (photo) {
       setImageUrl(photo.image_url);
       setCaption(photo.caption ?? "");
       setIsCover(Boolean(photo.is_cover));
+      setThemeId((photo as any).theme_id ?? null);
     } else {
       setImageUrl("");
       setCaption("");
       setIsCover(false);
+      setThemeId(null);
     }
   }, [photo, open]);
 
@@ -353,7 +358,7 @@ export function PhotoModal({
         <div className="px-6 py-4 border-b border-black/5 flex items-center justify-between bg-black/[0.01] shrink-0">
           <div>
             <h2 className="text-lg font-semibold text-[#2c2c2c]">
-              {isNew ? "Add Portfolio Photos" : "Edit Photo Details"}
+              {isNew ? "Add Photos / Themes" : "Edit Photo Details"}
             </h2>
             <p className="text-xs text-black/40 mt-0.5">
               {isNew 
@@ -382,7 +387,8 @@ export function PhotoModal({
                   caption: res.caption,
                   is_cover: false,
                   display_order: idx + 1,
-                }));
+                  theme_id: themeId,
+                } as any));
                 onSave(newPhotos);
               }}
               onCancel={onCancel}
@@ -391,11 +397,17 @@ export function PhotoModal({
             /* Single Edit View */
             <div className="space-y-6">
               <div className="relative aspect-video rounded-xl overflow-hidden border border-black/10 bg-black/5 shadow-inner group">
-                <img 
-                  src={proxiedImageUrl(imageUrl) ?? imageUrl} 
-                  alt="Preview" 
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                />
+                {imageUrl ? (
+                  <img 
+                    src={proxiedImageUrl(imageUrl) || imageUrl} 
+                    alt="Preview" 
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-[12px] text-black/40">
+                    No image
+                  </div>
+                )}
                 {isCover && (
                   <div className="absolute top-3 left-3 px-2 py-1 bg-[#027a48] text-white text-[10px] font-bold rounded-md shadow-lg flex items-center gap-1">
                     <CheckCircle2 className="w-3 h-3" />
@@ -416,6 +428,24 @@ export function PhotoModal({
                     placeholder="Tell a story about this photo..."
                   />
                 </div>
+
+                {themes && themes.length > 0 && (
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-black/60 uppercase tracking-wider">
+                      Theme
+                    </label>
+                    <select
+                      className="w-full h-11 rounded-xl border border-black/10 bg-black/[0.01] px-4 text-sm focus:border-[#a67c52] focus:ring-4 focus:ring-[#a67c52]/10 transition-all outline-none"
+                      value={themeId || ""}
+                      onChange={(e) => setThemeId(e.target.value ? Number(e.target.value) : null)}
+                    >
+                      <option value="">No Theme</option>
+                      {themes.map((t) => (
+                        <option key={t.id} value={t.id}>{t.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
 
                 <label className="flex items-center gap-3 p-4 rounded-xl border border-black/10 bg-black/[0.01] cursor-pointer hover:border-[#a67c52]/30 hover:bg-[#a67c52]/5 transition-all group">
                   <div className={cn(
@@ -460,8 +490,9 @@ export function PhotoModal({
                       image_url: imageUrl, 
                       caption, 
                       is_cover: isCover, 
-                      display_order: photo?.display_order ?? 1 
-                    }])}
+                      display_order: photo?.display_order ?? 1,
+                      theme_id: themeId,
+                    } as any])}
                     disabled={!imageUrl.trim()}
                     className="flex items-center gap-2 h-10 px-6 rounded-xl bg-[#a67c52] text-white text-sm font-semibold hover:bg-[#8e6a46] shadow-md shadow-[#a67c52]/20 transition-all hover:translate-y-[-1px] active:translate-y-[0px] disabled:opacity-50 disabled:translate-y-0"
                   >

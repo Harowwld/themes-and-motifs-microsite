@@ -35,7 +35,7 @@ export default function PromosSection({ promos }: { promos: FeaturedPromo[] }) {
           transition={{ duration: 0.5, ease: EASE_OUT }}
           className="text-[18px] sm:text-[20px] font-semibold tracking-[-0.01em] text-[#2c2c2c]"
         >
-          Unlock Exciting Promos
+          The Wedding Marketplace Promos
         </motion.h2>
         <motion.p
           initial={{ opacity: 0, y: 10 }}

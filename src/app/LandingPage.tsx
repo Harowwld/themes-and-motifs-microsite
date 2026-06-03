@@ -12,6 +12,7 @@ import SavedVendorsProvider from "../features/vendors/components/SavedVendorsPro
 import type { FeaturedVendor, VendorListItem } from "../features/vendors/types";
 import { getCachedVendorLocations } from "../lib/vendorUtils";
 import ScrollToTopOnMount from "./components/ScrollToTopOnMount";
+import FeaturedThemesSection from "./sections/FeaturedThemesSection";
 
 // Cache categories for 1 hour (3600 seconds)
 const getCachedCategories = unstable_cache(
@@ -195,12 +196,16 @@ async function LandingFeaturedDirect() {
   // without invalidating the cache).
   const vendors = shuffle(cachedVendors as FeaturedVendor[]).slice(0, 6);
   const promos = shuffle(cachedPromos).filter(isPromoCurrentlyValid);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const featuredSorted = sortWithImagesFirst(vendors as any);
 
   return (
     <>
       <PromosSection promos={promos} />
       <div className="my-6 sm:my-12 h-px bg-gradient-to-r from-transparent via-black/15 to-transparent" />
+      <FeaturedThemesSection />
+      <div className="my-6 sm:my-12 h-px bg-gradient-to-r from-transparent via-black/15 to-transparent" />
+      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <FeaturedVendorsSection vendors={featuredSorted as any} />
     </>
   );
@@ -244,10 +249,12 @@ async function LandingVendorsDirect({ page, pageSize, sort }: { page: number; pa
   const vendorTotalCount = vendorTotal ?? 0;
 
   const allWithCovers = await attachCoverImages(supabase, vendorAllItems);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const pageSorted = sortWithImagesFirst(allWithCovers as any);
 
   return (
     <SavedVendorsProvider>
+      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <VendorsSection vendors={pageSorted as any} total={vendorTotalCount} page={page} pageSize={pageSize} sort={sort} />
     </SavedVendorsProvider>
   );

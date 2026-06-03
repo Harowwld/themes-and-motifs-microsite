@@ -225,7 +225,7 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight, featured }: 
               return (
                 <span className="shrink-0" title={isPremium ? "Verified Premium Vendor" : "Verified Vendor"}>
                   <Image
-                    src="/cropped-vecteezy_verification-badge-set-guaranteed-stamp-or-verified-badge_23900241.svg"
+                    src="/verified-badge.svg"
                     alt="Verified"
                     width={18}
                     height={18}

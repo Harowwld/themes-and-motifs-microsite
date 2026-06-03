@@ -174,8 +174,13 @@ export default function EventRegistration({ userId }: EventRegistrationProps) {
       handleCloseRegister();
       await loadData();
     } catch (err: any) {
-      console.error("Error registering for event:", err);
-      toast.error(err.message || "Failed to submit registration.");
+      console.error("Error registering for event:", err, {
+        message: err?.message,
+        code: err?.code,
+        details: err?.details,
+        hint: err?.hint
+      });
+      toast.error(err?.message || "Failed to submit registration.");
     } finally {
       setSubmitting(false);
     }

@@ -12,6 +12,7 @@ export function PhotosSection({
   setEditImages: (v: any) => void;
   setEditingPhotoIndex: (v: number | null) => void;
   setPhotoModalOpen: (v: boolean) => void;
+  allThemes?: {id: number; name: string}[];
 }) {
   return (
     <section className="grid gap-4">
@@ -75,7 +76,7 @@ export function PhotosSection({
               {img.is_cover ? "C" : "C"}
             </button>
 
-            <div className="mt-1">
+            <div className="mt-1 flex flex-col gap-1">
               <input
                 value={img.caption}
                 onChange={(e) => {
@@ -86,6 +87,20 @@ export function PhotosSection({
                 className="w-full h-6 rounded-[3px] border border-black/10 px-1.5 text-[10px]"
                 placeholder="Caption"
               />
+              <select
+                value={img.theme_id || ""}
+                onChange={(e) => {
+                  const newImages = [...editImages];
+                  newImages[idx].theme_id = e.target.value ? Number(e.target.value) : null;
+                  setEditImages(newImages);
+                }}
+                className="w-full h-6 rounded-[3px] border border-black/10 px-1 text-[10px] bg-white outline-none"
+              >
+                <option value="">No Theme</option>
+                {allThemes?.map(t => (
+                  <option key={t.id} value={t.id}>{t.name}</option>
+                ))}
+              </select>
             </div>
           </div>
         ))}

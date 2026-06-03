@@ -84,6 +84,9 @@ export function useVendorDashboard() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [allCategories, setAllCategories] = useState<Category[]>([]);
 
+  const [regions, setRegions] = useState<{id: number, name: string}[]>([]);
+  const [cities, setCities] = useState<{id: number, name: string, region_id: number}[]>([]);
+
   const [albums, setAlbums] = useState<Album[]>([]);
   const [selectedAlbum, setSelectedAlbum] = useState<Album | null>(null);
   const [albumPhotos, setAlbumPhotos] = useState<AlbumPhoto[]>([]);
@@ -207,12 +210,13 @@ export function useVendorDashboard() {
             is_cover: Boolean(img.is_cover),
             display_order: typeof img.display_order === "number" ? img.display_order : idx + 1,
             media_type: img.media_type || 'image',
+            theme_id: (img as any).theme_id ?? null,
           }));
 
           setImages(
             normalizedImgs.length > 0
               ? ensureSingleCover(normalizedImgs)
-              : [{ image_url: "", caption: "", is_cover: true, display_order: 1 }]
+              : [{ image_url: "", caption: "", is_cover: true, display_order: 1, theme_id: null }]
           );
 
           setVideos(json.videos ?? []);
@@ -235,17 +239,22 @@ export function useVendorDashboard() {
           setCategories(normalizedCategories);
           setAllCategories(json.allCategories ?? []);
 
-          const [promosRes, inquiriesRes, albumsRes, reviewsRes] = await Promise.all([
+          const [promosRes, inquiriesRes, albumsRes, reviewsRes, regionsRes, cities1Res, cities2Res] = await Promise.all([
             apiFetch<{ promos: VendorPromo[] }>("/api/vendor/promos", session.access_token).catch(() => ({ promos: [] as VendorPromo[] })),
             apiFetch<{ inquiries: Inquiry[] }>("/api/vendor/inquiries", session.access_token).catch(() => ({ inquiries: [] as Inquiry[] })),
             apiFetch<{ albums: Album[] }>("/api/vendor/albums", session.access_token).catch(() => ({ albums: [] as Album[] })),
-            apiFetch<{ reviews: Review[] }>("/api/vendor/reviews", session.access_token).catch(() => ({ reviews: [] as Review[] }))
+            apiFetch<{ reviews: Review[] }>("/api/vendor/reviews", session.access_token).catch(() => ({ reviews: [] as Review[] })),
+            supabase.from("regions").select("id,name").is("parent_id", null).order("name", { ascending: true }).limit(200),
+            supabase.from("cities").select("id,name,region_id").order("name", { ascending: true }).range(0, 999),
+            supabase.from("cities").select("id,name,region_id").order("name", { ascending: true }).range(1000, 1999)
           ]);
 
           setPromos(promosRes.promos ?? []);
           setInquiries(inquiriesRes.inquiries ?? []);
           setAlbums(albumsRes.albums ?? []);
           setReviews(reviewsRes.reviews ?? []);
+          setRegions(regionsRes.data ?? []);
+          setCities([...(cities1Res.data ?? []), ...(cities2Res.data ?? [])]);
         } catch (e: any) {
           toast.error(e?.message ?? "Failed to load vendor profile.");
         } finally {
@@ -512,7 +521,7 @@ export function useVendorDashboard() {
     }
   };
 
-  const saveVerificationDetails = async (secUrl: string, dtiUrl: string, expiryDate: string | null, tin: string | null) => {
+  const saveVerificationDetails = async (secUrl: string, dtiUrl: string, birUrl: string, mayorsPermitUrl: string, expiryDate: string | null, tin: string | null) => {
     if (!token) return false;
     setSaving(true);
     try {
@@ -521,6 +530,8 @@ export function useVendorDashboard() {
         body: JSON.stringify({ 
           sec_doc_url: secUrl || null, 
           dti_doc_url: dtiUrl || null, 
+          bir_doc_url: birUrl || null,
+          mayors_permit_url: mayorsPermitUrl || null,
           expiry_date: expiryDate || null,
           tin: tin || null
         }),
@@ -537,7 +548,7 @@ export function useVendorDashboard() {
   };
 
   const saveVerificationDoc = async (url: string) => {
-    await saveVerificationDetails(url, "", null, subscription?.tin || null);
+    await saveVerificationDetails(url, "", "", "", null, subscription?.tin || null);
   };
 
   const saveProfile = async () => {
@@ -697,6 +708,7 @@ export function useVendorDashboard() {
         is_cover: i.is_cover,
         display_order: i.display_order || idx + 1,
         media_type: i.media_type || 'image',
+        theme_id: i.theme_id ?? null,
       }));
 
       const res = await apiFetch<{ images: VendorImage[] }>("/api/vendor/images", token, {
@@ -710,12 +722,13 @@ export function useVendorDashboard() {
         is_cover: Boolean(img.is_cover),
         display_order: typeof img.display_order === "number" ? img.display_order : idx + 1,
         media_type: img.media_type || 'image',
+        theme_id: (img as any).theme_id ?? null,
       }));
 
       setImages(
         normalizedImgs.length > 0
           ? ensureSingleCover(normalizedImgs)
-          : [{ image_url: "", caption: "", is_cover: true, display_order: 1 }]
+          : [{ image_url: "", caption: "", is_cover: true, display_order: 1, theme_id: null }]
       );
       toast.success("Portfolio photos saved.");
     } catch (e: any) {
@@ -770,6 +783,8 @@ export function useVendorDashboard() {
     allThemes,
     categories,
     allCategories,
+    regions,
+    cities,
     albums,
     selectedAlbum,
     albumPhotos,

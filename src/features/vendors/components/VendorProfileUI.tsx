@@ -136,7 +136,7 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
                   isPremium ? (
                     <span className="inline-flex items-center justify-center h-6 w-6 relative shrink-0" title="Verified Premium Vendor">
                       <Image
-                        src="/cropped-vecteezy_verification-badge-set-guaranteed-stamp-or-verified-badge_23900241.svg"
+                        src="/verified-badge.svg"
                         alt="Verified Premium Vendor"
                         fill
                         sizes="24px"
@@ -418,7 +418,7 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
                       {isPremium ? (
                         <div className="relative h-6 w-6 shrink-0">
                           <Image
-                            src="/cropped-vecteezy_verification-badge-set-guaranteed-stamp-or-verified-badge_23900241.svg"
+                            src="/verified-badge.svg"
                             alt="Verified Premium Vendor"
                             fill
                             sizes="24px"

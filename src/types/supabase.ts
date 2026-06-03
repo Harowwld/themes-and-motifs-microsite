@@ -1275,6 +1275,7 @@ export type Database = {
           image_url: string
           is_cover: boolean | null
           media_type: string | null
+          theme_id: number | null
           vendor_id: number
           zoom: number | null
         }
@@ -1288,6 +1289,7 @@ export type Database = {
           image_url: string
           is_cover?: boolean | null
           media_type?: string | null
+          theme_id?: number | null
           vendor_id: number
           zoom?: number | null
         }
@@ -1301,6 +1303,7 @@ export type Database = {
           image_url?: string
           is_cover?: boolean | null
           media_type?: string | null
+          theme_id?: number | null
           vendor_id?: number
           zoom?: number | null
         }
@@ -1527,10 +1530,12 @@ export type Database = {
       }
       vendor_subscriptions: {
         Row: {
+          bir_doc_url: string | null
           created_at: string
           dti_doc_url: string | null
           expiry_date: string | null
           id: number
+          mayors_permit_url: string | null
           plan_id: number | null
           sec_doc_url: string | null
           status: string
@@ -1540,10 +1545,12 @@ export type Database = {
           verification_doc_url: string | null
         }
         Insert: {
+          bir_doc_url?: string | null
           created_at?: string
           dti_doc_url?: string | null
           expiry_date?: string | null
           id?: number
+          mayors_permit_url?: string | null
           plan_id?: number | null
           sec_doc_url?: string | null
           status?: string
@@ -1553,10 +1560,12 @@ export type Database = {
           verification_doc_url?: string | null
         }
         Update: {
+          bir_doc_url?: string | null
           created_at?: string
           dti_doc_url?: string | null
           expiry_date?: string | null
           id?: number
+          mayors_permit_url?: string | null
           plan_id?: number | null
           sec_doc_url?: string | null
           status?: string

@@ -129,7 +129,7 @@ function VendorCard({ vendor, onRemove }: { vendor: SavedVendor["vendor"]; onRem
               if (shouldShowVerifiedBadge(vendor.document_verified, isPremium)) {
                 return (
                   <span className="inline-flex items-center justify-center h-5 w-5 shrink-0" title={isPremium ? "Verified Premium Vendor" : "Verified Vendor"}>
-                    <img src="/cropped-vecteezy_verification-badge-set-guaranteed-stamp-or-verified-badge_23900241.svg" alt="Verified" className="h-full w-full object-contain" loading="lazy" draggable={false} />
+                    <img src="/verified-badge.svg" alt="Verified" className="h-full w-full object-contain" loading="lazy" draggable={false} />
                   </span>
                 );
               }
@@ -1739,6 +1739,56 @@ export default function DashboardPage() {
                                       ))}
                                     </div>
                                   )}
+                                </section>
+
+                                {/* Community & Events Section */}
+                                <section>
+                                  <div className="flex items-center gap-2 mb-4">
+                                    <svg className="h-5 w-5 text-[#a68b6a]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+                                    </svg>
+                                    <h2 className="text-[18px] font-semibold text-[#2c2c2c] font-[family-name:var(--font-noto-serif)]">
+                                      Community & Events
+                                    </h2>
+                                  </div>
+                                  
+                                  <div className="grid gap-5 sm:grid-cols-2">
+                                    {/* T&M Event Registration */}
+                                    <a href="https://themesnmotifs.com/events" target="_blank" rel="noopener noreferrer" className="bg-white border border-black/[0.06] rounded-2xl p-5 shadow-sm hover:shadow-md transition-all group hover:-translate-y-0.5 duration-300 hover:border-[#a68b6a]/30 flex flex-col justify-between">
+                                      <div>
+                                        <div className="flex items-center justify-between mb-3">
+                                          <span className="text-[11px] font-bold text-[#a68b6a] uppercase tracking-wider bg-[#a68b6a]/10 px-2 py-0.5 rounded">Bridal Fairs</span>
+                                          <svg className="h-5 w-5 text-neutral-400 group-hover:text-[#a68b6a] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                          </svg>
+                                        </div>
+                                        <h3 className="text-[16px] font-bold text-neutral-700 font-[family-name:var(--font-plus-jakarta)] mb-1">
+                                          T&M Event Registration
+                                        </h3>
+                                        <p className="text-[12px] text-neutral-500 leading-relaxed">
+                                          Register for upcoming Themes & Motifs bridal fairs, expos, and exclusive wedding events.
+                                        </p>
+                                      </div>
+                                    </a>
+
+                                    {/* Join or Start A Convo */}
+                                    <a href="#" onClick={(e) => { e.preventDefault(); toast.success("Community Forum coming soon!"); }} className="bg-white border border-black/[0.06] rounded-2xl p-5 shadow-sm hover:shadow-md transition-all group hover:-translate-y-0.5 duration-300 hover:border-[#a68b6a]/30 flex flex-col justify-between">
+                                      <div>
+                                        <div className="flex items-center justify-between mb-3">
+                                          <span className="text-[11px] font-bold text-[#a68b6a] uppercase tracking-wider bg-[#a68b6a]/10 px-2 py-0.5 rounded">Forum</span>
+                                          <svg className="h-5 w-5 text-neutral-400 group-hover:text-[#a68b6a] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
+                                          </svg>
+                                        </div>
+                                        <h3 className="text-[16px] font-bold text-neutral-700 font-[family-name:var(--font-plus-jakarta)] mb-1">
+                                          Join or Start A Convo
+                                        </h3>
+                                        <p className="text-[12px] text-neutral-500 leading-relaxed">
+                                          Connect with other soon-to-weds, ask questions, and share your wedding planning journey.
+                                        </p>
+                                      </div>
+                                    </a>
+                                  </div>
                                 </section>
 
                                 {/* Recent Moments Section (Placed Last) */}

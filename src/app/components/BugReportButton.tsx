@@ -15,6 +15,23 @@ export default function BugReportButton() {
   const [message, setMessage] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [sent, setSent] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    // Check initial auth state
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setIsAuthenticated(!!session);
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsAuthenticated(!!session);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [supabase]);
 
   useEffect(() => {
     if (pathname !== "/") return;
@@ -75,6 +92,8 @@ export default function BugReportButton() {
       setIsSending(false);
     }
   };
+
+  if (!isAuthenticated) return null;
 
   return (
     <div className="fixed top-20 right-4 z-[100]">
