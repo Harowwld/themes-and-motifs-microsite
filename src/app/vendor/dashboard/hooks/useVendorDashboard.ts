@@ -71,8 +71,8 @@ export function useVendorDashboard() {
   const [socialPlatformChoices, setSocialPlatformChoices] = useState<SocialPlatformOption[]>(["facebook", "instagram", "tiktok"]);
   const [socialCustomPlatforms, setSocialCustomPlatforms] = useState<string[]>(["", "", ""]);
   
-  const [images, setImages] = useState<Array<{ image_url: string; caption: string; is_cover: boolean; display_order: number; media_type?: 'image' | 'video' }>>([
-    { image_url: "", caption: "", is_cover: true, display_order: 1 },
+  const [images, setImages] = useState<Array<{ image_url: string; caption: string; is_cover: boolean; display_order: number; media_type?: 'image' | 'video'; theme_id?: number | null }>>([
+    { image_url: "", caption: "", is_cover: true, display_order: 1, theme_id: null },
   ]);
   const [videos, setVideos] = useState<VendorVideo[]>([]);
 

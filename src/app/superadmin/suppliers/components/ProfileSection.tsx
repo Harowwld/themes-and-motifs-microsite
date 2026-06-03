@@ -2,7 +2,9 @@ import React from "react";
 
 export function ProfileSection({
   editForm,
-  setEditForm
+  setEditForm,
+  regions,
+  cities
 }: {
   editForm: any;
   setEditForm: (v: any) => void;

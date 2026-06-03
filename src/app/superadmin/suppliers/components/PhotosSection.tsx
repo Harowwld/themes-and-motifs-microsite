@@ -6,7 +6,8 @@ export function PhotosSection({
   editImages,
   setEditImages,
   setEditingPhotoIndex,
-  setPhotoModalOpen
+  setPhotoModalOpen,
+  allThemes
 }: {
   editImages: VendorImage[];
   setEditImages: (v: any) => void;

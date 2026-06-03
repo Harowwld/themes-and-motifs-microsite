@@ -43,6 +43,8 @@ export default function SuperadminVendorsPage() {
     editThemes,
     setEditThemes,
     allThemes,
+    regions,
+    cities,
     verificationDocuments,
     editPromos,
     promoForm,
@@ -127,6 +129,8 @@ export default function SuperadminVendorsPage() {
         editThemes={editThemes}
         setEditThemes={setEditThemes}
         allThemes={allThemes}
+        regions={regions}
+        cities={cities}
         editPromos={editPromos}
         showPromoForm={showPromoForm}
         setShowPromoForm={setShowPromoForm}
