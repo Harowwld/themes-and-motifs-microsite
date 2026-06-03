@@ -3,6 +3,7 @@ import type { NextRequest } from "next/server";
 
 import { updateSession } from "./src/lib/supabase-server";
 import { findSupabaseToken } from "./src/lib/editorAuth";
+import { rateLimitMiddleware, RATE_LIMITS } from "./src/lib/rateLimit";
 
 const VENDOR_PUBLIC_PATHS = ["/vendor/signin", "/vendor/signup", "/vendor/signup-link"];
 
@@ -24,6 +25,30 @@ function isEditorAllowedPath(pathname: string): boolean {
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
+
+  // Enforce browser-wide/global rate limiting (skip static assets/internal routes)
+  const isStaticAsset =
+    pathname.startsWith("/_next") ||
+    pathname.includes("/favicon.ico") ||
+    pathname.match(/\.(svg|png|jpg|jpeg|gif|webp|css|js)$/);
+
+  if (!isStaticAsset) {
+    let configKey: keyof typeof RATE_LIMITS = "DEFAULT_READ";
+    const endpoint = pathname;
+
+    if (pathname.startsWith("/superadmin") || pathname.startsWith("/admin")) {
+      configKey = "ADMIN";
+    } else if (pathname.startsWith("/vendor")) {
+      configKey = "VENDOR_API";
+    } else if (req.method !== "GET") {
+      configKey = "DEFAULT_WRITE";
+    }
+
+    const { allowed, response } = await rateLimitMiddleware(req, endpoint, RATE_LIMITS[configKey]);
+    if (!allowed && response) {
+      return response;
+    }
+  }
 
   // Handle vendor public paths (signin, signup)
   if (isVendorPublicPath(pathname)) {
@@ -140,5 +165,7 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/superadmin/:path*", "/vendor/:path*", "/editor/:path*"],
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+  ],
 };
