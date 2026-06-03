@@ -169,7 +169,7 @@ export default function SiteHeader() {
   const menuButtonRef = useRef<HTMLButtonElement>(null);
 
   const dashboardHref = useMemo(() => {
-    if (isVendor) return "/vendor/dashboard";
+    if (isVendor || accountType === "vendor") return "/vendor/dashboard";
     if (accountType === "superadmin") return "/superadmin";
     if (accountType === "editor") return "/editor/dashboard";
     return "/dashboard";
@@ -537,7 +537,16 @@ export default function SiteHeader() {
                 </>
               )}
 
-              {/* Dashboard for all signed-in users */}<motion.div
+              {/* Dashboard for all signed-in users */}
+              {mounted && signedIn && (
+                <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3, duration: 0.3, ease: EASE_OUT }}>
+                  <NavLink className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-[#a68b6a] hover:text-[#957a5c] hover:bg-gray-50 transition-colors" href={dashboardHref}>
+                    Dashboard
+                  </NavLink>
+                </motion.div>
+              )}
+
+              <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.35 }}

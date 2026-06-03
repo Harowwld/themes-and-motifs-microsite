@@ -11,8 +11,8 @@ const CACHE_TTL_MS = 30_000;
 type AccountType = "vendor" | "couple" | "editor" | "superadmin" | null;
 
 function getAccountType(role: string | null, isVendor: boolean): AccountType {
-  if (isVendor) return "vendor";
   const r = String(role ?? "").trim().toLowerCase();
+  if (isVendor || r === "vendor") return "vendor";
   if (r === "soon_to_wed") return "couple";
   if (r === "editor") return "editor";
   if (r === "admin" || r === "superadmin") return "superadmin";
