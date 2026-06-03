@@ -17,6 +17,7 @@ const securityHeaders = [
       "frame-ancestors 'self'", // Allow framing on same origin
       "form-action 'self'",
       "base-uri 'self'",
+      "worker-src 'self' blob:", // Allow web workers for image compression
       "upgrade-insecure-requests",
     ].join("; "),
   },
