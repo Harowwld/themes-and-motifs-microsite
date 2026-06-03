@@ -26,24 +26,19 @@ function isEditorAllowedPath(pathname: string): boolean {
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // Enforce browser-wide/global rate limiting (skip static assets/internal routes)
-  const isStaticAsset =
-    pathname.startsWith("/_next") ||
-    pathname.includes("/favicon.ico") ||
-    pathname.match(/\.(svg|png|jpg|jpeg|gif|webp|css|js)$/);
+  // Enforce rate limiting ONLY on /api/ routes to avoid slowing down page navigation and static assets
+  const isApiRoute = pathname.startsWith("/api/");
 
-  if (!isStaticAsset) {
-    let configKey: keyof typeof RATE_LIMITS = "DEFAULT_READ";
+  if (isApiRoute) {
+    let configKey: keyof typeof RATE_LIMITS = req.method === "GET" ? "DEFAULT_READ" : "DEFAULT_WRITE";
     const endpoint = pathname;
 
-    if (pathname.startsWith("/superadmin") || pathname.startsWith("/admin")) {
+    if (pathname.startsWith("/api/superadmin") || pathname.startsWith("/api/admin")) {
       configKey = "ADMIN";
-    } else if (pathname.startsWith("/vendor")) {
+    } else if (pathname.startsWith("/api/vendor")) {
       configKey = "VENDOR_API";
     } else if (pathname === "/api/bug-report") {
       configKey = "BUG_REPORT";
-    } else if (req.method !== "GET") {
-      configKey = "DEFAULT_WRITE";
     }
 
     const { allowed, response } = await rateLimitMiddleware(req, endpoint, RATE_LIMITS[configKey]);
