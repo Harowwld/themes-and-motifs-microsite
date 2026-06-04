@@ -291,7 +291,7 @@ export default function HeroSection({
           variants={itemVariants}
           className="mt-3 sm:mt-4 max-w-xl text-[14px] sm:text-[15px] lg:text-[16px] leading-6 sm:leading-7 text-white/75 font-[family-name:var(--font-plus-jakarta)]"
         >
-          Plan with confidence—connect with verified suppliers across the Philippines, with real couple reviews and exclusive offers.
+          Plan with confidence—find trusted wedding pros and manage every detail of your Big Day: budgets, checklists, RSVPs, guest lists, and seating plans.
         </motion.p>
 
         <motion.div
