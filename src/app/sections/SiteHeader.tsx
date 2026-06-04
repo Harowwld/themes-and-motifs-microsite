@@ -446,12 +446,14 @@ export default function SiteHeader() {
           {/* Desktop nav items - Right side */}
           {mounted && signedIn && (
             <>
-              <NavLink
-                className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-md text-[13px] font-medium text-gray-600 hover:text-gray-900 transition-colors font-[family-name:var(--font-plus-jakarta)]"
-                href={dashboardHref}
-              >
-                Dashboard
-              </NavLink>
+              {(isVendor || isSoonToWed || accountType !== null) && (
+                <NavLink
+                  className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-md text-[13px] font-medium text-gray-600 hover:text-gray-900 transition-colors font-[family-name:var(--font-plus-jakarta)]"
+                  href={dashboardHref}
+                >
+                  Dashboard
+                </NavLink>
+              )}
               <NavButton
                 disabled={signingOut}
                 onClick={() => void signOut()}
@@ -548,7 +550,7 @@ export default function SiteHeader() {
               )}
 
               {/* Dashboard for all signed-in users */}
-              {mounted && signedIn && (
+              {mounted && signedIn && (isVendor || isSoonToWed || accountType !== null) && (
                 <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3, duration: 0.3, ease: EASE_OUT }}>
                   <NavLink className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-[#a68b6a] hover:text-[#957a5c] hover:bg-gray-50 transition-colors" href={dashboardHref}>
                     Dashboard
@@ -581,7 +583,7 @@ export default function SiteHeader() {
                     <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full flex-shrink-0 ${
                       accountType === "vendor"
                         ? "bg-blue-50 text-blue-600 border border-blue-200"
-                        : accountType === "couple"
+                        : accountType === "couple" || accountType === "soon_to_wed"
                         ? "bg-[#a68b6a]/10 text-[#a68b6a] border border-[#a68b6a]/20"
                         : accountType === "editor"
                         ? "bg-purple-50 text-purple-600 border border-purple-200"
