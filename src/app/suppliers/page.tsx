@@ -12,7 +12,6 @@ import { VendorCardSkeleton } from "../../features/vendors/components/VendorCard
 import type { VendorWithSortFields, SortKey } from "../../lib/vendorUtils";
 import { getCachedVendorLocations } from "../../lib/vendorUtils";
 
-export const dynamic = 'force-dynamic';
 
 // Cache regions for 1 hour (3600 seconds)
 const getCachedRegions = unstable_cache(
@@ -81,12 +80,16 @@ const getCachedDefaultVendors = unstable_cache(
   { revalidate: 300 } // 5 minutes
 );
 
-// Don't cache themes - they can be added dynamically by vendors
-async function getThemes() {
-  const supabase = createSupabaseServerClient();
-  const { data } = await supabase.from("themes").select("id,name,slug").order("name", { ascending: true }).limit(200);
-  return (data ?? []) as ThemeListItem[];
-}
+// Cache themes for 1 hour (3600 seconds)
+const getThemes = unstable_cache(
+  async () => {
+    const supabase = createSupabaseServerClient();
+    const { data } = await supabase.from("themes").select("id,name,slug").order("name", { ascending: true }).limit(200);
+    return (data ?? []) as ThemeListItem[];
+  },
+  ["themes"],
+  { revalidate: 3600 }
+);
 
 type CategoryListItem = {
   id: number;

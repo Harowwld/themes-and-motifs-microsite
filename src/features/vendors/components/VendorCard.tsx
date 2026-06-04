@@ -114,6 +114,7 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight, featured }: 
       transition={{ duration: 0.4, ease: EASE_OUT }}
       href={`/suppliers/${encodeURIComponent(vendor.slug)}`}
       className={`group relative overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-shadow hover:shadow-2xl ${fixedHeight ? 'h-[200px] sm:h-[240px] flex flex-col' : 'block'}`}
+      style={{ contentVisibility: "auto", containIntrinsicSize: "0 240px" }}
       aria-label={`View ${vendor.business_name}`}
       onMouseEnter={() => {
         setIsHovered(true);
