@@ -141,7 +141,7 @@ export function useVendorDashboard() {
         }
 
         try {
-          const json = await apiFetch<{
+          const profilePromise = apiFetch<{
             vendor: VendorProfile;
             socials: SocialLink[];
             images: VendorImage[];
@@ -160,6 +160,26 @@ export function useVendorDashboard() {
             } | null;
             videos: VendorVideo[];
           }>("/api/vendor/profile", session.access_token);
+
+          const [
+            json,
+            promosRes,
+            inquiriesRes,
+            albumsRes,
+            reviewsRes,
+            regionsRes,
+            cities1Res,
+            cities2Res
+          ] = await Promise.all([
+            profilePromise,
+            apiFetch<{ promos: VendorPromo[] }>("/api/vendor/promos", session.access_token).catch(() => ({ promos: [] as VendorPromo[] })),
+            apiFetch<{ inquiries: Inquiry[] }>("/api/vendor/inquiries", session.access_token).catch(() => ({ inquiries: [] as Inquiry[] })),
+            apiFetch<{ albums: Album[] }>("/api/vendor/albums", session.access_token).catch(() => ({ albums: [] as Album[] })),
+            apiFetch<{ reviews: Review[] }>("/api/vendor/reviews", session.access_token).catch(() => ({ reviews: [] as Review[] })),
+            supabase.from("regions").select("id,name").is("parent_id", null).order("name", { ascending: true }).limit(200),
+            supabase.from("cities").select("id,name,region_id").order("name", { ascending: true }).range(0, 999),
+            supabase.from("cities").select("id,name,region_id").order("name", { ascending: true }).range(1000, 1999)
+          ]);
 
           setVendor(json.vendor);
           setSubscription(json.subscription);
@@ -238,16 +258,6 @@ export function useVendorDashboard() {
             .filter((c): c is Category => c !== null);
           setCategories(normalizedCategories);
           setAllCategories(json.allCategories ?? []);
-
-          const [promosRes, inquiriesRes, albumsRes, reviewsRes, regionsRes, cities1Res, cities2Res] = await Promise.all([
-            apiFetch<{ promos: VendorPromo[] }>("/api/vendor/promos", session.access_token).catch(() => ({ promos: [] as VendorPromo[] })),
-            apiFetch<{ inquiries: Inquiry[] }>("/api/vendor/inquiries", session.access_token).catch(() => ({ inquiries: [] as Inquiry[] })),
-            apiFetch<{ albums: Album[] }>("/api/vendor/albums", session.access_token).catch(() => ({ albums: [] as Album[] })),
-            apiFetch<{ reviews: Review[] }>("/api/vendor/reviews", session.access_token).catch(() => ({ reviews: [] as Review[] })),
-            supabase.from("regions").select("id,name").is("parent_id", null).order("name", { ascending: true }).limit(200),
-            supabase.from("cities").select("id,name,region_id").order("name", { ascending: true }).range(0, 999),
-            supabase.from("cities").select("id,name,region_id").order("name", { ascending: true }).range(1000, 1999)
-          ]);
 
           setPromos(promosRes.promos ?? []);
           setInquiries(inquiriesRes.inquiries ?? []);
