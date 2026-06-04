@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-export type VendorsSortKey = "alpha" | "rating" | "newest" | "saves" | "views";
+export type VendorsSortKey = "alpha" | "rating" | "newest" | "saves" | "views" | "verified";
 
 // Sanitize search input to prevent SQL injection
 function sanitizeSearchInput(input: string): { sanitized: string; isValid: boolean } {

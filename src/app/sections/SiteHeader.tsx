@@ -408,6 +408,11 @@ export default function SiteHeader() {
                 </NavLink>
               </motion.div>
               <motion.div variants={itemVariants}>
+                <NavLink className="hover:text-[#a68b6a] transition-colors" href="/suppliers">
+                  Verified Suppliers
+                </NavLink>
+              </motion.div>
+              <motion.div variants={itemVariants}>
                 <NavLink className="hover:text-[#a68b6a] transition-colors" href="/why-trust-us">
                   Why Trust Us
                 </NavLink>
@@ -522,6 +527,11 @@ export default function SiteHeader() {
                   <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.15, duration: 0.3, ease: EASE_OUT }}>
                     <NavLink className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors" href="/promos">
                       The Wedding Marketplace
+                    </NavLink>
+                  </motion.div>
+                  <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2, duration: 0.3, ease: EASE_OUT }}>
+                    <NavLink className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors" href="/suppliers">
+                      Verified Suppliers
                     </NavLink>
                   </motion.div>
                   <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2, duration: 0.3, ease: EASE_OUT }}>

@@ -139,39 +139,32 @@ export default function EventRegistration({ userId }: EventRegistrationProps) {
     }
   };
 
-  const handleOpenRegister = (fair: BridalFair) => {
-    setRegisteringFair(fair);
-  };
-
   const handleCloseRegister = () => {
     setRegisteringFair(null);
-    setRegNotes("");
   };
 
-  const handleRegisterSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!registeringFair) return;
+  const handleQuickRegister = async (fair: BridalFair) => {
+    setRegisteringFair(fair);
     setSubmitting(true);
 
     try {
       const { data, error } = await supabase
         .from("fair_registrations")
         .insert({
-          fair_id: registeringFair.id,
+          fair_id: fair.id,
           user_id: userId,
-          name: regName.trim(),
+          name: regName.trim() || "Guest",
           email: regEmail.trim(),
           phone: regPhone.trim() || null,
           wedding_date: regWeddingDate || null,
-          notes: regNotes.trim() || null,
+          notes: null,
         })
         .select()
         .single();
 
       if (error) throw error;
 
-      toast.success(`Successfully registered for ${registeringFair.title}!`);
-      handleCloseRegister();
+      toast.success(`Successfully registered for ${fair.title}!`);
       await loadData();
     } catch (err: any) {
       console.error("Error registering for event:", err, {
@@ -183,6 +176,7 @@ export default function EventRegistration({ userId }: EventRegistrationProps) {
       toast.error(err?.message || "Failed to submit registration.");
     } finally {
       setSubmitting(false);
+      setRegisteringFair(null);
     }
   };
 
@@ -427,11 +421,12 @@ export default function EventRegistration({ userId }: EventRegistrationProps) {
                         </div>
                       ) : (
                         <button
-                          onClick={() => handleOpenRegister(fair)}
-                          className="h-9 px-5 bg-[#a68b6a] hover:bg-[#957a5c] text-white text-[11px] font-bold rounded-xl uppercase tracking-widest transition-all inline-flex items-center gap-1.5 cursor-pointer shadow-sm hover:shadow"
+                          onClick={() => handleQuickRegister(fair)}
+                          disabled={submitting && registeringFair?.id === fair.id}
+                          className="h-9 px-5 bg-[#a68b6a] hover:bg-[#957a5c] disabled:opacity-50 text-white text-[11px] font-bold rounded-xl uppercase tracking-widest transition-all inline-flex items-center gap-1.5 cursor-pointer shadow-sm hover:shadow"
                         >
-                          <span>Register Free</span>
-                          <ChevronRight size={13} strokeWidth={2.5} />
+                          <span>{submitting && registeringFair?.id === fair.id ? "Registering..." : "Attend T&M Event"}</span>
+                          {(!submitting || registeringFair?.id !== fair.id) && <ChevronRight size={13} strokeWidth={2.5} />}
                         </button>
                       )}
                     </div>
@@ -444,129 +439,7 @@ export default function EventRegistration({ userId }: EventRegistrationProps) {
       </div>
 
       {/* simulated RSVP/Registration dialog popup */}
-      {registeringFair && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fadeIn select-none">
-          <div className="bg-white border border-black/10 rounded-2xl p-6 w-full max-w-md shadow-2xl relative">
-            
-            <button
-              onClick={handleCloseRegister}
-              className="absolute top-4 right-4 h-8 w-8 text-neutral-400 hover:text-neutral-600 rounded-full flex items-center justify-center hover:bg-neutral-100 transition-all cursor-pointer"
-            >
-              <X size={16} />
-            </button>
 
-            <div className="text-center mb-6">
-              <div className="flex justify-center text-[#a68b6a] mb-2">
-                <Ticket className="h-10 w-10 text-[#a68b6a] animate-pulse" />
-              </div>
-              <h3 className="text-[18px] font-bold text-neutral-800 font-[family-name:var(--font-noto-serif)] mt-2">
-                Exhibition Guest Registration
-              </h3>
-              <p className="text-[12px] text-neutral-400 mt-1">
-                Complete your free entry pass details for
-              </p>
-              <p className="text-[12.5px] font-bold text-[#a68b6a] mt-0.5 truncate px-2">
-                {registeringFair.title}
-              </p>
-            </div>
-
-            <form onSubmit={handleRegisterSubmit} className="space-y-4">
-              <div>
-                <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-400 mb-1.5 flex items-center gap-1">
-                  <User size={11} />
-                  <span>Registrant / Couple Name *</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={regName}
-                  onChange={(e) => setRegName(e.target.value)}
-                  placeholder="e.g. Wilson & Diana"
-                  className="w-full h-10 px-3 border border-black/[0.08] rounded-lg bg-[#fafafa]/50 text-[13px] font-semibold outline-none focus:border-[#a68b6a] focus:bg-white transition-all"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-400 mb-1.5 flex items-center gap-1">
-                    <Mail size={11} />
-                    <span>Email Address *</span>
-                  </label>
-                  <input
-                    type="email"
-                    required
-                    value={regEmail}
-                    onChange={(e) => setRegEmail(e.target.value)}
-                    placeholder="e.g. couple@gmail.com"
-                    className="w-full h-10 px-3 border border-black/[0.08] rounded-lg bg-[#fafafa]/50 text-[13px] font-semibold outline-none focus:border-[#a68b6a] focus:bg-white transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-400 mb-1.5 flex items-center gap-1">
-                    <Phone size={11} />
-                    <span>Phone Number</span>
-                  </label>
-                  <input
-                    type="tel"
-                    value={regPhone}
-                    onChange={(e) => setRegPhone(e.target.value)}
-                    placeholder="e.g. +639171234567"
-                    className="w-full h-10 px-3 border border-black/[0.08] rounded-lg bg-[#fafafa]/50 text-[13px] font-semibold outline-none focus:border-[#a68b6a] focus:bg-white transition-all"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 gap-3">
-                <div>
-                  <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-400 mb-1.5 flex items-center gap-1">
-                    <Calendar size={11} />
-                    <span>Target Wedding Date</span>
-                  </label>
-                  <input
-                    type="date"
-                    value={regWeddingDate}
-                    onChange={(e) => setRegWeddingDate(e.target.value)}
-                    className="w-full h-10 px-3 border border-black/[0.08] rounded-lg bg-[#fafafa]/50 text-[13px] font-semibold outline-none focus:border-[#a68b6a] focus:bg-white transition-all"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-400 mb-1.5 flex items-center gap-1">
-                  <FileText size={11} />
-                  <span>Special Inquiries / Notes</span>
-                </label>
-                <textarea
-                  value={regNotes}
-                  onChange={(e) => setRegNotes(e.target.value)}
-                  placeholder="Any specific supplier details or category matches you are looking for?"
-                  rows={3}
-                  className="w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 p-3 text-[13px] outline-none focus:border-[#a68b6a] focus:bg-white transition-all leading-relaxed"
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={submitting}
-                className="w-full h-11 bg-[#a68b6a] hover:bg-[#957a5c] disabled:bg-neutral-300 text-white text-[12px] font-bold uppercase tracking-widest rounded-lg transition-colors cursor-pointer inline-flex items-center justify-center gap-1.5 shadow"
-              >
-                {submitting ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-t-transparent border-white"></div>
-                    <span>Registering...</span>
-                  </>
-                ) : (
-                  <>
-                    <CheckCircle2 size={14} />
-                    <span>Get Free Entry Pass</span>
-                  </>
-                )}
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
 
     </div>
   );

@@ -1493,10 +1493,10 @@ export default function DashboardPage() {
             <aside className="w-full lg:w-[260px] shrink-0 space-y-2">
               <div className="rounded-2xl border border-black/[0.06] bg-white p-4 shadow-[0_8px_30px_rgba(0,0,0,0.015)] space-y-1.5">
                 <div className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest px-3 mb-2.5">
-                  Admin Workspace
+                  Wedding Tools Hub
                 </div>
                 {[
-                  { id: "wedding_tools", label: "Wedding Tools Hub", icon: LayoutDashboard },
+                  { id: "wedding_tools", label: "Wedding Journey Summary", icon: LayoutDashboard },
                   { id: "microsite_settings", label: "Wedding Page Settings", icon: Globe },
                   { id: "gift_registry", label: "Gift Registry", icon: Gift },
                   { id: "event_registration", label: "Event Registration", icon: Calendar },

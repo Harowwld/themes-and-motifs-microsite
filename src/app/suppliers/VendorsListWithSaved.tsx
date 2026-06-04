@@ -4,7 +4,7 @@ import SavedVendorsProvider from "../../features/vendors/components/SavedVendors
 import VirtualizedVendorsList from "./VirtualizedVendorsList";
 import type { VendorListItem } from "../../features/vendors/types";
 
-type SortKey = "alpha" | "rating" | "newest" | "saves" | "views";
+type SortKey = "alpha" | "rating" | "newest" | "saves" | "views" | "verified";
 
 interface Props {
   initialVendors: VendorListItem[];

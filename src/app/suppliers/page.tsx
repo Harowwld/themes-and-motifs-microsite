@@ -12,6 +12,8 @@ import { VendorCardSkeleton } from "../../features/vendors/components/VendorCard
 import type { VendorWithSortFields, SortKey } from "../../lib/vendorUtils";
 import { getCachedVendorLocations } from "../../lib/vendorUtils";
 
+export const dynamic = 'force-dynamic';
+
 // Cache regions for 1 hour (3600 seconds)
 const getCachedRegions = unstable_cache(
   async () => {
@@ -119,7 +121,7 @@ export function VendorsPageSkeleton() {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h2 className="text-[18px] sm:text-[20px] font-semibold tracking-[-0.01em] text-[#2c2c2c] animate-pulse">
-              Vendors
+              Suppliers
             </h2>
             <p className="mt-2 text-[13px] text-black/55 max-w-xl font-[family-name:var(--font-plus-jakarta)] animate-pulse">
               Browse suppliers — keep scrolling to load more.
@@ -238,7 +240,7 @@ export default async function VendorsPage({
   const limit = 30;
   const rawSort = (sp.vendorsSort as string | undefined) ?? "rating";
   const sort: SortKey =
-    rawSort === "alpha" || rawSort === "newest" || rawSort === "saves" || rawSort === "views" ? rawSort : "rating";
+    rawSort === "alpha" || rawSort === "newest" || rawSort === "saves" || rawSort === "views" || rawSort === "verified" ? rawSort : "rating";
 
   return (
     <div

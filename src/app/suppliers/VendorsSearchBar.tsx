@@ -20,7 +20,7 @@ type AffiliationOption = {
   slug: string;
 };
 
-type SortKey = "rating" | "alpha" | "newest" | "saves" | "views";
+type SortKey = "rating" | "alpha" | "newest" | "saves" | "views" | "verified";
 
 type CategoryOption = {
   id: number;
@@ -138,12 +138,12 @@ export default function VendorsSearchBar({
   return (
     <div className="rounded-lg border border-stone-200/60 bg-white/80 backdrop-blur-sm shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
       <div className="px-6 py-5 border-b border-stone-100">
-        <div className="text-lg font-semibold text-stone-800 font-headline font-[family-name:var(--font-plus-jakarta)]">Search vendors</div>
-        <div className="mt-1 text-sm text-stone-500 font-[family-name:var(--font-plus-jakarta)]">Refine by keyword, region, location, or affiliation.</div>
+        <div className="text-lg font-semibold text-stone-800 font-headline font-[family-name:var(--font-plus-jakarta)]">Search suppliers</div>
+        <div className="mt-1 text-sm text-stone-500 font-[family-name:var(--font-plus-jakarta)]">Refine by keyword, category, area, city, affiliation, or theme.</div>
       </div>
 
       <div className="p-6 space-y-4">
-        <div className="grid gap-3 items-end grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+        <div className="grid gap-3 items-end grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           <label className="grid gap-1.5">
             <span className="text-xs font-medium text-stone-500 uppercase tracking-wide font-[family-name:var(--font-plus-jakarta)]">Keyword</span>
             <input
@@ -152,9 +152,25 @@ export default function VendorsSearchBar({
               onKeyDown={(e) => {
                 if (e.key === "Enter") submit();
               }}
-              placeholder="Search vendor name"
+              placeholder="Search supplier name"
               className="h-11 w-full rounded-md border border-stone-200 bg-stone-50 px-4 text-sm text-stone-700 placeholder:text-stone-400 outline-none transition-all focus:border-[#a68b6a] focus:bg-white focus:ring-2 focus:ring-[#a68b6a]/10 font-[family-name:var(--font-plus-jakarta)]"
             />
+          </label>
+
+          <label className="grid gap-1.5">
+            <span className="text-xs font-medium text-stone-500 uppercase tracking-wide font-[family-name:var(--font-plus-jakarta)]">Category</span>
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="h-11 w-full rounded-md border border-stone-200 bg-stone-50 px-4 text-sm text-stone-700 outline-none transition-all focus:border-[#a68b6a] focus:bg-white focus:ring-2 focus:ring-[#a68b6a]/10 appearance-none cursor-pointer font-[family-name:var(--font-plus-jakarta)]"
+            >
+              <option value="" className="font-[family-name:var(--font-plus-jakarta)]">All categories</option>
+              {categoryOptions.map((c) => (
+                <option key={c.id} value={c.slug} className="font-[family-name:var(--font-plus-jakarta)]">
+                  {c.name}
+                </option>
+              ))}
+            </select>
           </label>
 
           <label className="grid gap-1.5">
@@ -242,6 +258,7 @@ export default function VendorsSearchBar({
               className="h-11 w-full rounded-md border border-stone-200 bg-stone-50 px-4 text-sm text-stone-700 outline-none transition-all focus:border-[#a68b6a] focus:bg-white focus:ring-2 focus:ring-[#a68b6a]/10 appearance-none cursor-pointer font-[family-name:var(--font-plus-jakarta)]"
             >
               <option value="rating" className="font-[family-name:var(--font-plus-jakarta)]">Top rated</option>
+              <option value="verified" className="font-[family-name:var(--font-plus-jakarta)]">Verified suppliers only</option>
               <option value="alpha" className="font-[family-name:var(--font-plus-jakarta)]">A-Z</option>
               <option value="newest" className="font-[family-name:var(--font-plus-jakarta)]">Newest</option>
               <option value="saves" className="font-[family-name:var(--font-plus-jakarta)]">Most saved</option>
@@ -268,13 +285,13 @@ export function VendorsSearchBarSkeleton() {
   return (
     <div className="rounded-lg border border-stone-200/60 bg-white/80 backdrop-blur-sm shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
       <div className="px-6 py-5 border-b border-stone-100">
-        <div className="text-lg font-semibold text-stone-800 font-headline font-[family-name:var(--font-plus-jakarta)]">Search vendors</div>
-        <div className="mt-1 text-sm text-stone-500 font-[family-name:var(--font-plus-jakarta)]">Refine by keyword, region, location, or affiliation.</div>
+        <div className="text-lg font-semibold text-stone-800 font-headline font-[family-name:var(--font-plus-jakarta)]">Search suppliers</div>
+        <div className="mt-1 text-sm text-stone-500 font-[family-name:var(--font-plus-jakarta)]">Refine by keyword, category, area, city, affiliation, or theme.</div>
       </div>
 
       <div className="p-6 space-y-4">
-        <div className="grid gap-3 items-end grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-          {["Keyword", "Area", "City", "Affiliation", "Theme", "Sort"].map((label) => (
+        <div className="grid gap-3 items-end grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {["Keyword", "Category", "Area", "City", "Affiliation", "Theme", "Sort"].map((label) => (
             <div key={label} className="grid gap-1.5 animate-pulse">
               <span className="text-xs font-medium text-stone-500 uppercase tracking-wide font-[family-name:var(--font-plus-jakarta)]">
                 {label}

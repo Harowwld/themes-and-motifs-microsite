@@ -37,7 +37,7 @@ export default function Loading() {
             <div className="rounded-2xl border border-black/[0.06] bg-white p-4 shadow-[0_8px_30px_rgba(0,0,0,0.015)] space-y-1.5">
               <div className="h-3.5 w-28 bg-black/5 rounded px-3 mb-2.5" />
               {[
-                { label: "Wedding Tools Hub", icon: LayoutDashboard },
+                { label: "Wedding Journey Summary", icon: LayoutDashboard },
                 { label: "Wedding Page Settings", icon: Globe },
                 { label: "Gift Registry", icon: Gift },
                 { label: "Guest List Tracker", icon: Users },

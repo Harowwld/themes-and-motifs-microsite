@@ -1,7 +1,7 @@
 import { unstable_cache } from "next/cache";
 import { createSupabaseServerClient } from "./supabaseServer";
 
-export type SortKey = "alpha" | "rating" | "newest" | "saves" | "views";
+export type SortKey = "alpha" | "rating" | "newest" | "saves" | "views" | "verified";
 
 // Shared cached function for vendor locations - used by both LandingPage and VendorsPage
 // Cache for 30 minutes (1800 seconds)

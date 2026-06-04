@@ -5,7 +5,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import VendorCard, { VendorCardSkeleton } from "../../features/vendors/components/VendorCard";
 import type { VendorListItem } from "../../features/vendors/types";
 
-type SortKey = "alpha" | "rating" | "newest" | "saves" | "views";
+type SortKey = "alpha" | "rating" | "newest" | "saves" | "views" | "verified";
 
 type Props = {
   initialVendors: VendorListItem[];
