@@ -1347,15 +1347,9 @@ export default function CoupleMicrositePage() {
 
       </div>
 
-      <div className="w-full border-t border-black/[0.05] bg-[#fafafa] mt-8 py-10 px-4 sm:px-6 overflow-hidden flex justify-center">
-        <div className="w-full max-w-[1400px]">
-          <AdBanner pageContext="microsite" />
-        </div>
-      </div>
-
-      {/* Footer with QR Code */}
-      <div className="w-full border-t border-black/[0.05] bg-white py-12 px-4 sm:px-6">
-        <div className="max-w-4xl mx-auto flex flex-col items-center justify-center text-center space-y-4">
+      {/* QR Code Section */}
+      <div className="w-full bg-[#fafafa] pt-8 pb-4 px-4 sm:px-6 border-t border-black/[0.05]">
+        <div className="max-w-2xl mx-auto bg-white rounded-xl border border-black/5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] hover:shadow-[0_10px_25px_rgba(0,0,0,0.08),0_4px_10px_rgba(0,0,0,0.04)] transition-all duration-300 py-8 px-6 flex flex-col items-center justify-center text-center space-y-4">
           <div className="p-3 bg-white border border-black/[0.08] shadow-sm rounded-xl">
             <img 
               src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(`https://themesnmotifs.com/moments/couple/${userId}`)}`} 
@@ -1369,6 +1363,12 @@ export default function CoupleMicrositePage() {
           <p className="text-[13px] text-neutral-500 max-w-sm font-[family-name:var(--font-plus-jakarta)]">
             Share this QR code with your family and friends so they can easily access your wedding details, stories, and registry.
           </p>
+        </div>
+      </div>
+
+      <div className="w-full border-t border-black/[0.05] bg-[#fafafa] py-10 px-4 sm:px-6 overflow-hidden flex justify-center">
+        <div className="w-full max-w-[1400px]">
+          <AdBanner pageContext="microsite" />
         </div>
       </div>
 

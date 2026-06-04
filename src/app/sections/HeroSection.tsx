@@ -304,23 +304,16 @@ export default function HeroSection({
             style={{ backgroundColor: 'var(--muted-brown)' }}
             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--muted-brown-hover)'}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--muted-brown)'}
-            href="/promos"
-          >
-            Unlock Great Deals
-          </motion.a>
-          <motion.a
-            whileTap={{ scale: 0.97 }}
-            className="h-11 sm:h-12 inline-flex items-center justify-center px-5 sm:px-6 rounded-md border border-white/30 bg-white/10 backdrop-blur-sm text-white text-[14px] sm:text-[15px] font-medium hover:bg-white/20 transition-colors shadow-lg touch-manipulation"
             href="/suppliers"
           >
-            Read Reviews
+            Discover Suppliers
           </motion.a>
           <motion.a
             whileTap={{ scale: 0.97 }}
             className="h-11 sm:h-12 inline-flex items-center justify-center px-5 sm:px-6 rounded-md border border-white/30 bg-white/10 backdrop-blur-sm text-white text-[14px] sm:text-[15px] font-medium hover:bg-white/20 transition-colors shadow-lg touch-manipulation"
-            href="/moments"
+            href="/suppliers/plans"
           >
-            Start Planning
+            Be A Verified Supplier
           </motion.a>
         </motion.div>
 
@@ -329,9 +322,9 @@ export default function HeroSection({
           className="mt-5 sm:mt-7 grid grid-cols-3 gap-1.5 sm:gap-3 max-w-xl"
         >
           {[
-            { label: "Browse", value: "Categories" },
-            { label: "Compare", value: "Ratings" },
-            { label: "Unlock", value: "Promos" },
+            { label: "Unlock", value: "Great Deals" },
+            { label: "Read", value: "Reviews" },
+            { label: "Start", value: "Planning" },
           ].map((stat, i) => (
             <motion.div
               key={i}
