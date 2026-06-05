@@ -88,7 +88,7 @@ export function PhotoSection({
       {/* Unified Tab Header */}
       <div className="px-6 pt-5 border-b border-black/[0.04] bg-[#fafafa]/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="font-serif text-[18px] font-semibold tracking-tight text-[#2c2c2c]">Photo Portfolio</h2>
+          <h2 className="font-serif text-[18px] font-semibold tracking-tight text-[#2c2c2c]">Photos and Themes</h2>
           <div className="mt-1 text-[12px] text-black/45">Showcase your masterpiece collections and albums.</div>
         </div>
         
@@ -129,38 +129,19 @@ export function PhotoSection({
                 .map(({ img, originalIdx }) => (
                   <div key={originalIdx} className="relative aspect-square rounded-lg border border-black/[0.05] overflow-hidden bg-[#fafafa] group shadow-sm hover:shadow-md transition-all duration-300">
                     <img src={img.image_url} alt={img.caption || `Photo ${originalIdx + 1}`} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                    
-                    {img.is_cover && (
-                      <div className="absolute top-3 left-3 rounded-lg bg-[#a67c52] px-3 py-1 text-[9px] font-bold uppercase tracking-wider text-white shadow-lg z-10">
-                        Cover
-                      </div>
-                    )}
 
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3 gap-2">
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 w-full">
                         <button
                           type="button"
                           onClick={() => {
                             setEditingPhotoIndex(originalIdx);
                             setPhotoModalOpen(true);
                           }}
-                          className="flex-1 h-8 rounded-lg bg-white text-[11px] font-bold text-[#2c2c2c] shadow-sm hover:bg-[#fafafa] transition-colors"
+                          className="w-full h-8 rounded-lg bg-white text-[11px] font-bold text-[#2c2c2c] shadow-sm hover:bg-[#fafafa] transition-colors"
                         >
-                          Edit
+                          Edit Details
                         </button>
-                        {!img.is_cover && (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const next = ensureSingleCover(images.map((r, i) => ({ ...r, is_cover: i === originalIdx })));
-                              setImages(next);
-                              void saveImages(next);
-                            }}
-                            className="flex-1 h-8 rounded-lg bg-[#a67c52] text-[11px] font-bold text-white shadow-sm hover:bg-[#8e6a46] transition-colors"
-                          >
-                            Cover
-                          </button>
-                        )}
                       </div>
                     </div>
 

@@ -452,22 +452,6 @@ export function PhotoModal({
                     </select>
                   </div>
                 )}
-
-                <label className="flex items-center gap-3 p-4 rounded-xl border border-black/10 bg-black/[0.01] cursor-pointer hover:border-[#a67c52]/30 hover:bg-[#a67c52]/5 transition-all group">
-                  <div className={cn(
-                    "w-5 h-5 rounded border flex items-center justify-center transition-all",
-                    isCover ? "bg-[#a67c52] border-[#a67c52]" : "border-black/20 bg-white group-hover:border-[#a67c52]"
-                  )}>
-                    {isCover && <CheckCircle2 className="w-4 h-4 text-white" />}
-                  </div>
-                  <input
-                    type="checkbox"
-                    checked={isCover}
-                    onChange={(e) => setIsCover(e.target.checked)}
-                    className="hidden"
-                  />
-                  <span className="text-sm font-medium text-black/70">Use as portfolio cover photo</span>
-                </label>
               </div>
 
               <div className="flex items-center justify-between pt-4 border-t border-black/5">

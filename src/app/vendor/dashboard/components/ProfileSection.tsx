@@ -16,6 +16,8 @@ export function ProfileSection({
   saveVerificationDoc,
   saveVerificationDetails,
   images,
+  setImages,
+  saveImages,
   cropperOpen,
   setCropperOpen,
   cardCropperOpen,
@@ -38,6 +40,8 @@ export function ProfileSection({
   saveVerificationDoc: (url: string) => void;
   saveVerificationDetails: (secUrl: string, dtiUrl: string, birUrl: string, mayorsPermitUrl: string, expiryDate: string | null, tin: string | null) => Promise<boolean>;
   images: VendorImage[];
+  setImages: any;
+  saveImages: (customImages?: any[]) => void;
   cropperOpen: boolean;
   setCropperOpen: (v: boolean) => void;
   cardCropperOpen: boolean;
@@ -322,6 +326,50 @@ export function ProfileSection({
                 )}
               </div>
             </div>
+          </div>
+
+          <div className="rounded-lg border border-black/[0.06] bg-[#fafafa]/30 p-4">
+            <div className="text-[11px] font-bold uppercase tracking-widest text-black/40">Choose Cover Photo</div>
+            <div className="mt-1 text-[12px] text-black/45 mb-4">
+              Select one of your portfolio photos to be used as your main profile cover banner and listing thumbnail.
+            </div>
+            
+            {images.filter(img => img.image_url?.trim()).length === 0 ? (
+              <div className="text-[12px] text-red-500/90 font-medium">
+                Please add some photos in the "Photos / Themes" tab first.
+              </div>
+            ) : (
+              <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3">
+                {images
+                  .filter(img => img.image_url?.trim())
+                  .map((img, idx) => {
+                    const isCover = img.is_cover;
+                    return (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => {
+                          if (isCover) return;
+                          const next = ensureSingleCover(images.map((r) => ({ ...r, is_cover: r.image_url === img.image_url })));
+                          setImages(next);
+                          void saveImages(next);
+                          toast.success("Cover photo updated!");
+                        }}
+                        className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all cursor-pointer ${
+                          isCover ? "border-[#a67c52] ring-2 ring-[#a67c52]/20" : "border-black/10 hover:border-black/30"
+                        }`}
+                      >
+                        <img src={img.image_url} alt="" className="h-full w-full object-cover" />
+                        {isCover && (
+                          <div className="absolute inset-0 bg-[#a67c52]/10 flex items-center justify-center">
+                            <span className="bg-[#a67c52] text-white text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider scale-90">Cover</span>
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
+              </div>
+            )}
           </div>
 
           <div className="rounded-lg border border-black/[0.06] bg-[#fafafa]/30 p-4">

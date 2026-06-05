@@ -386,6 +386,8 @@ export default function VendorDashboardPage() {
                             saveVerificationDoc={saveVerificationDoc}
                             saveVerificationDetails={saveVerificationDetails}
                             images={images}
+                            setImages={setImages}
+                            saveImages={saveImages}
                             cropperOpen={cropperOpen}
                             setCropperOpen={setCropperOpen}
                             cardCropperOpen={cardCropperOpen}
