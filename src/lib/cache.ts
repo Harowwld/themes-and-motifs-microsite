@@ -113,3 +113,5 @@ export const categoriesCache = createDataCache<any[]>("categories", 60 * 60 * 10
 export const vendorLocationsCache = createDataCache<any[]>("vendor_locations", 30 * 60 * 1000); // 30 min
 export const featuredVendorsCache = createDataCache<any[]>("featured_vendors", 5 * 60 * 1000); // 5 min
 export const featuredPromosCache = createDataCache<any[]>("featured_promos", 5 * 60 * 1000); // 5 min
+export const regionsCache = createDataCache<any[]>("regions", 24 * 60 * 60 * 1000); // 24 hours
+export const citiesCache = createDataCache<any[]>("cities", 24 * 60 * 60 * 1000); // 24 hours

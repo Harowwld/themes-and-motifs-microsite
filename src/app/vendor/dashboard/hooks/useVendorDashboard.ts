@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "../../../../lib/supabaseBrowser";
 import { toast } from "../../../../lib/toast";
+import { regionsCache, citiesCache } from "../../../../lib/cache";
 import { 
   VendorProfile, 
   SocialLink, 
@@ -174,6 +175,23 @@ export function useVendorDashboard() {
             videos: VendorVideo[];
           }>("/api/vendor/profile", session.access_token);
 
+          // Check local cache for static regions & cities to reduce dashboard loading times
+          const cachedRegions = regionsCache.get();
+          const cachedCities = citiesCache.get();
+
+          const regionsPromise = cachedRegions 
+            ? Promise.resolve({ data: cachedRegions }) 
+            : supabase.from("regions").select("id,name").is("parent_id", null).order("name", { ascending: true }).limit(200);
+
+          const citiesPromise = cachedCities
+            ? Promise.resolve({ data: cachedCities })
+            : Promise.all([
+                supabase.from("cities").select("id,name,region_id").order("name", { ascending: true }).range(0, 999),
+                supabase.from("cities").select("id,name,region_id").order("name", { ascending: true }).range(1000, 1999)
+              ]).then(([part1, part2]) => ({
+                data: [...(part1.data ?? []), ...(part2.data ?? [])]
+              }));
+
           const [
             json,
             promosRes,
@@ -182,8 +200,7 @@ export function useVendorDashboard() {
             albumsRes,
             reviewsRes,
             regionsRes,
-            cities1Res,
-            cities2Res
+            citiesRes
           ] = await Promise.all([
             profilePromise,
             apiFetch<{ promos: VendorPromo[] }>("/api/vendor/promos", session.access_token).catch(() => ({ promos: [] as VendorPromo[] })),
@@ -191,10 +208,17 @@ export function useVendorDashboard() {
             apiFetch<{ inquiries: Inquiry[] }>("/api/vendor/inquiries", session.access_token).catch(() => ({ inquiries: [] as Inquiry[] })),
             apiFetch<{ albums: Album[] }>("/api/vendor/albums", session.access_token).catch(() => ({ albums: [] as Album[] })),
             apiFetch<{ reviews: Review[] }>("/api/vendor/reviews", session.access_token).catch(() => ({ reviews: [] as Review[] })),
-            supabase.from("regions").select("id,name").is("parent_id", null).order("name", { ascending: true }).limit(200),
-            supabase.from("cities").select("id,name,region_id").order("name", { ascending: true }).range(0, 999),
-            supabase.from("cities").select("id,name,region_id").order("name", { ascending: true }).range(1000, 1999)
+            regionsPromise,
+            citiesPromise
           ]);
+
+          // Save to cache if they were fetched fresh
+          if (!cachedRegions && regionsRes.data) {
+            regionsCache.set(regionsRes.data);
+          }
+          if (!cachedCities && citiesRes.data) {
+            citiesCache.set(citiesRes.data);
+          }
 
           setVendor(json.vendor);
           setSubscription(json.subscription);
@@ -286,7 +310,7 @@ export function useVendorDashboard() {
           setAlbums(albumsRes.albums ?? []);
           setReviews(reviewsRes.reviews ?? []);
           setRegions(regionsRes.data ?? []);
-          setCities([...(cities1Res.data ?? []), ...(cities2Res.data ?? [])]);
+          setCities(citiesRes.data ?? []);
         } catch (e: any) {
           toast.error(e?.message ?? "Failed to load vendor profile.");
         } finally {

@@ -1,6 +1,10 @@
 import { Suspense } from "react";
-import { unstable_cache } from "next/cache";
+import { unstable_cache as next_unstable_cache } from "next/cache";
 import { createSupabaseServerClient } from "../../lib/supabaseServer";
+
+const unstable_cache = process.env.NODE_ENV === "development"
+  ? <T extends (...args: any[]) => Promise<any>>(fn: T) => fn
+  : next_unstable_cache;
 import CategoryBrowser, { CategoryBrowserSkeleton } from "../components/CategoryBrowser";
 import VendorsSearchBar, { VendorsSearchBarSkeleton } from "./VendorsSearchBar";
 import VendorsListWithSaved from "./VendorsListWithSaved";
