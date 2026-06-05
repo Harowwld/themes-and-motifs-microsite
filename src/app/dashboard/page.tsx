@@ -600,6 +600,21 @@ export default function DashboardPage() {
       }
 
       if (!cancelled && session?.user) {
+        // Redirect vendors and editors to their respective dashboards
+        const [{ data: vendorProfile }, { data: editorProfile }] = await Promise.all([
+          supabase.from("vendors").select("id").eq("user_id", session.user.id).maybeSingle(),
+          supabase.from("editors").select("id").eq("user_id", session.user.id).maybeSingle()
+        ]);
+
+        if (!cancelled && vendorProfile) {
+          router.replace("/vendor/dashboard");
+          return;
+        }
+        if (!cancelled && editorProfile) {
+          router.replace("/editor/dashboard");
+          return;
+        }
+
         setUser(session.user);
 
         // Sync premium status from the database soon_to_wed_profiles table
