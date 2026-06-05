@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 import { createSupabaseBrowserClient } from "../../lib/supabaseBrowser";
 import { toast } from "../../lib/toast";
+import { authCache } from "../../lib/cache";
 
 function normalizeReturnTo(v: string | null) {
   const raw = (v ?? "").trim();
@@ -63,12 +64,30 @@ function SignInPageContent() {
     setSubmitting(true);
 
     try {
-      const { error: signInErr } = await supabase.auth.signInWithPassword({
+      const { data: signInData, error: signInErr } = await supabase.auth.signInWithPassword({
         email: e1,
         password,
       });
 
       if (signInErr) throw signInErr;
+
+      // Pre-populate the cache with the new user's role to prevent redirects from displaying the wrong layout
+      if (signInData.session?.access_token) {
+        try {
+          const res = await fetch("/api/auth/me", {
+            headers: {
+              authorization: `Bearer ${signInData.session.access_token}`,
+            },
+          });
+          const json = await res.json().catch(() => null);
+          if (json) {
+            authCache.set(true, Boolean(json.isVendor), Boolean(json.isSoonToWed));
+          }
+        } catch (cacheErr) {
+          console.error("Error pre-warming auth cache:", cacheErr);
+        }
+      }
+
       setPassword("");
       router.push(returnTo);
     } catch (err: any) {

@@ -42,8 +42,7 @@ const getCachedCategories = unstable_cache(
           "id,business_name,slug,logo_url,average_rating,review_count,location_text,city,document_verified,cover_focus_x,cover_focus_y,cover_zoom,card_cover_focus_x,card_cover_focus_y,card_cover_zoom,portrait_cover_focus_x,portrait_cover_focus_y,portrait_cover_zoom,plan:plans(id,name)"
         )
         .eq("is_active", true)
-        .eq("is_featured", true)
-        .limit(20),
+        .eq("is_featured", true),
       supabase
         .from("promos")
         .select(
@@ -204,7 +203,7 @@ async function LandingFeaturedDirect() {
 
   // Shuffle after reading from cache (so display order rotates on each render
   // without invalidating the cache).
-  const vendors = shuffle(cachedVendors as FeaturedVendor[]).slice(0, 6);
+  const vendors = shuffle(cachedVendors as FeaturedVendor[]);
   const promos = shuffle(cachedPromos).filter(isPromoCurrentlyValid);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const featuredSorted = sortWithImagesFirst(vendors as any);
