@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useTransition } from "react";
+import { useTransition, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import VendorCard from "../components/VendorCard";
 import type { VendorListItem } from "../types";
@@ -70,15 +70,84 @@ export default function VendorsSection({
 }: VendorsSectionProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [activePage, setActivePage] = useState(page);
+  const [localVendors, setLocalVendors] = useState(vendors);
+
+  // Sync state if server side prop changes (e.g. on filter/sort change or direct URL navigation)
+  useEffect(() => {
+    setActivePage(page);
+    setLocalVendors(vendors);
+  }, [page, sort, vendors]);
+
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
-  const hasPrev = page > 1;
-  const hasNext = page < totalPages;
+  const hasPrev = activePage > 1;
+  const hasNext = activePage < totalPages;
 
   const navigate = (href: string) => {
     startTransition(() => {
       router.push(href, { scroll: false });
     });
   };
+
+  // Sliding window background pre-fetcher
+  useEffect(() => {
+    const maxLoadedPage = page - 1 + Math.ceil(localVendors.length / pageSize);
+    if (activePage + 5 > maxLoadedPage && maxLoadedPage < totalPages) {
+      const nextPageToFetch = maxLoadedPage + 1;
+      
+      const fetchNextPageData = async () => {
+        try {
+          const params = new URLSearchParams();
+          if (extraParams) {
+            for (const [k, v] of Object.entries(extraParams)) {
+              if (v) params.set(k, v);
+            }
+          }
+          params.set("page", String(nextPageToFetch));
+          params.set("limit", String(pageSize));
+          params.set("vendorsSort", sort);
+          
+          const res = await fetch(`/api/suppliers?${params.toString()}`);
+          if (res.ok) {
+            const data = await res.json();
+            if (data && Array.isArray(data.vendors)) {
+              setLocalVendors(prev => {
+                const existingIds = new Set(prev.map(v => v.id));
+                const newItems = data.vendors.filter((v: any) => !existingIds.has(v.id));
+                return [...prev, ...newItems];
+              });
+            }
+          }
+        } catch (err) {
+          console.error("Failed to pre-fetch next page:", err);
+        }
+      };
+      
+      fetchNextPageData();
+    }
+  }, [activePage, localVendors.length, page, pageSize, totalPages, sort, extraParams]);
+
+  const handlePageChange = (targetPage: number) => {
+    const localFrom = (targetPage - page) * pageSize;
+    const localTo = localFrom + pageSize;
+
+    // If the data is available in the pre-fetched array, change page instantly client-side
+    if (localFrom >= 0 && localTo <= localVendors.length) {
+      setActivePage(targetPage);
+      const nextHref = makeHref({ page: targetPage, sort, basePath, extraParams });
+      window.history.pushState(null, "", nextHref);
+    } else {
+      // Fallback: load next chunk from server
+      navigate(makeHref({ page: targetPage, sort, basePath, extraParams }));
+    }
+  };
+
+  // Slice localVendors in memory for the active page
+  const localFrom = (activePage - page) * pageSize;
+  const localTo = localFrom + pageSize;
+  const currentPageVendors = (localFrom >= 0 && localFrom < localVendors.length)
+    ? localVendors.slice(localFrom, localTo)
+    : [];
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -146,7 +215,7 @@ export default function VendorsSection({
       <div className="mt-6 sm:mt-8">
         <AnimatePresence mode="wait">
           <motion.div 
-            key={`${sort}-${page}-${isPending}`}
+            key={`${sort}-${activePage}-${isPending}`}
             variants={containerVariants}
             initial="hidden"
             animate="visible"
@@ -157,7 +226,7 @@ export default function VendorsSection({
               Array.from({ length: pageSize }).map((_, i) => (
                 <VendorCardSkeleton key={`skeleton-${i}`} />
               ))
-            ) : vendors.length === 0 ? (
+            ) : currentPageVendors.length === 0 ? (
               <motion.div 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -167,7 +236,7 @@ export default function VendorsSection({
                 <div className="mt-1 text-[13px] text-gray-500 font-[family-name:var(--font-plus-jakarta)]">Try another sort or check back later.</div>
               </motion.div>
             ) : (
-              vendors.map((vendor, i) => (
+              currentPageVendors.map((vendor, i) => (
                 <VendorCard key={vendor.id} vendor={vendor} toneSeed={i} fixedHeight />
               ))
             )}
@@ -183,7 +252,7 @@ export default function VendorsSection({
         className="mt-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
       >
         <div className="text-[12px] font-bold text-gray-400 text-center sm:text-left font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wider">
-          Page {page} <span className="mx-1 opacity-50">/</span> {totalPages}
+          Page {activePage} <span className="mx-1 opacity-50">/</span> {totalPages}
         </div>
         <div className="flex items-center justify-center sm:justify-start gap-3">
           <motion.a
@@ -194,11 +263,11 @@ export default function VendorsSection({
                 ? "border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:shadow-sm"
                 : "border-gray-100 bg-gray-50 text-gray-300 pointer-events-none"
             }`}
-            href={makeHref({ page: Math.max(1, page - 1), sort, basePath, extraParams })}
+            href={makeHref({ page: Math.max(1, activePage - 1), sort, basePath, extraParams })}
             onClick={(e) => {
               if (!hasPrev) return;
               e.preventDefault();
-              navigate(makeHref({ page: Math.max(1, page - 1), sort, basePath, extraParams }));
+              handlePageChange(Math.max(1, activePage - 1));
             }}
             aria-disabled={!hasPrev}
           >
@@ -212,11 +281,11 @@ export default function VendorsSection({
                 ? "border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:shadow-sm"
                 : "border-gray-100 bg-gray-50 text-gray-300 pointer-events-none"
             }`}
-            href={makeHref({ page: Math.min(totalPages, page + 1), sort, basePath, extraParams })}
+            href={makeHref({ page: Math.min(totalPages, activePage + 1), sort, basePath, extraParams })}
             onClick={(e) => {
               if (!hasNext) return;
               e.preventDefault();
-              navigate(makeHref({ page: Math.min(totalPages, page + 1), sort, basePath, extraParams }));
+              handlePageChange(Math.min(totalPages, activePage + 1));
             }}
             aria-disabled={!hasNext}
           >

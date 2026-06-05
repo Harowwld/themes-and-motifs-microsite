@@ -62,10 +62,18 @@ const getCachedCategories = unstable_cache(
     const vendors = (featuredVendors ?? []) as FeaturedVendor[];
     const promos = (featuredPromos ?? []) as FeaturedPromo[];
 
-    const vendorsWithCovers = await attachCoverImages(supabase, vendors);
-    const vendorsWithAffiliations = await attachAffiliations(supabase, vendorsWithCovers);
+    const [vendorsWithCovers, vendorsWithAffiliations] = await Promise.all([
+      attachCoverImages(supabase, vendors),
+      attachAffiliations(supabase, vendors),
+    ]);
 
-    return { vendors: vendorsWithAffiliations, promos, themedIdeas: recentImages ?? [] };
+    const vendorsWithData = vendors.map((v, index) => ({
+      ...v,
+      cover_image_url: vendorsWithCovers[index]?.cover_image_url ?? null,
+      affiliations: vendorsWithAffiliations[index]?.affiliations ?? [],
+    }));
+
+    return { vendors: vendorsWithData, promos, themedIdeas: recentImages ?? [] };
   },
   ["featured-data-v3"],
   { revalidate: 300 }
@@ -224,8 +232,9 @@ async function LandingFeaturedDirect() {
 async function LandingVendorsDirect({ page, pageSize, sort }: { page: number; pageSize: number; sort: SortKey }) {
   const supabase = createSupabaseServerClient();
 
+  // Fetch up to 6 pages of data (current + 5 pages ahead) to allow instant client-side paging
   const from = (page - 1) * pageSize;
-  const to = from + pageSize - 1;
+  const to = from + (pageSize * 6) - 1;
 
   let q = supabase
     .from("vendors")
@@ -238,9 +247,17 @@ async function LandingVendorsDirect({ page, pageSize, sort }: { page: number; pa
   if (sort === "alpha") {
     q = q.order("business_name", { ascending: true }).order("id", { ascending: true });
   } else if (sort === "photos") {
-    const { data: vendorIdsWithCover } = await supabase.from("vendor_images").select("vendor_id").eq("is_cover", true);
-    const idsWithCover = (vendorIdsWithCover ?? []).map((r) => r.vendor_id);
-    q = q.in("id", idsWithCover).order("business_name", { ascending: true }).order("id", { ascending: true });
+    // Optimized: Use an inner join select to filter vendors that have a cover image in a single query
+    q = supabase
+      .from("vendors")
+      .select(
+        "id,business_name,slug,logo_url,average_rating,review_count,location_text,city,document_verified,cover_focus_x,cover_focus_y,cover_zoom,card_cover_focus_x,card_cover_focus_y,card_cover_zoom,portrait_cover_focus_x,portrait_cover_focus_y,portrait_cover_zoom,plan:plans(id,name),vendor_images!inner(id)",
+        { count: "exact" }
+      )
+      .eq("is_active", true)
+      .eq("vendor_images.is_cover", true)
+      .order("business_name", { ascending: true })
+      .order("id", { ascending: true }) as any;
   } else if (sort === "newest") {
     q = q.order("created_at", { ascending: false }).order("id", { ascending: true });
   } else {

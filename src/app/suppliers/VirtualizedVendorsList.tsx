@@ -119,12 +119,16 @@ export default function VirtualizedVendorsList({
           fetchNextPage();
         }
       },
-      { rootMargin: "800px" }
+      { rootMargin: "2000px" }
     );
 
     observer.observe(sentinel);
     return () => observer.disconnect();
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+
+  // Calculate sentinel index to trigger prefetching when user is 10% down the latest page
+  const latestPageStartIndex = allVendors.length - limit;
+  const sentinelIndex = Math.max(0, latestPageStartIndex + Math.floor(limit * 0.1));
 
   return (
     <section className="mt-16 sm:mt-20">
@@ -157,7 +161,7 @@ export default function VirtualizedVendorsList({
           {allVendors.map((vendor, index) => (
             <div
               key={vendor.id}
-              ref={index === allVendors.length - 5 ? sentinelRef : undefined}
+              ref={index === sentinelIndex ? sentinelRef : undefined}
             >
               <VendorCard vendor={vendor} />
             </div>

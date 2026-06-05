@@ -37,7 +37,7 @@ export async function GET(req: Request) {
   const page = Math.max(1, Number(rawPage) || 1);
 
   const sort: SortKey =
-    rawSort === "alpha" || rawSort === "newest" || rawSort === "saves" || rawSort === "views" ? rawSort : "rating";
+    rawSort === "alpha" || rawSort === "newest" || rawSort === "saves" || rawSort === "views" || rawSort === "verified" ? rawSort : "rating";
 
   const supabase = createSupabaseServerClient();
 
