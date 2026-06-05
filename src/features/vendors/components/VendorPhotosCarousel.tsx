@@ -164,17 +164,16 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500, vendor
   }, [displayedImages]);
 
   const [activeIndex, setActiveIndex] = useState(initialIndex);
-  const [prevActiveIndex, setPrevActiveIndex] = useState(initialIndex);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [userInteractedWithVideo, setUserInteractedWithVideo] = useState(false);
 
-  if (activeIndex !== prevActiveIndex) {
-    setPrevActiveIndex(activeIndex);
+  const changeActiveIndex = useCallback((idx: number) => {
+    setActiveIndex(idx);
     setUserInteractedWithVideo(false);
     setIsVideoPlaying(false);
-  }
+  }, []);
 
   const stripRef = useRef<HTMLDivElement | null>(null);
   const thumbRefs = useRef<Record<number, HTMLButtonElement | null>>({});
@@ -208,9 +207,7 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500, vendor
     startAutoplay();
   }, [startAutoplay, stopAutoplay]);
 
-  useEffect(() => {
-    setActiveIndex(initialIndex);
-  }, [initialIndex]);
+
 
   // Restart autoplay when interaction/playing state changes
   useEffect(() => {
@@ -306,7 +303,8 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500, vendor
               type="button"
               onClick={() => {
                 setSelectedAlbumId("all");
-                setActiveIndex(0);
+                const coverIdx = normalized.findIndex((i) => i.is_cover);
+                changeActiveIndex(coverIdx >= 0 ? coverIdx : 0);
               }}
               className={`shrink-0 rounded-full px-4 py-1.5 text-[12px] font-bold transition-all duration-300 cursor-pointer ${
                 selectedAlbumId === "all"
@@ -322,7 +320,8 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500, vendor
                 type="button"
                 onClick={() => {
                   setSelectedAlbumId(album.id);
-                  setActiveIndex(0);
+                  const coverIdx = album.photos.findIndex((i) => i.is_cover);
+                  changeActiveIndex(coverIdx >= 0 ? coverIdx : 0);
                 }}
                 className={`shrink-0 rounded-full px-4 py-1.5 text-[12px] font-bold transition-all duration-300 flex items-center gap-1.5 cursor-pointer ${
                   selectedAlbumId === album.id
@@ -415,7 +414,7 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500, vendor
                   }}
                   onClick={() => {
                     userInitiatedRef.current = true;
-                    setActiveIndex(idx);
+                    changeActiveIndex(idx);
                     restartAutoplay();
                   }}
                   className={

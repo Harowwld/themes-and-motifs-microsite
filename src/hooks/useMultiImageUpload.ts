@@ -31,6 +31,7 @@ interface UseMultiImageUploadOptions {
 }
 
 export function useMultiImageUpload(options: UseMultiImageUploadOptions) {
+  const { bucket, folder, entityId, maxSizeMB } = options;
   const [uploads, setUploads] = useState<MultiUploadState[]>([]);
   const uploadsRef = useRef<MultiUploadState[]>(uploads);
 
@@ -83,7 +84,7 @@ export function useMultiImageUpload(options: UseMultiImageUploadOptions) {
       );
       
       const compressionResult = await compressImage(file, {
-        maxSizeMB: options.maxSizeMB || 2,
+        maxSizeMB: maxSizeMB || 2,
       });
 
       // 3. Uploading
@@ -94,11 +95,11 @@ export function useMultiImageUpload(options: UseMultiImageUploadOptions) {
       const ext = file.name.split('.').pop() || 'jpg';
       const timestamp = Date.now();
       const randomId = Math.random().toString(36).substring(2, 8);
-      const storagePath = `${options.folder ? options.folder + '/' : ''}${options.entityId ? options.entityId + '/' : ''}${timestamp}-${randomId}.${ext}`;
+      const storagePath = `${folder ? folder + '/' : ''}${entityId ? entityId + '/' : ''}${timestamp}-${randomId}.${ext}`;
 
       const supabase = createSupabaseBrowserClient();
       const { error: uploadError } = await supabase.storage
-        .from(options.bucket)
+        .from(bucket)
         .upload(storagePath, compressionResult.file, {
           cacheControl: '3600',
           upsert: false,
@@ -107,7 +108,7 @@ export function useMultiImageUpload(options: UseMultiImageUploadOptions) {
       if (uploadError) throw uploadError;
 
       const { data: { publicUrl } } = supabase.storage
-        .from(options.bucket)
+        .from(bucket)
         .getPublicUrl(storagePath);
 
       setUploads((prev) =>
@@ -135,7 +136,7 @@ export function useMultiImageUpload(options: UseMultiImageUploadOptions) {
       );
       return null;
     }
-  }, [options.maxSizeMB, options.folder, options.entityId, options.bucket]);
+  }, [maxSizeMB, folder, entityId, bucket]);
 
   const startUploads = useCallback(async (ids?: string[]) => {
     // We use the latest ref value to avoid closure staleness in the for loop

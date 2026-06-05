@@ -155,6 +155,7 @@ export function PromoSection({
       </div>
 
       <PromoModal
+        key={promoModalOpen ? (editingPromoId ? `promo-${editingPromoId}` : "new-promo") : "closed"}
         vendorId={vendorId}
         open={promoModalOpen}
         promo={editingPromoId ? promos.find((p) => p.id === editingPromoId) ?? null : null}

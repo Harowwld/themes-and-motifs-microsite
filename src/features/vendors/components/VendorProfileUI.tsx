@@ -343,7 +343,7 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
             {/* Photos & Videos */}
             {images.length > 0 ? (
               <div className="rounded-2xl border border-black/6 bg-[#fcfbf9] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] hover:shadow-md transition-shadow duration-300 min-w-0">
-                <VendorPhotosCarousel images={images} vendorId={vendor.id} />
+                <VendorPhotosCarousel key={`${vendor.id}-${images.length}-${images[0]?.image_url}`} images={images} vendorId={vendor.id} />
               </div>
             ) : null}
 

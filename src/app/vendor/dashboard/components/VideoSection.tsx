@@ -141,6 +141,7 @@ export function VideoSection({
       </div>
 
       <VideoModal
+        key={videoModalOpen ? (editingVideoIndex !== null ? `video-${editingVideoIndex}` : "new-video") : "video-closed"}
         open={videoModalOpen}
         video={editingVideoIndex !== null ? videos[editingVideoIndex] : null}
         isNew={editingVideoIndex === null}

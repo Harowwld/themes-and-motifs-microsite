@@ -529,7 +529,7 @@ export default function SuperadminSettingsPage() {
               <div className="divide-y divide-black/5">
                 {filtered.map((r) => (
                   <SettingsRow
-                    key={r.id}
+                    key={`${table}-${r.id}`}
                     row={r}
                     table={table}
                     saving={savingId === r.id}
@@ -557,13 +557,7 @@ function SettingsRow({
   onSave: (patch: Record<string, any>) => void;
 }) {
   const fields = TABLE_FIELDS[table];
-  const [prevRowId, setPrevRowId] = useState<number | null>(null);
-  const [prevTable, setPrevTable] = useState<TableName | null>(null);
-  const [values, setValues] = useState<Record<string, string>>({});
-
-  if (row.id !== prevRowId || table !== prevTable) {
-    setPrevRowId(row.id);
-    setPrevTable(table);
+  const [values, setValues] = useState<Record<string, string>>(() => {
     const next: Record<string, string> = {};
     for (const f of fields) {
       const v = (row as any)[f.key];
@@ -573,8 +567,8 @@ function SettingsRow({
         next[f.key] = v == null ? "" : String(v);
       }
     }
-    setValues(next);
-  }
+    return next;
+  });
 
   const inputClass =
     "h-9 w-full rounded-[3px] border border-black/10 bg-white px-2 text-[12px] text-black/70 outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15";

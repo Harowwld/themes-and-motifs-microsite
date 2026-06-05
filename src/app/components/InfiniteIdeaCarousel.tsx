@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { motion, AnimatePresence, useAnimationControls, Variants } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { Tag } from "lucide-react";
 import { ThemedIdea } from "../sections/FeaturedThemesSection";
 
@@ -31,46 +32,50 @@ const itemVariants: Variants = {
   exit: { opacity: 0, scale: 0.95, transition: { duration: 0.2 } }
 };
 
-function IdeaCard({ idea, isGrid = false }: { idea: ThemedIdea, isGrid?: boolean }) {
+function IdeaCard({ idea, isGrid = false, width }: { idea: ThemedIdea; isGrid?: boolean; width?: number }) {
   const gridClasses = "w-full";
-  const carouselClasses = "flex-shrink-0 w-[calc((100%-48px)/3)]";
+  const carouselClasses = "flex-shrink-0";
 
   return (
     <motion.div
       variants={isGrid ? itemVariants : undefined}
-      whileHover={{ y: -4, scale: 1.01 }}
+      whileHover={{ y: -6, scale: 1.01 }}
       whileTap={{ scale: 0.98 }}
-      className={`relative group rounded-2xl overflow-hidden bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-xl transition-shadow duration-500 border border-gray-50 ${isGrid ? gridClasses : carouselClasses}`}
+      style={!isGrid && width ? { width } : undefined}
+      className={`relative group rounded-2xl overflow-hidden bg-white shadow-[0_4px_20px_rgba(0,0,0,0.02),0_2px_8px_rgba(0,0,0,0.02)] hover:shadow-[0_20px_40px_rgba(166,139,106,0.12)] transition-all duration-500 border border-black/[0.03] ${isGrid ? gridClasses : carouselClasses}`}
     >
       <div className="relative overflow-hidden aspect-[4/5] sm:aspect-[3/4]">
         <Link href={`/suppliers/${idea.vendors.slug}`} className="block h-full w-full">
-          <img 
+          <Image 
             src={idea.image_url} 
             alt={idea.caption || idea.themes.name} 
-            className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
-            loading="lazy"
+            fill
+            sizes="(max-width: 640px) 50vw, 33vw"
+            className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
             draggable={false}
           />
+          {/* Subtle Vignette Gradient Overlay at the bottom */}
+          <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/25 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
         </Link>
         {/* Theme Tag Badge */}
         <Link 
           href={`/themes/${idea.themes.slug}`}
           onClick={(e) => e.stopPropagation()} 
-          className="absolute top-3 left-3 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-1.5 text-[11px] font-bold tracking-wide uppercase shadow-sm border border-black/5 text-[#2c2c2c] hover:bg-[#a67c52] hover:text-white hover:border-[#a67c52] transition-colors z-20"
+          className="absolute top-3 left-3 bg-white/75 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-1.5 text-[10px] font-bold tracking-wider uppercase shadow-[0_2px_10px_rgba(0,0,0,0.03)] border border-white/50 text-[#2c2c2c] hover:bg-[#a68b6a] hover:text-white hover:border-[#a68b6a] transition-all duration-300 z-20 font-[family-name:var(--font-plus-jakarta)]"
         >
-          <Tag size={12} />
+          <Tag size={10} className="text-[#a68b6a] group-hover:text-white transition-colors" />
           {idea.themes.name}
         </Link>
       </div>
       
       <div className="p-4">
         <Link href={`/suppliers/${idea.vendors.slug}`} className="inline-block">
-          <span className="text-[14px] font-bold text-[#2c2c2c] hover:text-[#a67c52] transition-colors">
+          <span className="text-[14px] font-bold tracking-tight text-[#2c2c2c] group-hover:text-[#a68b6a] transition-colors duration-300 font-[family-name:var(--font-plus-jakarta)]">
             {idea.vendors.business_name}
           </span>
         </Link>
         {idea.caption && (
-          <p className="mt-1.5 text-[13px] text-black/60 line-clamp-2 leading-relaxed">
+          <p className="mt-2 text-[12px] leading-relaxed text-black/55 font-medium font-[family-name:var(--font-plus-jakarta)] line-clamp-2">
             {idea.caption}
           </p>
         )}
@@ -80,8 +85,8 @@ function IdeaCard({ idea, isGrid = false }: { idea: ThemedIdea, isGrid?: boolean
 }
 
 export default function InfiniteIdeaCarousel({ ideas }: { ideas: ThemedIdea[] }) {
-  const [currentIndex, setCurrentIndex] = useState(ideas.length);
-  const [isPaused, setIsPaused] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(() => ideas.length);
+  const isPaused = useRef(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
   const controls = useAnimationControls();
@@ -143,14 +148,16 @@ export default function InfiniteIdeaCarousel({ ideas }: { ideas: ThemedIdea[] })
   }, [currentIndex, controls, cardWidth, gap, isMobile]);
 
   useEffect(() => {
-    if (isPaused || ideas.length === 0 || isMobile) return;
+    if (ideas.length === 0 || isMobile) return;
 
     const interval = setInterval(() => {
-      setCurrentIndex((prev) => prev + 1);
+      if (!isPaused.current) {
+        setCurrentIndex((prev) => prev + 1);
+      }
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [isPaused, ideas.length, isMobile]);
+  }, [ideas.length, isMobile]);
 
   const getPageIdeas = useCallback((page: number) => {
     const startIndex = page * itemsPerPage;
@@ -169,14 +176,16 @@ export default function InfiniteIdeaCarousel({ ideas }: { ideas: ThemedIdea[] })
   }, [ideas, itemsPerPage]);
 
   useEffect(() => {
-    if (!isMobile || isPaused || totalPages <= 1) return;
+    if (!isMobile || totalPages <= 1) return;
     
     const interval = setInterval(() => {
-      setCurrentPage((prev) => (prev + 1) % totalPages);
+      if (!isPaused.current) {
+        setCurrentPage((prev) => (prev + 1) % totalPages);
+      }
     }, 5000);
     
     return () => clearInterval(interval);
-  }, [isMobile, isPaused, totalPages]);
+  }, [isMobile, totalPages]);
 
   if (isMobile) {
     return (
@@ -204,7 +213,8 @@ export default function InfiniteIdeaCarousel({ ideas }: { ideas: ThemedIdea[] })
           <div className="flex justify-center gap-2 mt-8">
             {Array.from({ length: totalPages }).map((_, i) => (
               <button
-                key={i}
+                key={ideas[i]?.id ?? i}
+                type="button"
                 onClick={() => setCurrentPage(i)}
                 className="group p-2"
                 aria-label={`Go to page ${i + 1}`}
@@ -228,8 +238,8 @@ export default function InfiniteIdeaCarousel({ ideas }: { ideas: ThemedIdea[] })
     <div
       ref={containerRef}
       className="relative overflow-visible pt-4"
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
+      onMouseEnter={() => { isPaused.current = true; }}
+      onMouseLeave={() => { isPaused.current = false; }}
     >
       <div className="overflow-hidden -mx-5 px-5 sm:-mx-12 sm:px-12 py-12 -my-12">
         <motion.div
@@ -238,18 +248,19 @@ export default function InfiniteIdeaCarousel({ ideas }: { ideas: ThemedIdea[] })
           onAnimationComplete={handleAnimationComplete}
         >
           {duplicatedIdeas.map((idea, i) => (
-            <IdeaCard key={`${idea.id}-${i}`} idea={idea} />
+            <IdeaCard key={`${idea.id}-${i}`} idea={idea} width={cardWidth} />
           ))}
         </motion.div>
       </div>
 
       <div className="flex justify-center gap-2 mt-10">
-        {ideas.map((_, i) => {
+        {ideas.map((idea, i) => {
           const actualIndex = currentIndex % ideas.length;
           const isActive = actualIndex === i;
           return (
             <button
-              key={i}
+              key={idea.id}
+              type="button"
               onClick={() => setCurrentIndex(ideas.length + i)}
               className="group p-2"
               aria-label={`Go to slide ${i + 1}`}

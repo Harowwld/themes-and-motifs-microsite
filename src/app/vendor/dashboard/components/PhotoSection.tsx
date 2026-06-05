@@ -228,6 +228,7 @@ export function PhotoSection({
             </div>
 
             <PhotoModal
+              key={photoModalOpen ? (editingPhotoIndex !== null ? `photo-${editingPhotoIndex}` : "new-photo") : "photo-closed"}
               open={photoModalOpen}
               photo={editingPhotoIndex !== null ? images[editingPhotoIndex] : null}
               isNew={editingPhotoIndex === null}

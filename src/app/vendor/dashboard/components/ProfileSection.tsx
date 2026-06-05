@@ -660,6 +660,7 @@ export function ProfileSection({
                   ) : null}
 
                   <LogoModal
+                    key={logoModalOpen ? `logo-${form.logo_url}` : "logo-closed"}
                     open={logoModalOpen}
                     logoUrl={form.logo_url}
                     onCancel={() => setLogoModalOpen(false)}

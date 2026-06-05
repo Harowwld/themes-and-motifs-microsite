@@ -22,10 +22,6 @@ export function LogoModal({
 }) {
   const [url, setUrl] = useState(logoUrl);
 
-  useEffect(() => {
-    setUrl(logoUrl);
-  }, [logoUrl, open]);
-
   if (!open) return null;
 
   return (
@@ -120,25 +116,7 @@ export function PromoModal({
   const [zoom, setZoom] = useState(() => clampZoom(Number(promo?.image_zoom ?? 1)));
   const [cropperOpen, setCropperOpen] = useState(false);
 
-  const [prevPromo, setPrevPromo] = useState<VendorPromo | null>(null);
-  const [prevOpen, setPrevOpen] = useState(false);
 
-  if (promo !== prevPromo || open !== prevOpen) {
-    setPrevPromo(promo);
-    setPrevOpen(open);
-    setTitle(promo?.title ?? "");
-    setSummary(promo?.summary ?? "");
-    setTerms(promo?.terms ?? "");
-    setValidFrom(promo?.valid_from ?? "");
-    setValidTo(promo?.valid_to ?? "");
-    setDiscount(String(promo?.discount_percentage ?? ""));
-    setImageUrl(promo?.image_url ?? "");
-    setIsActive(promo?.is_active ?? true);
-    setFocusX(clampPct(Number(promo?.image_focus_x ?? 50)));
-    setFocusY(clampPct(Number(promo?.image_focus_y ?? 50)));
-    setZoom(clampZoom(Number(promo?.image_zoom ?? 1)));
-    setCropperOpen(false);
-  }
 
   if (!open) return null;
 
@@ -338,19 +316,7 @@ export function PhotoModal({
   const [isCover, setIsCover] = useState(photo?.is_cover ?? false);
   const [themeId, setThemeId] = useState<number | null>((photo as any)?.theme_id ?? null);
 
-  useEffect(() => {
-    if (photo) {
-      setImageUrl(photo.image_url);
-      setCaption(photo.caption ?? "");
-      setIsCover(Boolean(photo.is_cover));
-      setThemeId((photo as any).theme_id ?? null);
-    } else {
-      setImageUrl("");
-      setCaption("");
-      setIsCover(false);
-      setThemeId(null);
-    }
-  }, [photo, open]);
+
 
   if (!open) return null;
 
@@ -517,10 +483,7 @@ export function VideoModal({
   const [title, setTitle] = useState(video?.title ?? "");
   const [url, setUrl] = useState(video?.video_url ?? "");
 
-  useEffect(() => {
-    setTitle(video?.title ?? "");
-    setUrl(video?.video_url ?? "");
-  }, [video, open]);
+
 
   if (!open) return null;
 

@@ -30,19 +30,7 @@ export default function PhotoModal({ open, photo, isNew, onCancel, onSave, onDel
   const [isCover, setIsCover] = useState(photo?.is_cover ?? false);
   const [themeId, setThemeId] = useState<number | null>(photo?.theme_id ?? null);
 
-  useEffect(() => {
-    if (photo) {
-      setImageUrl(photo.image_url);
-      setCaption(photo.caption);
-      setIsCover(photo.is_cover);
-      setThemeId(photo.theme_id ?? null);
-    } else {
-      setImageUrl("");
-      setCaption("");
-      setIsCover(false);
-      setThemeId(null);
-    }
-  }, [photo, open]);
+
 
   if (!open) return null;
 

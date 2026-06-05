@@ -10,39 +10,43 @@ export const metadata: Metadata = {
 export default async function ThemesPage() {
   const supabase = createSupabaseServerClient();
 
-  // Query themes with photo counts and one representative image URL
-  const { data: themesData } = await supabase.rpc("get_themes_with_representative_images");
+  // Get all themes
+  const { data: rawThemes } = await supabase
+    .from("themes")
+    .select("id, name, slug")
+    .order("name", { ascending: true });
 
-  let themes = themesData || [];
+  // Fetch images with vendor info
+  const { data: imageRows } = await supabase
+    .from("vendor_images")
+    .select("theme_id, image_url, vendors(business_name, slug)")
+    .not("theme_id", "is", null);
 
-  if (themes.length === 0) {
-    // Fallback if the RPC is not defined yet, run raw select
-    const { data: rawThemes } = await supabase
-      .from("themes")
-      .select("id, name, slug")
-      .order("name", { ascending: true });
+  // Group images by theme to find a representative one (latest or first)
+  const imageMap = new Map<number, { image_url: string; vendor: { business_name: string; slug: string } | null }>();
+  imageRows?.forEach((row: any) => {
+    if (row.theme_id && row.image_url && !imageMap.has(row.theme_id)) {
+      imageMap.set(row.theme_id, {
+        image_url: row.image_url,
+        vendor: row.vendors ? {
+          business_name: row.vendors.business_name,
+          slug: row.vendors.slug
+        } : null
+      });
+    }
+  });
 
-    // For fallback, fetch one image for each theme manually (simplified)
-    const { data: imageRows } = await supabase
-      .from("vendor_images")
-      .select("theme_id, image_url")
-      .not("theme_id", "is", null);
-
-    const imageMap = new Map<number, string>();
-    imageRows?.forEach((row) => {
-      if (row.theme_id && row.image_url) {
-        imageMap.set(row.theme_id, row.image_url);
-      }
-    });
-
-    themes = (rawThemes || []).map((t) => ({
+  const themes = (rawThemes || []).map((t) => {
+    const imgInfo = imageMap.get(t.id);
+    return {
       id: t.id,
       name: t.name,
       slug: t.slug,
       count: imageRows?.filter((r) => r.theme_id === t.id).length || 0,
-      image_url: imageMap.get(t.id) || null,
-    }));
-  }
+      image_url: imgInfo?.image_url || null,
+      vendor: imgInfo?.vendor || null,
+    };
+  });
 
   return (
     <div className="min-h-screen bg-[#fafafa]">
@@ -60,26 +64,44 @@ export default async function ThemesPage() {
           {themes.map((theme: any) => {
             const hasImage = !!theme.image_url;
             return (
-              <Link
+              <div
                 key={theme.id}
-                href={`/themes/${theme.slug}`}
                 className="group relative h-48 rounded-2xl overflow-hidden bg-white border border-black/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_12px_40px_rgb(0,0,0,0.1)] transition-all duration-300 flex flex-col justify-end p-6"
               >
+                {/* Background Link to the theme */}
+                <Link
+                  href={`/themes/${theme.slug}`}
+                  className="absolute inset-0 z-0"
+                />
+
                 {hasImage ? (
                   <>
                     <img
                       src={theme.image_url}
                       alt={theme.name}
-                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105 pointer-events-none"
                       loading="lazy"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent pointer-events-none" />
                   </>
                 ) : (
-                  <div className="absolute inset-0 bg-gradient-to-tr from-[#faf5ef] to-[#f4ebe1] group-hover:from-[#f4ebe1] group-hover:to-[#faf5ef] transition-all duration-500" />
+                  <div className="absolute inset-0 bg-gradient-to-tr from-[#faf5ef] to-[#f4ebe1] group-hover:from-[#f4ebe1] group-hover:to-[#faf5ef] transition-all duration-500 pointer-events-none" />
                 )}
 
-                <div className="relative z-10">
+                {theme.vendor && (
+                  <Link
+                    href={`/suppliers/${theme.vendor.slug}`}
+                    className={`absolute top-4 right-4 z-20 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider backdrop-blur-md transition-all active:scale-95 ${
+                      hasImage
+                        ? "bg-black/30 hover:bg-[#a67c52] text-white/90 hover:text-white border border-white/10 hover:border-[#a67c52] shadow-sm"
+                        : "bg-black/5 hover:bg-[#a67c52] text-black/60 hover:text-white border border-black/5 hover:border-[#a67c52]"
+                    }`}
+                  >
+                    by {theme.vendor.business_name}
+                  </Link>
+                )}
+
+                <div className="relative z-10 pointer-events-none">
                   <h2
                     className={`text-lg font-bold tracking-tight font-serif ${
                       hasImage ? "text-white" : "text-[#2c2c2c]"
@@ -95,7 +117,7 @@ export default async function ThemesPage() {
                     {theme.count} {theme.count === 1 ? "inspiration photo" : "inspiration photos"}
                   </p>
                 </div>
-              </Link>
+              </div>
             );
           })}
         </div>

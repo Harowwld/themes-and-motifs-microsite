@@ -271,6 +271,7 @@ export default function SuperadminVendorsPage() {
       ) : null}
 
       <PhotoModal
+        key={photoModalOpen ? (editingPhotoIndex !== null ? `photo-${editingPhotoIndex}` : "new-photo") : "photo-closed"}
         open={photoModalOpen}
         photo={editingPhotoIndex !== null ? editImages[editingPhotoIndex] : null}
         isNew={editingPhotoIndex === null}
