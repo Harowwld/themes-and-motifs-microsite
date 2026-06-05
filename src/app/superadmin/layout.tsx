@@ -57,7 +57,7 @@ export default async function SuperadminLayout({ children }: { children: React.R
   const user = await getCurrentUser();
   
   if (!user.email || (!user.isSuperadmin && !user.isEditor)) {
-    redirect("/admin/login");
+    redirect("/signin?returnTo=/superadmin");
   }
 
   // Enforce editor page-access limits by reading the x-pathname header forwarded from the middleware
@@ -68,7 +68,7 @@ export default async function SuperadminLayout({ children }: { children: React.R
     const EDITOR_ALLOWED_PATHS = ["/superadmin/promos", "/superadmin/suppliers"];
     const isAllowed = EDITOR_ALLOWED_PATHS.some((path) => pathname.startsWith(path));
     if (!isAllowed) {
-      redirect("/admin/login");
+      redirect("/signin?returnTo=/superadmin");
     }
   }
 

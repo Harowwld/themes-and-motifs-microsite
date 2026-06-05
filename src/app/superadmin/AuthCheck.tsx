@@ -19,7 +19,7 @@ export function EditorAuthCheck({ children }: { children: React.ReactNode }) {
       const { data: { session } } = await supabase.auth.getSession();
 
       if (!session?.user) {
-        router.replace("/admin/login");
+        router.replace("/signin?returnTo=" + encodeURIComponent(window.location.pathname));
         return;
       }
 
@@ -34,8 +34,8 @@ export function EditorAuthCheck({ children }: { children: React.ReactNode }) {
       if (editorData) {
         setAuthState({ isEditor: true, email: session.user.email ?? null });
       } else {
-        // Not an editor, redirect to admin login
-        router.replace("/admin/login");
+        // Not an editor, redirect to signin
+        router.replace("/signin?returnTo=" + encodeURIComponent(window.location.pathname));
       }
     }
 

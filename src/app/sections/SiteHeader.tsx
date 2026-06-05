@@ -414,7 +414,7 @@ export default function SiteHeader() {
           {mounted && !signedIn && (
             <NavLink
               className="hidden sm:inline-flex h-9 items-center justify-center px-3 rounded-md text-[13px] font-medium text-gray-600 hover:text-gray-900 transition-colors font-[family-name:var(--font-plus-jakarta)]"
-              href="/soon-to-wed/signin"
+              href="/signin"
               prefetch={false}
             >
               Sign in
@@ -588,7 +588,7 @@ export default function SiteHeader() {
                 >
                   <NavLink
                     className="flex items-center px-3 py-3 rounded-md text-[14px] font-medium text-gray-600 hover:text-[#a68b6a] hover:bg-gray-50 transition-colors"
-                    href="/soon-to-wed/signin"
+                    href="/signin"
                     prefetch={false}
                   >
                     Sign in

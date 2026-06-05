@@ -106,7 +106,7 @@ export default function AcceptInvitePage() {
         if (signInError) {
           console.error("Auto sign-in failed:", signInError);
           // Redirect to login if auto sign-in fails
-          router.replace("/admin/login");
+          router.replace("/signin?returnTo=/superadmin");
           return;
         }
       }
@@ -153,7 +153,7 @@ export default function AcceptInvitePage() {
               </div>
               <div className="mt-6">
                 <a
-                  href="/admin/login"
+                  href="/signin"
                   className="inline-flex items-center justify-center h-10 px-4 rounded-[3px] bg-[#a67c52] text-white text-[13px] font-semibold hover:bg-[#8e6a46] transition-colors"
                 >
                   Go to Sign In

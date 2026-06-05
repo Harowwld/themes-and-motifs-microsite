@@ -73,7 +73,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       success: true,
-      message: "First superadmin created successfully. You can now log in at /admin/login",
+      message: "First superadmin created successfully. You can now log in at /signin",
       email,
     }, { status: 200 });
   } catch (e: any) {

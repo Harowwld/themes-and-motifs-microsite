@@ -64,15 +64,51 @@ function SignInPageContent() {
     setSubmitting(true);
 
     try {
-      const { data: signInData, error: signInErr } = await supabase.auth.signInWithPassword({
+      let signInData;
+      let signInErr;
+
+      const { data, error } = await supabase.auth.signInWithPassword({
         email: e1,
         password,
       });
+      signInData = data;
+      signInErr = error;
 
-      if (signInErr) throw signInErr;
+      if (signInErr) {
+        // Fallback check: try calling the legacy admin auth endpoint to support auto-migration
+        try {
+          const legacyRes = await fetch("/api/admin/auth/login", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ email: e1, password }),
+          });
+          const legacyJson = await legacyRes.json().catch(() => ({}));
+          if (legacyRes.ok && legacyJson.ok) {
+            if (legacyJson.legacy) {
+              // Redirect legacy users to bootstrap
+              setPassword("");
+              router.replace("/admin/bootstrap");
+              return;
+            }
+            if (legacyJson.session) {
+              const { data: sessData, error: sessionError } = await supabase.auth.setSession({
+                access_token: legacyJson.session.access_token,
+                refresh_token: legacyJson.session.refresh_token,
+              });
+              if (sessionError) throw sessionError;
+              signInData = sessData;
+              signInErr = null;
+            }
+          } else {
+            throw signInErr;
+          }
+        } catch {
+          throw signInErr;
+        }
+      }
 
       // Pre-populate the cache with the new user's role to prevent redirects from displaying the wrong layout
-      if (signInData.session?.access_token) {
+      if (signInData?.session?.access_token) {
         try {
           const res = await fetch("/api/auth/me", {
             headers: {
@@ -81,7 +117,36 @@ function SignInPageContent() {
           });
           const json = await res.json().catch(() => null);
           if (json) {
-            authCache.set(true, Boolean(json.isVendor), Boolean(json.isSoonToWed));
+            authCache.set(
+              true,
+              Boolean(json.isVendor),
+              Boolean(json.isSoonToWed),
+              Boolean(json.isSuperadmin),
+              json.accountType
+            );
+
+            setPassword("");
+
+            if (json.isSuperadmin || json.accountType === "superadmin") {
+              router.push("/superadmin");
+              return;
+            }
+            if (json.accountType === "editor") {
+              router.push("/editor/dashboard");
+              return;
+            }
+            if (json.isVendor || json.accountType === "vendor") {
+              router.push("/vendor/dashboard");
+              return;
+            }
+            if (json.isSoonToWed || json.accountType === "couple") {
+              if (returnTo && returnTo !== "/") {
+                router.push(returnTo);
+              } else {
+                router.push(`/moments/couple/${json.user?.id}`);
+              }
+              return;
+            }
           }
         } catch (cacheErr) {
           console.error("Error pre-warming auth cache:", cacheErr);
@@ -165,8 +230,8 @@ function SignInPageContent() {
                   New here? Create an account
                 </a>
 
-                <a className="text-[14px] font-medium text-[#8e6a46] hover:text-[#6e4f33] transition-colors font-[family-name:var(--font-plus-jakarta)]" href="/vendor/signin">
-                  Are you a vendor? Sign in here
+                <a className="text-[14px] font-medium text-[#8e6a46] hover:text-[#6e4f33] transition-colors font-[family-name:var(--font-plus-jakarta)]" href="/register">
+                  Are you a vendor? Register your business
                 </a>
               </div>
             </form>

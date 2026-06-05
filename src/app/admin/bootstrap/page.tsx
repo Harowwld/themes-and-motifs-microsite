@@ -37,7 +37,7 @@ export default function BootstrapPage() {
 
       // Redirect to login after 2 seconds
       setTimeout(() => {
-        router.push("/admin/login");
+        router.push("/signin?returnTo=/superadmin");
       }, 2000);
     } catch (err: any) {
       setResult({

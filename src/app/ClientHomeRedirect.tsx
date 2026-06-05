@@ -17,13 +17,13 @@ export default function ClientHomeRedirect() {
       const { data: { user } } = await supabase.auth.getUser();
 
       if (user) {
-        const { data: userData } = await supabase
-          .from("users")
-          .select("role")
-          .eq("id", user.id)
+        const { data: profile } = await supabase
+          .from("soon_to_wed_profiles")
+          .select("id")
+          .eq("user_id", user.id)
           .maybeSingle();
 
-        if (userData?.role === "soon_to_wed") {
+        if (profile) {
           router.push(`/moments/couple/${user.id}`);
         }
       }

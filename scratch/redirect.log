@@ -1,0 +1,25 @@
+[2026-06-05T11:43:29.869Z] GET /api/auth/me called. Auth Header exists: true, Token exists: true
+[2026-06-05T11:43:30.194Z] User authenticated. ID: b7c62fa0-ee4e-4e73-a1b3-c2d129e9c7b5, Email: admin@themesandmotifs.com
+[2026-06-05T11:43:30.498Z] Superadmin check: true. Data: {"id":"e2c1ba92-9af6-446b-bb1b-2922cd9ce78b"}, Err: null
+[2026-06-05T11:43:30.751Z] Combined role check: role=soon_to_wed, vendorId=null. Err: null
+[2026-06-05T11:43:30.751Z] Final auth response constructed: {"user":{"id":"b7c62fa0-ee4e-4e73-a1b3-c2d129e9c7b5","email":"admin@themesandmotifs.com"},"email":"admin@themesandmotifs.com","accountType":"superadmin","isVendor":false,"isSoonToWed":true,"isSuperadmin":true}
+[2026-06-05T11:43:30.769Z] GET /api/auth/me called. Auth Header exists: true, Token exists: true
+[2026-06-05T11:43:30.769Z] Cache hit. Returning cached data: {"user":{"id":"b7c62fa0-ee4e-4e73-a1b3-c2d129e9c7b5","email":"admin@themesandmotifs.com"},"email":"admin@themesandmotifs.com","accountType":"superadmin","isVendor":false,"isSoonToWed":true,"isSuperadmin":true}
+[2026-06-05T11:43:30.828Z] GET /api/auth/me called. Auth Header exists: true, Token exists: true
+[2026-06-05T11:43:30.828Z] Cache hit. Returning cached data: {"user":{"id":"b7c62fa0-ee4e-4e73-a1b3-c2d129e9c7b5","email":"admin@themesandmotifs.com"},"email":"admin@themesandmotifs.com","accountType":"superadmin","isVendor":false,"isSoonToWed":true,"isSuperadmin":true}
+[2026-06-05T11:43:30.833Z] GET /api/auth/me called. Auth Header exists: true, Token exists: true
+[2026-06-05T11:43:30.833Z] Cache hit. Returning cached data: {"user":{"id":"b7c62fa0-ee4e-4e73-a1b3-c2d129e9c7b5","email":"admin@themesandmotifs.com"},"email":"admin@themesandmotifs.com","accountType":"superadmin","isVendor":false,"isSoonToWed":true,"isSuperadmin":true}
+[2026-06-05T11:43:30.841Z] GET /api/auth/me called. Auth Header exists: true, Token exists: true
+[2026-06-05T11:43:30.841Z] Cache hit. Returning cached data: {"user":{"id":"b7c62fa0-ee4e-4e73-a1b3-c2d129e9c7b5","email":"admin@themesandmotifs.com"},"email":"admin@themesandmotifs.com","accountType":"superadmin","isVendor":false,"isSoonToWed":true,"isSuperadmin":true}
+[2026-06-05T11:43:35.700Z] GET /api/auth/me called. Auth Header exists: true, Token exists: true
+[2026-06-05T11:43:35.701Z] Cache hit. Returning cached data: {"user":{"id":"b7c62fa0-ee4e-4e73-a1b3-c2d129e9c7b5","email":"admin@themesandmotifs.com"},"email":"admin@themesandmotifs.com","accountType":"superadmin","isVendor":false,"isSoonToWed":true,"isSuperadmin":true}
+[2026-06-05T11:43:35.712Z] GET /api/auth/me called. Auth Header exists: true, Token exists: true
+[2026-06-05T11:43:35.712Z] Cache hit. Returning cached data: {"user":{"id":"b7c62fa0-ee4e-4e73-a1b3-c2d129e9c7b5","email":"admin@themesandmotifs.com"},"email":"admin@themesandmotifs.com","accountType":"superadmin","isVendor":false,"isSoonToWed":true,"isSuperadmin":true}
+[2026-06-05T11:43:36.371Z] GET /api/auth/me called. Auth Header exists: true, Token exists: true
+[2026-06-05T11:43:36.371Z] Cache hit. Returning cached data: {"user":{"id":"b7c62fa0-ee4e-4e73-a1b3-c2d129e9c7b5","email":"admin@themesandmotifs.com"},"email":"admin@themesandmotifs.com","accountType":"superadmin","isVendor":false,"isSoonToWed":true,"isSuperadmin":true}
+[2026-06-05T11:43:36.396Z] GET /api/auth/me called. Auth Header exists: true, Token exists: true
+[2026-06-05T11:43:36.397Z] Cache hit. Returning cached data: {"user":{"id":"b7c62fa0-ee4e-4e73-a1b3-c2d129e9c7b5","email":"admin@themesandmotifs.com"},"email":"admin@themesandmotifs.com","accountType":"superadmin","isVendor":false,"isSoonToWed":true,"isSuperadmin":true}
+[2026-06-05T11:43:36.403Z] GET /api/auth/me called. Auth Header exists: true, Token exists: true
+[2026-06-05T11:43:36.404Z] Cache hit. Returning cached data: {"user":{"id":"b7c62fa0-ee4e-4e73-a1b3-c2d129e9c7b5","email":"admin@themesandmotifs.com"},"email":"admin@themesandmotifs.com","accountType":"superadmin","isVendor":false,"isSoonToWed":true,"isSuperadmin":true}
+[2026-06-05T11:43:36.411Z] GET /api/auth/me called. Auth Header exists: true, Token exists: true
+[2026-06-05T11:43:36.412Z] Cache hit. Returning cached data: {"user":{"id":"b7c62fa0-ee4e-4e73-a1b3-c2d129e9c7b5","email":"admin@themesandmotifs.com"},"email":"admin@themesandmotifs.com","accountType":"superadmin","isVendor":false,"isSoonToWed":true,"isSuperadmin":true}

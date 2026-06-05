@@ -3,7 +3,7 @@ import { Spinner } from "./DashboardSections";
 import { PhotoModal } from "./DashboardModals";
 import { ensureSingleCover } from "../utils";
 import { AlbumSection } from "./AlbumSection";
-import { Album, AlbumPhoto } from "../types";
+import { Album, AlbumPhoto, Theme } from "../types";
 import { toast } from "@/lib/toast";
 
 export function PhotoSection({
@@ -15,6 +15,12 @@ export function PhotoSection({
   setEditingPhotoIndex,
   saving,
   saveImages,
+
+  // Theme properties
+  themes,
+  setThemes,
+  allThemes,
+  saveThemes,
 
   // Album properties
   albums,
@@ -42,7 +48,6 @@ export function PhotoSection({
   setAlbumToRename,
   setRenameAlbumTitle,
   renameAlbum,
-  themes
 }: {
   images: any[];
   setImages: any;
@@ -52,6 +57,12 @@ export function PhotoSection({
   setEditingPhotoIndex: (v: number | null) => void;
   saving: boolean;
   saveImages: (customImages?: any[]) => void;
+
+  // Theme types
+  themes: Theme[];
+  setThemes: any;
+  allThemes: Theme[];
+  saveThemes: (customThemes?: Theme[]) => void;
 
   // Album types
   albums: Album[];
@@ -79,7 +90,6 @@ export function PhotoSection({
   setAlbumToRename: (v: Album | null) => void;
   setRenameAlbumTitle: (v: string) => void;
   renameAlbum: () => void;
-  themes?: {id: number, name: string}[];
 }) {
   const [subTab, setSubTab] = React.useState<"photos" | "albums">("photos");
 
@@ -122,6 +132,45 @@ export function PhotoSection({
       <div className="p-6">
         {subTab === "photos" ? (
           <div className="grid gap-6">
+            {/* Storefront Themes Selector */}
+            <div className="rounded-xl border border-black/[0.06] bg-[#fafafa]/30 p-5">
+              <h3 className="text-[11px] font-bold text-black/40 uppercase tracking-widest mb-1.5">Themes</h3>
+              <div className="text-[12px] text-black/45 mb-4">Select up to 10 themes that best describe your business. These active themes will also define the options available to tag each of your photos.</div>
+              
+              <div className="flex flex-wrap gap-2">
+                {allThemes.map((t) => {
+                  const isSelected = themes.some((x) => x.id === t.id);
+                  return (
+                    <button
+                      key={t.id}
+                      type="button"
+                      onClick={() => {
+                        let nextThemes: Theme[];
+                        if (isSelected) {
+                          nextThemes = themes.filter((x) => x.id !== t.id);
+                        } else {
+                          if (themes.length >= 10) return;
+                          nextThemes = [...themes, t];
+                        }
+                        setThemes(nextThemes);
+                        void saveThemes(nextThemes);
+                      }}
+                      className={`px-3 py-1.5 rounded-lg text-[12px] font-bold transition-all border flex items-center gap-1.5 cursor-pointer active:scale-95 ${
+                        isSelected
+                          ? "bg-[#7c3aed]/10 text-[#7c3aed] border-[#7c3aed]/30 shadow-sm"
+                          : "bg-white text-black/40 border-black/[0.06] hover:border-[#a67c52]/40 hover:text-[#a67c52]"
+                      }`}
+                    >
+                      {t.name}
+                      {isSelected && (
+                        <span className="w-1 h-1 rounded-full bg-[#7c3aed]" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
               {images
                 .map((img, originalIdx) => ({ img, originalIdx }))

@@ -23,7 +23,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useVendorDashboard } from "./hooks/useVendorDashboard";
 import { DashboardSkeleton } from "./components/DashboardSections";
 import { ProfileSection } from "./components/ProfileSection";
-import { ThemesSection } from "./components/ThemesSection";
 import { CategoriesSection } from "./components/CategoriesSection";
 import { SocialSection } from "./components/SocialSection";
 import { PhotoSection } from "./components/PhotoSection";
@@ -172,13 +171,12 @@ export default function VendorDashboardPage() {
   };
 
   const tabs = [
-    { id: "photos", label: "Photos / Themes", icon: ImageIcon },
+    { id: "photos", label: "Photos and Themes", icon: ImageIcon },
     { id: "promos", label: "Exclusive Deals", icon: Ticket },
     { id: "marketplace", label: "Marketplace Items", icon: Store },
     { id: "profile", label: "Business Profile", icon: User },
     { id: "social", label: "Social Links", icon: Globe },
     { id: "categories", label: "Service Categories", icon: Tag },
-    { id: "themes", label: "Storefront Themes", icon: Palette },
     { id: "videos", label: "Video Highlights", icon: Film },
     { id: "analytics", label: "Analytics", icon: BarChart3 },
     { id: "inquiries", label: "Client Inquiries", icon: MessageCircle },
@@ -295,6 +293,12 @@ export default function VendorDashboardPage() {
                             saving={saving}
                             saveImages={saveImages}
 
+                            // Theme properties
+                            themes={themes}
+                            setThemes={setThemes}
+                            allThemes={allThemes}
+                            saveThemes={saveThemes}
+
                             // Album properties
                             albums={albums}
                             setAlbumModalOpen={setAlbumModalOpen}
@@ -321,7 +325,6 @@ export default function VendorDashboardPage() {
                             setAlbumToRename={setAlbumToRename}
                             setRenameAlbumTitle={setRenameAlbumTitle}
                             renameAlbum={renameAlbum}
-                            themes={allThemes}
                           />
                         );
                       case "videos":
@@ -400,16 +403,6 @@ export default function VendorDashboardPage() {
                             isPremium={isPremium}
                             regions={regions}
                             cities={cities}
-                          />
-                        );
-                      case "themes":
-                        return (
-                          <ThemesSection 
-                            themes={themes}
-                            setThemes={setThemes}
-                            allThemes={allThemes}
-                            saving={saving}
-                            saveThemes={saveThemes}
                           />
                         );
                       case "categories":

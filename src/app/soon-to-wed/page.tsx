@@ -19,7 +19,7 @@ export default function SoonToWedPage() {
       if (session?.user) {
         router.push(`/moments/couple/${session.user.id}`);
       } else {
-        router.push("/soon-to-wed/signin?returnTo=/soon-to-wed");
+        router.push("/signin?returnTo=/soon-to-wed");
       }
     }
 

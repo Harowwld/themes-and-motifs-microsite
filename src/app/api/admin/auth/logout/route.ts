@@ -11,7 +11,7 @@ async function handleLogout(req: Request) {
 
   // Sign out from Supabase Auth (if using Supabase Auth)
   const supabaseToken = getSupabaseAuthToken(req);
-  const redirectUrl = new URL("/admin/login", req.url);
+  const redirectUrl = new URL("/signin", req.url);
   const res = NextResponse.redirect(redirectUrl, { status: 302 });
 
   if (supabaseToken) {

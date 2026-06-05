@@ -104,8 +104,8 @@ export async function middleware(req: NextRequest) {
       const token = findSupabaseToken(cookieHeader);
       if (!token) {
         const url = req.nextUrl.clone();
-        url.pathname = "/admin/login";
-        url.searchParams.set("redirect", pathname);
+        url.pathname = "/signin";
+        url.searchParams.set("returnTo", pathname);
         return NextResponse.redirect(url);
       }
 
@@ -124,8 +124,8 @@ export async function middleware(req: NextRequest) {
     // If no user, redirect to admin login
     if (!('user' in sessionResult) || !sessionResult.user) {
       const url = req.nextUrl.clone();
-      url.pathname = "/admin/login";
-      url.searchParams.set("redirect", pathname);
+      url.pathname = "/signin";
+      url.searchParams.set("returnTo", pathname);
       return NextResponse.redirect(url);
     }
     
@@ -156,8 +156,8 @@ export async function middleware(req: NextRequest) {
   }
 
   const url = req.nextUrl.clone();
-  url.pathname = "/admin/login";
-  url.searchParams.set("redirect", pathname);
+  url.pathname = "/signin";
+  url.searchParams.set("returnTo", pathname);
   return NextResponse.redirect(url);
 }
 

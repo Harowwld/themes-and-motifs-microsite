@@ -785,13 +785,14 @@ export function useVendorDashboard() {
     }
   };
 
-  const saveThemes = async () => {
+  const saveThemes = async (customThemes?: Theme[]) => {
     if (!token) return;
     setSaving(true);
     try {
+      const targetThemes = customThemes || themes;
       const res = await apiFetch<{ themes: { id: number; theme: Theme | Theme[] | null }[]; allThemes: Theme[]; created: Theme[] }>("/api/vendor/themes", token, {
         method: "PUT",
-        body: JSON.stringify({ themes: themes.map((t) => ({ id: t.id, name: t.name, slug: t.slug })) }),
+        body: JSON.stringify({ themes: targetThemes.map((t) => ({ id: t.id, name: t.name, slug: t.slug })) }),
       });
 
       const normalizedThemes = (res.themes ?? [])
