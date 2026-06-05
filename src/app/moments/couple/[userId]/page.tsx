@@ -831,6 +831,33 @@ export default function CoupleMicrositePage() {
     return <CoupleMicrositeSkeleton />;
   }
 
+  if (!profile) {
+    return (
+      <div className="min-h-screen bg-[#fafafa] flex flex-col items-center justify-center p-4">
+        <div className="max-w-md w-full bg-white border border-black/5 rounded-2xl p-8 shadow-sm text-center space-y-4">
+          <div className="w-12 h-12 rounded-full bg-amber-50 flex items-center justify-center mx-auto text-amber-600">
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <h2 className="text-[20px] font-bold text-neutral-800 font-[family-name:var(--font-noto-serif)]">Microsite Not Found</h2>
+          <p className="text-[14px] text-neutral-500 font-[family-name:var(--font-plus-jakarta)] leading-relaxed">
+            The wedding microsite you are trying to access does not exist or has not been set up.
+          </p>
+          <button
+            onClick={() => router.push("/")}
+            className="w-full h-11 inline-flex items-center justify-center px-5 rounded-lg text-white text-[14px] font-medium transition-colors font-[family-name:var(--font-plus-jakarta)]"
+            style={{ backgroundColor: '#a67c52' }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#8e6a46'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#a67c52'}
+          >
+            Go back home
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#fafafa]">
 

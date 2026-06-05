@@ -192,7 +192,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
         .single(),
       supabase
         .from("vendor_images")
-        .select("id, image_url, caption, is_cover, display_order")
+        .select("id, image_url, caption, is_cover, display_order, focus_x, focus_y, zoom, theme_id")
         .eq("vendor_id", vendorId)
         .order("display_order", { ascending: true }),
       supabase

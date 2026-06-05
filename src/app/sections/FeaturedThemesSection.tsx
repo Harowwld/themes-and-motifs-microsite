@@ -48,6 +48,26 @@ export default function FeaturedThemesSection({ ideas }: { ideas?: ThemedIdea[] 
       >
         <InfiniteIdeaCarousel ideas={ideas} />
       </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+        className="mt-6 text-center"
+      >
+        <motion.a
+          whileHover={{ x: 5 }}
+          whileTap={{ scale: 0.97 }}
+          href="/themes"
+          className="inline-flex items-center gap-1 text-[13px] font-semibold text-[#a68b6a] hover:text-[#957a5c] transition-colors font-[family-name:var(--font-plus-jakarta)]"
+        >
+          View All Themes
+          <svg width="20" height="16" viewBox="0 0 20 16" fill="none" aria-hidden className="w-5 h-4">
+            <path d="M2 8h16M12 2l6 6-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </motion.a>
+      </motion.div>
     </section>
   );
 }

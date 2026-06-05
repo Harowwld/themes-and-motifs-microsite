@@ -7,6 +7,8 @@ type AuthCacheData = {
   signedIn: boolean;
   isVendor: boolean;
   isSoonToWed: boolean;
+  isSuperadmin?: boolean;
+  accountType?: string | null;
   timestamp: number;
 };
 
@@ -28,13 +30,15 @@ export const authCache = {
     }
   },
 
-  set(signedIn: boolean, isVendor: boolean, isSoonToWed: boolean) {
+  set(signedIn: boolean, isVendor: boolean, isSoonToWed: boolean, isSuperadmin?: boolean, accountType?: string | null) {
     if (typeof window === "undefined") return;
     try {
       const data: AuthCacheData = {
         signedIn,
         isVendor,
         isSoonToWed,
+        isSuperadmin,
+        accountType,
         timestamp: Date.now(),
       };
       localStorage.setItem(AUTH_CACHE_KEY, JSON.stringify(data));

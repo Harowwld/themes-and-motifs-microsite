@@ -594,9 +594,19 @@ export default function DashboardPage() {
 
     // Fast synchronous check using the client-side cache
     const cached = authCache.get();
-    if (cached?.signedIn && cached.isVendor) {
-      router.replace("/vendor/dashboard");
-      return;
+    if (cached?.signedIn) {
+      if (cached.isVendor || cached.accountType === "vendor") {
+        router.replace("/vendor/dashboard");
+        return;
+      }
+      if (cached.isSuperadmin || cached.accountType === "superadmin") {
+        router.replace("/superadmin");
+        return;
+      }
+      if (cached.accountType === "editor") {
+        router.replace("/editor/dashboard");
+        return;
+      }
     }
 
     async function checkAuth() {
@@ -608,10 +618,15 @@ export default function DashboardPage() {
       }
 
       if (!cancelled && session?.user) {
-        // Redirect vendors and editors to their respective dashboards
-        const [{ data: vendorProfile }, { data: editorProfile }] = await Promise.all([
+        // Redirect vendors, editors, and superadmins to their respective dashboards
+        const [
+          { data: vendorProfile },
+          { data: editorProfile },
+          { data: superadminProfile }
+        ] = await Promise.all([
           supabase.from("vendors").select("id").eq("user_id", session.user.id).maybeSingle(),
-          supabase.from("editors").select("id").eq("user_id", session.user.id).maybeSingle()
+          supabase.from("editors").select("id").eq("user_id", session.user.id).maybeSingle(),
+          supabase.from("superadmins").select("id").eq("auth_user_id", session.user.id).eq("is_active", true).maybeSingle()
         ]);
 
         if (!cancelled && vendorProfile) {
@@ -620,6 +635,10 @@ export default function DashboardPage() {
         }
         if (!cancelled && editorProfile) {
           router.replace("/editor/dashboard");
+          return;
+        }
+        if (!cancelled && superadminProfile) {
+          router.replace("/superadmin");
           return;
         }
 

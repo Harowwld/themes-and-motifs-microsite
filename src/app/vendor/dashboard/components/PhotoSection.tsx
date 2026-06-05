@@ -4,6 +4,7 @@ import { PhotoModal } from "./DashboardModals";
 import { ensureSingleCover } from "../utils";
 import { AlbumSection } from "./AlbumSection";
 import { Album, AlbumPhoto } from "../types";
+import { toast } from "@/lib/toast";
 
 export function PhotoSection({
   images,
@@ -207,7 +208,13 @@ export function PhotoSection({
               onSave={(photos) => {
                 if (editingPhotoIndex !== null) {
                   const photo = photos[0];
-                  setImages((rows: any[]) => rows.map((r, i) => (i === editingPhotoIndex ? photo : r)));
+                  const oldPhoto = images[editingPhotoIndex];
+                  const themeChanged = oldPhoto?.theme_id !== photo.theme_id;
+                  const nextImages = images.map((r, i) => (i === editingPhotoIndex ? photo : r));
+                  setImages(nextImages);
+                  if (themeChanged) {
+                    void saveImages(nextImages);
+                  }
                 } else {
                   const newPhotosWithOrder = photos.map((p, idx) => ({
                     ...p,

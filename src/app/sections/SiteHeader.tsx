@@ -152,8 +152,8 @@ export default function SiteHeader() {
   const pathname = usePathname();
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);
 
-  const meCacheRef = useRef<{ token: string; at: number; isVendor: boolean; isSoonToWed: boolean; email: string | null; accountType: string | null } | null>(null);
-  const meInFlightRef = useRef<Promise<{ isVendor: boolean; isSoonToWed: boolean; email: string | null; accountType: string | null } | null> | null>(null);
+  const meCacheRef = useRef<{ token: string; at: number; isVendor: boolean; isSoonToWed: boolean; email: string | null; accountType: string | null; isSuperadmin?: boolean } | null>(null);
+  const meInFlightRef = useRef<Promise<{ isVendor: boolean; isSoonToWed: boolean; email: string | null; accountType: string | null; isSuperadmin?: boolean } | null> | null>(null);
 
   // Try to get cached auth state immediately for instant UI
   const cachedAuth = useMemo(() => authCache.get(), []);
@@ -161,7 +161,7 @@ export default function SiteHeader() {
   const [isVendor, setIsVendor] = useState(cachedAuth?.isVendor ?? false);
   const [isSoonToWed, setIsSoonToWed] = useState(cachedAuth?.isSoonToWed ?? false);
   const [email, setEmail] = useState<string | null>(null);
-  const [accountType, setAccountType] = useState<string | null>(null);
+  const [accountType, setAccountType] = useState<string | null>(cachedAuth?.accountType ?? null);
   const [signingOut, setSigningOut] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -207,7 +207,7 @@ export default function SiteHeader() {
       if (cached && cached.token === token && now - cached.at < ttlMs) {
         setIsVendor(cached.isVendor);
         setIsSoonToWed(cached.isSoonToWed);
-        authCache.set(newSignedIn, cached.isVendor, cached.isSoonToWed);
+        authCache.set(newSignedIn, cached.isVendor, cached.isSoonToWed, cached.isSuperadmin, cached.accountType);
         return;
       }
 
@@ -219,12 +219,13 @@ export default function SiteHeader() {
                 authorization: `Bearer ${token}`,
               },
             });
-            const json = (await res.json().catch(() => null)) as { isVendor?: boolean; isSoonToWed?: boolean; email?: string | null; accountType?: string | null } | null;
+            const json = (await res.json().catch(() => null)) as { isVendor?: boolean; isSoonToWed?: boolean; email?: string | null; accountType?: string | null; isSuperadmin?: boolean } | null;
             return {
               isVendor: Boolean(json?.isVendor),
               isSoonToWed: Boolean(json?.isSoonToWed),
               email: json?.email ?? null,
               accountType: json?.accountType ?? null,
+              isSuperadmin: Boolean(json?.isSuperadmin),
             };
           } catch {
             return null;
@@ -237,8 +238,8 @@ export default function SiteHeader() {
       try {
         const me = await meInFlightRef.current;
         if (!me) throw new Error("me fetch failed");
-        meCacheRef.current = { token, at: Date.now(), isVendor: me.isVendor, isSoonToWed: me.isSoonToWed, email: me.email, accountType: me.accountType };
-        authCache.set(newSignedIn, me.isVendor, me.isSoonToWed);
+        meCacheRef.current = { token, at: Date.now(), isVendor: me.isVendor, isSoonToWed: me.isSoonToWed, email: me.email, accountType: me.accountType, isSuperadmin: me.isSuperadmin };
+        authCache.set(newSignedIn, me.isVendor, me.isSoonToWed, me.isSuperadmin, me.accountType);
         if (!cancelled) {
           setIsVendor(me.isVendor);
           setIsSoonToWed(me.isSoonToWed);
@@ -251,7 +252,7 @@ export default function SiteHeader() {
           setIsSoonToWed(false);
           setEmail(null);
           setAccountType(null);
-          authCache.set(newSignedIn, false, false);
+          authCache.set(newSignedIn, false, false, false, null);
         }
       }
     }

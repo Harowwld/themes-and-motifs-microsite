@@ -71,6 +71,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
         focus_x: typeof img.focus_x === 'number' ? img.focus_x : 50,
         focus_y: typeof img.focus_y === 'number' ? img.focus_y : 50,
         zoom: typeof img.zoom === 'number' ? img.zoom : 1,
+        theme_id: typeof img.theme_id === 'number' ? img.theme_id : null,
       }));
 
     if (imagesToInsert.length > 0) {
@@ -83,7 +84,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     // Fetch updated images
     const { data: updatedImages } = await supabase
       .from("vendor_images")
-      .select("id, image_url, caption, is_cover, display_order, focus_x, focus_y, zoom")
+      .select("id, image_url, caption, is_cover, display_order, focus_x, focus_y, zoom, theme_id")
       .eq("vendor_id", vendorId)
       .order("display_order", { ascending: true });
 

@@ -5,6 +5,7 @@ import ImageCropperModal from "../ImageCropper";
 import PhotoModal from "@/components/PhotoModal";
 import { ImageUploadDropzone } from "@/components/ImageUploadDropzone";
 import { proxiedImageUrl } from "@/lib/imageSizes";
+import { toast } from "@/lib/toast";
 
 import { useSuperadminSuppliers } from "./hooks/useSuperadminSuppliers";
 import { VendorList } from "./components/VendorList";
@@ -280,7 +281,12 @@ export default function SuperadminVendorsPage() {
         onSave={(photos) => {
           if (editingPhotoIndex !== null) {
             const photo = photos[0];
+            const oldPhoto = editImages[editingPhotoIndex];
+            const themeChanged = oldPhoto?.theme_id !== photo.theme_id;
             setEditImages((rows: any) => rows.map((r: any, i: number) => (i === editingPhotoIndex ? photo : r)));
+            if (themeChanged) {
+              toast.success("Photo theme updated! Remember to save the vendor details.");
+            }
           } else {
             const newPhotosWithOrder = photos.map((p, idx) => ({
               ...p,

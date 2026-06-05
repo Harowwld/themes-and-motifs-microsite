@@ -1,6 +1,7 @@
 import React from "react";
 import { proxiedImageUrl } from "@/lib/imageSizes";
 import { VendorImage } from "../hooks/useSuperadminSuppliers";
+import { toast } from "@/lib/toast";
 
 export function PhotosSection({
   editImages,
@@ -98,6 +99,7 @@ export function PhotosSection({
                   const newImages = [...editImages];
                   newImages[idx].theme_id = e.target.value ? Number(e.target.value) : null;
                   setEditImages(newImages);
+                  toast.success("Photo theme updated! Remember to save the vendor details.");
                 }}
                 className="w-full h-6 rounded-[3px] border border-black/10 px-1 text-[10px] bg-white outline-none"
               >
