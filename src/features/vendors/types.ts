@@ -30,6 +30,12 @@ export type VendorListItem = {
   cover_focus_x?: number | null;
   cover_focus_y?: number | null;
   cover_zoom?: number | null;
+  card_cover_focus_x?: number | null;
+  portrait_cover_focus_x?: number | null;
+  portrait_cover_focus_y?: number | null;
+  portrait_cover_zoom?: number | null;
+  card_cover_focus_y?: number | null;
+  card_cover_zoom?: number | null;
   plan?: { id: number; name: string } | { id: number; name: string }[] | null;
 };
 

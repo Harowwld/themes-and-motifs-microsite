@@ -15,7 +15,8 @@ import {
   Palette,
   Globe,
   Star,
-  BarChart3
+  BarChart3,
+  Store
 } from "lucide-react";
 
 import { motion, AnimatePresence } from "framer-motion";
@@ -29,6 +30,7 @@ import { PhotoSection } from "./components/PhotoSection";
 import { VideoSection } from "./components/VideoSection";
 import { AlbumSection } from "./components/AlbumSection";
 import { PromoSection } from "./components/PromoSection";
+import { MarketplaceSection } from "./components/MarketplaceSection";
 import { InquirySection } from "./components/InquirySection";
 import { ReviewsSection } from "./components/ReviewsSection";
 import { AnalyticsSection } from "./components/AnalyticsSection";
@@ -70,11 +72,15 @@ export default function VendorDashboardPage() {
     albumToRename,
     renameAlbumTitle,
     cropperOpen,
+    cardCropperOpen,
+    portraitCropperOpen,
     logoModalOpen,
     photoModalOpen,
     editingPhotoIndex,
     promoModalOpen,
     editingPromoId,
+    marketplaceItemModalOpen,
+    editingMarketplaceItemId,
     videoModalOpen,
     editingVideoIndex,
     isPreviewOpen,
@@ -98,11 +104,15 @@ export default function VendorDashboardPage() {
     setAlbumToRename,
     setRenameAlbumTitle,
     setCropperOpen,
+    setCardCropperOpen,
+    setPortraitCropperOpen,
     setLogoModalOpen,
     setPhotoModalOpen,
     setEditingPhotoIndex,
     setPromoModalOpen,
     setEditingPromoId,
+    setMarketplaceItemModalOpen,
+    setEditingMarketplaceItemId,
     setVideoModalOpen,
     setEditingVideoIndex,
     setIsPreviewOpen,
@@ -111,6 +121,11 @@ export default function VendorDashboardPage() {
     createPromo,
     updatePromo,
     deletePromo,
+    marketplaceItems,
+    refreshMarketplaceItems,
+    createMarketplaceItem,
+    updateMarketplaceItem,
+    deleteMarketplaceItem,
     refreshInquiries,
     updateInquiryStatus,
     saveReviewReply,
@@ -129,7 +144,22 @@ export default function VendorDashboardPage() {
     saveVideos,
   } = useVendorDashboard();
   
-  const [activeTab, setActiveTab] = React.useState("inquiries");
+  const [activeTab, setActiveTab] = React.useState("photos");
+
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const tab = params.get("tab");
+    if (tab) {
+      setActiveTab(tab);
+    }
+  }, []);
+
+  const handleTabChange = React.useCallback((tab: string) => {
+    setActiveTab(tab);
+    const params = new URLSearchParams(window.location.search);
+    params.set("tab", tab);
+    window.history.replaceState(null, "", `?${params.toString()}`);
+  }, []);
   const supabase = React.useMemo(() => createSupabaseBrowserClient(), []);
 
   if (loading) {
@@ -142,16 +172,17 @@ export default function VendorDashboardPage() {
   };
 
   const tabs = [
-    { id: "inquiries", label: "Client Inquiries", icon: MessageCircle },
-    { id: "analytics", label: "Storefront Analytics", icon: BarChart3 },
     { id: "photos", label: "Photos / Themes", icon: ImageIcon },
-    { id: "videos", label: "Video Highlights", icon: Film },
     { id: "promos", label: "Exclusive Deals", icon: Ticket },
-    { id: "reviews", label: "Couple Reviews", icon: Star },
+    { id: "marketplace", label: "Marketplace Items", icon: Store },
     { id: "profile", label: "Business Profile", icon: User },
+    { id: "social", label: "Social Links", icon: Globe },
     { id: "categories", label: "Service Categories", icon: Tag },
     { id: "themes", label: "Storefront Themes", icon: Palette },
-    { id: "social", label: "Social Links", icon: Globe },
+    { id: "videos", label: "Video Highlights", icon: Film },
+    { id: "analytics", label: "Analytics", icon: BarChart3 },
+    { id: "inquiries", label: "Client Inquiries", icon: MessageCircle },
+    { id: "reviews", label: "Couple Reviews", icon: Star },
   ];
 
   return (
@@ -206,7 +237,7 @@ export default function VendorDashboardPage() {
                   return (
                     <button
                       key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
+                      onClick={() => handleTabChange(tab.id)}
                       className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[13px] font-bold active:scale-[0.98] transition-all duration-200 text-left cursor-pointer ${
                         isSelected
                           ? "bg-[#a67c52] text-white shadow-[0_4px_12px_rgba(166,124,82,0.15)]"
@@ -290,6 +321,7 @@ export default function VendorDashboardPage() {
                             setAlbumToRename={setAlbumToRename}
                             setRenameAlbumTitle={setRenameAlbumTitle}
                             renameAlbum={renameAlbum}
+                            themes={allThemes}
                           />
                         );
                       case "videos":
@@ -308,6 +340,7 @@ export default function VendorDashboardPage() {
                       case "promos":
                         return (
                           <PromoSection 
+                            vendorId={vendor?.id}
                             promos={promos}
                             isPremium={isPremium}
                             setEditingPromoId={setEditingPromoId}
@@ -317,6 +350,20 @@ export default function VendorDashboardPage() {
                             deletePromo={deletePromo}
                             updatePromo={updatePromo}
                             createPromo={createPromo}
+                          />
+                        );
+                      case "marketplace":
+                        return (
+                          <MarketplaceSection
+                            vendorId={vendor?.id}
+                            marketplaceItems={marketplaceItems}
+                            setEditingMarketplaceItemId={setEditingMarketplaceItemId}
+                            setMarketplaceItemModalOpen={setMarketplaceItemModalOpen}
+                            marketplaceItemModalOpen={marketplaceItemModalOpen}
+                            editingMarketplaceItemId={editingMarketplaceItemId}
+                            deleteMarketplaceItem={deleteMarketplaceItem}
+                            updateMarketplaceItem={updateMarketplaceItem}
+                            createMarketplaceItem={createMarketplaceItem}
                           />
                         );
                       case "reviews":
@@ -341,6 +388,10 @@ export default function VendorDashboardPage() {
                             images={images}
                             cropperOpen={cropperOpen}
                             setCropperOpen={setCropperOpen}
+                            cardCropperOpen={cardCropperOpen}
+                            setCardCropperOpen={setCardCropperOpen}
+                            portraitCropperOpen={portraitCropperOpen}
+                            setPortraitCropperOpen={setPortraitCropperOpen}
                             saveCoverCrop={saveCoverCrop}
                             logoModalOpen={logoModalOpen}
                             setLogoModalOpen={setLogoModalOpen}

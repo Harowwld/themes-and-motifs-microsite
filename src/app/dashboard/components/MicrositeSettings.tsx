@@ -74,6 +74,7 @@ export default function MicrositeSettings({ user, supabase }: MicrositeSettingsP
   const [groomNickname, setGroomNickname] = useState("");
   const [groomLastName, setGroomLastName] = useState("");
   const [weddingDate, setWeddingDate] = useState("");
+  const [weddingTime, setWeddingTime] = useState("");
   const [weddingDatePublic, setWeddingDatePublic] = useState(false);
   const [weddingVenueArea, setWeddingVenueArea] = useState("");
   const [weddingVenuePublic, setWeddingVenuePublic] = useState(false);
@@ -107,7 +108,7 @@ export default function MicrositeSettings({ user, supabase }: MicrositeSettingsP
         setLoading(true);
         const { data, error } = await supabase
           .from("soon_to_wed_profiles")
-          .select("our_story_text, entourage, sponsors, our_message, profile_photo_url, bride_nickname, bride_last_name, groom_nickname, groom_last_name, wedding_date, wedding_date_public, wedding_venue_area, wedding_venue_public, location, profile_visibility")
+          .select("our_story_text, entourage, sponsors, our_message, profile_photo_url, bride_nickname, bride_last_name, groom_nickname, groom_last_name, wedding_date, wedding_time, wedding_date_public, wedding_venue_area, wedding_venue_public, location, profile_visibility")
           .eq("user_id", user.id)
           .maybeSingle();
 
@@ -122,6 +123,7 @@ export default function MicrositeSettings({ user, supabase }: MicrositeSettingsP
           setGroomNickname(data.groom_nickname || "");
           setGroomLastName(data.groom_last_name || "");
           setWeddingDate(data.wedding_date || "");
+          setWeddingTime(data.wedding_time || "");
           setWeddingDatePublic(!!data.wedding_date_public);
           setWeddingVenueArea(data.wedding_venue_area || "");
           setWeddingVenuePublic(!!data.wedding_venue_public);
@@ -170,6 +172,7 @@ export default function MicrositeSettings({ user, supabase }: MicrositeSettingsP
           groom_nickname: groomNickname || null,
           groom_last_name: groomLastName || null,
           wedding_date: weddingDate || null,
+          wedding_time: weddingTime || null,
           wedding_date_public: weddingDatePublic,
           wedding_venue_area: weddingVenueArea || null,
           wedding_venue_public: weddingVenuePublic,
@@ -380,6 +383,17 @@ export default function MicrositeSettings({ user, supabase }: MicrositeSettingsP
                     onChange={(e) => setWeddingDate(e.target.value)}
                     className="w-full px-3 py-2 border border-neutral-200 bg-neutral-50/30 rounded-xl text-[13px] text-neutral-700 font-[family-name:var(--font-plus-jakarta)] focus:outline-none focus:ring-1 focus:ring-[#a68b6a] focus:bg-white transition-all"
                   />
+                  <div className="mt-3">
+                    <label className="block text-xs font-bold uppercase text-neutral-400 mb-1.5 font-[family-name:var(--font-plus-jakarta)]">
+                      Wedding Time
+                    </label>
+                    <input
+                      type="time"
+                      value={weddingTime}
+                      onChange={(e) => setWeddingTime(e.target.value)}
+                      className="w-full px-3 py-2 border border-neutral-200 bg-neutral-50/30 rounded-xl text-[13px] text-neutral-700 font-[family-name:var(--font-plus-jakarta)] focus:outline-none focus:ring-1 focus:ring-[#a68b6a] focus:bg-white transition-all"
+                    />
+                  </div>
                   <label className="flex items-center gap-2 mt-2 select-none cursor-pointer">
                     <input
                       type="checkbox"

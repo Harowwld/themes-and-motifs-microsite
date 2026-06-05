@@ -45,6 +45,26 @@ function clampZoom(v: number) {
   return Math.max(1, Math.min(3, v));
 }
 
+type MarketplaceItem = {
+  id: number;
+  title: string;
+  summary: string | null;
+  price: number;
+  price_text: string | null;
+  image_url: string | null;
+  image_focus_x: number | null;
+  image_focus_y: number | null;
+  image_zoom: number | null;
+  vendors: {
+    id: number;
+    business_name: string;
+    slug: string;
+    logo_url: string | null;
+    city: string | null;
+    location_text: string | null;
+  }[];
+};
+
 
 function isPromoCurrentlyValid(promo: Pick<Promo, "valid_from" | "valid_to">) {
   const now = new Date();
@@ -244,13 +264,152 @@ async function PromosList({ query }: { query: string }) {
   );
 }
 
+async function MarketplaceList({ query }: { query: string }) {
+  const supabase = createSupabaseServerClient();
+
+  const { data: itemsData } = await supabase
+    .from("marketplace_items")
+    .select(
+      "id,title,summary,price,price_text,image_url,image_focus_x,image_focus_y,image_zoom,is_active,vendors(id,business_name,slug,logo_url,city,location_text)"
+    )
+    .eq("is_active", true)
+    .order("updated_at", { ascending: false })
+    .limit(100);
+
+  let items = ((itemsData ?? []) as MarketplaceItem[]);
+
+  if (query.trim()) {
+    const q = query.trim().toLowerCase();
+    items = items.filter((p) => {
+      const vendorName = p.vendors?.[0]?.business_name ?? "";
+      return (
+        p.title.toLowerCase().includes(q) ||
+        (p.summary?.toLowerCase() ?? "").includes(q) ||
+        vendorName.toLowerCase().includes(q)
+      );
+    });
+  }
+
+  if (items.length === 0) {
+    return (
+      <div className="rounded-md border border-black/10 bg-white p-8 text-center">
+        <div className="text-[16px] font-semibold text-[#2c2c2c]">No items found</div>
+        <div className="mt-2 text-[14px] text-black/55">
+          {query.trim()
+            ? "Try adjusting your search terms."
+            : "Check back later for products and packages from our vendors."}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {items.map((item, i) => {
+        const tone = i % 3 === 0 ? "#a67c52" : i % 3 === 1 ? "#c17a4e" : "#8e6a46";
+        const vendor = item.vendors?.[0];
+        const vendorName = vendor?.business_name;
+        const coverUrl = proxiedImageUrl(item.image_url) ?? "";
+        const fx = clampPct(Number(item.image_focus_x ?? 50));
+        const fy = clampPct(Number(item.image_focus_y ?? 50));
+        const z = clampZoom(Number(item.image_zoom ?? 1));
+        const location = vendor?.city ?? vendor?.location_text;
+
+        return (
+          <div
+            key={item.id}
+            className="group relative rounded-2xl border border-black/5 bg-linear-to-b from-white to-[#fff7ed]/10 shadow-xs hover:border-[#c17a4e]/25 hover:-translate-y-1 hover:shadow-md transition-all duration-300 ease-out overflow-hidden flex flex-row items-stretch min-h-[150px]"
+          >
+            <a
+              href={`/promos/marketplace/${item.id}`}
+              className="flex flex-row items-stretch w-full min-h-[150px] z-10"
+            >
+              <div className="absolute top-0 left-0 z-10">
+                <div className="bg-[#a67c52] text-white text-[11px] font-bold px-3 py-1 rounded-br-xl">
+                  MARKETPLACE
+                </div>
+              </div>
+
+            <div className="w-28 sm:w-32 shrink-0 relative overflow-hidden self-stretch bg-[#fcfbf9]">
+              <div className="absolute inset-0">
+                {coverUrl ? (
+                  <img
+                    src={coverUrl}
+                    alt=""
+                    className="w-full h-auto min-h-0 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+                    style={{ transformOrigin: `${fx}% ${fy}%`, transform: `scale(${z})` }}
+                    loading="lazy"
+                    decoding="async"
+                    referrerPolicy="no-referrer"
+                    draggable={false}
+                  />
+                ) : (
+                  <div
+                    className="h-full w-full"
+                    style={{
+                      background: `linear-gradient(135deg, ${tone}33, ${tone}11)`,
+                    }}
+                  />
+                )}
+              </div>
+            </div>
+
+            <div className="flex-1 p-4 flex flex-col justify-between min-w-0">
+              <div>
+                <div className="flex items-center gap-2">
+                  {vendor?.logo_url ? (
+                    <img
+                      src={proxiedImageUrl(vendor.logo_url) ?? vendor.logo_url ?? ""}
+                      alt=""
+                      className="h-5 w-5 rounded-md object-cover border border-black/10"
+                    />
+                  ) : null}
+                  <div className="text-[11px] font-semibold text-[#a67c52] uppercase tracking-wide truncate">
+                    {vendorName}
+                  </div>
+                </div>
+
+                <div className="mt-1 text-[15px] font-bold text-[#2c2c2c] leading-tight line-clamp-3">
+                  {item.title}
+                </div>
+
+                {item.summary ? (
+                  <div className="mt-1.5 text-[12px] text-black/60 line-clamp-2">
+                    {item.summary}
+                  </div>
+                ) : null}
+              </div>
+
+              <div className="mt-4">
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex items-center rounded-lg bg-[#a67c52] px-2 py-0.5 text-[12px] font-bold text-white">
+                    {item.price_text ? item.price_text : `₱${item.price.toLocaleString()}`}
+                  </span>
+                </div>
+
+                {location ? (
+                  <div className="mt-2 text-[11px] text-black/45">
+                    {location}
+                  </div>
+                ) : null}
+              </div>
+            </div>
+            </a>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 export default async function PromosPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ q?: string }>;
+  searchParams?: Promise<{ q?: string; tab?: string }>;
 }) {
   const resolvedParams = (await searchParams) ?? {};
   const query = resolvedParams.q ?? "";
+  const tab = resolvedParams.tab === "marketplace" ? "marketplace" : "promos";
 
   return (
     <div style={{ background: "#fafafa" }}>
@@ -267,9 +426,19 @@ export default async function PromosPage({
               </p>
             </div>
 
+            <div className="flex items-center gap-6 border-b border-black/10 mb-8">
+              <a href={`/promos?tab=promos${query ? `&q=${query}` : ""}`} className={`pb-3 text-[14px] tracking-wide uppercase transition-all duration-300 ${tab === 'promos' ? 'border-b-2 border-[#a67c52] text-[#a67c52] font-black' : 'border-b-2 border-transparent text-black/40 hover:text-black/60 font-bold'}`}>
+                Promos & Deals
+              </a>
+              <a href={`/promos?tab=marketplace${query ? `&q=${query}` : ""}`} className={`pb-3 text-[14px] tracking-wide uppercase transition-all duration-300 ${tab === 'marketplace' ? 'border-b-2 border-[#a67c52] text-[#a67c52] font-black' : 'border-b-2 border-transparent text-black/40 hover:text-black/60 font-bold'}`}>
+                Marketplace
+              </a>
+            </div>
+
             {/* Search Bar */}
             <div className="mb-8">
               <form className="flex gap-3" action="/promos" method="GET">
+                <input type="hidden" name="tab" value={tab} />
                 <div className="relative flex-1 max-w-md">
                   <input
                     type="text"
@@ -297,7 +466,7 @@ export default async function PromosPage({
             </div>
 
             <Suspense fallback={<PromosSkeleton />}>
-              <PromosList query={query} />
+              {tab === "promos" ? <PromosList query={query} /> : <MarketplaceList query={query} />}
             </Suspense>
           </FadeInOnView>
         </main>

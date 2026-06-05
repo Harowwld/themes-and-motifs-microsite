@@ -44,6 +44,10 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
   const coverUrl = cover?.image_url ? proxiedImageUrl(cover.image_url) ?? "" : "";
   const logoUrl = vendor.logo_url ? proxiedImageUrl(vendor.logo_url) : null;
 
+  const coverX = clampPct(Number(vendor.cover_focus_x ?? 50));
+  const coverY = clampPct(Number(vendor.cover_focus_y ?? 50));
+  const coverZ = clampZoom(Number(vendor.cover_zoom ?? 1));
+
   const isPremium = (vendor.plan_name ?? "").toLowerCase().includes("premium");
 
   const verifiedStatuses = (vendor.document_verified ?? "")
@@ -79,7 +83,12 @@ export default function VendorProfileUI({ vendor, categories, affiliations, them
               fill
               sizes="100vw"
               priority
-              className="object-cover object-center"
+              className="object-cover"
+              style={{
+                objectPosition: `${coverX}% ${coverY}%`,
+                transformOrigin: `${coverX}% ${coverY}%`,
+                transform: `scale(${coverZ})`
+              }}
             />
           )}
         </div>

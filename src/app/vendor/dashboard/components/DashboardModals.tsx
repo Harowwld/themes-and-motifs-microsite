@@ -4,6 +4,7 @@ import { Field } from "./DashboardSections";
 import { VendorPromo, VendorImage, VendorVideo } from "../types";
 import { clampPct, clampZoom } from "../utils";
 import { MultiImageUploadManager } from "@/components/MultiImageUploadManager";
+import { ImageUploadDropzone } from "@/components/ImageUploadDropzone";
 import { proxiedImageUrl } from "@/lib/imageSizes";
 import { cn } from "@/lib/utils";
 
@@ -78,6 +79,7 @@ export function LogoModal({
 }
 
 export function PromoModal({
+  vendorId,
   open,
   promo,
   isNew,
@@ -85,6 +87,7 @@ export function PromoModal({
   onSave,
   onDelete,
 }: {
+  vendorId?: number;
   open: boolean;
   promo: VendorPromo | null;
   isNew: boolean;
@@ -234,14 +237,17 @@ export function PromoModal({
                 placeholder="e.g. 15"
               />
             </Field>
-            <Field label="Cover Image URL">
-              <input
-                className="h-11 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-4 text-[14px] outline-none focus:border-[#a67c52] focus:bg-white focus:ring-4 focus:ring-[#a67c52]/10 transition-all duration-200"
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
-                placeholder="https://..."
+            <div className="pt-2">
+              <ImageUploadDropzone
+                bucket="promo-assets"
+                folder="promos"
+                entityId={vendorId?.toString()}
+                label="Cover Image"
+                existingUrl={imageUrl}
+                onUploadComplete={(res) => setImageUrl(res.url)}
+                onClear={() => setImageUrl("")}
               />
-            </Field>
+            </div>
           </div>
 
           <div className="pt-2">
@@ -606,6 +612,7 @@ export function CoverCropperModal({
   initialZoom,
   minZoom = 1,
   maxZoom = 3,
+  aspectRatio = "aspect-[3/4]",
   onCancel,
   onSave,
 }: {
@@ -616,6 +623,7 @@ export function CoverCropperModal({
   initialZoom: number;
   minZoom?: number;
   maxZoom?: number;
+  aspectRatio?: string;
   onCancel: () => void;
   onSave: (next: { focusX: number; focusY: number; zoom: number }) => void;
 }) {
@@ -627,6 +635,7 @@ export function CoverCropperModal({
   const [focusX, setFocusX] = useState(() => clampPct(initialFocusX));
   const [focusY, setFocusY] = useState(() => clampPct(initialFocusY));
   const [zoom, setZoom] = useState(() => clampZoom(initialZoom));
+  const [naturalSize, setNaturalSize] = useState({ w: 0, h: 0 });
 
   useEffect(() => {
     focusXRef.current = focusX;
@@ -694,10 +703,30 @@ export function CoverCropperModal({
       const dy = e.clientY - drag.startY;
 
       const z = zoomRef.current;
-      const denomX = Math.max(1, rect.width * z);
-      const denomY = Math.max(1, rect.height * z);
-      const nextX = drag.baseFocusX - (dx / denomX) * 100;
-      const nextY = drag.baseFocusY - (dy / denomY) * 100;
+      
+      let renderedWidth = rect.width;
+      let renderedHeight = rect.height;
+
+      if (naturalSize.w && naturalSize.h) {
+        const imageAR = naturalSize.w / naturalSize.h;
+        const containerAR = rect.width / rect.height;
+        if (imageAR > containerAR) {
+          renderedHeight = rect.height;
+          renderedWidth = rect.height * imageAR;
+        } else {
+          renderedWidth = rect.width;
+          renderedHeight = rect.width / imageAR;
+        }
+      }
+
+      const overflowX = Math.max(1, renderedWidth * z - rect.width);
+      const overflowY = Math.max(1, renderedHeight * z - rect.height);
+
+      const dFocusX = - (dx / overflowX) * 100;
+      const dFocusY = - (dy / overflowY) * 100;
+
+      const nextX = drag.baseFocusX + dFocusX;
+      const nextY = drag.baseFocusY + dFocusY;
 
       setFocusX(clampPct(nextX));
       setFocusY(clampPct(nextY));
@@ -727,7 +756,7 @@ export function CoverCropperModal({
       el.removeEventListener("pointercancel", onPointerUp);
       el.removeEventListener("wheel", onWheel as any);
     };
-  }, [open]);
+  }, [open, naturalSize]);
 
   if (!open) return null;
 
@@ -748,14 +777,15 @@ export function CoverCropperModal({
             <div className="flex justify-center">
               <div
                 ref={viewportRef}
-                className="relative w-full max-w-[300px] aspect-[3/4] rounded-lg border border-black/20 bg-[#f3f4f6] overflow-hidden cursor-grab active:cursor-grabbing"
+                className={`relative w-full max-w-[600px] ${aspectRatio} rounded-lg border border-black/20 bg-[#f3f4f6] overflow-hidden cursor-grab active:cursor-grabbing`}
               >
                 <img
                   src={imageUrl}
                   alt=""
                   className="absolute inset-0 h-full w-full object-cover select-none"
-                  style={{ transformOrigin, transform: `scale(${zoom})` }}
+                  style={{ objectPosition: transformOrigin, transformOrigin, transform: `scale(${zoom})` }}
                   draggable={false}
+                  onLoad={(e) => setNaturalSize({ w: e.currentTarget.naturalWidth, h: e.currentTarget.naturalHeight })}
                 />
               </div>
             </div>

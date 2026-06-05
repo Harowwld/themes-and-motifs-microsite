@@ -1,4 +1,5 @@
 import { assertVendor, getVendorForUser } from "../_auth";
+import { revalidatePath } from "next/cache";
 
 export const dynamic = "force-dynamic";
 
@@ -14,6 +15,12 @@ type PatchBody = {
   cover_focus_x?: number | null;
   cover_focus_y?: number | null;
   cover_zoom?: number | null;
+  card_cover_focus_x?: number | null;
+  card_cover_focus_y?: number | null;
+  card_cover_zoom?: number | null;
+  portrait_cover_focus_x?: number | null;
+  portrait_cover_focus_y?: number | null;
+  portrait_cover_zoom?: number | null;
   contact_person_1_name?: string | null;
   contact_person_1_position?: string | null;
   contact_person_2_name?: string | null;
@@ -50,7 +57,7 @@ export async function GET(req: Request) {
         .limit(50),
       supabase
         .from("vendor_images")
-        .select("id,image_url,caption,is_cover,display_order")
+        .select("id,image_url,caption,is_cover,display_order,theme_id")
         .eq("vendor_id", vendor.id)
         .order("is_cover", { ascending: false })
         .order("display_order", { ascending: true })
@@ -142,6 +149,26 @@ export async function PATCH(req: Request) {
     }
     if (typeof body.cover_zoom === "number" || body.cover_zoom === null) patch.cover_zoom = body.cover_zoom;
 
+    if (typeof body.card_cover_focus_x === "number" || body.card_cover_focus_x === null) {
+      patch.card_cover_focus_x = body.card_cover_focus_x === null ? null : Math.max(0, Math.min(100, Math.round(body.card_cover_focus_x)));
+    }
+    if (typeof body.card_cover_focus_y === "number" || body.card_cover_focus_y === null) {
+      patch.card_cover_focus_y = body.card_cover_focus_y === null ? null : Math.max(0, Math.min(100, Math.round(body.card_cover_focus_y)));
+    }
+    if (typeof body.card_cover_zoom === "number" || body.card_cover_zoom === null) {
+      patch.card_cover_zoom = body.card_cover_zoom === null ? null : Math.max(1, Math.min(3, Number(body.card_cover_zoom)));
+    }
+
+    if (typeof body.portrait_cover_focus_x === "number" || body.portrait_cover_focus_x === null) {
+      patch.portrait_cover_focus_x = body.portrait_cover_focus_x === null ? null : Math.max(0, Math.min(100, Math.round(body.portrait_cover_focus_x)));
+    }
+    if (typeof body.portrait_cover_focus_y === "number" || body.portrait_cover_focus_y === null) {
+      patch.portrait_cover_focus_y = body.portrait_cover_focus_y === null ? null : Math.max(0, Math.min(100, Math.round(body.portrait_cover_focus_y)));
+    }
+    if (typeof body.portrait_cover_zoom === "number" || body.portrait_cover_zoom === null) {
+      patch.portrait_cover_zoom = body.portrait_cover_zoom === null ? null : Math.max(1, Math.min(3, Number(body.portrait_cover_zoom)));
+    }
+
     if (typeof body.contact_person_1_name === "string" || body.contact_person_1_name === null) patch.contact_person_1_name = body.contact_person_1_name;
     if (typeof body.contact_person_1_position === "string" || body.contact_person_1_position === null) patch.contact_person_1_position = body.contact_person_1_position;
     if (typeof body.contact_person_2_name === "string" || body.contact_person_2_name === null) patch.contact_person_2_name = body.contact_person_2_name;
@@ -180,7 +207,7 @@ export async function PATCH(req: Request) {
       .update(patch)
       .eq("id", vendor.id)
       .select(
-        "id,user_id,business_name,slug,logo_url,description,location_text,region_id,city,address,contact_email,contact_phone,website_url,plan_id,is_active,document_verified,cover_focus_x,cover_focus_y,cover_zoom,contact_person_1_name,contact_person_1_position,contact_person_2_name,contact_person_2_position,admin_email_1,admin_email_2,admin_email_3,admin_phone_1,admin_phone_2,admin_phone_3,year_established,view_count,save_count,click_count,inquiry_count,average_rating,review_count"
+        "id,user_id,business_name,slug,logo_url,description,location_text,region_id,city,address,contact_email,contact_phone,website_url,plan_id,is_active,document_verified,cover_focus_x,cover_focus_y,cover_zoom,card_cover_focus_x,card_cover_focus_y,card_cover_zoom,portrait_cover_focus_x,portrait_cover_focus_y,portrait_cover_zoom,contact_person_1_name,contact_person_1_position,contact_person_2_name,contact_person_2_position,admin_email_1,admin_email_2,admin_email_3,admin_phone_1,admin_phone_2,admin_phone_3,year_established,view_count,save_count,click_count,inquiry_count,average_rating,review_count"
       )
       .single();
 
@@ -202,6 +229,15 @@ export async function PATCH(req: Request) {
       }
 
       return Response.json({ error: msg }, { status: 500 });
+    }
+
+    // Revalidate caching
+    try {
+      revalidatePath("/");
+      revalidatePath("/suppliers");
+      revalidatePath(`/suppliers/${data.slug}`);
+    } catch (e) {
+      console.error("[Vendor Profile API] Cache revalidation failed:", e);
     }
 
     // Fetch plan separately to include in response

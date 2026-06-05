@@ -14,6 +14,12 @@ export type VendorProfile = {
   cover_focus_x?: number | null;
   cover_focus_y?: number | null;
   cover_zoom?: number | null;
+  card_cover_focus_x?: number | null;
+  portrait_cover_focus_x?: number | null;
+  portrait_cover_focus_y?: number | null;
+  portrait_cover_zoom?: number | null;
+  card_cover_focus_y?: number | null;
+  card_cover_zoom?: number | null;
   contact_person_1_name?: string | null;
   contact_person_1_position?: string | null;
   contact_person_2_name?: string | null;
@@ -65,6 +71,21 @@ export type VendorPromo = {
   is_active: boolean | null;
   image_url: string | null;
   discount_percentage: number | null;
+  image_focus_x: number | null;
+  image_focus_y: number | null;
+  image_zoom: number | null;
+  updated_at: string;
+};
+
+export type MarketplaceItem = {
+  id: number;
+  vendor_id: number;
+  title: string;
+  summary: string | null;
+  price: number;
+  price_text: string | null;
+  is_active: boolean | null;
+  image_url: string | null;
   image_focus_x: number | null;
   image_focus_y: number | null;
   image_zoom: number | null;

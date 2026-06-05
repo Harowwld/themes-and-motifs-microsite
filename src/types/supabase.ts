@@ -790,6 +790,7 @@ export type Database = {
           wedding_date: string | null
           wedding_date_public: boolean | null
           wedding_style: string | null
+          wedding_time: string | null
           wedding_venue_area: string | null
           wedding_venue_public: boolean | null
         }
@@ -811,6 +812,7 @@ export type Database = {
           wedding_date?: string | null
           wedding_date_public?: boolean | null
           wedding_style?: string | null
+          wedding_time?: string | null
           wedding_venue_area?: string | null
           wedding_venue_public?: boolean | null
         }
@@ -832,6 +834,7 @@ export type Database = {
           wedding_date?: string | null
           wedding_date_public?: boolean | null
           wedding_style?: string | null
+          wedding_time?: string | null
           wedding_venue_area?: string | null
           wedding_venue_public?: boolean | null
         }
@@ -1702,6 +1705,12 @@ export type Database = {
           contact_person_2_name: string | null
           contact_person_2_position: string | null
           contact_phone: string | null
+          card_cover_focus_x?: number | null;
+          card_cover_focus_y?: number | null;
+          card_cover_zoom?: number | null
+          portrait_cover_focus_x?: number | null
+          portrait_cover_focus_y?: number | null
+          portrait_cover_zoom?: number | null;
           cover_focus_x: number | null
           cover_focus_y: number | null
           cover_zoom: number | null
@@ -1750,6 +1759,12 @@ export type Database = {
           contact_person_2_name?: string | null
           contact_person_2_position?: string | null
           contact_phone?: string | null
+          card_cover_focus_x?: number | null
+          card_cover_focus_y?: number | null
+          card_cover_zoom?: number | null
+          portrait_cover_focus_x?: number | null
+          portrait_cover_focus_y?: number | null
+          portrait_cover_zoom?: number | null
           cover_focus_x?: number | null
           cover_focus_y?: number | null
           cover_zoom?: number | null
@@ -1798,6 +1813,12 @@ export type Database = {
           contact_person_2_name?: string | null
           contact_person_2_position?: string | null
           contact_phone?: string | null
+          card_cover_focus_x?: number | null
+          card_cover_focus_y?: number | null
+          card_cover_zoom?: number | null
+          portrait_cover_focus_x?: number | null
+          portrait_cover_focus_y?: number | null
+          portrait_cover_zoom?: number | null
           cover_focus_x?: number | null
           cover_focus_y?: number | null
           cover_zoom?: number | null

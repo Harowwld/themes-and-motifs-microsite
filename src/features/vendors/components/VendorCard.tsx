@@ -48,11 +48,17 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight, featured }: 
   const coverUrl = proxiedImageUrl(vendor.cover_image_url);
   const logoUrl = proxiedImageUrl(vendor.logo_url);
 
-  const focusX = Number.isFinite(Number(vendor.cover_focus_x)) ? Number(vendor.cover_focus_x) : 50;
-  const focusY = Number.isFinite(Number(vendor.cover_focus_y)) ? Number(vendor.cover_focus_y) : 50;
-  const coverObjectPosition = `${Math.max(0, Math.min(100, focusX))}% ${Math.max(0, Math.min(100, focusY))}%`;
-  const zoomRaw = Number.isFinite(Number(vendor.cover_zoom)) ? Number(vendor.cover_zoom) : 1;
-  const coverZoom = Math.max(1, Math.min(3, zoomRaw));
+  const focusX = vendor.card_cover_focus_x ?? vendor.cover_focus_x;
+  const finalFocusX = Number.isFinite(Number(focusX)) && focusX !== null ? Number(focusX) : 50;
+  
+  const focusY = vendor.card_cover_focus_y ?? vendor.cover_focus_y;
+  const finalFocusY = Number.isFinite(Number(focusY)) && focusY !== null ? Number(focusY) : 50;
+  
+  const coverObjectPosition = `${Math.max(0, Math.min(100, finalFocusX))}% ${Math.max(0, Math.min(100, finalFocusY))}%`;
+  
+  const zoomRaw = vendor.card_cover_zoom ?? vendor.cover_zoom;
+  const parsedZoom = Number.isFinite(Number(zoomRaw)) && zoomRaw !== null ? Number(zoomRaw) : 1;
+  const coverZoom = Math.max(1, Math.min(3, parsedZoom));
 
   const handleSaveClick = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -173,14 +179,16 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight, featured }: 
         </motion.button>
 
         {coverUrl ? (
-          <Image
-            src={coverUrl}
-            alt=""
-            fill
-            sizes="(max-width: 640px) 100vw, 400px"
-            className="absolute inset-0 object-cover transition-transform duration-700 group-hover:scale-110"
-            style={{ objectPosition: coverObjectPosition, transformOrigin: coverObjectPosition, transform: `scale(${coverZoom})` }}
-          />
+          <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-[1.05]">
+            <Image
+              src={coverUrl}
+              alt=""
+              fill
+              sizes="(max-width: 640px) 100vw, 400px"
+              className="object-cover"
+              style={{ objectPosition: coverObjectPosition, transformOrigin: coverObjectPosition, transform: `scale(${coverZoom})` }}
+            />
+          </div>
         ) : (
           <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${tone}11, #ffffff 80%)` }} />
         )}

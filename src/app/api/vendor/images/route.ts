@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { assertVendor, getVendorForUser } from "../_auth";
+import { revalidatePath } from "next/cache";
 
 export const dynamic = "force-dynamic";
 
@@ -8,6 +9,7 @@ type VendorImageInput = {
   caption?: string | null;
   is_cover?: boolean | null;
   display_order?: number | null;
+  theme_id?: number | null;
 };
 
 type PutBody = {
@@ -31,7 +33,8 @@ export async function PUT(req: Request) {
         const caption = typeof (img as any)?.caption === "string" ? (img as any).caption : null;
         const is_cover = Boolean((img as any)?.is_cover);
         const display_order = Number.isFinite(Number((img as any)?.display_order)) ? Number((img as any).display_order) : idx + 1;
-        return { url, caption, is_cover, display_order };
+        const theme_id = typeof (img as any)?.theme_id === "number" ? (img as any).theme_id : null;
+        return { url, caption, is_cover, display_order, theme_id };
       })
       .filter((x) => x.url);
 
@@ -99,6 +102,7 @@ export async function PUT(req: Request) {
         caption: x.caption,
         is_cover: x.is_cover,
         display_order: x.display_order,
+        theme_id: x.theme_id,
       }));
       console.log("[API/vendor/images] Inserting:", insertData);
 
@@ -113,7 +117,7 @@ export async function PUT(req: Request) {
 
     const { data, error } = await supabase
       .from("vendor_images")
-      .select("id,image_url,caption,is_cover,display_order")
+      .select("id,image_url,caption,is_cover,display_order,theme_id")
       .eq("vendor_id", vendor.id)
       .order("is_cover", { ascending: false })
       .order("display_order", { ascending: true });
@@ -129,6 +133,15 @@ export async function PUT(req: Request) {
       if (storageError) {
         console.error("[API/vendor/images] Failed to delete some images from storage:", storageError);
       }
+    }
+
+    // Revalidate caching
+    try {
+      revalidatePath("/");
+      revalidatePath("/suppliers");
+      revalidatePath(`/suppliers/${vendor.slug}`);
+    } catch (e) {
+      console.error("[Vendor Images API] Cache revalidation failed:", e);
     }
 
     return NextResponse.json({ images: data ?? [] }, { status: 200 });

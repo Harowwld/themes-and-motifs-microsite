@@ -7,13 +7,17 @@ export function PhotosSection({
   setEditImages,
   setEditingPhotoIndex,
   setPhotoModalOpen,
-  allThemes
+  allThemes,
+  editThemes,
+  setEditThemes
 }: {
   editImages: VendorImage[];
   setEditImages: (v: any) => void;
   setEditingPhotoIndex: (v: number | null) => void;
   setPhotoModalOpen: (v: boolean) => void;
   allThemes?: {id: number; name: string}[];
+  editThemes?: any[];
+  setEditThemes?: (v: any) => void;
 }) {
   return (
     <section className="grid gap-4">
@@ -117,6 +121,44 @@ export function PhotosSection({
           <div className="text-[10px] text-black/40 mt-1">Add photos</div>
         </div>
       </div>
+
+      {editThemes && setEditThemes && allThemes && (
+        <section className="grid gap-4 mt-8 pt-6 border-t border-black/5">
+          <div className="text-[13px] font-semibold text-[#2c2c2c] border-b border-black/5 pb-2">
+            Storefront Themes
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {allThemes.map((theme) => {
+              const isSelected = editThemes.some((t) => t.id === theme.id);
+              return (
+                <button
+                  key={theme.id}
+                  type="button"
+                  onClick={() => {
+                    if (isSelected) {
+                      setEditThemes((prev: any) => prev.filter((t: any) => t.id !== theme.id));
+                    } else {
+                      setEditThemes((prev: any) => [...prev, theme]);
+                    }
+                  }}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-medium transition-colors ${
+                    isSelected
+                      ? "bg-purple-100 text-purple-700 border border-purple-200"
+                      : "bg-[#fcfbf9] text-black/60 border border-black/10 hover:bg-black/5"
+                  }`}
+                >
+                  {isSelected && (
+                    <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M20 6L9 17l-5-5" />
+                    </svg>
+                  )}
+                  {theme.name}
+                </button>
+              );
+            })}
+          </div>
+        </section>
+      )}
     </section>
   );
 }

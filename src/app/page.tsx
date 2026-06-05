@@ -10,11 +10,15 @@ export const metadata: Metadata = {
   description: "Find the best wedding suppliers, caterers, photographers, and venues in the Philippines for your dream wedding.",
 };
 
-export default function Home() {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}) {
   return (
     <>
       <ClientHomeRedirect />
-      <LandingPage />
+      <LandingPage searchParams={searchParams} />
     </>
   );
 }

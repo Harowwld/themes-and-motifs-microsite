@@ -41,9 +41,9 @@ function VendorCard({
 }) {
   const coverUrl = proxiedImageUrl(vendor.cover_image_url);
   const logoUrl = proxiedImageUrl(vendor.logo_url);
-  const fx = clampPct(Number(vendor.cover_focus_x ?? 50));
-  const fy = clampPct(Number(vendor.cover_focus_y ?? 50));
-  const z = clampZoom(Number(vendor.cover_zoom ?? 1));
+  const fx = clampPct(Number(vendor.portrait_cover_focus_x ?? vendor.cover_focus_x ?? 50));
+  const fy = clampPct(Number(vendor.portrait_cover_focus_y ?? vendor.cover_focus_y ?? 50));
+  const z = clampZoom(Number(vendor.portrait_cover_zoom ?? vendor.cover_zoom ?? 1));
   const rating = vendor.average_rating ?? 0;
   const reviews = vendor.review_count ?? 0;
   const location = vendor.city ?? vendor.location_text;
@@ -64,15 +64,17 @@ function VendorCard({
     >
       <div className="absolute inset-0">
         {coverUrl ? (
-          <Image
-            src={coverUrl}
-            alt=""
-            fill
-            sizes="(max-width: 640px) 280px, 320px"
-            className="object-cover transition-transform duration-1000 group-hover:scale-110"
-            style={{ transformOrigin: `${fx}% ${fy}%`, transform: `scale(${z})` }}
-            draggable={false}
-          />
+          <div className="absolute inset-0 transition-transform duration-[2000ms] group-hover:scale-[1.05]">
+            <Image
+              src={coverUrl}
+              alt=""
+              fill
+              sizes="(max-width: 640px) 280px, 320px"
+              className="object-cover"
+              style={{ objectPosition: `${fx}% ${fy}%`, transformOrigin: `${fx}% ${fy}%`, transform: `scale(${z})` }}
+              draggable={false}
+            />
+          </div>
         ) : (
           <div
             className="h-full w-full"

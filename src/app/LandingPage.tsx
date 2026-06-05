@@ -28,14 +28,14 @@ const getCachedCategories = unstable_cache(
 // Cache featured vendors + promos for 5 minutes (300 seconds)
 // These two queries + attachCoverImages + attachAffiliations previously ran
 // fresh on every SSR render. Now served from the cache between revalidations.
-const getCachedFeaturedData = unstable_cache(
+  const getCachedFeaturedData = unstable_cache(
   async () => {
     const supabase = createSupabaseServerClient();
-    const [{ data: featuredVendors }, { data: featuredPromos }] = await Promise.all([
+    const [{ data: featuredVendors }, { data: featuredPromos }, { data: recentImages }] = await Promise.all([
       supabase
         .from("vendors")
         .select(
-          "id,business_name,slug,logo_url,average_rating,review_count,location_text,city,document_verified,cover_focus_x,cover_focus_y,cover_zoom,plan:plans(id,name)"
+          "id,business_name,slug,logo_url,average_rating,review_count,location_text,city,document_verified,cover_focus_x,cover_focus_y,cover_zoom,card_cover_focus_x,card_cover_focus_y,card_cover_zoom,portrait_cover_focus_x,portrait_cover_focus_y,portrait_cover_zoom,plan:plans(id,name)"
         )
         .eq("is_active", true)
         .eq("is_featured", true)
@@ -48,6 +48,12 @@ const getCachedFeaturedData = unstable_cache(
         .eq("is_active", true)
         .eq("is_featured", true)
         .limit(20),
+      supabase
+        .from("vendor_images")
+        .select("id, image_url, caption, themes!inner(id, name, slug), vendors!inner(business_name, slug)")
+        .not("theme_id", "is", null)
+        .order("created_at", { ascending: false })
+        .limit(12),
     ]);
 
     const vendors = (featuredVendors ?? []) as FeaturedVendor[];
@@ -56,7 +62,7 @@ const getCachedFeaturedData = unstable_cache(
     const vendorsWithCovers = await attachCoverImages(supabase, vendors);
     const vendorsWithAffiliations = await attachAffiliations(supabase, vendorsWithCovers);
 
-    return { vendors: vendorsWithAffiliations, promos };
+    return { vendors: vendorsWithAffiliations, promos, themedIdeas: recentImages ?? [] };
   },
   ["featured-data-v3"],
   { revalidate: 300 }
@@ -190,7 +196,7 @@ function shuffle<T>(arr: T[]): T[] {
 // Direct data fetching component for featured section
 // Data is served from getCachedFeaturedData() — zero DB round-trips for 5 min.
 async function LandingFeaturedDirect() {
-  const { vendors: cachedVendors, promos: cachedPromos } = await getCachedFeaturedData();
+  const { vendors: cachedVendors, promos: cachedPromos, themedIdeas } = await getCachedFeaturedData();
 
   // Shuffle after reading from cache (so display order rotates on each render
   // without invalidating the cache).
@@ -203,7 +209,7 @@ async function LandingFeaturedDirect() {
     <>
       <PromosSection promos={promos} />
       <div className="my-6 sm:my-12 h-px bg-gradient-to-r from-transparent via-black/15 to-transparent" />
-      <FeaturedThemesSection />
+      <FeaturedThemesSection ideas={themedIdeas as any[]} />
       <div className="my-6 sm:my-12 h-px bg-gradient-to-r from-transparent via-black/15 to-transparent" />
       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <FeaturedVendorsSection vendors={featuredSorted as any} />
@@ -221,7 +227,7 @@ async function LandingVendorsDirect({ page, pageSize, sort }: { page: number; pa
   let q = supabase
     .from("vendors")
     .select(
-      "id,business_name,slug,logo_url,average_rating,review_count,location_text,city,document_verified,cover_focus_x,cover_focus_y,cover_zoom,plan:plans(id,name)",
+      "id,business_name,slug,logo_url,average_rating,review_count,location_text,city,document_verified,cover_focus_x,cover_focus_y,cover_zoom,card_cover_focus_x,card_cover_focus_y,card_cover_zoom,portrait_cover_focus_x,portrait_cover_focus_y,portrait_cover_zoom,plan:plans(id,name)",
       { count: "exact" }
     )
     .eq("is_active", true);

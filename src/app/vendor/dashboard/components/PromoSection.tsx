@@ -4,6 +4,7 @@ import { VendorPromo } from "../types";
 import { clampPct } from "../utils";
 
 export function PromoSection({
+  vendorId,
   promos,
   isPremium,
   setEditingPromoId,
@@ -14,6 +15,7 @@ export function PromoSection({
   updatePromo,
   createPromo
 }: {
+  vendorId?: number;
   promos: VendorPromo[];
   isPremium: boolean;
   setEditingPromoId: (v: number | null) => void;
@@ -153,6 +155,7 @@ export function PromoSection({
       </div>
 
       <PromoModal
+        vendorId={vendorId}
         open={promoModalOpen}
         promo={editingPromoId ? promos.find((p) => p.id === editingPromoId) ?? null : null}
         isNew={!editingPromoId}

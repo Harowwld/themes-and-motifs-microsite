@@ -25,6 +25,9 @@ type VendorRow = {
   user_id: string | null;
   updated_at: string;
   year_established: string | null;
+  cover_focus_x?: number | null;
+  cover_focus_y?: number | null;
+  cover_zoom?: number | null;
   plan?: { id: number; name: string } | { id: number; name: string }[] | null;
 };
 
@@ -146,7 +149,7 @@ async function VendorDetailData({ slug }: { slug: string }) {
   const { data: vendor } = await supabase
     .from("vendors")
     .select(
-      "id,business_name,slug,logo_url,description,location_text,city,address,website_url,contact_email,contact_phone,sec_dti_number,average_rating,review_count,save_count,document_verified,user_id,updated_at,year_established,plan:plans(id,name)"
+      "id,business_name,slug,logo_url,description,location_text,city,address,website_url,contact_email,contact_phone,sec_dti_number,average_rating,review_count,save_count,document_verified,user_id,updated_at,year_established,cover_focus_x,cover_focus_y,cover_zoom,plan:plans(id,name)"
     )
     .eq("slug", slug)
     .eq("is_active", true)
@@ -260,6 +263,9 @@ const [categoriesRes, affiliationsRes, imagesRes, socialsRes, reviewsRes, promos
         updated_at: vendor.updated_at,
         plan_name: planName,
         year_established: vendor.year_established,
+        cover_focus_x: vendor.cover_focus_x,
+        cover_focus_y: vendor.cover_focus_y,
+        cover_zoom: vendor.cover_zoom,
       }}
       categories={categories as any}
       affiliations={affiliations as any}

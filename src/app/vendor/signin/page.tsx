@@ -69,43 +69,45 @@ export default function VendorSignInPage() {
   }
 
   return (
-    <div
-      className="min-h-screen bg-[#fafafa]"
-    >
-      <div className="mx-auto w-full max-w-3xl px-5 sm:px-8 py-12">
-        <div className="rounded-[3px] border border-black/10 bg-white shadow-sm overflow-hidden">
-          <div className="p-7">
-            <div className="text-[18px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">Vendor sign in</div>
-            <div className="mt-2 text-[13px] text-black/60">Use your email and password to sign in.</div>
+    <div className="min-h-screen bg-[#fafafa]">
+      <div className="mx-auto w-full max-w-3xl px-5 sm:px-8 py-10 sm:py-14">
+        <div className="rounded-xl border border-black/6 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] p-6 sm:p-8">
+          <div className="text-[13px] font-medium text-black/45 font-[family-name:var(--font-plus-jakarta)]">For vendors</div>
+          <h1 className="mt-1 text-[28px] sm:text-[32px] font-medium tracking-[-0.02em] text-[#2c2c2c] font-headline font-[family-name:var(--font-plus-jakarta)]">
+            Vendor sign in
+          </h1>
+          <div className="mt-2 text-[14px] text-black/55 font-[family-name:var(--font-plus-jakarta)]">
+            Use your email and password to sign in.
+          </div>
 
             {resetSuccess ? (
-              <div className="mt-4 rounded-[3px] border border-[#a68b6a]/30 bg-[#faf6f1] px-4 py-3 text-[13px] text-[#6e4f33]">
+              <div className="mt-6 rounded-lg border border-[#a68b6a]/30 bg-[#faf6f1] px-4 py-3 text-[13px] text-[#6e4f33] font-[family-name:var(--font-plus-jakarta)]">
                 Password reset successful. Please sign in with your new password.
               </div>
             ) : null}
 
             {wasSignedOut ? (
-              <div className="mt-4 rounded-[3px] border border-[#a68b6a]/30 bg-[#faf6f1] px-4 py-3 text-[13px] text-[#6e4f33]">
+              <div className="mt-6 rounded-lg border border-[#a68b6a]/30 bg-[#faf6f1] px-4 py-3 text-[13px] text-[#6e4f33] font-[family-name:var(--font-plus-jakarta)]">
                 You have been signed out. Please sign in again.
               </div>
             ) : null}
 
-            <form onSubmit={onSubmit} className="mt-6 grid gap-4">
+            <form onSubmit={onSubmit} className="mt-8 grid gap-5">
               <label className="grid gap-1.5">
-                <span className="text-[12px] font-semibold text-black/55">Email</span>
+                <span className="text-[13px] font-medium text-[#2c2c2c] font-[family-name:var(--font-plus-jakarta)]">Email</span>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="h-10 rounded-[3px] border border-black/10 bg-white px-3 text-[14px] text-[#2c2c2c] placeholder:text-black/35 outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15"
+                  className="h-11 w-full rounded-lg border border-black/10 bg-white px-3 text-[14px] text-[#2c2c2c] placeholder:text-black/35 outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15 font-[family-name:var(--font-plus-jakarta)]"
                   placeholder="you@company.com"
                 />
               </label>
 
               <label className="grid gap-1.5">
                 <div className="flex items-center justify-between">
-                  <span className="text-[12px] font-semibold text-black/55">Password</span>
-                  <a href="/forgot-password" className="text-[11px] font-semibold text-[#6e4f33] hover:underline">
+                  <span className="text-[13px] font-medium text-[#2c2c2c] font-[family-name:var(--font-plus-jakarta)]">Password</span>
+                  <a href="/forgot-password" className="text-[13px] font-medium text-[#8e6a46] hover:text-[#6e4f33] transition-colors font-[family-name:var(--font-plus-jakarta)]">
                     Create / Forgot Password?
                   </a>
                 </div>
@@ -113,7 +115,7 @@ export default function VendorSignInPage() {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="h-10 rounded-[3px] border border-black/10 bg-white px-3 text-[14px] text-[#2c2c2c] placeholder:text-black/35 outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15"
+                  className="h-11 w-full rounded-lg border border-black/10 bg-white px-3 text-[14px] text-[#2c2c2c] placeholder:text-black/35 outline-none focus:border-[#a67c52]/50 focus:ring-2 focus:ring-[#a67c52]/15 font-[family-name:var(--font-plus-jakarta)]"
                   placeholder="Your password"
                 />
               </label>
@@ -121,20 +123,24 @@ export default function VendorSignInPage() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="h-10 inline-flex items-center justify-center px-4 rounded-[3px] bg-[#a67c52] text-white text-[13px] font-semibold hover:bg-[#8e6a46] transition-colors disabled:opacity-60"
+                className="mt-2 h-11 inline-flex items-center justify-center px-5 rounded-lg text-white text-[14px] font-medium transition-colors disabled:opacity-60 font-[family-name:var(--font-plus-jakarta)]"
+                style={{ backgroundColor: 'var(--muted-brown)' }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--muted-brown-hover)'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--muted-brown)'}
               >
                 {submitting ? "Signing in…" : "Sign in"}
               </button>
 
-              <a className="text-[12px] font-semibold text-[#6e4f33] hover:underline" href="/vendor/signup-link">
-                Need access? Create dashboard account
-              </a>
+              <div className="mt-4 flex flex-col gap-2">
+                <a className="text-[14px] font-medium text-[#8e6a46] hover:text-[#6e4f33] transition-colors font-[family-name:var(--font-plus-jakarta)]" href="/vendor/signup-link">
+                  Need access? Create dashboard account
+                </a>
 
-              <a className="text-[12px] font-semibold text-[#6e4f33] hover:underline" href="/register">
-                New vendor? Register your business
-              </a>
+                <a className="text-[14px] font-medium text-[#8e6a46] hover:text-[#6e4f33] transition-colors font-[family-name:var(--font-plus-jakarta)]" href="/register">
+                  New vendor? Register your business
+                </a>
+              </div>
             </form>
-          </div>
         </div>
       </div>
     </div>

@@ -40,7 +40,8 @@ export function PhotoSection({
   setRenameAlbumModalOpen,
   setAlbumToRename,
   setRenameAlbumTitle,
-  renameAlbum
+  renameAlbum,
+  themes
 }: {
   images: any[];
   setImages: any;
@@ -49,7 +50,7 @@ export function PhotoSection({
   editingPhotoIndex: number | null;
   setEditingPhotoIndex: (v: number | null) => void;
   saving: boolean;
-  saveImages: () => void;
+  saveImages: (customImages?: any[]) => void;
 
   // Album types
   albums: Album[];
@@ -77,6 +78,7 @@ export function PhotoSection({
   setAlbumToRename: (v: Album | null) => void;
   setRenameAlbumTitle: (v: string) => void;
   renameAlbum: () => void;
+  themes?: {id: number, name: string}[];
 }) {
   const [subTab, setSubTab] = React.useState<"photos" | "albums">("photos");
 
@@ -148,7 +150,11 @@ export function PhotoSection({
                         {!img.is_cover && (
                           <button
                             type="button"
-                            onClick={() => setImages((rows: any[]) => ensureSingleCover(rows.map((r, i) => ({ ...r, is_cover: i === originalIdx }))))}
+                            onClick={() => {
+                              const next = ensureSingleCover(images.map((r, i) => ({ ...r, is_cover: i === originalIdx })));
+                              setImages(next);
+                              void saveImages(next);
+                            }}
                             className="flex-1 h-8 rounded-lg bg-[#a67c52] text-[11px] font-bold text-white shadow-sm hover:bg-[#8e6a46] transition-colors"
                           >
                             Cover
@@ -182,7 +188,7 @@ export function PhotoSection({
             </div>
 
             <div className="flex justify-end pt-4 border-t border-black/[0.03]">
-              <button type="button" onClick={saveImages} disabled={saving} className="h-11 px-8 rounded-lg bg-[#a67c52] text-white text-[14px] font-bold shadow-[0_4px_12px_rgba(166,124,82,0.3)] hover:bg-[#8e6a46] hover:shadow-[0_6px_16px_rgba(166,124,82,0.4)] transition-all duration-300 disabled:opacity-60">
+              <button type="button" onClick={() => saveImages()} disabled={saving} className="h-11 px-8 rounded-lg bg-[#a67c52] text-white text-[14px] font-bold shadow-[0_4px_12px_rgba(166,124,82,0.3)] hover:bg-[#8e6a46] hover:shadow-[0_6px_16px_rgba(166,124,82,0.4)] transition-all duration-300 disabled:opacity-60">
                 <span className="inline-flex items-center gap-2">
                   {saving ? <Spinner className="text-white/90" /> : null}
                   <span>{saving ? "Saving Portfolio…" : "Save Photo Changes"}</span>
@@ -217,6 +223,7 @@ export function PhotoSection({
                 setPhotoModalOpen(false);
                 setEditingPhotoIndex(null);
               } : undefined}
+              themes={themes}
             />
           </div>
         ) : (

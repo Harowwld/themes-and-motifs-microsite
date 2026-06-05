@@ -217,6 +217,21 @@ export default function DashboardPage() {
   // Premium tier controls
   const [isPremium, setIsPremium] = useState(false);
   const [activeTab, setActiveTab] = useState("wedding_tools");
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const tab = params.get("tab");
+    if (tab) {
+      setActiveTab(tab);
+    }
+  }, []);
+
+  const handleTabChange = useCallback((tab: string) => {
+    setActiveTab(tab);
+    const params = new URLSearchParams(window.location.search);
+    params.set("tab", tab);
+    window.history.replaceState(null, "", `?${params.toString()}`);
+  }, []);
   const [preselectedVendorName, setPreselectedVendorName] = useState<string | null>(null);
   const [confettiBurst, setConfettiBurst] = useState(false);
 
@@ -651,7 +666,7 @@ export default function DashboardPage() {
 
       setIsPremium(true);
       setConfettiBurst(true);
-      setActiveTab("wedding_tools");
+      handleTabChange("wedding_tools");
       toast.success("✨ Welcome to Premium Soon-to-Wed! Seating planners, budgets, and logs unlocked.");
       setTimeout(() => setConfettiBurst(false), 5000);
     } catch (err) {
@@ -1516,7 +1531,7 @@ export default function DashboardPage() {
                   return (
                     <button
                       key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
+                      onClick={() => handleTabChange(tab.id)}
                       className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[13px] font-bold active:scale-[0.98] transition-all duration-200 text-left cursor-pointer ${isSelected
                           ? "bg-[#a68b6a] text-white shadow-[0_4px_12px_rgba(166,139,106,0.15)]"
                           : "text-neutral-500 hover:text-[#a68b6a] hover:bg-[#a68b6a]/5"
@@ -1557,7 +1572,7 @@ export default function DashboardPage() {
 
                                   {/* Seating Assignment Widget */}
                                   <div
-                                    onClick={() => setActiveTab("table_assignment")}
+                                    onClick={() => handleTabChange("table_assignment")}
                                     className="bg-white border border-black/[0.06] rounded-2xl p-5 shadow-[0_8px_30px_rgba(0,0,0,0.015)] transition-all cursor-pointer group hover:-translate-y-0.5 duration-300 hover:border-[#a68b6a]/30"
                                   >
                                     <div className="flex items-center justify-between mb-3">
@@ -1574,7 +1589,7 @@ export default function DashboardPage() {
 
                                   {/* Budget Status Widget */}
                                   <div
-                                    onClick={() => setActiveTab("budget_planner")}
+                                    onClick={() => handleTabChange("budget_planner")}
                                     className="bg-white border border-black/[0.06] rounded-2xl p-5 shadow-[0_8px_30px_rgba(0,0,0,0.015)] transition-all cursor-pointer group hover:-translate-y-0.5 duration-300 hover:border-[#a68b6a]/30"
                                   >
                                     <div className="flex items-center justify-between mb-3">
@@ -1591,7 +1606,7 @@ export default function DashboardPage() {
 
                                   {/* Tasks Status Widget */}
                                   <div
-                                    onClick={() => setActiveTab("checklist")}
+                                    onClick={() => handleTabChange("checklist")}
                                     className="bg-white border border-black/[0.06] rounded-2xl p-5 shadow-[0_8px_30px_rgba(0,0,0,0.015)] transition-all cursor-pointer group hover:-translate-y-0.5 duration-300 hover:border-[#a68b6a]/30"
                                   >
                                     <div className="flex items-center justify-between mb-3">
@@ -1999,7 +2014,7 @@ export default function DashboardPage() {
                               onDeleteVendor={handleDeleteVendor}
                               onUpdateVendor={handleUpdateVendor}
                               onNavigateToTab={(tabId, vendorName) => {
-                                setActiveTab(tabId);
+                                handleTabChange(tabId);
                                 if (vendorName) setPreselectedVendorName(vendorName);
                               }}
                               savedVendors={savedVendors}

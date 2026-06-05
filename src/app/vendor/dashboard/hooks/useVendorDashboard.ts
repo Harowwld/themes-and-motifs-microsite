@@ -11,11 +11,12 @@ import {
   VendorVideo, 
   VendorPromo, 
   Inquiry, 
-  SocialPlatformOption, 
-  Album, 
+  SocialPlatformOption,
   AlbumPhoto,
+  Album,
   SOCIAL_PLATFORM_OPTIONS,
-  Review
+  Review,
+  MarketplaceItem
 } from "../types";
 import { apiFetch, ensureSingleCover, isKnownPlatform, clampPct, clampZoom } from "../utils";
 
@@ -50,6 +51,12 @@ export function useVendorDashboard() {
     cover_focus_x: 50,
     cover_focus_y: 50,
     cover_zoom: 1,
+    card_cover_focus_x: 50,
+    card_cover_focus_y: 50,
+    card_cover_zoom: 1,
+    portrait_cover_focus_x: 50,
+    portrait_cover_focus_y: 50,
+    portrait_cover_zoom: 1,
     contact_person_1_name: "",
     contact_person_1_position: "",
     contact_person_2_name: "",
@@ -77,6 +84,7 @@ export function useVendorDashboard() {
   const [videos, setVideos] = useState<VendorVideo[]>([]);
 
   const [promos, setPromos] = useState<VendorPromo[]>([]);
+  const [marketplaceItems, setMarketplaceItems] = useState<MarketplaceItem[]>([]);
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [themes, setThemes] = useState<Theme[]>([]);
@@ -101,12 +109,17 @@ export function useVendorDashboard() {
   const [renameAlbumTitle, setRenameAlbumTitle] = useState("");
 
   const [cropperOpen, setCropperOpen] = useState(false);
+  const [cardCropperOpen, setCardCropperOpen] = useState(false);
+  const [portraitCropperOpen, setPortraitCropperOpen] = useState(false);
   const [logoModalOpen, setLogoModalOpen] = useState(false);
   const [photoModalOpen, setPhotoModalOpen] = useState(false);
   const [editingPhotoIndex, setEditingPhotoIndex] = useState<number | null>(null);
 
   const [promoModalOpen, setPromoModalOpen] = useState(false);
   const [editingPromoId, setEditingPromoId] = useState<number | null>(null);
+
+  const [marketplaceItemModalOpen, setMarketplaceItemModalOpen] = useState(false);
+  const [editingMarketplaceItemId, setEditingMarketplaceItemId] = useState<number | null>(null);
 
   const [videoModalOpen, setVideoModalOpen] = useState(false);
   const [editingVideoIndex, setEditingVideoIndex] = useState<number | null>(null);
@@ -164,6 +177,7 @@ export function useVendorDashboard() {
           const [
             json,
             promosRes,
+            marketplaceItemsRes,
             inquiriesRes,
             albumsRes,
             reviewsRes,
@@ -173,6 +187,7 @@ export function useVendorDashboard() {
           ] = await Promise.all([
             profilePromise,
             apiFetch<{ promos: VendorPromo[] }>("/api/vendor/promos", session.access_token).catch(() => ({ promos: [] as VendorPromo[] })),
+            apiFetch<{ marketplaceItems: MarketplaceItem[] }>("/api/vendor/marketplace-items", session.access_token).catch(() => ({ marketplaceItems: [] as MarketplaceItem[] })),
             apiFetch<{ inquiries: Inquiry[] }>("/api/vendor/inquiries", session.access_token).catch(() => ({ inquiries: [] as Inquiry[] })),
             apiFetch<{ albums: Album[] }>("/api/vendor/albums", session.access_token).catch(() => ({ albums: [] as Album[] })),
             apiFetch<{ reviews: Review[] }>("/api/vendor/reviews", session.access_token).catch(() => ({ reviews: [] as Review[] })),
@@ -195,6 +210,12 @@ export function useVendorDashboard() {
             cover_focus_x: Number.isFinite(Number((json.vendor as any).cover_focus_x)) ? Number((json.vendor as any).cover_focus_x) : 50,
             cover_focus_y: Number.isFinite(Number((json.vendor as any).cover_focus_y)) ? Number((json.vendor as any).cover_focus_y) : 50,
             cover_zoom: Number.isFinite(Number((json.vendor as any).cover_zoom)) ? Number((json.vendor as any).cover_zoom) : 1,
+            card_cover_focus_x: Number.isFinite(Number((json.vendor as any).card_cover_focus_x)) ? Number((json.vendor as any).card_cover_focus_x) : 50,
+            card_cover_focus_y: Number.isFinite(Number((json.vendor as any).card_cover_focus_y)) ? Number((json.vendor as any).card_cover_focus_y) : 50,
+            card_cover_zoom: Number.isFinite(Number((json.vendor as any).card_cover_zoom)) ? Number((json.vendor as any).card_cover_zoom) : 1,
+            portrait_cover_focus_x: Number.isFinite(Number((json.vendor as any).portrait_cover_focus_x)) ? Number((json.vendor as any).portrait_cover_focus_x) : 50,
+            portrait_cover_focus_y: Number.isFinite(Number((json.vendor as any).portrait_cover_focus_y)) ? Number((json.vendor as any).portrait_cover_focus_y) : 50,
+            portrait_cover_zoom: Number.isFinite(Number((json.vendor as any).portrait_cover_zoom)) ? Number((json.vendor as any).portrait_cover_zoom) : 1,
             contact_person_1_name: json.vendor.contact_person_1_name ?? "",
             contact_person_1_position: json.vendor.contact_person_1_position ?? "",
             contact_person_2_name: json.vendor.contact_person_2_name ?? "",
@@ -260,6 +281,7 @@ export function useVendorDashboard() {
           setAllCategories(json.allCategories ?? []);
 
           setPromos(promosRes.promos ?? []);
+          setMarketplaceItems(marketplaceItemsRes.marketplaceItems ?? []);
           setInquiries(inquiriesRes.inquiries ?? []);
           setAlbums(albumsRes.albums ?? []);
           setReviews(reviewsRes.reviews ?? []);
@@ -280,17 +302,34 @@ export function useVendorDashboard() {
     };
   }, [router, supabase]);
 
-  const saveCoverCrop = async (next: { focusX: number; focusY: number; zoom: number }) => {
+  const saveCoverCrop = async (type: 'portrait' | 'card' | 'details', next: { focusX: number; focusY: number; zoom: number }) => {
     if (!token) return;
     setSaving(true);
     try {
-      const res = await apiFetch<{ vendor: VendorProfile }>("/api/vendor/profile", token, {
-        method: "PATCH",
-        body: JSON.stringify({
+      let payload = {};
+      if (type === 'portrait') {
+        payload = {
+          portrait_cover_focus_x: Number.isFinite(Number(next.focusX)) ? Math.round(Number(next.focusX)) : null,
+          portrait_cover_focus_y: Number.isFinite(Number(next.focusY)) ? Math.round(Number(next.focusY)) : null,
+          portrait_cover_zoom: Number.isFinite(Number(next.zoom)) ? Number(next.zoom) : null,
+        };
+      } else if (type === 'card') {
+        payload = {
+          card_cover_focus_x: Number.isFinite(Number(next.focusX)) ? Math.round(Number(next.focusX)) : null,
+          card_cover_focus_y: Number.isFinite(Number(next.focusY)) ? Math.round(Number(next.focusY)) : null,
+          card_cover_zoom: Number.isFinite(Number(next.zoom)) ? Number(next.zoom) : null,
+        };
+      } else {
+        payload = {
           cover_focus_x: Number.isFinite(Number(next.focusX)) ? Math.round(Number(next.focusX)) : null,
           cover_focus_y: Number.isFinite(Number(next.focusY)) ? Math.round(Number(next.focusY)) : null,
           cover_zoom: Number.isFinite(Number(next.zoom)) ? Number(next.zoom) : null,
-        }),
+        };
+      }
+
+      const res = await apiFetch<{ vendor: VendorProfile }>("/api/vendor/profile", token, {
+        method: "PATCH",
+        body: JSON.stringify(payload),
       });
       setVendor(res.vendor);
       setForm((p) => ({
@@ -298,8 +337,16 @@ export function useVendorDashboard() {
         cover_focus_x: Number.isFinite(Number((res.vendor as any).cover_focus_x)) ? Number((res.vendor as any).cover_focus_x) : 50,
         cover_focus_y: Number.isFinite(Number((res.vendor as any).cover_focus_y)) ? Number((res.vendor as any).cover_focus_y) : 50,
         cover_zoom: Number.isFinite(Number((res.vendor as any).cover_zoom)) ? Number((res.vendor as any).cover_zoom) : 1,
+        card_cover_focus_x: Number.isFinite(Number((res.vendor as any).card_cover_focus_x)) ? Number((res.vendor as any).card_cover_focus_x) : 50,
+        card_cover_focus_y: Number.isFinite(Number((res.vendor as any).card_cover_focus_y)) ? Number((res.vendor as any).card_cover_focus_y) : 50,
+        card_cover_zoom: Number.isFinite(Number((res.vendor as any).card_cover_zoom)) ? Number((res.vendor as any).card_cover_zoom) : 1,
+        portrait_cover_focus_x: Number.isFinite(Number((res.vendor as any).portrait_cover_focus_x)) ? Number((res.vendor as any).portrait_cover_focus_x) : 50,
+        portrait_cover_focus_y: Number.isFinite(Number((res.vendor as any).portrait_cover_focus_y)) ? Number((res.vendor as any).portrait_cover_focus_y) : 50,
+        portrait_cover_zoom: Number.isFinite(Number((res.vendor as any).portrait_cover_zoom)) ? Number((res.vendor as any).portrait_cover_zoom) : 1,
       }));
       setCropperOpen(false);
+      setCardCropperOpen(false);
+      setPortraitCropperOpen(false);
     } catch (e: any) {
       toast.error(e?.message ?? "Failed to save cover crop.");
     } finally {
@@ -371,6 +418,63 @@ export function useVendorDashboard() {
       await refreshPromos();
     } catch (e: any) {
       toast.error(e?.message ?? "Failed to delete promo.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const refreshMarketplaceItems = async () => {
+    if (!token) return;
+    try {
+      const res = await apiFetch<{ marketplaceItems: MarketplaceItem[] }>("/api/vendor/marketplace-items", token);
+      setMarketplaceItems(res.marketplaceItems ?? []);
+    } catch {
+      setMarketplaceItems([]);
+    }
+  };
+
+  const createMarketplaceItem = async (payload: any) => {
+    if (!token) return;
+    setSaving(true);
+    try {
+      await apiFetch<{ marketplaceItem: MarketplaceItem }>("/api/vendor/marketplace-items", token, {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+      await refreshMarketplaceItems();
+    } catch (e: any) {
+      toast.error(e?.message ?? "Failed to save marketplace item.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const updateMarketplaceItem = async (id: number, payload: any) => {
+    if (!token) return;
+    setSaving(true);
+    try {
+      await apiFetch<{ marketplaceItem: MarketplaceItem }>("/api/vendor/marketplace-items", token, {
+        method: "PATCH",
+        body: JSON.stringify({ id, ...payload }),
+      });
+      await refreshMarketplaceItems();
+    } catch (e: any) {
+      toast.error(e?.message ?? "Failed to save marketplace item.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const deleteMarketplaceItem = async (id: number) => {
+    if (!token) return;
+    setSaving(true);
+    try {
+      await apiFetch<{ ok: boolean }>(`/api/vendor/marketplace-items?id=${encodeURIComponent(String(id))}`, token, {
+        method: "DELETE",
+      });
+      await refreshMarketplaceItems();
+    } catch (e: any) {
+      toast.error(e?.message ?? "Failed to delete marketplace item.");
     } finally {
       setSaving(false);
     }
@@ -592,6 +696,12 @@ export function useVendorDashboard() {
           cover_focus_x: Number.isFinite(Number(form.cover_focus_x)) ? Number(form.cover_focus_x) : null,
           cover_focus_y: Number.isFinite(Number(form.cover_focus_y)) ? Number(form.cover_focus_y) : null,
           cover_zoom: Number.isFinite(Number(form.cover_zoom)) ? Number(form.cover_zoom) : null,
+          card_cover_focus_x: Number.isFinite(Number(form.card_cover_focus_x)) ? Number(form.card_cover_focus_x) : null,
+          portrait_cover_focus_x: Number.isFinite(Number(form.portrait_cover_focus_x)) ? Number(form.portrait_cover_focus_x) : null,
+          portrait_cover_focus_y: Number.isFinite(Number(form.portrait_cover_focus_y)) ? Number(form.portrait_cover_focus_y) : null,
+          portrait_cover_zoom: Number.isFinite(Number(form.portrait_cover_zoom)) ? Number(form.portrait_cover_zoom) : null,
+          card_cover_focus_y: Number.isFinite(Number(form.card_cover_focus_y)) ? Number(form.card_cover_focus_y) : null,
+          card_cover_zoom: Number.isFinite(Number(form.card_cover_zoom)) ? Number(form.card_cover_zoom) : null,
           contact_person_1_name: form.contact_person_1_name || null,
           contact_person_1_position: form.contact_person_1_position || null,
           contact_person_2_name: form.contact_person_2_name || null,
@@ -701,11 +811,12 @@ export function useVendorDashboard() {
     }
   };
 
-  const saveImages = async () => {
+  const saveImages = async (customImages?: any[]) => {
     if (!token) return;
     setSaving(true);
     try {
-      const cleaned = ensureSingleCover(images).filter((i) => i.image_url.trim().length > 0);
+      const targetImages = customImages || images;
+      const cleaned = ensureSingleCover(targetImages).filter((i) => i.image_url.trim().length > 0);
 
       if (cleaned.length === 0) {
         toast.error("Cover photo is required.");
@@ -787,6 +898,7 @@ export function useVendorDashboard() {
     images,
     videos,
     promos,
+    marketplaceItems,
     inquiries,
     reviews,
     themes,
@@ -807,11 +919,18 @@ export function useVendorDashboard() {
     albumToRename,
     renameAlbumTitle,
     cropperOpen,
+    setCropperOpen,
+    cardCropperOpen,
+    setCardCropperOpen,
+    portraitCropperOpen,
+    setPortraitCropperOpen,
     logoModalOpen,
     photoModalOpen,
     editingPhotoIndex,
     promoModalOpen,
     editingPromoId,
+    marketplaceItemModalOpen,
+    editingMarketplaceItemId,
     videoModalOpen,
     editingVideoIndex,
     isPreviewOpen,
@@ -834,12 +953,13 @@ export function useVendorDashboard() {
     setRenameAlbumModalOpen,
     setAlbumToRename,
     setRenameAlbumTitle,
-    setCropperOpen,
     setLogoModalOpen,
     setPhotoModalOpen,
     setEditingPhotoIndex,
     setPromoModalOpen,
     setEditingPromoId,
+    setMarketplaceItemModalOpen,
+    setEditingMarketplaceItemId,
     setVideoModalOpen,
     setEditingVideoIndex,
     setIsPreviewOpen,
@@ -849,6 +969,10 @@ export function useVendorDashboard() {
     createPromo,
     updatePromo,
     deletePromo,
+    refreshMarketplaceItems,
+    createMarketplaceItem,
+    updateMarketplaceItem,
+    deleteMarketplaceItem,
     refreshInquiries,
     updateInquiryStatus,
     saveReviewReply,

@@ -980,12 +980,22 @@ export default function CoupleMicrositePage() {
               {/* Invitation Subtext */}
               <div className="text-center max-w-md border-t border-black/[0.04] pt-5">
                 <p className="text-[13px] sm:text-[14px] text-neutral-500 font-[family-name:var(--font-plus-jakarta)] leading-relaxed italic">
-                  {profile?.groom_nickname && profile?.groom_last_name && profile?.bride_nickname && profile?.bride_last_name ? (
+                  {profile?.groom_last_name && profile?.bride_last_name ? (
                     <>
-                      We, <strong className="not-italic text-neutral-700 font-bold">{profile.groom_nickname} {profile.groom_last_name}</strong> and <strong className="not-italic text-neutral-700 font-bold">{profile.bride_nickname} {profile.bride_last_name}</strong>, joyfully invite you to attend our wedding ceremony! Reception and dancing to follow.
+                      "{profile.groom_last_name} - {profile.bride_last_name}" Nuptials<br />
+                      {profile.wedding_time ? (() => {
+                        const [h, m] = profile.wedding_time.split(":");
+                        let hrs = parseInt(h, 10);
+                        const ampm = hrs >= 12 ? "pm" : "am";
+                        hrs = hrs % 12 || 12;
+                        return `${hrs}:${m} ${ampm}`;
+                      })() : "00:00 am/pm"} at (ceremony/ church venue) ; Reception follows at {profile.wedding_venue_area || "(venue)"}
                     </>
                   ) : (
-                    "We joyfully invite you to attend our wedding ceremony! Reception and dancing to follow."
+                    <>
+                      "Groom's Family Name - Bride's Family Name" Nuptials<br />
+                      00:00 am/pm at (ceremony/ church venue) ; Reception follows at (venue)
+                    </>
                   )}
                 </p>
               </div>

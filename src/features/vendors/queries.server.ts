@@ -51,6 +51,12 @@ type SearchVendorsRow = {
   cover_focus_x: number | null;
   cover_focus_y: number | null;
   cover_zoom: number | null;
+  card_cover_focus_x: number | null;
+  portrait_cover_focus_x: number | null;
+  portrait_cover_focus_y: number | null;
+  portrait_cover_zoom: number | null;
+  card_cover_focus_y: number | null;
+  card_cover_zoom: number | null;
   plan: { id: number | null; name: string | null } | null;
   save_count: number | null;
   view_count: number | null;

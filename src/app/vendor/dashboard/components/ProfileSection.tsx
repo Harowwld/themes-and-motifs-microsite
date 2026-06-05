@@ -18,6 +18,10 @@ export function ProfileSection({
   images,
   cropperOpen,
   setCropperOpen,
+  cardCropperOpen,
+  setCardCropperOpen,
+  portraitCropperOpen,
+  setPortraitCropperOpen,
   saveCoverCrop,
   logoModalOpen,
   setLogoModalOpen,
@@ -36,7 +40,11 @@ export function ProfileSection({
   images: VendorImage[];
   cropperOpen: boolean;
   setCropperOpen: (v: boolean) => void;
-  saveCoverCrop: (v: any) => void;
+  cardCropperOpen: boolean;
+  setCardCropperOpen: (v: boolean) => void;
+  portraitCropperOpen: boolean;
+  setPortraitCropperOpen: (v: boolean) => void;
+  saveCoverCrop: (type: 'card' | 'details' | 'portrait', v: any) => void;
   logoModalOpen: boolean;
   setLogoModalOpen: (v: boolean) => void;
   isPremium: boolean;
@@ -317,9 +325,9 @@ export function ProfileSection({
           </div>
 
           <div className="rounded-lg border border-black/[0.06] bg-[#fafafa]/30 p-4">
-            <div className="text-[11px] font-bold uppercase tracking-widest text-black/40">Card Cover Position</div>
+            <div className="text-[11px] font-bold uppercase tracking-widest text-black/40">Details Page Cover Position</div>
             <div className="mt-1 text-[12px] text-black/45">
-              Fine-tune how your cover photo displays on search results.
+              Fine-tune how your wide banner displays on your storefront details page.
             </div>
 
             {(() => {
@@ -330,36 +338,62 @@ export function ProfileSection({
               const pos = `${x}% ${y}%`;
 
               return (
-                <div className="mt-4 grid gap-6 sm:grid-cols-[200px_1fr] sm:items-center">
-                  <div
-                    className="h-28 w-full rounded-lg border border-white shadow-md overflow-hidden bg-[#fafafa] ring-1 ring-black/[0.05]"
-                    style={{
-                      backgroundImage: cover?.image_url ? `url(${cover.image_url})` : undefined,
-                      backgroundSize: `${z * 100}% ${z * 100}%`,
-                      backgroundPosition: pos,
-                    }}
-                  />
-
-                  <div className="flex flex-col gap-3">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[12px] font-bold text-[#a67c52]">Zoom: {Math.round(z * 100)}%</span>
-                      <span className="h-1 w-1 rounded-full bg-black/10" />
-                      <span className="text-[12px] text-black/40">Position: {x}% {y}%</span>
+                <div className="mt-6 flex flex-col gap-6">
+                  {/* Full-Width Storefront Header Preview */}
+                  <div className="relative w-full rounded-2xl border border-black/10 bg-white overflow-hidden shadow-sm pointer-events-none">
+                    <div className="w-full relative overflow-hidden bg-black/5 aspect-[5/1]" style={{ background: "linear-gradient(135deg, rgba(166,139,106,0.2), rgba(166,139,106,0.05))" }}>
+                      {cover?.image_url && (
+                        <img
+                          src={cover.image_url}
+                          alt="Cover preview"
+                          className="absolute inset-0 h-full w-full object-cover select-none"
+                          style={{
+                            objectPosition: `${x}% ${y}%`,
+                            transformOrigin: `${x}% ${y}%`,
+                            transform: `scale(${z})`,
+                          }}
+                        />
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-40" />
                     </div>
+                    <div className="px-6 relative -mt-12 sm:-mt-16 pb-6 flex items-end justify-between">
+                      <div className="h-24 w-24 sm:h-28 sm:w-28 rounded-2xl border-4 border-white bg-white shadow-md overflow-hidden flex items-center justify-center shrink-0">
+                        {form.logo_url ? (
+                          <img src={form.logo_url} alt="Logo" className="h-full w-full object-cover" />
+                        ) : (
+                          <div className="h-full w-full bg-white flex items-center justify-center text-[24px] font-bold text-[#a68b6a]">
+                            {form.business_name?.charAt(0).toUpperCase() || "V"}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-xl bg-white p-4 border border-black/5 shadow-sm">
+                    <div className="flex flex-col gap-1">
+                      <div className="text-[12px] font-semibold text-black/70">Crop & Zoom Settings</div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[12px] font-bold text-[#a67c52]">Zoom: {Math.round(z * 100)}%</span>
+                        <span className="h-1 w-1 rounded-full bg-black/10" />
+                        <span className="text-[12px] text-black/40">Position: {x}% {y}%</span>
+                      </div>
+                    </div>
+                    
                     <button
                       type="button"
-                      className="h-9 px-5 rounded-lg border border-[#a67c52]/30 bg-white text-[12px] font-semibold text-[#a67c52] hover:bg-[#a67c52] hover:text-white transition-all duration-300 shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
+                      className="h-10 px-6 rounded-lg border border-[#a67c52]/30 bg-white text-[13px] font-bold text-[#a67c52] hover:bg-[#a67c52] hover:text-white transition-all duration-300 shadow-sm disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
                       onClick={() => setCropperOpen(true)}
                       disabled={!cover?.image_url}
                     >
-                      Adjust Crop Position
+                      Adjust Details Crop
                     </button>
-                    {!cover?.image_url ? (
-                      <div className="text-[11px] text-red-400/80 font-medium">
-                        Please add a cover photo in the "Photos" section first.
-                      </div>
-                    ) : null}
                   </div>
+
+                  {!cover?.image_url ? (
+                    <div className="text-[12px] text-red-500/90 font-medium">
+                      Please add a cover photo in the "Photos" section first.
+                    </div>
+                  ) : null}
 
                   {cover?.image_url ? (
                     <CoverCropperModal
@@ -370,8 +404,210 @@ export function ProfileSection({
                       initialZoom={z}
                       minZoom={1}
                       maxZoom={3}
+                      aspectRatio="aspect-[3/1]"
                       onCancel={() => setCropperOpen(false)}
-                      onSave={(next) => void saveCoverCrop(next)}
+                      onSave={(next) => void saveCoverCrop('details', next)}
+                    />
+                  ) : null}
+                </div>
+              );
+            })()}
+          </div>
+
+          <div className="rounded-lg border border-black/[0.06] bg-[#fafafa]/30 p-4 mt-6">
+            <div className="text-[11px] font-bold uppercase tracking-widest text-black/40">Portrait Featured Card Position</div>
+            <div className="mt-1 text-[12px] text-black/45">
+              Fine-tune how your cover displays on the home page when you are featured.
+            </div>
+
+            {(() => {
+              const cover = ensureSingleCover(images).find((i) => i.is_cover && i.image_url.trim());
+              const x = clampPct(Number(form.portrait_cover_focus_x ?? form.cover_focus_x));
+              const y = clampPct(Number(form.portrait_cover_focus_y ?? form.cover_focus_y));
+              const z = clampZoom(Number(form.portrait_cover_zoom ?? form.cover_zoom));
+
+              return (
+                <div className="mt-6 flex flex-col gap-6">
+                  {/* Card Thumbnail Preview */}
+                  <div className="w-[280px] sm:w-[320px] rounded-2xl border border-black/10 bg-white overflow-hidden shadow-sm pointer-events-none mx-auto aspect-[3/4] relative">
+                    {cover?.image_url ? (
+                      <img
+                        src={cover.image_url}
+                        alt="Card preview"
+                        className="absolute inset-0 h-full w-full object-cover select-none"
+                        style={{
+                          objectPosition: `${x}% ${y}%`,
+                          transformOrigin: `${x}% ${y}%`,
+                          transform: `scale(${z})`,
+                        }}
+                      />
+                    ) : (
+                      <div className="h-full w-full" style={{ background: "linear-gradient(135deg, rgba(166,139,106,0.2), rgba(166,139,106,0.05))" }} />
+                    )}
+                    
+                    <div className="absolute inset-x-0 bottom-0 z-20 h-[38%] overflow-hidden">
+                      <div
+                        className="absolute inset-0 bg-white/80 border-t border-white/40"
+                        style={{
+                          backdropFilter: "blur(16px)",
+                          WebkitBackdropFilter: "blur(16px)",
+                          transform: "skewY(-4.35deg)",
+                          transformOrigin: "top right",
+                        }}
+                      />
+                      <div className="absolute inset-x-0 bottom-0 px-4 pb-4 pt-4 sm:px-5 sm:pb-5">
+                        <div className="flex items-center gap-3">
+                          <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl border border-gray-100 bg-white shadow-sm overflow-hidden flex items-center justify-center shrink-0 z-30">
+                            {form.logo_url ? (
+                              <img src={form.logo_url} alt="Logo" className="h-full w-full object-cover" />
+                            ) : (
+                              <div className="text-[18px] font-bold text-[#a68b6a]">
+                                {form.business_name?.charAt(0).toUpperCase() || "V"}
+                              </div>
+                            )}
+                          </div>
+                          <div className="min-w-0 z-30 relative">
+                            <div className="text-[14px] sm:text-[16px] font-bold text-gray-900 uppercase tracking-tight truncate font-[family-name:var(--font-plus-jakarta)]">
+                              {form.business_name || "Business Name"}
+                            </div>
+                            <div className="mt-1 h-3 bg-black/5 rounded w-1/2" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-xl bg-white p-4 border border-black/5 shadow-sm">
+                    <div className="flex flex-col gap-1">
+                      <div className="text-[12px] font-semibold text-black/70">Crop & Zoom Settings</div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[12px] font-bold text-[#a67c52]">Zoom: {Math.round(z * 100)}%</span>
+                        <span className="h-1 w-1 rounded-full bg-black/10" />
+                        <span className="text-[12px] text-black/40">Position: {x}% {y}%</span>
+                      </div>
+                    </div>
+                    
+                    <button
+                      type="button"
+                      className="h-10 px-6 rounded-lg border border-[#a67c52]/30 bg-white text-[13px] font-bold text-[#a67c52] hover:bg-[#a67c52] hover:text-white transition-all duration-300 shadow-sm disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
+                      onClick={() => setPortraitCropperOpen(true)}
+                      disabled={!cover?.image_url}
+                    >
+                      Adjust Portrait Crop
+                    </button>
+                  </div>
+
+                  {!cover?.image_url ? (
+                    <div className="text-[12px] text-red-500/90 font-medium">
+                      Please add a cover photo in the "Photos" section first.
+                    </div>
+                  ) : null}
+
+                  {cover?.image_url ? (
+                    <CoverCropperModal
+                      open={portraitCropperOpen}
+                      imageUrl={cover.image_url}
+                      initialFocusX={x}
+                      initialFocusY={y}
+                      initialZoom={z}
+                      minZoom={1}
+                      maxZoom={3}
+                      aspectRatio="aspect-[3/4]"
+                      onCancel={() => setPortraitCropperOpen(false)}
+                      onSave={(next) => void saveCoverCrop('portrait', next)}
+                    />
+                  ) : null}
+                </div>
+              );
+            })()}
+          </div>
+
+          <div className="rounded-lg border border-black/[0.06] bg-[#fafafa]/30 p-4 mt-6">
+            <div className="text-[11px] font-bold uppercase tracking-widest text-black/40">Landscape Directory Card Position</div>
+            <div className="mt-1 text-[12px] text-black/45">
+              Fine-tune how your cover photo displays as a thumbnail in search results.
+            </div>
+
+            {(() => {
+              const cover = ensureSingleCover(images).find((i) => i.is_cover && i.image_url.trim());
+              const x = clampPct(Number(form.card_cover_focus_x ?? form.cover_focus_x));
+              const y = clampPct(Number(form.card_cover_focus_y ?? form.cover_focus_y));
+              const z = clampZoom(Number(form.card_cover_zoom ?? form.cover_zoom));
+
+              return (
+                <div className="mt-6 flex flex-col gap-6">
+                  {/* Card Thumbnail Preview */}
+                  <div className="w-full max-w-sm rounded-2xl border border-black/10 bg-white overflow-hidden shadow-sm pointer-events-none mx-auto">
+                    <div className="h-32 sm:h-48 w-full relative overflow-hidden bg-black/5" style={{ background: "linear-gradient(135deg, rgba(166,139,106,0.2), rgba(166,139,106,0.05))" }}>
+                      {cover?.image_url && (
+                        <img
+                          src={cover.image_url}
+                          alt="Card preview"
+                          className="absolute inset-0 h-full w-full object-cover select-none"
+                          style={{
+                            objectPosition: `${x}% ${y}%`,
+                            transformOrigin: `${x}% ${y}%`,
+                            transform: `scale(${z})`,
+                          }}
+                        />
+                      )}
+                      
+                      <div className="absolute bottom-2.5 left-2.5 flex items-end gap-3">
+                        <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-xl sm:rounded-2xl border-2 sm:border-4 border-white bg-white shadow-lg sm:shadow-xl overflow-hidden flex items-center justify-center shrink-0">
+                          {form.logo_url ? (
+                            <img src={form.logo_url} alt="Logo" className="h-full w-full object-cover" />
+                          ) : (
+                            <div className="h-full w-full bg-white flex items-center justify-center text-[24px] font-bold text-[#a68b6a]">
+                              {form.business_name?.charAt(0).toUpperCase() || "V"}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="p-4 bg-white">
+                      <div className="h-5 bg-black/5 rounded w-2/3 mb-2" />
+                      <div className="h-3 bg-black/5 rounded w-1/3" />
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-xl bg-white p-4 border border-black/5 shadow-sm">
+                    <div className="flex flex-col gap-1">
+                      <div className="text-[12px] font-semibold text-black/70">Crop & Zoom Settings</div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[12px] font-bold text-[#a67c52]">Zoom: {Math.round(z * 100)}%</span>
+                        <span className="h-1 w-1 rounded-full bg-black/10" />
+                        <span className="text-[12px] text-black/40">Position: {x}% {y}%</span>
+                      </div>
+                    </div>
+                    
+                    <button
+                      type="button"
+                      className="h-10 px-6 rounded-lg border border-[#a67c52]/30 bg-white text-[13px] font-bold text-[#a67c52] hover:bg-[#a67c52] hover:text-white transition-all duration-300 shadow-sm disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
+                      onClick={() => setCardCropperOpen(true)}
+                      disabled={!cover?.image_url}
+                    >
+                      Adjust Card Crop
+                    </button>
+                  </div>
+
+                  {!cover?.image_url ? (
+                    <div className="text-[12px] text-red-500/90 font-medium">
+                      Please add a cover photo in the "Photos" section first.
+                    </div>
+                  ) : null}
+
+                  {cover?.image_url ? (
+                    <CoverCropperModal
+                      open={cardCropperOpen}
+                      imageUrl={cover.image_url}
+                      initialFocusX={x}
+                      initialFocusY={y}
+                      initialZoom={z}
+                      minZoom={1}
+                      maxZoom={3}
+                      aspectRatio="aspect-video"
+                      onCancel={() => setCardCropperOpen(false)}
+                      onSave={(next) => void saveCoverCrop('card', next)}
                     />
                   ) : null}
 

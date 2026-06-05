@@ -15,7 +15,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Vendor, VerificationDocument, Promo, Theme, Affiliation, VendorImage, VendorVideo, VendorSocial } from "../hooks/useSuperadminSuppliers";
 import { ProfileSection } from "./ProfileSection";
 import { ContactSection } from "./ContactSection";
-import { AdminContactSection } from "./AdminContactSection";
 import { VerificationSection } from "./VerificationSection";
 import { PhotosSection } from "./PhotosSection";
 import { VideosSection } from "./VideosSection";
@@ -132,12 +131,11 @@ export function VendorEditModal({
     { id: "promos", label: "Exclusive Deals", icon: Ticket },
     { id: "profile", label: "Business Profile", icon: User },
     { id: "contact", label: "Contact Info", icon: Phone },
-    { id: "adminContact", label: "Admin Contact", icon: ShieldCheck },
-    { id: "verification", label: "Verification", icon: CheckSquare },
-    { id: "videos", label: "Video Highlights", icon: Film },
     { id: "social", label: "Social Links", icon: Globe },
-    { id: "affiliations", label: "Affiliations & Themes", icon: Palette },
+    { id: "affiliations", label: "Affiliations", icon: Palette },
     { id: "professional", label: "Professional Status", icon: Briefcase },
+    { id: "verification", label: "Verifications", icon: CheckSquare },
+    { id: "videos", label: "Video Highlights", icon: Film },
   ];
 
   return (
@@ -145,8 +143,8 @@ export function VendorEditModal({
       <div className="w-full max-w-5xl max-h-[90vh] rounded-[3px] border border-black/10 bg-white shadow-lg my-8 flex flex-col overflow-hidden">
         <div className="px-4 py-3 border-b border-black/5 flex items-center justify-between">
           <div>
-            <div className="text-[12px] font-medium text-black/45">Edit Vendor</div>
-            <div className="text-[16px] font-bold text-[#2c2c2c]">{editingVendor.business_name}</div>
+            <div className="text-[11px] font-medium text-black/45">Edit Vendor</div>
+            <div className="text-[20px] font-bold text-[#2c2c2c]">{editingVendor.business_name}</div>
           </div>
           <button
             type="button"
@@ -206,6 +204,9 @@ export function VendorEditModal({
                           setEditImages={setEditImages} 
                           setEditingPhotoIndex={setEditingPhotoIndex} 
                           setPhotoModalOpen={setPhotoModalOpen} 
+                          allThemes={allThemes}
+                          editThemes={editThemes}
+                          setEditThemes={setEditThemes}
                         />
                       );
                     case "promos":
@@ -230,8 +231,6 @@ export function VendorEditModal({
                       return <ProfileSection editForm={editForm} setEditForm={setEditForm} regions={regions} cities={cities} />;
                     case "contact":
                       return <ContactSection editForm={editForm} setEditForm={setEditForm} setLogoUrlInput={setLogoUrlInput} setLogoModalOpen={setLogoModalOpen} />;
-                    case "adminContact":
-                      return <AdminContactSection editForm={editForm} setEditForm={setEditForm} />;
                     case "verification":
                       return (
                         <VerificationSection 
@@ -254,9 +253,6 @@ export function VendorEditModal({
                           allAffiliations={allAffiliations} 
                           affiliationInput={affiliationInput} 
                           setAffiliationInput={setAffiliationInput} 
-                          editThemes={editThemes} 
-                          setEditThemes={setEditThemes} 
-                          allThemes={allThemes} 
                         />
                       );
                     case "professional":
