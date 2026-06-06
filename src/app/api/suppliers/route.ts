@@ -1,9 +1,23 @@
 import { NextResponse } from "next/server";
+import { unstable_cache as next_unstable_cache } from "next/cache";
 
 import { createSupabaseServerClient } from "../../../lib/supabaseServer";
 import { attachCoverImages } from "../../../features/vendors/coverImages.server";
-import { buildVendorsQuery } from "../../../features/vendors/queries.server";
+import { buildVendorsQuery, type VendorsQueryFilters } from "../../../features/vendors/queries.server";
 import type { VendorWithSortFields, SortKey } from "../../../lib/vendorUtils";
+
+const unstable_cache = process.env.NODE_ENV === "development"
+  ? <T extends (...args: any[]) => Promise<any>>(fn: T) => fn
+  : next_unstable_cache;
+
+const getCachedVendorsQuery = unstable_cache(
+  async (filters: VendorsQueryFilters, sort: SortKey, from: number, to: number) => {
+    const supabase = createSupabaseServerClient();
+    return await buildVendorsQuery({ supabase, filters, sort, from, to });
+  },
+  ["api-suppliers-list-query"],
+  { revalidate: 30 }
+);
 
 export const dynamic = "force-dynamic";
 
@@ -66,13 +80,12 @@ export async function GET(req: Request) {
     const from = (page - 1) * limit;
     const to = from + limit - 1;
 
-    const { vendors, total } = await buildVendorsQuery({
-      supabase,
-      filters: { q, category, location, region, affiliation, theme },
+    const { vendors, total } = await getCachedVendorsQuery(
+      { q, category, location, region, affiliation, theme },
       sort,
       from,
-      to,
-    });
+      to
+    );
 
     const vendorAllItems = (vendors ?? []) as VendorWithCoverImage[];
     const hasMore = from + vendorAllItems.length < total;
