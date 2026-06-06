@@ -1,5 +1,0 @@
--- Update all existing vendors to verified status
--- TODO: Uncomment when vendors table is created
--- UPDATE vendors
--- SET verified_status = 'verified'
--- WHERE verified_status IS NULL OR verified_status != 'verified';

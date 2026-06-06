@@ -94,7 +94,7 @@ export function ProfileSection({
           </div>
           {subscription?.expiry_date && (
             <div>
-              Expiry: <span className="font-semibold text-[#2c2c2c]">{new Date(subscription.expiry_date).toLocaleDateString()}</span>
+              Document Validity: <span className="font-semibold text-[#2c2c2c]">{new Date(subscription.expiry_date).toLocaleDateString()}</span>
             </div>
           )}
         </div>
@@ -155,7 +155,7 @@ export function ProfileSection({
 
           <div className="border-t border-black/[0.04] pt-6 grid gap-6">
             <div className="grid gap-6 md:grid-cols-2">
-              <Field label="Document Expiration Date *">
+              <Field label="Document Validity Date *">
                 <input 
                   type="date" 
                   className="h-11 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-4 text-[13px] transition-all duration-200 focus:border-[#a67c52] focus:bg-white focus:ring-4 focus:ring-[#a67c52]/10 outline-none" 
@@ -184,7 +184,7 @@ export function ProfileSection({
                     return;
                   }
                   if (!expiryDate || !expiryDate.trim()) {
-                    toast.error("Please provide a document expiration date.");
+                    toast.error("Please provide a document validity date.");
                     return;
                   }
                   if (!tin || !tin.trim()) {

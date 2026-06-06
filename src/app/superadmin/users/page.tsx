@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "../../../lib/toast";
 
+
 type UserRow = Record<string, any> & { id: string };
 
 async function apiFetch<T>(url: string, init?: RequestInit): Promise<T> {
@@ -28,6 +29,7 @@ export default function SuperadminUsersPage() {
   const [savingId, setSavingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [deletingUser, setDeletingUser] = useState<UserRow | null>(null);
+
 
   // Profile edit state
   const [editingProfileUser, setEditingProfileUser] = useState<UserRow | null>(null);
@@ -61,6 +63,7 @@ export default function SuperadminUsersPage() {
   useEffect(() => {
     refresh();
   }, []);
+
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -167,7 +170,8 @@ export default function SuperadminUsersPage() {
         </div>
 
         <div className="p-6 grid gap-4">
-          <div className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
+
+          <div className="grid gap-3 sm:grid-cols-[1fr_auto_auto] sm:items-end">
             <label className="grid gap-1.5">
               <span className="text-[12px] font-semibold text-black/55">Search</span>
               <input
@@ -563,6 +567,7 @@ export default function SuperadminUsersPage() {
           </div>
         </div>
       ) : null}
+
     </div>
   );
 }

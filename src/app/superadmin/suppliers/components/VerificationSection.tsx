@@ -86,7 +86,7 @@ export function VerificationSection({
           </div>
           
           <div className="mt-2 flex flex-col gap-1">
-            <span className="text-[10px] font-bold text-black/35 uppercase tracking-widest">Expiration Date</span>
+            <span className="text-[10px] font-bold text-black/35 uppercase tracking-widest">Document Validity Date</span>
             {editSubscription?.expiry_date ? (
               <div className="flex items-center gap-1.5 mt-0.5">
                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
@@ -102,7 +102,7 @@ export function VerificationSection({
               <div className="flex items-center gap-1.5 mt-0.5">
                 <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
                 <span className="text-[11px] font-medium text-amber-600 italic">
-                  No Expiration Set
+                  No Validity Date Set
                 </span>
               </div>
             )}
@@ -121,7 +121,7 @@ export function VerificationSection({
       {/* Date Picker and TIN Inputs */}
       <div className="grid gap-4 sm:grid-cols-2 bg-[#fafafa]/50 p-4 rounded-xl border border-black/[0.04]">
         <label className="grid gap-1.5">
-          <span className="text-[11px] font-bold uppercase tracking-widest text-black/40">Set Expiration / Expiry Date</span>
+          <span className="text-[11px] font-bold uppercase tracking-widest text-black/40">Set Document Validity Date</span>
           <input
             type="date"
             value={editSubscription?.expiry_date ? new Date(editSubscription.expiry_date).toISOString().split('T')[0] : ""}
