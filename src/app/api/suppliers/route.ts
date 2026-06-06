@@ -45,9 +45,9 @@ export async function GET(req: Request) {
 
   const rawPage = searchParams.get("page") ?? "1";
   const rawSort = searchParams.get("vendorsSort") ?? "rating";
-  const rawLimit = searchParams.get("limit") ?? "30";
+  const rawLimit = searchParams.get("limit") ?? "42";
 
-  const limit = Math.max(1, Math.min(30, Number(rawLimit) || 30));
+  const limit = Math.max(1, Math.min(100, Number(rawLimit) || 42));
   const page = Math.max(1, Number(rawPage) || 1);
 
   const sort: SortKey =

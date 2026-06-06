@@ -100,35 +100,14 @@ export default function VirtualizedVendorsList({
     ).values()
   );
 
-  // Ref for intersection observer
   const parentRef = useRef<HTMLDivElement>(null);
 
-  // Intersection observer for infinite scroll trigger
-  const sentinelRef = useRef<HTMLDivElement>(null);
+  // Continuously fetch next page as long as there is more data
   useEffect(() => {
-    const sentinel = sentinelRef.current;
-    if (!sentinel) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (
-          entries[0]?.isIntersecting &&
-          hasNextPage &&
-          !isFetchingNextPage
-        ) {
-          fetchNextPage();
-        }
-      },
-      { rootMargin: "2000px" }
-    );
-
-    observer.observe(sentinel);
-    return () => observer.disconnect();
-  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
-
-  // Calculate sentinel index to trigger prefetching when user is 10% down the latest page
-  const latestPageStartIndex = allVendors.length - limit;
-  const sentinelIndex = Math.max(0, latestPageStartIndex + Math.floor(limit * 0.1));
+    if (hasNextPage && !isFetchingNextPage && !isError) {
+      fetchNextPage();
+    }
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage, isError]);
 
   return (
     <section className="mt-16 sm:mt-20">
@@ -158,19 +137,15 @@ export default function VirtualizedVendorsList({
         </div>
       ) : (
         <div ref={parentRef} className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {allVendors.map((vendor, index) => (
-            <div
-              key={vendor.id}
-              ref={index === sentinelIndex ? sentinelRef : undefined}
-            >
+          {allVendors.map((vendor) => (
+            <div key={vendor.id}>
               <VendorCard vendor={vendor} />
             </div>
           ))}
         </div>
       )}
 
-      {/* Sentinel for infinite scroll */}
-      <div ref={sentinelRef} className="h-4" />
+
 
       {/* Error state */}
       {isError && (

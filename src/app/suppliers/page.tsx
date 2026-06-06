@@ -244,7 +244,7 @@ export default async function VendorsPage({
   const affiliation = (sp.affiliation as string | undefined)?.trim() || "";
   const theme = (sp.theme as string | undefined)?.trim() || "";
 
-  const limit = 30;
+  const limit = 42;
   const rawSort = (sp.vendorsSort as string | undefined) ?? "rating";
   const sort: SortKey =
     rawSort === "alpha" || rawSort === "newest" || rawSort === "saves" || rawSort === "views" || rawSort === "verified" ? rawSort : "rating";
