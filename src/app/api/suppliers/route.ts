@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 // by session. Anonymous users (no cookie) will get full CDN cache hits.
 const LIST_CACHE = "public, s-maxage=30, stale-while-revalidate=300, must-revalidate";
 const SINGLE_CACHE = "public, s-maxage=120, stale-while-revalidate=600, must-revalidate";
-const VARY = "Cookie, Accept-Encoding";
+const VARY = "Accept-Encoding";
 
 type VendorWithCoverImage = VendorWithSortFields & { cover_image_url: string | null };
 
