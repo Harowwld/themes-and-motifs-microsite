@@ -237,7 +237,8 @@ export default function HeroSection({
           alt="Hero background"
           fill
           priority
-          quality={85}
+          unoptimized
+          fetchPriority="high"
           className="object-cover object-center scale-105"
         />
       </div>
@@ -247,7 +248,8 @@ export default function HeroSection({
           alt="Hero background mobile"
           fill
           priority
-          quality={85}
+          unoptimized
+          fetchPriority="high"
           className="object-cover object-center scale-105"
         />
       </div>
