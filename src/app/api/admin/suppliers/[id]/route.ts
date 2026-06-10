@@ -1,6 +1,7 @@
 import { createSupabaseAdminClient } from "../../../../../lib/supabaseAdmin";
 import { assertAdminOrEditorRequest } from "../../../../../lib/editorAuth";
 import { createErrorResponse } from "../../../../../lib/errors";
+import { revalidatePath } from "next/cache";
 
 // Field validators for mass assignment protection
 const FIELD_VALIDATORS: Record<string, (val: unknown) => { valid: boolean; value?: unknown; error?: string }> = {
@@ -297,6 +298,13 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
       .eq("id", vendorId)
       .select("*")
       .single();
+
+        try {
+          revalidatePath("/", "layout");
+        } catch (err) {
+          console.error("[Admin API] Cache revalidation failed:", err);
+        }
+
 
     if (error) {
       return createErrorResponse(error, 500, { source: "vendor_update", vendorId });

@@ -3,10 +3,12 @@
 import { motion } from "framer-motion";
 import InfiniteVendorCarousel from "../components/InfiniteVendorCarousel";
 import type { FeaturedVendor } from "../types";
+import { VendorCardSkeleton } from "./VendorsSection";
 
 const EASE_OUT = [0.23, 1, 0.32, 1] as [number, number, number, number];
 
-export default function FeaturedVendorsSection({ vendors }: { vendors: FeaturedVendor[] }) {
+export default function FeaturedVendorsSection({ vendors = [], isLoading }: { vendors?: FeaturedVendor[], isLoading?: boolean }) {
+  if (!isLoading && (!vendors || vendors.length === 0)) return null;
   return (
     <section id="featured" className="mt-4 sm:mt-16 scroll-mt-20">
       <div className="text-center">
@@ -37,7 +39,17 @@ export default function FeaturedVendorsSection({ vendors }: { vendors: FeaturedV
         transition={{ duration: 0.6, delay: 0.2, ease: EASE_OUT }}
         className="mt-4 sm:mt-8 max-w-5xl mx-auto py-2 sm:py-12 px-0 sm:px-6 lg:px-8"
       >
-        <InfiniteVendorCarousel vendors={vendors} />
+        {isLoading ? (
+          <div className="flex gap-6 overflow-hidden px-5 sm:px-0 pointer-events-none">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="flex-shrink-0 w-[calc(100vw-40px)] sm:w-[calc((100%-48px)/3)]">
+                <VendorCardSkeleton />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <InfiniteVendorCarousel vendors={vendors} />
+        )}
       </motion.div>
 
       <motion.div

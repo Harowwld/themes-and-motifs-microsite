@@ -1,5 +1,6 @@
 import { createSupabaseAdminClient } from "../../../../lib/supabaseAdmin";
 import { assertAdminOrEditorRequest } from "../../../../lib/editorAuth";
+import { revalidatePath } from "next/cache";
 
 // GET - fetch all cities
 export async function GET(req: Request) {
@@ -46,6 +47,13 @@ export async function DELETE(req: Request) {
       return Response.json({ error: error.message }, { status: 500 });
     }
 
+        try {
+          revalidatePath("/", "layout");
+        } catch (err) {
+          console.error("[Admin API] Cache revalidation failed:", err);
+        }
+
+
     return Response.json({ success: true, message: "City deleted successfully." }, { status: 200 });
   } catch (e: any) {
     const status = typeof e?.statusCode === "number" ? e.statusCode : 500;
@@ -91,6 +99,13 @@ export async function POST(req: Request) {
       })
       .select()
       .single();
+
+        try {
+          revalidatePath("/", "layout");
+        } catch (err) {
+          console.error("[Admin API] Cache revalidation failed:", err);
+        }
+
 
     if (insertError) return Response.json({ error: insertError.message }, { status: 500 });
 
@@ -146,6 +161,13 @@ export async function PUT(req: Request) {
       .single();
 
     if (updateError) return Response.json({ error: updateError.message }, { status: 500 });
+
+        try {
+          revalidatePath("/", "layout");
+        } catch (err) {
+          console.error("[Admin API] Cache revalidation failed:", err);
+        }
+
 
     return Response.json({ success: true, city: updatedCity }, { status: 200 });
   } catch (e: any) {

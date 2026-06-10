@@ -1,5 +1,6 @@
 import { createSupabaseAdminClient } from "../../../../../../lib/supabaseAdmin";
 import { assertAdminOrEditorRequest } from "../../../../../../lib/editorAuth";
+import { revalidatePath } from "next/cache";
 
 type PromoRow = {
   id: number;
@@ -94,6 +95,12 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
       return Response.json({ error: error.message }, { status: 500 });
     }
 
+    try {
+      revalidatePath("/", "layout");
+    } catch (err) {
+      console.error("[Admin Supplier Promos API] Cache revalidation failed:", err);
+    }
+
     return Response.json({ promo: data as PromoRow }, { status: 200 });
   } catch (e: any) {
     const status = typeof e?.statusCode === "number" ? e.statusCode : 500;
@@ -151,6 +158,12 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 
     if (error) {
       return Response.json({ error: error.message }, { status: 500 });
+    }
+
+    try {
+      revalidatePath("/", "layout");
+    } catch (err) {
+      console.error("[Admin Supplier Promos API] Cache revalidation failed:", err);
     }
 
     return Response.json({ promo: data as PromoRow }, { status: 200 });
@@ -228,6 +241,12 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
           }
         }
       }
+    }
+
+    try {
+      revalidatePath("/", "layout");
+    } catch (err) {
+      console.error("[Admin Supplier Promos API] Cache revalidation failed:", err);
     }
 
     return Response.json({ ok: true }, { status: 200 });

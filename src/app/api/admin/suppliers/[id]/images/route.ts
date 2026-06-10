@@ -1,5 +1,6 @@
 import { createSupabaseAdminClient } from "../../../../../../lib/supabaseAdmin";
 import { assertAdminOrEditorRequest } from "../../../../../../lib/editorAuth";
+import { revalidatePath } from "next/cache";
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -60,6 +61,13 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     await supabase.from("vendor_images").delete().eq("vendor_id", vendorId);
 
     // Insert new images
+
+        try {
+          revalidatePath("/", "layout");
+        } catch (err) {
+          console.error("[Admin API] Cache revalidation failed:", err);
+        }
+
     const imagesToInsert = images
       .filter((img: any) => img.image_url?.trim())
       .map((img: any, idx: number) => ({

@@ -1,6 +1,7 @@
 import { createSupabaseAdminClient } from "../../../../../../lib/supabaseAdmin";
 import { assertAdminOrEditorRequest } from "../../../../../../lib/editorAuth";
 import { createErrorResponse } from "../../../../../../lib/errors";
+import { revalidatePath } from "next/cache";
 
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -40,6 +41,13 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     }
 
     let result;
+
+        try {
+          revalidatePath("/", "layout");
+        } catch (err) {
+          console.error("[Admin API] Cache revalidation failed:", err);
+        }
+
     if (sub) {
       const { data, error } = await supabase
         .from("vendor_subscriptions")

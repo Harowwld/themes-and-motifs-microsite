@@ -181,14 +181,26 @@ export default async function LandingPage({
           <div className="my-6 sm:my-12 h-px bg-gradient-to-r from-transparent via-black/15 to-transparent" />
 
           {/* Featured section - now with Suspense for streaming */}
-          <Suspense fallback={<div className="h-64 animate-pulse bg-gray-200 rounded-lg" />}>
+          <Suspense fallback={
+            <div className="animate-pulse pointer-events-none">
+              <PromosSection promos={[]} isLoading />
+              <div className="my-6 sm:my-12 h-px bg-gradient-to-r from-transparent via-black/15 to-transparent" />
+              <FeaturedThemesSection ideas={[]} isLoading />
+              <div className="my-6 sm:my-12 h-px bg-gradient-to-r from-transparent via-black/15 to-transparent" />
+              <FeaturedVendorsSection vendors={[]} isLoading />
+            </div>
+          }>
             <LandingFeaturedDirect />
           </Suspense>
 
           <div className="my-6 sm:my-12 h-px bg-gradient-to-r from-transparent via-black/15 to-transparent" />
 
           {/* Vendors section - now with Suspense for streaming */}
-          <Suspense fallback={<div className="h-96 animate-pulse bg-gray-200 rounded-lg" />}>
+          <Suspense fallback={
+            <div className="animate-pulse pointer-events-none">
+              <VendorsSection vendors={[]} total={0} page={page} pageSize={pageSize} sort={sort} isLoading />
+            </div>
+          }>
             <LandingVendorsDirect page={page} pageSize={pageSize} sort={sort} />
           </Suspense>
 

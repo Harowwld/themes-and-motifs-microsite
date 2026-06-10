@@ -1,5 +1,6 @@
 import { createSupabaseAdminClient } from "../../../../../../lib/supabaseAdmin";
 import { assertAdminOrEditorRequest } from "../../../../../../lib/editorAuth";
+import { revalidatePath } from "next/cache";
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -31,6 +32,13 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
         platform: s.platform.trim().toLowerCase(),
         url: s.url.trim(),
       }));
+
+        try {
+          revalidatePath("/", "layout");
+        } catch (err) {
+          console.error("[Admin API] Cache revalidation failed:", err);
+        }
+
 
     if (socialsToInsert.length > 0) {
       const { error } = await supabase.from("vendor_social_links").insert(socialsToInsert);

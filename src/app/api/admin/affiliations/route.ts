@@ -1,5 +1,6 @@
 import { createSupabaseAdminClient } from "../../../../lib/supabaseAdmin";
 import { assertAdminOrEditorRequest } from "../../../../lib/editorAuth";
+import { revalidatePath } from "next/cache";
 
 // GET - fetch all affiliations
 export async function GET(req: Request) {
@@ -44,6 +45,13 @@ export async function DELETE(req: Request) {
     if (error) {
       return Response.json({ error: error.message }, { status: 500 });
     }
+
+        try {
+          revalidatePath("/", "layout");
+        } catch (err) {
+          console.error("[Admin API] Cache revalidation failed:", err);
+        }
+
 
     return Response.json({ success: true, message: "Affiliation deleted successfully." }, { status: 200 });
   } catch (e: any) {
@@ -92,6 +100,13 @@ export async function POST(req: Request) {
       .single();
 
     if (insertError) return Response.json({ error: insertError.message }, { status: 500 });
+
+        try {
+          revalidatePath("/", "layout");
+        } catch (err) {
+          console.error("[Admin API] Cache revalidation failed:", err);
+        }
+
 
     return Response.json({ success: true, affiliation: newAffiliation }, { status: 201 });
   } catch (e: any) {
@@ -146,6 +161,13 @@ export async function PUT(req: Request) {
       .single();
 
     if (updateError) return Response.json({ error: updateError.message }, { status: 500 });
+
+        try {
+          revalidatePath("/", "layout");
+        } catch (err) {
+          console.error("[Admin API] Cache revalidation failed:", err);
+        }
+
 
     return Response.json({ success: true, affiliation: updatedAffiliation }, { status: 200 });
   } catch (e: any) {

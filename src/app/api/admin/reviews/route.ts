@@ -1,5 +1,6 @@
 import { createSupabaseAdminClient } from "../../../../lib/supabaseAdmin";
 import { assertSuperadminRequest } from "../../../../lib/superadminAuth";
+import { revalidatePath } from "next/cache";
 
 export async function GET(req: Request) {
   try {
@@ -66,6 +67,13 @@ export async function PATCH(req: Request) {
 
     // Recalculate average rating and review count for this vendor
     const vendorId = data?.vendor_id;
+
+        try {
+          revalidatePath("/", "layout");
+        } catch (err) {
+          console.error("[Admin API] Cache revalidation failed:", err);
+        }
+
     if (vendorId) {
       const { data: allRatings, error: ratingsErr } = await supabase
         .from("reviews")

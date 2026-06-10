@@ -1,5 +1,6 @@
 import { createSupabaseAdminClient } from "../../../../lib/supabaseAdmin";
 import { assertAdminOrEditorRequest } from "../../../../lib/editorAuth";
+import { revalidatePath } from "next/cache";
 
 export const dynamic = "force-dynamic";
 
@@ -83,6 +84,13 @@ export async function POST(req: Request) {
       slug = `${slug}-${Math.floor(1000 + Math.random() * 9000)}`;
     }
 
+        try {
+          revalidatePath("/", "layout");
+        } catch (err) {
+          console.error("[Admin API] Cache revalidation failed:", err);
+        }
+
+
     const { data: newEvent, error: insertError } = await supabase
       .from("bridal_fairs")
       .insert({
@@ -154,6 +162,13 @@ export async function PATCH(req: Request) {
     // Set updated_at timestamp
     updateData.updated_at = new Date().toISOString();
 
+        try {
+          revalidatePath("/", "layout");
+        } catch (err) {
+          console.error("[Admin API] Cache revalidation failed:", err);
+        }
+
+
     const { data: updatedEvent, error } = await supabase
       .from("bridal_fairs")
       .update(updateData)
@@ -194,6 +209,13 @@ export async function DELETE(req: Request) {
     if (error) {
       return Response.json({ error: error.message }, { status: 500 });
     }
+
+        try {
+          revalidatePath("/", "layout");
+        } catch (err) {
+          console.error("[Admin API] Cache revalidation failed:", err);
+        }
+
 
     return Response.json({ success: true, message: "Event deleted successfully." }, { status: 200 });
   } catch (e: any) {

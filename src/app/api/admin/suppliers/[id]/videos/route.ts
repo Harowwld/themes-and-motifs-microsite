@@ -1,5 +1,6 @@
 import { createSupabaseAdminClient } from "../../../../../../lib/supabaseAdmin";
 import { assertAdminOrEditorRequest } from "../../../../../../lib/editorAuth";
+import { revalidatePath } from "next/cache";
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -32,6 +33,13 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
         title: v.title?.trim() || null,
         display_order: v.display_order ?? idx + 1,
       }));
+
+        try {
+          revalidatePath("/", "layout");
+        } catch (err) {
+          console.error("[Admin API] Cache revalidation failed:", err);
+        }
+
 
     if (videosToInsert.length > 0) {
       const { error } = await supabase.from("vendor_videos").insert(videosToInsert);

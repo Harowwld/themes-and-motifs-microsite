@@ -34,7 +34,8 @@ function clampZoom(v: number) {
 
 export default function VendorProfileUI({ vendor, categories, affiliations, themes, images, socials, reviews, promos }: any) {
   const locationParts = [];
-  if (vendor.city) locationParts.push(vendor.city);
+  if (vendor.city_rel?.name) locationParts.push(vendor.city_rel.name);
+  else if (vendor.city) locationParts.push(vendor.city);
   if (vendor.province?.name) locationParts.push(vendor.province.name);
   const location = locationParts.join(", ") || null;
 

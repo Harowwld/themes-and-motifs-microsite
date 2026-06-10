@@ -1,5 +1,6 @@
 import { createSupabaseAdminClient } from "../../../../lib/supabaseAdmin";
 import { assertAdminOrEditorRequest } from "../../../../lib/editorAuth";
+import { revalidatePath } from "next/cache";
 
 export async function GET(req: Request) {
   try {
@@ -63,6 +64,12 @@ export async function PATCH(req: Request) {
 
     if (error) {
       return Response.json({ error: error.message }, { status: 500 });
+    }
+
+    try {
+      revalidatePath("/", "layout");
+    } catch (err) {
+      console.error("[Admin Promos API] Cache revalidation failed:", err);
     }
 
     return Response.json({ promo: data }, { status: 200 });

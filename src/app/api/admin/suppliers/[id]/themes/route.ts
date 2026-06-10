@@ -1,5 +1,6 @@
 import { createSupabaseAdminClient } from "../../../../../../lib/supabaseAdmin";
 import { assertAdminOrEditorRequest } from "../../../../../../lib/editorAuth";
+import { revalidatePath } from "next/cache";
 
 function slugify(input: string) {
   const s = (input ?? "").trim().toLowerCase();
@@ -116,6 +117,13 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
         return Response.json({ error: insertError.message }, { status: 500 });
       }
     }
+
+        try {
+          revalidatePath("/", "layout");
+        } catch (err) {
+          console.error("[Admin API] Cache revalidation failed:", err);
+        }
+
 
     // Fetch updated themes for this vendor
     const { data: updatedThemes, error: fetchError } = await supabase

@@ -8,7 +8,7 @@ import type { VendorListItem } from "../types";
 
 const EASE_OUT = [0.23, 1, 0.32, 1] as [number, number, number, number];
 
-function VendorCardSkeleton() {
+export function VendorCardSkeleton() {
   return (
     <div className="h-[240px] rounded-2xl border border-gray-100 bg-white shadow-sm overflow-hidden flex flex-col">
       <div className="h-28 w-full bg-gray-50 animate-pulse" />
@@ -27,13 +27,14 @@ function VendorCardSkeleton() {
 type SortKey = "alpha" | "rating" | "newest" | "saves" | "views" | "photos";
 
 type VendorsSectionProps = {
-  vendors: VendorListItem[];
-  total: number;
-  page: number;
-  pageSize: number;
-  sort: SortKey;
+  vendors?: VendorListItem[];
+  total?: number;
+  page?: number;
+  pageSize?: number;
+  sort?: SortKey;
   basePath?: string;
   extraParams?: Record<string, string | undefined>;
+  isLoading?: boolean;
 };
 
 function makeHref({
@@ -60,13 +61,14 @@ function makeHref({
 }
 
 export default function VendorsSection({
-  vendors,
-  total,
-  page,
-  pageSize,
-  sort,
+  vendors = [],
+  total = 0,
+  page = 1,
+  pageSize = 9,
+  sort = "photos",
   basePath,
   extraParams,
+  isLoading,
 }: VendorsSectionProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -222,7 +224,7 @@ export default function VendorsSection({
             exit={{ opacity: 0, transition: { duration: 0.2 } }}
             className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto"
           >
-            {isPending ? (
+            {isPending || isLoading ? (
               Array.from({ length: pageSize }).map((_, i) => (
                 <VendorCardSkeleton key={`skeleton-${i}`} />
               ))

@@ -1,6 +1,7 @@
 import { createSupabaseAdminClient } from "../../../../lib/supabaseAdmin";
 import { assertAdminOrEditorRequest } from "../../../../lib/editorAuth";
 import { createErrorResponse, CLIENT_ERRORS } from "../../../../lib/errors";
+import { revalidatePath } from "next/cache";
 
 // Sanitize search query to prevent SQL injection
 function sanitizeSearchQuery(query: string): { sanitized: string; isValid: boolean } {
@@ -110,6 +111,13 @@ export async function PATCH(req: Request) {
     if (error) {
       return createErrorResponse(error, 500, { source: "vendor_patch", id });
     }
+
+        try {
+          revalidatePath("/", "layout");
+        } catch (err) {
+          console.error("[Admin API] Cache revalidation failed:", err);
+        }
+
 
     return Response.json({ vendor: data }, { status: 200 });
   } catch (e: any) {

@@ -1,5 +1,6 @@
 import { createSupabaseAdminClient } from "../../../../lib/supabaseAdmin";
 import { assertSuperadminRequest } from "../../../../lib/superadminAuth";
+import { revalidatePath } from "next/cache";
 
 export const dynamic = "force-dynamic";
 
@@ -49,6 +50,13 @@ export async function PATCH(req: Request) {
     if (error) {
       return Response.json({ error: error.message }, { status: 500 });
     }
+
+        try {
+          revalidatePath("/", "layout");
+        } catch (err) {
+          console.error("[Admin API] Cache revalidation failed:", err);
+        }
+
 
     return Response.json({ setting: data }, { status: 200 });
   } catch (e: any) {

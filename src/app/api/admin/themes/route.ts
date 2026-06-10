@@ -1,5 +1,6 @@
 import { createSupabaseAdminClient } from "../../../../lib/supabaseAdmin";
 import { assertAdminOrEditorRequest } from "../../../../lib/editorAuth";
+import { revalidatePath } from "next/cache";
 
 // GET - fetch all themes
 export async function GET(req: Request) {
@@ -57,6 +58,13 @@ export async function DELETE(req: Request) {
     const isInUse = (usage ?? []).length > 0;
 
     // Delete the theme (vendor_themes entries will be cascade deleted due to ON DELETE CASCADE)
+
+        try {
+          revalidatePath("/", "layout");
+        } catch (err) {
+          console.error("[Admin API] Cache revalidation failed:", err);
+        }
+
     const { error } = await supabase
       .from("themes")
       .delete()
@@ -118,6 +126,13 @@ export async function POST(req: Request) {
     if (existing) {
       return Response.json({ error: `A theme with slug "${slug}" already exists.` }, { status: 400 });
     }
+
+        try {
+          revalidatePath("/", "layout");
+        } catch (err) {
+          console.error("[Admin API] Cache revalidation failed:", err);
+        }
+
 
     const { data: newTheme, error: insertError } = await supabase
       .from("themes")

@@ -13,8 +13,8 @@ export type ThemedIdea = {
   vendors: { business_name: string; slug: string; logo_url?: string | null };
 };
 
-export default function FeaturedThemesSection({ ideas }: { ideas?: ThemedIdea[] }) {
-  if (!ideas || ideas.length === 0) return null;
+export default function FeaturedThemesSection({ ideas = [], isLoading }: { ideas?: ThemedIdea[], isLoading?: boolean }) {
+  if (!isLoading && (!ideas || ideas.length === 0)) return null;
 
   return (
     <section id="featured-themes" className="mt-6 sm:mt-12">
@@ -46,7 +46,15 @@ export default function FeaturedThemesSection({ ideas }: { ideas?: ThemedIdea[] 
         transition={{ duration: 0.6, delay: 0.2, ease: EASE_OUT }}
         className="mt-4 sm:mt-8 max-w-5xl mx-auto py-4 sm:py-12 px-0"
       >
-        <InfiniteIdeaCarousel ideas={ideas} />
+        {isLoading ? (
+          <div className="flex gap-6 overflow-hidden px-5 sm:px-12 -mx-5 sm:-mx-12 py-12 -my-12 pointer-events-none">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="flex-shrink-0 aspect-[4/5] sm:aspect-[3/4] w-[calc(100vw-32px)] sm:w-[calc((100%-48px)/3)] rounded-2xl bg-black/5 animate-pulse" />
+            ))}
+          </div>
+        ) : (
+          <InfiniteIdeaCarousel ideas={ideas} />
+        )}
       </motion.div>
 
       <motion.div

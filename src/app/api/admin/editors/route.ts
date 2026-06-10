@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createSupabaseAdminClient } from "../../../../lib/supabaseAdmin";
 import { assertSuperadminOnly } from "../../../../lib/editorAuth";
+import { revalidatePath } from "next/cache";
 
 export async function GET(req: Request) {
   try {
@@ -154,6 +155,13 @@ export async function POST(req: Request) {
     }
 
     // Fetch user data for response
+
+        try {
+          revalidatePath("/", "layout");
+        } catch (err) {
+          console.error("[Admin API] Cache revalidation failed:", err);
+        }
+
     let userEmail = users[0].email ?? null;
     let userName = null;
     try {
@@ -208,6 +216,13 @@ export async function DELETE(req: Request) {
     if (!id) {
       return NextResponse.json({ error: "Editor ID is required" }, { status: 400 });
     }
+
+        try {
+          revalidatePath("/", "layout");
+        } catch (err) {
+          console.error("[Admin API] Cache revalidation failed:", err);
+        }
+
 
     const { error } = await supabase
       .from("editors")

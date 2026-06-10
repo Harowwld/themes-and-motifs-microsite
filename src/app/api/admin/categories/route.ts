@@ -1,5 +1,6 @@
 import { createSupabaseAdminClient } from "../../../../lib/supabaseAdmin";
 import { assertAdminOrEditorRequest } from "../../../../lib/editorAuth";
+import { revalidatePath } from "next/cache";
 
 // GET - fetch all categories
 export async function GET(req: Request) {
@@ -42,6 +43,13 @@ export async function DELETE(req: Request) {
 
     // Delete the category
     const { error } = await supabase.from("categories").delete().eq("id", categoryId);
+
+        try {
+          revalidatePath("/", "layout");
+        } catch (err) {
+          console.error("[Admin API] Cache revalidation failed:", err);
+        }
+
 
     if (error) {
       return Response.json({ error: error.message }, { status: 500 });
@@ -95,6 +103,13 @@ export async function POST(req: Request) {
       .single();
 
     if (insertError) return Response.json({ error: insertError.message }, { status: 500 });
+
+        try {
+          revalidatePath("/", "layout");
+        } catch (err) {
+          console.error("[Admin API] Cache revalidation failed:", err);
+        }
+
 
     return Response.json({ success: true, category: newCategory }, { status: 201 });
   } catch (e: any) {
@@ -150,6 +165,13 @@ export async function PUT(req: Request) {
       .single();
 
     if (updateError) return Response.json({ error: updateError.message }, { status: 500 });
+
+        try {
+          revalidatePath("/", "layout");
+        } catch (err) {
+          console.error("[Admin API] Cache revalidation failed:", err);
+        }
+
 
     return Response.json({ success: true, category: updatedCategory }, { status: 200 });
   } catch (e: any) {

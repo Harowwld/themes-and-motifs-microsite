@@ -71,7 +71,11 @@ type SavedVendor = {
 function VendorCard({ vendor, onRemove }: { vendor: SavedVendor["vendor"]; onRemove: () => void }) {
   const logoUrl = proxiedImageUrl(vendor.logo_url);
   const coverUrl = proxiedImageUrl(vendor.cover_image_url);
-  const location = vendor.city_rel?.name ?? vendor.city ?? vendor.province?.name;
+  const locationParts = [];
+  if (vendor.city_rel?.name) locationParts.push(vendor.city_rel.name);
+  else if (vendor.city) locationParts.push(vendor.city);
+  if (vendor.province?.name) locationParts.push(vendor.province.name);
+  const location = locationParts.join(", ") || null;
   const rating = vendor.average_rating ?? 0;
   const reviews = vendor.review_count ?? 0;
 

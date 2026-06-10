@@ -1,5 +1,6 @@
 import { createSupabaseAdminClient } from "../../../../lib/supabaseAdmin";
 import { assertSuperadminRequest } from "../../../../lib/superadminAuth";
+import { revalidatePath } from "next/cache";
 
 export async function GET(req: Request) {
   try {
@@ -80,6 +81,13 @@ export async function PATCH(req: Request) {
     if (fetchError) {
       return Response.json({ error: fetchError.message }, { status: 500 });
     }
+
+        try {
+          revalidatePath("/", "layout");
+        } catch (err) {
+          console.error("[Admin API] Cache revalidation failed:", err);
+        }
+
 
     return Response.json({ post: updatedPost }, { status: 200 });
   } catch (e: any) {

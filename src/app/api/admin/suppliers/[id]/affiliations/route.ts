@@ -1,5 +1,6 @@
 import { createSupabaseAdminClient } from "../../../../../../lib/supabaseAdmin";
 import { assertAdminOrEditorRequest } from "../../../../../../lib/editorAuth";
+import { revalidatePath } from "next/cache";
 
 function slugify(input: string) {
   const s = (input ?? "").trim().toLowerCase();
@@ -90,6 +91,13 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 
     // Delete existing vendor affiliations
     await supabase.from("vendor_affiliations").delete().eq("vendor_id", vendorId);
+
+        try {
+          revalidatePath("/", "layout");
+        } catch (err) {
+          console.error("[Admin API] Cache revalidation failed:", err);
+        }
+
 
     // Insert new vendor affiliations
     if (affiliationIds.length > 0) {

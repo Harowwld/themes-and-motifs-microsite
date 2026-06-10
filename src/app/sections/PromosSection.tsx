@@ -24,7 +24,7 @@ type FeaturedPromo = {
 
 const EASE_OUT = [0.23, 1, 0.32, 1] as [number, number, number, number];
 
-export default function PromosSection({ promos }: { promos: FeaturedPromo[] }) {
+export default function PromosSection({ promos = [], isLoading }: { promos?: FeaturedPromo[], isLoading?: boolean }) {
   return (
     <section id="promos" className="mt-6 sm:mt-20">
       <div className="text-center">
@@ -55,7 +55,15 @@ export default function PromosSection({ promos }: { promos: FeaturedPromo[] }) {
         transition={{ duration: 0.6, delay: 0.2, ease: EASE_OUT }}
         className="mt-4 sm:mt-8 max-w-5xl mx-auto py-4 sm:py-12 px-0"
       >
-        <InfinitePromoCarousel promos={promos} />
+        {isLoading ? (
+          <div className="flex gap-6 overflow-hidden px-5 sm:px-12 -mx-5 sm:-mx-12 py-12 -my-12 pointer-events-none">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="flex-shrink-0 aspect-[3/4] w-[calc((100vw-64px)/2)] sm:w-[calc((100%-48px)/3)] rounded-[12px] bg-black/5 animate-pulse" />
+            ))}
+          </div>
+        ) : (
+          <InfinitePromoCarousel promos={promos} />
+        )}
       </motion.div>
 
       <motion.div
