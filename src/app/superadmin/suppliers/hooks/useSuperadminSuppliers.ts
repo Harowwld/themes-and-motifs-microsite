@@ -17,7 +17,8 @@ export type Vendor = {
   plan?: { id: number; name: string } | { id: number; name: string }[] | null;
   user_id?: string;
   description?: string | null;
-  location_text?: string | null;
+  province_id?: number | null;
+  city_id?: number | null;
   city?: string | null;
   address?: string | null;
   contact_email?: string | null;
@@ -143,7 +144,7 @@ export function useSuperadminSuppliers() {
 
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);
   const [regions, setRegions] = useState<{id: number, name: string}[]>([]);
-  const [cities, setCities] = useState<{id: number, name: string, region_id: number}[]>([]);
+  const [cities, setCities] = useState<{id: number, name: string, province_id: number}[]>([]);
 
   // Edit modal state
   const [editingVendor, setEditingVendor] = useState<Vendor | null>(null);
@@ -155,7 +156,8 @@ export function useSuperadminSuppliers() {
     business_name: "",
     slug: "",
     description: "",
-    location_text: "",
+    province_id: null as number | null,
+    city_id: null as number | null,
     city: "",
     address: "",
     contact_email: "",
@@ -226,9 +228,9 @@ export function useSuperadminSuppliers() {
 
       if (regions.length === 0) {
         Promise.all([
-          supabase.from("regions").select("id,name").is("parent_id", null).order("name", { ascending: true }).limit(200),
-          supabase.from("cities").select("id,name,region_id").order("name", { ascending: true }).range(0, 999),
-          supabase.from("cities").select("id,name,region_id").order("name", { ascending: true }).range(1000, 1999)
+          supabase.from("provinces").select("id,name").order("name", { ascending: true }).limit(200),
+          supabase.from("cities").select("id,name,province_id").order("name", { ascending: true }).range(0, 999),
+          supabase.from("cities").select("id,name,province_id").order("name", { ascending: true }).range(1000, 1999)
         ]).then(([regionsRes, cities1Res, cities2Res]) => {
           setRegions(regionsRes.data ?? []);
           setCities([...(cities1Res.data ?? []), ...(cities2Res.data ?? [])]);
@@ -325,7 +327,8 @@ export function useSuperadminSuppliers() {
         business_name: v.business_name ?? "",
         slug: v.slug ?? "",
         description: v.description ?? "",
-        location_text: v.location_text ?? "",
+        province_id: v.province_id ?? null,
+        city_id: v.city_id ?? null,
         city: v.city ?? "",
         address: v.address ?? "",
         contact_email: v.contact_email ?? "",
@@ -446,7 +449,8 @@ export function useSuperadminSuppliers() {
           business_name: editForm.business_name,
           slug: editForm.slug,
           description: editForm.description,
-          location_text: editForm.location_text || null,
+          province_id: editForm.province_id,
+          city_id: editForm.city_id,
           city: editForm.city || null,
           address: editForm.address || null,
           contact_email: editForm.contact_email || null,

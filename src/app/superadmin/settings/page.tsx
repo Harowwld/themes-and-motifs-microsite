@@ -36,7 +36,6 @@ const TABLE_FIELDS: Record<TableName, TableField[]> = {
   ],
   regions: [
     { key: "name", label: "Name", type: "text", required: true, width: "260px" },
-    { key: "parent_id", label: "Parent ID", type: "number", width: "180px" },
   ],
   affiliations: [
     { key: "name", label: "Name", type: "text", required: true, width: "260px" },
@@ -74,7 +73,6 @@ export default function SuperadminSettingsPage() {
   const [createFeatures, setCreateFeatures] = useState<string>("");
   const [createIcon, setCreateIcon] = useState<string>("");
   const [createDisplayOrder, setCreateDisplayOrder] = useState<string>("");
-  const [createParentId, setCreateParentId] = useState<string>("");
   const [createSaving, setCreateSaving] = useState(false);
 
   const [pwCurrent, setPwCurrent] = useState("");
@@ -182,7 +180,6 @@ export default function SuperadminSettingsPage() {
     setCreateFeatures("");
     setCreateIcon("");
     setCreateDisplayOrder("");
-    setCreateParentId("");
   }, [table]);
 
   const filtered = useMemo(() => {
@@ -219,7 +216,6 @@ export default function SuperadminSettingsPage() {
       if (f.key === "features") data.features = createFeatures;
       if (f.key === "icon") data.icon = createIcon;
       if (f.key === "display_order") data.display_order = createDisplayOrder;
-      if (f.key === "parent_id") data.parent_id = createParentId;
     }
 
     for (const f of TABLE_FIELDS[table]) {
@@ -276,7 +272,6 @@ export default function SuperadminSettingsPage() {
       setCreateFeatures("");
       setCreateIcon("");
       setCreateDisplayOrder("");
-      setCreateParentId("");
       toast.success("Row created successfully.");
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed to create row.");
@@ -476,14 +471,6 @@ export default function SuperadminSettingsPage() {
                       <label key={f.key} className="grid gap-1.5">
                         <span className="text-[12px] font-semibold text-black/55">{f.label}</span>
                         <input value={createDisplayOrder} onChange={(e) => setCreateDisplayOrder(e.target.value)} className={common} placeholder="0" />
-                      </label>
-                    );
-                  }
-                  if (f.key === "parent_id") {
-                    return (
-                      <label key={f.key} className="grid gap-1.5">
-                        <span className="text-[12px] font-semibold text-black/55">{f.label}</span>
-                        <input value={createParentId} onChange={(e) => setCreateParentId(e.target.value)} className={common} placeholder="(optional)" />
                       </label>
                     );
                   }

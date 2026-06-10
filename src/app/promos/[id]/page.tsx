@@ -14,7 +14,8 @@ type Vendor = {
   logo_url: string | null;
   description: string | null;
   city: string | null;
-  location_text: string | null;
+  province: { name: string } | null;
+  city_rel: { name: string } | null;
   contact_email: string | null;
   contact_phone: string | null;
   website_url: string | null;
@@ -86,7 +87,7 @@ export default async function PromoDetailPage({ params }: Props) {
     .from("promos")
     .select(
       `id,title,summary,terms,valid_from,valid_to,image_url,discount_percentage,image_focus_x,image_focus_y,image_zoom,is_active,created_at,
-      vendor:vendor_id(id,business_name,slug,logo_url,description,city,location_text,contact_email,contact_phone,website_url)`
+      vendor:vendor_id(id,business_name,slug,logo_url,description,city,province:provinces(name),city_rel:cities(name),contact_email,contact_phone,website_url)`
     )
     .eq("id", id)
     .eq("is_active", true)
@@ -109,7 +110,7 @@ export default async function PromoDetailPage({ params }: Props) {
 
   const vendorRaw = promo.vendor;
   const vendor = Array.isArray(vendorRaw) ? vendorRaw[0] ?? null : vendorRaw;
-  const location = vendor?.city ?? vendor?.location_text;
+  const location = vendor?.city_rel?.name ?? vendor?.city ?? vendor?.province?.name;
 
   return (
     <div style={{ background: "#fafafa" }}>
@@ -131,7 +132,7 @@ export default async function PromoDetailPage({ params }: Props) {
                   {/* Promo Badge */}
                   <div className="absolute top-0 left-0 z-10">
                     <div className="bg-[#c17a4e] text-white text-[12px] font-bold px-4 py-1.5 rounded-br-xl">
-                      EXCLUSIVE PROMO
+                      {vendor?.business_name || "EXCLUSIVE PROMO"}
                     </div>
                   </div>
 
@@ -327,7 +328,7 @@ async function MorePromos({ currentId }: { currentId: number }) {
   const { data: promosData } = await supabase
     .from("promos")
     .select(
-      "id,title,summary,valid_from,valid_to,image_url,discount_percentage,image_focus_x,image_focus_y,image_zoom,vendor:vendor_id(id,business_name,slug,logo_url,city,location_text)"
+      "id,title,summary,valid_from,valid_to,image_url,discount_percentage,image_focus_x,image_focus_y,image_zoom,vendor:vendor_id(id,business_name,slug,logo_url,city,province:provinces(name),city_rel:cities(name))"
     )
     .eq("is_active", true)
     .neq("id", currentId)
@@ -364,7 +365,7 @@ async function MorePromos({ currentId }: { currentId: number }) {
           >
             <div className="absolute top-0 left-0 z-10">
               <div className="bg-[#c17a4e] text-white text-[10px] font-bold px-2.5 py-0.5 rounded-br-xl">
-                PROMO
+                {vendorName || "PROMO"}
               </div>
             </div>
 

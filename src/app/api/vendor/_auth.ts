@@ -26,7 +26,7 @@ export async function getVendorForUser(supabase: ReturnType<typeof createSupabas
   const { data, error } = await supabase
     .from("vendors")
     .select(
-      "id,user_id,business_name,slug,logo_url,description,location_text,region_id,city,address,contact_email,contact_phone,website_url,plan_id,is_active,document_verified,cover_focus_x,cover_focus_y,cover_zoom,card_cover_focus_x,card_cover_focus_y,card_cover_zoom,portrait_cover_focus_x,portrait_cover_focus_y,portrait_cover_zoom,year_established,view_count,save_count,click_count,inquiry_count,average_rating,review_count,plan:plans(id,name)"
+      "id,user_id,business_name,slug,logo_url,description,province_id,city_id,province:provinces(name),city_rel:cities(name),city,address,contact_email,contact_phone,website_url,plan_id,is_active,document_verified,cover_focus_x,cover_focus_y,cover_zoom,card_cover_focus_x,card_cover_focus_y,card_cover_zoom,portrait_cover_focus_x,portrait_cover_focus_y,portrait_cover_zoom,year_established,view_count,save_count,click_count,inquiry_count,average_rating,review_count,plan:plans(id,name)"
     )
     .eq("user_id", userId)
     .maybeSingle();

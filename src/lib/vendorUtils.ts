@@ -8,7 +8,7 @@ export type SortKey = "alpha" | "rating" | "newest" | "saves" | "views" | "verif
 export const getCachedVendorLocations = unstable_cache(
   async () => {
     const supabase = createSupabaseServerClient();
-    const { data } = await supabase.from("vendors").select("region_id,city,location_text").eq("is_active", true).limit(5000);
+    const { data } = await supabase.from("vendors").select("province_id,city,province:provinces(name),city_rel:cities(name)").eq("is_active", true).limit(5000);
     return data ?? [];
   },
   ["vendor-locations-v5"],
@@ -22,8 +22,9 @@ export type VendorWithSortFields = {
   logo_url: string | null;
   average_rating: number | null;
   review_count: number | null;
-  location_text: string | null;
   city: string | null;
+  province: { name: string } | null;
+  city_rel: { name: string } | null;
   cover_focus_x: number | null;
   cover_focus_y: number | null;
   cover_zoom: number | null;

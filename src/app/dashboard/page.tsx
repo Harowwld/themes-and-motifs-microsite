@@ -57,7 +57,8 @@ type SavedVendor = {
     cover_focus_y: number | null;
     cover_zoom: number | null;
     city: string | null;
-    location_text: string | null;
+    province: { name: string } | null;
+    city_rel: { name: string } | null;
     average_rating: number | null;
     review_count: number | null;
     starting_price: number | null;
@@ -70,7 +71,7 @@ type SavedVendor = {
 function VendorCard({ vendor, onRemove }: { vendor: SavedVendor["vendor"]; onRemove: () => void }) {
   const logoUrl = proxiedImageUrl(vendor.logo_url);
   const coverUrl = proxiedImageUrl(vendor.cover_image_url);
-  const location = vendor.city ?? vendor.location_text;
+  const location = vendor.city_rel?.name ?? vendor.city ?? vendor.province?.name;
   const rating = vendor.average_rating ?? 0;
   const reviews = vendor.review_count ?? 0;
 

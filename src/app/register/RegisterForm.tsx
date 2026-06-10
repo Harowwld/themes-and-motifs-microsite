@@ -6,14 +6,14 @@ import { ImageUploadDropzone } from "@/components/ImageUploadDropzone";
 import type { UploadResult } from "@/hooks/useImageUpload";
 
 type Category = { id: number; name: string; slug: string };
-type Region = { id: number; name: string };
-type City = { id: number; name: string; region_id: number };
+type Province = { id: number; name: string };
+type City = { id: number; name: string; province_id: number };
 type Plan = { id: number; name: string };
 type Affiliation = { id: number; name: string; slug: string };
 
 type Props = {
   categories: Category[];
-  regions: Region[];
+  provinces: Province[];
   cities: City[];
   plans: Plan[];
   affiliations: Affiliation[];
@@ -32,7 +32,7 @@ type FormState = {
   tin: string;
   coverPhotoUrl: string;
   logoUrl: string;
-  regionId: string;
+  provinceId: string;
   city: string;
   address: string;
   contactPerson: string;
@@ -63,7 +63,7 @@ const initialState: FormState = {
   tin: "",
   coverPhotoUrl: "",
   logoUrl: "",
-  regionId: "",
+  provinceId: "",
   city: "",
   address: "",
   contactPerson: "",
@@ -84,7 +84,7 @@ const initialState: FormState = {
 
 
 
-export default function RegisterForm({ categories, regions, cities, plans, affiliations, preselectedPlan }: Props) {
+export default function RegisterForm({ categories, provinces, cities, plans, affiliations, preselectedPlan }: Props) {
   const router = useRouter();
   const formRef = useRef<HTMLDivElement>(null);
   const [form, setForm] = useState<FormState>({
@@ -107,16 +107,16 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
 
   const cityOptions = useMemo(() => {
     const base = cities ?? [];
-    // Only filter by region if a specific region is selected (not empty string)
-    if (!form.regionId || form.regionId === "") {
+    // Only filter by province if a specific province is selected (not empty string)
+    if (!form.provinceId || form.provinceId === "") {
       return base.slice().sort((a, b) => a.name.localeCompare(b.name));
     }
-    const regionIdNum = Number(form.regionId);
-    const filtered = Number.isFinite(regionIdNum) && regionIdNum > 0
-      ? base.filter((c) => c.region_id === regionIdNum)
+    const provinceIdNum = Number(form.provinceId);
+    const filtered = Number.isFinite(provinceIdNum) && provinceIdNum > 0
+      ? base.filter((c) => c.province_id === provinceIdNum)
       : base;
     return filtered.slice().sort((a, b) => a.name.localeCompare(b.name));
-  }, [cities, form.regionId]);
+  }, [cities, form.provinceId]);
 
   const affiliationOptions = useMemo(() => {
     return (affiliations ?? []).slice().sort((a, b) => a.name.localeCompare(b.name));
@@ -154,7 +154,7 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
     if (!form.tin.trim()) errors.add("tin");
     if (!form.contactPerson.trim()) errors.add("contactPerson");
     if (!form.address.trim()) errors.add("address");
-    if (!form.regionId) errors.add("regionId");
+    if (!form.provinceId) errors.add("provinceId");
     if (!form.city) errors.add("city");
     if (!form.description.trim()) errors.add("description");
     if (form.description.trim().length > 500) errors.add("description");
@@ -197,7 +197,7 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
           planId: form.planId,
           description: form.description,
           location: {
-            regionId: form.regionId,
+            provinceId: form.provinceId,
             city: form.city,
             address: form.address,
           },
@@ -389,26 +389,26 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
           />
         </Field>
 
-        <Field id="field-regionId" label="Region">
+        <Field id="field-provinceId" label="Province">
           <select
             className={`h-11 w-full rounded-lg border px-3 text-[14px] bg-white font-[family-name:var(--font-plus-jakarta)] ${
-              fieldErrors.has("regionId")
+              fieldErrors.has("provinceId")
                 ? "border-red-500 bg-red-50"
-                : form.regionId
+                : form.provinceId
                   ? "text-[#2c2c2c] border-black/10"
                   : "text-black/55 border-black/10"
             }`}
-            value={form.regionId}
+            value={form.provinceId}
             onChange={(e) => {
               const next = e.target.value;
-              set("regionId", next);
+              set("provinceId", next);
               set("city", "");
             }}
           >
             <option value="">Select</option>
-            {regions.map((r) => (
-              <option key={r.id} value={String(r.id)}>
-                {r.name}
+            {provinces.map((p) => (
+              <option key={p.id} value={String(p.id)}>
+                {p.name}
               </option>
             ))}
           </select>
@@ -430,8 +430,8 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
               
               setForm(prev => {
                 const next = { ...prev, city: cityName };
-                if (selectedCity?.region_id) {
-                  next.regionId = String(selectedCity.region_id);
+                if (selectedCity?.province_id) {
+                  next.provinceId = String(selectedCity.province_id);
                 }
                 return next;
               });
@@ -439,8 +439,8 @@ export default function RegisterForm({ categories, regions, cities, plans, affil
               setFieldErrors(prev => {
                 const next = new Set(prev);
                 next.delete("city");
-                if (selectedCity?.region_id) {
-                  next.delete("regionId");
+                if (selectedCity?.province_id) {
+                  next.delete("provinceId");
                 }
                 return next;
               });

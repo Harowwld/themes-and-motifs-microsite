@@ -20,15 +20,18 @@ const FIELD_VALIDATORS: Record<string, (val: unknown) => { valid: boolean; value
     if (val.length > 5000) return { valid: false, error: "description must be under 5000 characters" };
     return { valid: true, value: val.trim() };
   },
-  location_text: (val) => {
-    if (typeof val !== "string" && val !== null) return { valid: false, error: "location_text must be a string or null" };
-    if (typeof val === "string" && val.length > 200) return { valid: false, error: "location_text must be under 200 characters" };
-    return { valid: true, value: val === null ? null : val.trim() };
-  },
   city: (val) => {
     if (typeof val !== "string" && val !== null) return { valid: false, error: "city must be a string or null" };
     if (typeof val === "string" && val.length > 100) return { valid: false, error: "city must be under 100 characters" };
     return { valid: true, value: val === null ? null : val.trim() };
+  },
+  province_id: (val) => {
+    if (typeof val !== "number" && val !== null) return { valid: false, error: "province_id must be a number or null" };
+    return { valid: true, value: val };
+  },
+  city_id: (val) => {
+    if (typeof val !== "number" && val !== null) return { valid: false, error: "city_id must be a number or null" };
+    return { valid: true, value: val };
   },
   address: (val) => {
     if (typeof val !== "string" && val !== null) return { valid: false, error: "address must be a string or null" };

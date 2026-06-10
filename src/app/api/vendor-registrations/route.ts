@@ -16,7 +16,7 @@ type RegistrationPayload = {
   planId?: string;
   description?: string;
   location?: {
-    regionId?: string;
+    provinceId?: string;
     city?: string;
     address?: string;
   };
@@ -77,7 +77,7 @@ export async function POST(req: Request) {
   const locationStr = [
     body.location?.address,
     body.location?.city,
-    body.location?.regionId ? `region_id:${body.location.regionId}` : undefined,
+    body.location?.provinceId ? `province_id:${body.location.provinceId}` : undefined,
   ]
     .map((v) => (v ?? "").trim())
     .filter(Boolean)

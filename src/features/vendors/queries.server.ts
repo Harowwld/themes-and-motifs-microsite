@@ -35,6 +35,7 @@ export type VendorsQueryFilters = {
   category?: string;
   location?: string;
   region?: string;
+  city?: string;
   affiliation?: string;
   theme?: string;
 };
@@ -46,8 +47,9 @@ type SearchVendorsRow = {
   logo_url: string | null;
   average_rating: number | null;
   review_count: number | null;
-  location_text: string | null;
   city: string | null;
+  province: { name: string } | null;
+  city_rel: { name: string } | null;
   cover_focus_x: number | null;
   cover_focus_y: number | null;
   cover_zoom: number | null;
@@ -88,6 +90,7 @@ export async function buildVendorsQuery({
   const category = (filters.category ?? "").trim();
   const location = (filters.location ?? "").trim();
   const region = (filters.region ?? "").trim();
+  const city = (filters.city ?? "").trim();
   const affiliation = (filters.affiliation ?? "").trim();
   const theme = (filters.theme ?? "").trim();
 
@@ -97,6 +100,7 @@ export async function buildVendorsQuery({
   const fromI = Math.max(0, from ?? 0);
   const toI = Math.max(fromI, to ?? fromI + 59);
   const regionId = region ? Number(region) : NaN;
+  const cityId = city ? Number(city) : NaN;
 
   const { data, error } = await supabase.rpc("search_vendors", {
     p_q: safeQ || null,
@@ -104,7 +108,8 @@ export async function buildVendorsQuery({
     p_affiliation_slug: affiliation || null,
     p_theme_slug: theme || null,
     p_location: safeLocation || null,
-    p_region_id: Number.isFinite(regionId) ? regionId : null,
+    p_province_id: Number.isFinite(regionId) ? regionId : null,
+    p_city_id: Number.isFinite(cityId) ? cityId : null,
     p_sort: sort,
     p_from: fromI,
     p_to: toI,

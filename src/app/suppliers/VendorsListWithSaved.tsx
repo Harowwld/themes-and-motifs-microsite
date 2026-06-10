@@ -17,6 +17,7 @@ interface Props {
     q: string;
     category: string;
     location: string;
+    city: string;
     region: string;
     affiliation: string;
     theme: string;

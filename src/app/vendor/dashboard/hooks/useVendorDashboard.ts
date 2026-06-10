@@ -44,7 +44,8 @@ export function useVendorDashboard() {
     business_name: "",
     logo_url: "",
     description: "",
-    location_text: "",
+    province_id: null as number | null,
+    city_id: null as number | null,
     city: "",
     address: "",
     website_url: "",
@@ -94,7 +95,7 @@ export function useVendorDashboard() {
   const [allCategories, setAllCategories] = useState<Category[]>([]);
 
   const [regions, setRegions] = useState<{id: number, name: string}[]>([]);
-  const [cities, setCities] = useState<{id: number, name: string, region_id: number}[]>([]);
+  const [cities, setCities] = useState<{id: number, name: string, province_id: number}[]>([]);
 
   const [albums, setAlbums] = useState<Album[]>([]);
   const [selectedAlbum, setSelectedAlbum] = useState<Album | null>(null);
@@ -181,13 +182,13 @@ export function useVendorDashboard() {
 
           const regionsPromise = cachedRegions 
             ? Promise.resolve({ data: cachedRegions }) 
-            : supabase.from("regions").select("id,name").is("parent_id", null).order("name", { ascending: true }).limit(200);
+            : supabase.from("provinces").select("id,name").order("name", { ascending: true }).limit(200);
 
           const citiesPromise = cachedCities
             ? Promise.resolve({ data: cachedCities })
             : Promise.all([
-                supabase.from("cities").select("id,name,region_id").order("name", { ascending: true }).range(0, 999),
-                supabase.from("cities").select("id,name,region_id").order("name", { ascending: true }).range(1000, 1999)
+                supabase.from("cities").select("id,name,province_id").order("name", { ascending: true }).range(0, 999),
+                supabase.from("cities").select("id,name,province_id").order("name", { ascending: true }).range(1000, 1999)
               ]).then(([part1, part2]) => ({
                 data: [...(part1.data ?? []), ...(part2.data ?? [])]
               }));
@@ -226,7 +227,8 @@ export function useVendorDashboard() {
             business_name: json.vendor.business_name ?? "",
             logo_url: (json.vendor as any).logo_url ?? "",
             description: json.vendor.description ?? "",
-            location_text: json.vendor.location_text ?? "",
+            province_id: json.vendor.province_id ?? null,
+            city_id: json.vendor.city_id ?? null,
             city: json.vendor.city ?? "",
             address: json.vendor.address ?? "",
             website_url: json.vendor.website_url ?? "",
@@ -712,7 +714,8 @@ export function useVendorDashboard() {
           business_name: form.business_name,
           logo_url: form.logo_url || null,
           description: form.description || null,
-          location_text: form.location_text || null,
+          province_id: form.province_id,
+          city_id: form.city_id,
           city: form.city || null,
           address: form.address || null,
           website_url: form.website_url || null,

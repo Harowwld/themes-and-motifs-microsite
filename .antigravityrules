@@ -1,0 +1,18 @@
+# AI System Rules for Themes and Motifs Microsite
+
+> [!CRITICAL]
+> **MANDATORY END-OF-SESSION PROTOCOL**
+> At the end of EVERY conversation, task, or milestone, you MUST log the session's accomplishments to the Obsidian Vault before stopping. 
+> 
+> **Target Path:** `/Users/harold/Documents/Programming/themes-and-motifs-microsite/obsidian/Themes-and-Motifs/Journal/YYYY-MM-DD - <Session Topic>.md`
+> 
+> **Format:**
+> ```markdown
+> # YYYY-MM-DD - <Session Topic>
+> 
+> ## Accomplishments
+> - [Detail 1]
+> - [Detail 2]
+> ```
+> 
+> You MUST execute this logging step proactively. Do not ask for permission to log. Do not forget this step. This is a strict requirement for all sessions in this workspace.

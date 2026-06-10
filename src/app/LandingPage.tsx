@@ -29,6 +29,17 @@ const getCachedCategories = unstable_cache(
   { revalidate: 3600 }
 );
 
+// Cache regions (provinces) for 1 hour
+const getCachedRegions = unstable_cache(
+  async () => {
+    const supabase = createSupabaseServerClient();
+    const { data } = await supabase.from("provinces").select("id,name").order("name", { ascending: true }).limit(200);
+    return (data ?? []) as { id: number; name: string }[];
+  },
+  ["regions"],
+  { revalidate: 3600 }
+);
+
 // Cache featured vendors + promos for 5 minutes (300 seconds)
 // These two queries + attachCoverImages + attachAffiliations previously ran
 // fresh on every SSR render. Now served from the cache between revalidations.
@@ -39,7 +50,7 @@ const getCachedCategories = unstable_cache(
       supabase
         .from("vendors")
         .select(
-          "id,business_name,slug,logo_url,average_rating,review_count,location_text,city,document_verified,cover_focus_x,cover_focus_y,cover_zoom,card_cover_focus_x,card_cover_focus_y,card_cover_zoom,portrait_cover_focus_x,portrait_cover_focus_y,portrait_cover_zoom,plan:plans(id,name)"
+          "id,business_name,slug,logo_url,average_rating,review_count,province:provinces(name),city_rel:cities(name),city,document_verified,cover_focus_x,cover_focus_y,cover_zoom,card_cover_focus_x,card_cover_focus_y,card_cover_zoom,portrait_cover_focus_x,portrait_cover_focus_y,portrait_cover_zoom,plan:plans(id,name)"
         )
         .eq("is_active", true)
         .eq("is_featured", true),
@@ -53,13 +64,13 @@ const getCachedCategories = unstable_cache(
         .limit(20),
       supabase
         .from("vendor_images")
-        .select("id, image_url, caption, themes!inner(id, name, slug), vendors!inner(business_name, slug)")
+        .select("id, image_url, caption, themes!inner(id, name, slug), vendors!inner(business_name, slug, logo_url)")
         .not("theme_id", "is", null)
         .order("created_at", { ascending: false })
         .limit(12),
     ]);
 
-    const vendors = (featuredVendors ?? []) as FeaturedVendor[];
+    const vendors = (featuredVendors ?? []) as unknown as FeaturedVendor[];
     const promos = (featuredPromos ?? []) as FeaturedPromo[];
 
     const [vendorsWithCovers, vendorsWithAffiliations] = await Promise.all([
@@ -145,20 +156,13 @@ export default async function LandingPage({
   const sort: SortKey = rawSort === "alpha" ? "alpha" : rawSort === "photos" ? "photos" : rawSort === "newest" ? "newest" : "rating";
 
   // Fetch data directly - cached so this is fast, no Suspense needed
-  const [categoriesData, locationRows] = await Promise.all([
+  const [categoriesData, regionsData] = await Promise.all([
     getCachedCategories(),
-    getCachedVendorLocations(),
+    getCachedRegions(),
   ]);
 
   const categories = categoriesData;
-  const locations = Array.from(
-    new Set(
-      (locationRows as { region_id: number | null; city: string | null; location_text: string | null }[])
-        .flatMap((r) => [r.city, r.location_text])
-        .map((v) => (v ?? "").trim())
-        .filter(Boolean)
-    )
-  ).sort((a, b) => a.localeCompare(b));
+  const regions = regionsData;
 
   return (
     <div
@@ -171,7 +175,7 @@ export default async function LandingPage({
       <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
         <main className="pt-6 pb-12 sm:py-14">
           {/* Top section - cached, no Suspense */}
-          <HeroSection categories={categories} locations={locations} />
+          <HeroSection categories={categories} regions={regions} />
           <CategoryBrowser categories={categories} />
 
           <div className="my-6 sm:my-12 h-px bg-gradient-to-r from-transparent via-black/15 to-transparent" />
@@ -228,55 +232,68 @@ async function LandingFeaturedDirect() {
   );
 }
 
-// Direct data fetching component for vendors section
-async function LandingVendorsDirect({ page, pageSize, sort }: { page: number; pageSize: number; sort: SortKey }) {
-  const supabase = createSupabaseServerClient();
+const getCachedVendorPage = unstable_cache(
+  async (page: number, pageSize: number, sort: SortKey) => {
+    const supabase = createSupabaseServerClient();
+    // Fetch up to 6 pages of data (current + 5 pages ahead) to allow instant client-side paging
+    const from = (page - 1) * pageSize;
+    const to = from + (pageSize * 6) - 1;
 
-  // Fetch up to 6 pages of data (current + 5 pages ahead) to allow instant client-side paging
-  const from = (page - 1) * pageSize;
-  const to = from + (pageSize * 6) - 1;
-
-  let q = supabase
-    .from("vendors")
-    .select(
-      "id,business_name,slug,logo_url,average_rating,review_count,location_text,city,document_verified,cover_focus_x,cover_focus_y,cover_zoom,card_cover_focus_x,card_cover_focus_y,card_cover_zoom,portrait_cover_focus_x,portrait_cover_focus_y,portrait_cover_zoom,plan:plans(id,name)",
-      { count: "exact" }
-    )
-    .eq("is_active", true);
-
-  if (sort === "alpha") {
-    q = q.order("business_name", { ascending: true }).order("id", { ascending: true });
-  } else if (sort === "photos") {
-    // Optimized: Use an inner join select to filter vendors that have a cover image in a single query
-    q = supabase
+    let q = supabase
       .from("vendors")
       .select(
-        "id,business_name,slug,logo_url,average_rating,review_count,location_text,city,document_verified,cover_focus_x,cover_focus_y,cover_zoom,card_cover_focus_x,card_cover_focus_y,card_cover_zoom,portrait_cover_focus_x,portrait_cover_focus_y,portrait_cover_zoom,plan:plans(id,name),vendor_images!inner(id)",
+        "id,business_name,slug,logo_url,average_rating,review_count,province:provinces(name),city_rel:cities(name),city,document_verified,cover_focus_x,cover_focus_y,cover_zoom,card_cover_focus_x,card_cover_focus_y,card_cover_zoom,portrait_cover_focus_x,portrait_cover_focus_y,portrait_cover_zoom,plan:plans(id,name)",
         { count: "exact" }
       )
-      .eq("is_active", true)
-      .eq("vendor_images.is_cover", true)
-      .order("business_name", { ascending: true })
-      .order("id", { ascending: true }) as any;
-  } else if (sort === "newest") {
-    q = q.order("created_at", { ascending: false }).order("id", { ascending: true });
-  } else {
-    q = q
-      .order("average_rating", { ascending: false, nullsFirst: false })
-      .order("review_count", { ascending: false, nullsFirst: false })
-      .order("business_name", { ascending: true })
-      .order("id", { ascending: true });
-  }
+      .eq("is_active", true);
 
-  q = q.range(from, to);
+    if (sort === "alpha") {
+      q = q.order("business_name", { ascending: true }).order("id", { ascending: true });
+    } else if (sort === "photos") {
+      // Optimized: Use an inner join select to filter vendors that have a cover image in a single query
+      q = supabase
+        .from("vendors")
+        .select(
+          "id,business_name,slug,logo_url,average_rating,review_count,province:provinces(name),city_rel:cities(name),city,document_verified,cover_focus_x,cover_focus_y,cover_zoom,card_cover_focus_x,card_cover_focus_y,card_cover_zoom,portrait_cover_focus_x,portrait_cover_focus_y,portrait_cover_zoom,plan:plans(id,name),vendor_images!inner(id)",
+          { count: "exact" }
+        )
+        .eq("is_active", true)
+        .eq("vendor_images.is_cover", true)
+        .order("business_name", { ascending: true })
+        .order("id", { ascending: true }) as any;
+    } else if (sort === "newest") {
+      q = q.order("created_at", { ascending: false }).order("id", { ascending: true });
+    } else {
+      q = q
+        .order("average_rating", { ascending: false, nullsFirst: false })
+        .order("review_count", { ascending: false, nullsFirst: false })
+        .order("business_name", { ascending: true })
+        .order("id", { ascending: true });
+    }
 
-  const { data: vendors, count: vendorTotal } = await q;
-  const vendorAllItems = (vendors ?? []) as VendorListItem[];
-  const vendorTotalCount = vendorTotal ?? 0;
+    q = q.range(from, to);
 
-  const allWithCovers = await attachCoverImages(supabase, vendorAllItems);
+    const { data: vendors, count: vendorTotal } = await q;
+    const vendorAllItems = (vendors ?? []) as unknown as VendorListItem[];
+    const vendorTotalCount = vendorTotal ?? 0;
+
+    const allWithCovers = await attachCoverImages(supabase, vendorAllItems);
+    
+    return {
+      vendorsWithCovers: allWithCovers,
+      vendorTotalCount
+    };
+  },
+  ["landing-vendors-page"],
+  { revalidate: 45 }
+);
+
+// Direct data fetching component for vendors section
+async function LandingVendorsDirect({ page, pageSize, sort }: { page: number; pageSize: number; sort: SortKey }) {
+  const { vendorsWithCovers, vendorTotalCount } = await getCachedVendorPage(page, pageSize, sort);
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const pageSorted = sortWithImagesFirst(allWithCovers as any);
+  const pageSorted = sortWithImagesFirst(vendorsWithCovers as any);
 
   return (
     <SavedVendorsProvider>

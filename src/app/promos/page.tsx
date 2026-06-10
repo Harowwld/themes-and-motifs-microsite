@@ -4,8 +4,8 @@ import { Metadata } from "next";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Exclusive Promos & Deals | Themes & Motifs",
-  description: "Browse exclusive, time-bound offers and discounts from our registered wedding suppliers and vendors.",
+  title: "The Wedding Marketplace | Themes & Motifs",
+  description: "Evaluate, inquire, or book exclusive deals and special offers from trusted wedding suppliers.",
 };
  
 import { createSupabaseServerClient } from "../../lib/supabaseServer";
@@ -31,7 +31,8 @@ type Promo = {
     slug: string;
     logo_url: string | null;
     city: string | null;
-    location_text: string | null;
+    province: { name: string } | null;
+    city_rel: { name: string } | null;
   }[];
 };
 
@@ -61,7 +62,8 @@ type MarketplaceItem = {
     slug: string;
     logo_url: string | null;
     city: string | null;
-    location_text: string | null;
+    province: { name: string } | null;
+    city_rel: { name: string } | null;
   }[];
 };
 
@@ -111,13 +113,13 @@ async function PromosList({ query }: { query: string }) {
   const { data: promosData } = await supabase
     .from("promos")
     .select(
-      "id,title,summary,terms,valid_from,valid_to,image_url,discount_percentage,image_focus_x,image_focus_y,image_zoom,is_active,vendors(id,business_name,slug,logo_url,city,location_text)"
+      "id,title,summary,terms,valid_from,valid_to,image_url,discount_percentage,image_focus_x,image_focus_y,image_zoom,is_active,vendors(id,business_name,slug,logo_url,city,province:provinces(name),city_rel:cities(name))"
     )
     .eq("is_active", true)
     .order("updated_at", { ascending: false })
     .limit(100);
 
-  let promos = ((promosData ?? []) as Promo[]).filter(isPromoCurrentlyValid);
+  let promos = ((promosData ?? []) as unknown as Promo[]).filter(isPromoCurrentlyValid);
 
   // Filter by search query
   if (query.trim()) {
@@ -155,7 +157,7 @@ async function PromosList({ query }: { query: string }) {
         const fx = clampPct(Number(promo.image_focus_x ?? 50));
         const fy = clampPct(Number(promo.image_focus_y ?? 50));
         const z = clampZoom(Number(promo.image_zoom ?? 1));
-        const location = vendor?.city ?? vendor?.location_text;
+        const location = vendor?.city_rel?.name ?? vendor?.city ?? vendor?.province?.name;
 
         return (
           <div
@@ -174,7 +176,7 @@ async function PromosList({ query }: { query: string }) {
               {/* Promo Badge */}
               <div className="absolute top-0 left-0 z-10">
                 <div className="bg-[#c17a4e] text-white text-[11px] font-bold px-3 py-1 rounded-br-xl">
-                  PROMO
+                  {vendorName || "PROMO"}
                 </div>
               </div>
 
@@ -270,13 +272,13 @@ async function MarketplaceList({ query }: { query: string }) {
   const { data: itemsData } = await supabase
     .from("marketplace_items")
     .select(
-      "id,title,summary,price,price_text,image_url,image_focus_x,image_focus_y,image_zoom,is_active,vendors(id,business_name,slug,logo_url,city,location_text)"
+      "id,title,summary,price,price_text,image_url,image_focus_x,image_focus_y,image_zoom,is_active,vendors(id,business_name,slug,logo_url,city,province:provinces(name),city_rel:cities(name))"
     )
     .eq("is_active", true)
     .order("updated_at", { ascending: false })
     .limit(100);
 
-  let items = ((itemsData ?? []) as MarketplaceItem[]);
+  let items = ((itemsData ?? []) as unknown as MarketplaceItem[]);
 
   if (query.trim()) {
     const q = query.trim().toLowerCase();
@@ -313,7 +315,7 @@ async function MarketplaceList({ query }: { query: string }) {
         const fx = clampPct(Number(item.image_focus_x ?? 50));
         const fy = clampPct(Number(item.image_focus_y ?? 50));
         const z = clampZoom(Number(item.image_zoom ?? 1));
-        const location = vendor?.city ?? vendor?.location_text;
+        const location = vendor?.city_rel?.name ?? vendor?.city ?? vendor?.province?.name;
 
         return (
           <div
@@ -418,17 +420,16 @@ export default async function PromosPage({
           <FadeInOnView>
             <div className="mb-8">
               <h1 className="text-[24px] sm:text-[28px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">
-                Exclusive Promos & Deals
+                The Wedding Marketplace
               </h1>
               <p className="mt-2 text-[14px] text-black/55 max-w-xl">
-                Browse time-bound offers from our wedding suppliers. These deals are perfect for
-                booking your preferred vendors at special rates.
+                Evaluate, inquire, or book exclusive deals and special offers from trusted wedding suppliers.
               </p>
             </div>
 
             <div className="flex items-center gap-6 border-b border-black/10 mb-8">
               <a href={`/promos?tab=promos${query ? `&q=${query}` : ""}`} className={`pb-3 text-[14px] tracking-wide uppercase transition-all duration-300 ${tab === 'promos' ? 'border-b-2 border-[#a67c52] text-[#a67c52] font-black' : 'border-b-2 border-transparent text-black/40 hover:text-black/60 font-bold'}`}>
-                Promos & Deals
+                Deals & Offers
               </a>
               <a href={`/promos?tab=marketplace${query ? `&q=${query}` : ""}`} className={`pb-3 text-[14px] tracking-wide uppercase transition-all duration-300 ${tab === 'marketplace' ? 'border-b-2 border-[#a67c52] text-[#a67c52] font-black' : 'border-b-2 border-transparent text-black/40 hover:text-black/60 font-bold'}`}>
                 Marketplace

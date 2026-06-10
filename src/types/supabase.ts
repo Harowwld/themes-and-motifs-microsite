@@ -186,26 +186,26 @@ export type Database = {
           created_at: string
           id: number
           name: string
-          region_id: number
+          province_id: number
         }
         Insert: {
           created_at?: string
           id?: number
           name: string
-          region_id: number
+          province_id: number
         }
         Update: {
           created_at?: string
           id?: number
           name?: string
-          region_id?: number
+          province_id?: number
         }
         Relationships: [
           {
-            foreignKeyName: "cities_region_id_fkey"
-            columns: ["region_id"]
+            foreignKeyName: "cities_province_id_fkey"
+            columns: ["province_id"]
             isOneToOne: false
-            referencedRelation: "regions"
+            referencedRelation: "provinces"
             referencedColumns: ["id"]
           },
         ]
@@ -373,6 +373,87 @@ export type Database = {
           },
         ]
       }
+      island_groups: {
+        Row: {
+          created_at: string
+          id: number
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          name: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          name?: string
+        }
+        Relationships: []
+      }
+      marketplace_items: {
+        Row: {
+          created_at: string
+          id: number
+          image_focus_x: number | null
+          image_focus_y: number | null
+          image_url: string | null
+          image_zoom: number | null
+          is_active: boolean | null
+          price: number
+          price_text: string | null
+          summary: string | null
+          title: string
+          updated_at: string
+          vendor_id: number
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          image_focus_x?: number | null
+          image_focus_y?: number | null
+          image_url?: string | null
+          image_zoom?: number | null
+          is_active?: boolean | null
+          price: number
+          price_text?: string | null
+          summary?: string | null
+          title: string
+          updated_at?: string
+          vendor_id: number
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          image_focus_x?: number | null
+          image_focus_y?: number | null
+          image_url?: string | null
+          image_zoom?: number | null
+          is_active?: boolean | null
+          price?: number
+          price_text?: string | null
+          summary?: string | null
+          title?: string
+          updated_at?: string
+          vendor_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_items_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_details"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_items_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       moment_photos: {
         Row: {
           caption: string | null
@@ -513,31 +594,60 @@ export type Database = {
           },
         ]
       }
-      regions: {
+      provinces: {
         Row: {
           created_at: string
           id: number
           name: string
-          parent_id: number | null
+          region_id: number | null
         }
         Insert: {
           created_at?: string
           id?: number
           name: string
-          parent_id?: number | null
+          region_id?: number | null
         }
         Update: {
           created_at?: string
           id?: number
           name?: string
-          parent_id?: number | null
+          region_id?: number | null
         }
         Relationships: [
           {
-            foreignKeyName: "regions_parent_id_fkey"
-            columns: ["parent_id"]
+            foreignKeyName: "provinces_region_id_fkey"
+            columns: ["region_id"]
             isOneToOne: false
             referencedRelation: "regions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      regions: {
+        Row: {
+          created_at: string
+          id: number
+          island_group_id: number | null
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          island_group_id?: number | null
+          name: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          island_group_id?: number | null
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "regions_island_group_id_fkey"
+            columns: ["island_group_id"]
+            isOneToOne: false
+            referencedRelation: "island_groups"
             referencedColumns: ["id"]
           },
         ]
@@ -606,20 +716,65 @@ export type Database = {
           },
         ]
       }
-      saved_promos: {
+      saved_marketplace_items: {
         Row: {
+          contribution: number | null
           created_at: string
-          promo_id: number
+          marketplace_item_id: number
+          target_amount: number | null
           user_id: string
         }
         Insert: {
+          contribution?: number | null
           created_at?: string
-          promo_id: number
+          marketplace_item_id: number
+          target_amount?: number | null
           user_id: string
         }
         Update: {
+          contribution?: number | null
+          created_at?: string
+          marketplace_item_id?: number
+          target_amount?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_marketplace_items_marketplace_item_id_fkey"
+            columns: ["marketplace_item_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "saved_marketplace_items_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      saved_promos: {
+        Row: {
+          contribution: number | null
+          created_at: string
+          promo_id: number
+          target_amount: number | null
+          user_id: string
+        }
+        Insert: {
+          contribution?: number | null
+          created_at?: string
+          promo_id: number
+          target_amount?: number | null
+          user_id: string
+        }
+        Update: {
+          contribution?: number | null
           created_at?: string
           promo_id?: number
+          target_amount?: number | null
           user_id?: string
         }
         Relationships: [
@@ -777,14 +932,18 @@ export type Database = {
           bride_nickname: string | null
           budget_range: string | null
           created_at: string
+          entourage: Json | null
           groom_last_name: string | null
           groom_nickname: string | null
           is_premium: boolean | null
           location: string | null
           notes: string | null
+          our_message: string | null
+          our_story_text: string | null
           plan_type: string
           profile_photo_url: string | null
           profile_visibility: string | null
+          sponsors: Json | null
           updated_at: string
           user_id: string
           wedding_date: string | null
@@ -799,14 +958,18 @@ export type Database = {
           bride_nickname?: string | null
           budget_range?: string | null
           created_at?: string
+          entourage?: Json | null
           groom_last_name?: string | null
           groom_nickname?: string | null
           is_premium?: boolean | null
           location?: string | null
           notes?: string | null
+          our_message?: string | null
+          our_story_text?: string | null
           plan_type?: string
           profile_photo_url?: string | null
           profile_visibility?: string | null
+          sponsors?: Json | null
           updated_at?: string
           user_id: string
           wedding_date?: string | null
@@ -821,14 +984,18 @@ export type Database = {
           bride_nickname?: string | null
           budget_range?: string | null
           created_at?: string
+          entourage?: Json | null
           groom_last_name?: string | null
           groom_nickname?: string | null
           is_premium?: boolean | null
           location?: string | null
           notes?: string | null
+          our_message?: string | null
+          our_story_text?: string | null
           plan_type?: string
           profile_photo_url?: string | null
           profile_visibility?: string | null
+          sponsors?: Json | null
           updated_at?: string
           user_id?: string
           wedding_date?: string | null
@@ -1000,6 +1167,7 @@ export type Database = {
           email_verified: boolean | null
           id: string
           is_active: boolean | null
+          is_archived: boolean
           last_login_at: string | null
           role: string
           updated_at: string
@@ -1010,6 +1178,7 @@ export type Database = {
           email_verified?: boolean | null
           id: string
           is_active?: boolean | null
+          is_archived?: boolean
           last_login_at?: string | null
           role: string
           updated_at?: string
@@ -1020,6 +1189,7 @@ export type Database = {
           email_verified?: boolean | null
           id?: string
           is_active?: boolean | null
+          is_archived?: boolean
           last_login_at?: string | null
           role?: string
           updated_at?: string
@@ -1312,6 +1482,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "vendor_images_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "themes"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "vendor_images_vendor_id_fkey"
             columns: ["vendor_id"]
             isOneToOne: false
@@ -1533,12 +1710,10 @@ export type Database = {
       }
       vendor_subscriptions: {
         Row: {
-          bir_doc_url: string | null
           created_at: string
           dti_doc_url: string | null
           expiry_date: string | null
           id: number
-          mayors_permit_url: string | null
           plan_id: number | null
           sec_doc_url: string | null
           status: string
@@ -1548,12 +1723,10 @@ export type Database = {
           verification_doc_url: string | null
         }
         Insert: {
-          bir_doc_url?: string | null
           created_at?: string
           dti_doc_url?: string | null
           expiry_date?: string | null
           id?: number
-          mayors_permit_url?: string | null
           plan_id?: number | null
           sec_doc_url?: string | null
           status?: string
@@ -1563,12 +1736,10 @@ export type Database = {
           verification_doc_url?: string | null
         }
         Update: {
-          bir_doc_url?: string | null
           created_at?: string
           dti_doc_url?: string | null
           expiry_date?: string | null
           id?: number
-          mayors_permit_url?: string | null
           plan_id?: number | null
           sec_doc_url?: string | null
           status?: string
@@ -1697,7 +1868,11 @@ export type Database = {
           admin_phone_3: string | null
           average_rating: number | null
           business_name: string
+          card_cover_focus_x: number | null
+          card_cover_focus_y: number | null
+          card_cover_zoom: number | null
           city: string | null
+          city_id: number | null
           click_count: number | null
           contact_email: string | null
           contact_person_1_name: string | null
@@ -1705,12 +1880,6 @@ export type Database = {
           contact_person_2_name: string | null
           contact_person_2_position: string | null
           contact_phone: string | null
-          card_cover_focus_x?: number | null;
-          card_cover_focus_y?: number | null;
-          card_cover_zoom?: number | null
-          portrait_cover_focus_x?: number | null
-          portrait_cover_focus_y?: number | null
-          portrait_cover_zoom?: number | null;
           cover_focus_x: number | null
           cover_focus_y: number | null
           cover_zoom: number | null
@@ -1721,13 +1890,16 @@ export type Database = {
           inquiry_count: number | null
           is_active: boolean | null
           is_featured: boolean | null
-          latitude: number | null
-          location_text: string | null
           logo_url: string | null
           longitude: number | null
           map_url: string | null
+          old_region_id: number | null
           plan_id: number | null
+          portrait_cover_focus_x: number | null
+          portrait_cover_focus_y: number | null
+          portrait_cover_zoom: number | null
           price_range: string | null
+          province_id: number | null
           region_id: number | null
           review_count: number | null
           save_count: number | null
@@ -1751,7 +1923,11 @@ export type Database = {
           admin_phone_3?: string | null
           average_rating?: number | null
           business_name: string
+          card_cover_focus_x?: number | null
+          card_cover_focus_y?: number | null
+          card_cover_zoom?: number | null
           city?: string | null
+          city_id?: number | null
           click_count?: number | null
           contact_email?: string | null
           contact_person_1_name?: string | null
@@ -1759,12 +1935,6 @@ export type Database = {
           contact_person_2_name?: string | null
           contact_person_2_position?: string | null
           contact_phone?: string | null
-          card_cover_focus_x?: number | null
-          card_cover_focus_y?: number | null
-          card_cover_zoom?: number | null
-          portrait_cover_focus_x?: number | null
-          portrait_cover_focus_y?: number | null
-          portrait_cover_zoom?: number | null
           cover_focus_x?: number | null
           cover_focus_y?: number | null
           cover_zoom?: number | null
@@ -1775,13 +1945,16 @@ export type Database = {
           inquiry_count?: number | null
           is_active?: boolean | null
           is_featured?: boolean | null
-          latitude?: number | null
-          location_text?: string | null
           logo_url?: string | null
           longitude?: number | null
           map_url?: string | null
+          old_region_id?: number | null
           plan_id?: number | null
+          portrait_cover_focus_x?: number | null
+          portrait_cover_focus_y?: number | null
+          portrait_cover_zoom?: number | null
           price_range?: string | null
+          province_id?: number | null
           region_id?: number | null
           review_count?: number | null
           save_count?: number | null
@@ -1805,7 +1978,11 @@ export type Database = {
           admin_phone_3?: string | null
           average_rating?: number | null
           business_name?: string
+          card_cover_focus_x?: number | null
+          card_cover_focus_y?: number | null
+          card_cover_zoom?: number | null
           city?: string | null
+          city_id?: number | null
           click_count?: number | null
           contact_email?: string | null
           contact_person_1_name?: string | null
@@ -1813,12 +1990,6 @@ export type Database = {
           contact_person_2_name?: string | null
           contact_person_2_position?: string | null
           contact_phone?: string | null
-          card_cover_focus_x?: number | null
-          card_cover_focus_y?: number | null
-          card_cover_zoom?: number | null
-          portrait_cover_focus_x?: number | null
-          portrait_cover_focus_y?: number | null
-          portrait_cover_zoom?: number | null
           cover_focus_x?: number | null
           cover_focus_y?: number | null
           cover_zoom?: number | null
@@ -1829,13 +2000,16 @@ export type Database = {
           inquiry_count?: number | null
           is_active?: boolean | null
           is_featured?: boolean | null
-          latitude?: number | null
-          location_text?: string | null
           logo_url?: string | null
           longitude?: number | null
           map_url?: string | null
+          old_region_id?: number | null
           plan_id?: number | null
+          portrait_cover_focus_x?: number | null
+          portrait_cover_focus_y?: number | null
+          portrait_cover_zoom?: number | null
           price_range?: string | null
+          province_id?: number | null
           region_id?: number | null
           review_count?: number | null
           save_count?: number | null
@@ -1851,10 +2025,24 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "vendors_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "vendors_plan_id_fkey"
             columns: ["plan_id"]
             isOneToOne: false
             referencedRelation: "plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vendors_province_id_fkey"
+            columns: ["province_id"]
+            isOneToOne: false
+            referencedRelation: "provinces"
             referencedColumns: ["id"]
           },
           {
@@ -2106,6 +2294,8 @@ export type Database = {
           content: string | null
           created_at: string | null
           id: string
+          is_active: boolean
+          is_archived: boolean
           moment_type: string
           title: string
           updated_at: string | null
@@ -2116,6 +2306,8 @@ export type Database = {
           content?: string | null
           created_at?: string | null
           id?: string
+          is_active?: boolean
+          is_archived?: boolean
           moment_type: string
           title: string
           updated_at?: string | null
@@ -2126,13 +2318,23 @@ export type Database = {
           content?: string | null
           created_at?: string | null
           id?: string
+          is_active?: boolean
+          is_archived?: boolean
           moment_type?: string
           title?: string
           updated_at?: string | null
           user_id?: string
           visibility?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_wedding_moments_users"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       wedding_notes: {
         Row: {
@@ -2272,7 +2474,6 @@ export type Database = {
           document_verified: string | null
           id: number | null
           is_featured: boolean | null
-          location_text: string | null
           owner_email: string | null
           plan_name: string | null
           review_count: number | null
@@ -2331,10 +2532,11 @@ export type Database = {
         Args: {
           p_affiliation_slug?: string
           p_category_slug?: string
+          p_city?: string
           p_from?: number
           p_location?: string
+          p_province_id?: number
           p_q?: string
-          p_region_id?: number
           p_sort?: string
           p_theme_slug?: string
           p_to?: number
@@ -2342,6 +2544,9 @@ export type Database = {
         Returns: {
           average_rating: number
           business_name: string
+          card_cover_focus_x: number
+          card_cover_focus_y: number
+          card_cover_zoom: number
           city: string
           cover_focus_x: number
           cover_focus_y: number
@@ -2349,9 +2554,11 @@ export type Database = {
           cover_zoom: number
           document_verified: string
           id: number
-          location_text: string
           logo_url: string
           plan: Json
+          portrait_cover_focus_x: number
+          portrait_cover_focus_y: number
+          portrait_cover_zoom: number
           review_count: number
           save_count: number
           slug: string

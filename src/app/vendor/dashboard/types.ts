@@ -5,8 +5,11 @@ export type VendorProfile = {
   slug: string;
   logo_url?: string | null;
   description: string | null;
-  location_text: string | null;
+  province_id: number | null;
+  city_id: number | null;
   city: string | null;
+  province: { name: string } | null;
+  city_rel: { name: string } | null;
   address: string | null;
   contact_email: string | null;
   contact_phone: string | null;

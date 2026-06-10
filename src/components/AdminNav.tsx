@@ -67,6 +67,15 @@ function NavLinks({ isSuperadmin, isEditor, email, accountType, pathname }: NavL
           <Link className={navLinkClass("/superadmin/themes")} href="/superadmin/themes">
             Themes
           </Link>
+          <Link className={navLinkClass("/superadmin/categories")} href="/superadmin/categories">
+            Categories
+          </Link>
+          <Link className={navLinkClass("/superadmin/locations")} href="/superadmin/locations">
+            Locations
+          </Link>
+          <Link className={navLinkClass("/superadmin/affiliations")} href="/superadmin/affiliations">
+            Affiliations
+          </Link>
           <Link className={navLinkClass("/superadmin/users")} href="/superadmin/users">
             Soon to Weds
           </Link>

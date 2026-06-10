@@ -1,0 +1,37 @@
+DO $$ 
+BEGIN
+  UPDATE vendors SET province_id = 37, location_text = 'Bohol' WHERE location_text IN ('BOHOL', 'Tagbilaran City, Bohol', 'Panglao Island, Bohol');
+  UPDATE vendors SET province_id = 35, location_text = 'Benguet' WHERE location_text IN ('Baguio', 'BAGUIO', 'Baguio City', 'Cordillera Admin.Reg.');
+  UPDATE vendors SET province_id = 59, location_text = 'Ilocos Sur' WHERE location_text IN ('Ilocos', 'ILOCOS SUR', 'Vigan City, Ilocos Sur');
+  UPDATE vendors SET province_id = 40, location_text = 'Cagayan' WHERE location_text = 'Cagayan Valley';
+  UPDATE vendors SET province_id = 63, location_text = 'La Union' WHERE location_text = 'LaUnion';
+  UPDATE vendors SET province_id = 74, location_text = 'Misamis Oriental' WHERE location_text IN ('Cagayan de Oro', 'Northern Mindanao');
+  UPDATE vendors SET province_id = 82, location_text = 'Pampanga' WHERE location_text IN ('Central Luzon', 'PAMPANGA', 'Pampanga, Philippines', 'Angeles City, Pampanga', 'San Fernando, Pampanga');
+  UPDATE vendors SET province_id = 67, location_text = 'Leyte' WHERE location_text IN ('Eastern Visayas', 'Ormoc City, Leyte, Region 8');
+  UPDATE vendors SET province_id = 51, location_text = 'Davao del Sur' WHERE location_text IN ('Davao', 'DAVAO', 'Davao City, Davao Region', 'Davao City');
+  UPDATE vendors SET province_id = 46, location_text = 'Cavite' WHERE location_text IN ('CAVITE', 'TAGAYTAY', 'Tagaytay, Cavite (CALABARZON Region 4-A)');
+  UPDATE vendors SET province_id = 47, location_text = 'Cebu' WHERE location_text IN ('CEBU', 'Cebu Province (Central Visayas)', 'Mandaue City, Cebu');
+  UPDATE vendors SET province_id = 102, location_text = 'Zamboanga del Sur' WHERE location_text IN ('Zamboanga City, Philippines', 'Zamboanga', 'Zamboanga Peninsula');
+  UPDATE vendors SET province_id = 72, location_text = 'Mindoro Oriental' WHERE location_text IN ('Mimaropa', 'Mindoro');
+  UPDATE vendors SET province_id = 27, location_text = 'Albay' WHERE location_text IN ('Legazpi', 'Tabaco City, Albay.');
+  UPDATE vendors SET province_id = 42, location_text = 'Camarines Sur' WHERE location_text IN ('Naga');
+  UPDATE vendors SET province_id = 22, location_text = 'Metro Manila' WHERE location_text IN ('METRO MANILA', 'Manila', 'Metro South', 'southern Metro Manila.', 'southern Metro Manila', 'Central Manila', 'Quezon City', 'Pasig City');
+  UPDATE vendors SET province_id = 77, location_text = 'Negros Oriental' WHERE location_text IN ('Negros Island Region', 'Dumaguete', 'Dumaguete City');
+  UPDATE vendors SET province_id = 81, location_text = 'Palawan' WHERE location_text IN ('PALAWAN', 'Coron, Palawan');
+  UPDATE vendors SET province_id = 60, location_text = 'Iloilo' WHERE location_text = 'ILOILO';
+  UPDATE vendors SET province_id = 34, location_text = 'Batangas' WHERE location_text = 'BATANGAS';
+  UPDATE vendors SET province_id = 32, location_text = 'Bataan' WHERE location_text = 'Morong, Bataan';
+  UPDATE vendors SET province_id = 26, location_text = 'Aklan' WHERE location_text IN ('Boracay Island', 'Boracay Island, Aklan (Western Visayas region)');
+  UPDATE vendors SET province_id = 98, location_text = 'Tarlac' WHERE location_text = 'Central Tarlac City';
+  UPDATE vendors SET province_id = 101, location_text = 'Zamboanga del Norte' WHERE location_text = 'DIPOLOG CITY';
+  UPDATE vendors SET province_id = 100, location_text = 'Zambales' WHERE location_text = 'OLONGAPO';
+  UPDATE vendors SET province_id = 49, location_text = 'Cotabato' WHERE location_text = 'Soccsksargen';
+  UPDATE vendors SET province_id = 38, location_text = 'Bukidnon' WHERE location_text = 'BUKIDNON';
+  UPDATE vendors SET province_id = 39, location_text = 'Bulacan' WHERE location_text = 'BULACAN';
+  UPDATE vendors SET province_id = 84, location_text = 'Quezon' WHERE location_text = 'Quezon Province';
+  UPDATE vendors SET province_id = 68, location_text = 'Maguindanao' WHERE location_text = 'Bangsamoro';
+  UPDATE vendors SET province_id = 24, location_text = 'Agusan del Norte' WHERE location_text = 'Caraga';
+  UPDATE vendors SET province_id = 64, location_text = 'Laguna' WHERE location_text = 'Sta. Rosa, Laguna';
+  UPDATE vendors SET province_id = 65, location_text = 'Lanao del Norte' WHERE location_text = 'Iligan';
+  UPDATE vendors SET province_id = NULL, location_text = NULL WHERE location_text = 'XII Region of Magallanes';
+END $$;

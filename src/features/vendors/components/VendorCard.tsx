@@ -38,7 +38,7 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight, featured }: 
   const tone = seed % 2 === 0 ? "#a68b6a" : "#957a5c";
   const rating = vendor.average_rating ?? 0;
   const reviews = vendor.review_count ?? 0;
-  const location = vendor.city ?? vendor.location_text;
+  const location = vendor.city_rel?.name ?? vendor.city ?? vendor.province?.name;
 
   const planName = String((Array.isArray(vendor.plan) ? vendor.plan?.[0]?.name : vendor.plan?.name) ?? "")
     .trim()

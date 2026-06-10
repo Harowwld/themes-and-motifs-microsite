@@ -23,8 +23,9 @@ export type VendorListItem = {
   logo_url?: string | null;
   average_rating: number | null;
   review_count: number | null;
-  location_text: string | null;
   city: string | null;
+  province: { name: string } | null;
+  city_rel: { name: string } | null;
   document_verified?: string | null;
   cover_image_url?: string | null;
   cover_focus_x?: number | null;

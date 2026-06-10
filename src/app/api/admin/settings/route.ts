@@ -56,7 +56,7 @@ export async function POST(req: Request) {
     const allowedFieldsByTable: Record<TableName, string[]> = {
       plans: ["name", "price", "description", "features"],
       categories: ["name", "slug", "description", "icon", "display_order"],
-      regions: ["name", "parent_id"],
+      regions: ["name"],
       affiliations: ["name", "slug"],
     };
 

@@ -21,7 +21,7 @@ import { getCachedVendorLocations } from "../../lib/vendorUtils";
 const getCachedRegions = unstable_cache(
   async () => {
     const supabase = createSupabaseServerClient();
-    const { data } = await supabase.from("regions").select("id,name").is("parent_id", null).order("name", { ascending: true }).limit(200);
+    const { data } = await supabase.from("provinces").select("id,name").order("name", { ascending: true }).limit(200);
     return (data ?? []) as RegionRow[];
   },
   ["regions"],
@@ -55,13 +55,13 @@ const getCachedCities = unstable_cache(
   async () => {
     const supabase = createSupabaseServerClient();
     const [part1, part2] = await Promise.all([
-      supabase.from("cities").select("id,name,region_id").order("name", { ascending: true }).range(0, 999),
-      supabase.from("cities").select("id,name,region_id").order("name", { ascending: true }).range(1000, 1999),
+      supabase.from("cities").select("id,name,province_id").order("name", { ascending: true }).range(0, 999),
+      supabase.from("cities").select("id,name,province_id").order("name", { ascending: true }).range(1000, 1999),
     ]);
     return [
       ...(part1.data ?? []),
       ...(part2.data ?? [])
-    ] as { id: number; name: string; region_id: number }[];
+    ] as { id: number; name: string; province_id: number }[];
   },
   ["cities"],
   { revalidate: 3600 }
@@ -150,6 +150,7 @@ async function VendorsPageData({
   q,
   category,
   location,
+  city,
   region,
   affiliation,
   theme,
@@ -159,6 +160,7 @@ async function VendorsPageData({
   q: string;
   category: string;
   location: string;
+  city: string;
   region: string;
   affiliation: string;
   theme: string;
@@ -181,12 +183,12 @@ async function VendorsPageData({
   const to = limit - 1;
 
   // Use the cached default fetch when no filters are active, otherwise query live
-  const isDefaultQuery = !q && !category && !location && !region && !affiliation && !theme && sort === "rating";
+  const isDefaultQuery = !q && !category && !location && !city && !region && !affiliation && !theme && sort === "rating";
   const { vendors, total: vendorTotal } = isDefaultQuery
     ? await getCachedDefaultVendors(limit)
     : await buildVendorsQuery({
         supabase,
-        filters: { q, category, location, region, affiliation, theme },
+        filters: { q, category, location, city, region, affiliation, theme },
         sort,
         from,
         to,
@@ -194,7 +196,7 @@ async function VendorsPageData({
   const loadedCount = (vendors ?? []).length;
   const hasMore = loadedCount > 0 && from + loadedCount < (vendorTotal ?? 0);
 
-  const vendorAllItemsWithCovers = (vendors ?? []) as VendorListItem[];
+  const vendorAllItemsWithCovers = (vendors ?? []) as unknown as VendorListItem[];
 
   return (
     <>
@@ -203,12 +205,13 @@ async function VendorsPageData({
         initialQ={q}
         initialCategory={category}
         initialLocation={location}
+        initialCity={city}
         initialRegion={region}
         initialAffiliation={affiliation}
         initialSort={sort}
         initialTheme={theme}
         regions={regionsList}
-        cities={citiesList.map((c) => ({ id: c.id, name: c.name, region_id: c.region_id }))}
+        cities={citiesList.map((c) => ({ id: c.id, name: c.name, province_id: c.province_id }))}
         affiliations={affiliationsList}
         categories={categoriesList}
         themes={themesList}
@@ -224,7 +227,7 @@ async function VendorsPageData({
         limit={limit}
         total={vendorTotal ?? 0}
         sort={sort}
-        query={{ q, category, location, region, affiliation, theme }}
+        query={{ q, category, location, city, region, affiliation, theme }}
       />
     </>
   );
@@ -240,6 +243,7 @@ export default async function VendorsPage({
   const q = (sp.q as string | undefined)?.trim() || "";
   const category = (sp.category as string | undefined)?.trim() || "";
   const location = (sp.location as string | undefined)?.trim() || "";
+  const city = (sp.city as string | undefined)?.trim() || "";
   const region = (sp.region as string | undefined)?.trim() || "";
   const affiliation = (sp.affiliation as string | undefined)?.trim() || "";
   const theme = (sp.theme as string | undefined)?.trim() || "";
@@ -262,6 +266,7 @@ export default async function VendorsPage({
               q={q}
               category={category}
               location={location}
+              city={city}
               region={region}
               affiliation={affiliation}
               theme={theme}

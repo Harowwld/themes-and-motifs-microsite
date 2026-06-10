@@ -35,7 +35,7 @@ export default function PromosSection({ promos }: { promos: FeaturedPromo[] }) {
           transition={{ duration: 0.5, ease: EASE_OUT }}
           className="text-[18px] sm:text-[20px] font-semibold tracking-[-0.01em] text-[#2c2c2c]"
         >
-          The Wedding Marketplace Promos
+          The Wedding Marketplace Great Deals
         </motion.h2>
         <motion.p
           initial={{ opacity: 0, y: 10 }}
@@ -44,7 +44,7 @@ export default function PromosSection({ promos }: { promos: FeaturedPromo[] }) {
           transition={{ duration: 0.5, delay: 0.1, ease: EASE_OUT }}
           className="mt-2 text-[13px] text-black/55 max-w-xl mx-auto font-[family-name:var(--font-plus-jakarta)]"
         >
-          Limited time exclusive promos for your dream wedding.
+          Limited time exclusive offers for your dream wedding.
         </motion.p>
       </div>
 

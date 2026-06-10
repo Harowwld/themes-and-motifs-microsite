@@ -11,7 +11,7 @@ type RegionOption = {
 type CityOption = {
   id: number;
   name: string;
-  region_id: number;
+  province_id: number;
 };
 
 type AffiliationOption = {
@@ -38,6 +38,7 @@ type Props = {
   initialQ: string;
   initialCategory: string;
   initialLocation: string;
+  initialCity: string;
   initialRegion: string;
   initialAffiliation: string;
   initialSort: SortKey;
@@ -53,6 +54,7 @@ function buildHref({
   q,
   category,
   location,
+  city,
   region,
   affiliation,
   sort,
@@ -61,6 +63,7 @@ function buildHref({
   q: string;
   category: string;
   location: string;
+  city: string;
   region: string;
   affiliation: string;
   sort: SortKey;
@@ -70,6 +73,7 @@ function buildHref({
   if (q.trim()) params.set("q", q.trim());
   if (category) params.set("category", category);
   if (location.trim()) params.set("location", location.trim());
+  if (city.trim()) params.set("city", city.trim());
   if (region) params.set("region", region);
   if (affiliation) params.set("affiliation", affiliation);
   if (theme) params.set("theme", theme);
@@ -83,6 +87,7 @@ export default function VendorsSearchBar({
   initialQ,
   initialCategory,
   initialLocation,
+  initialCity,
   initialRegion,
   initialAffiliation,
   initialSort,
@@ -97,6 +102,7 @@ export default function VendorsSearchBar({
 
   const [q, setQ] = useState(initialQ);
   const [location, setLocation] = useState(initialLocation);
+  const [city, setCity] = useState(initialCity);
   const [region, setRegion] = useState(initialRegion);
   const [affiliation, setAffiliation] = useState(initialAffiliation);
   const [sort, setSort] = useState<SortKey>(initialSort);
@@ -112,7 +118,7 @@ export default function VendorsSearchBar({
     }
     const regionIdNum = Number(region);
     const filtered = Number.isFinite(regionIdNum) && regionIdNum > 0
-      ? base.filter((c) => c.region_id === regionIdNum)
+      ? base.filter((c) => c.province_id === regionIdNum)
       : base;
     return filtered.slice().sort((a, b) => a.name.localeCompare(b.name));
   }, [cities, region]);
@@ -120,12 +126,15 @@ export default function VendorsSearchBar({
   const categoryOptions = useMemo(() => categories ?? [], [categories]);
   const themeOptions = useMemo(() => themes ?? [], [themes]);
 
+
+
   const submit = () => {
     router.push(
       buildHref({
         q,
         category,
         location,
+        city,
         region,
         affiliation,
         sort,
@@ -139,11 +148,11 @@ export default function VendorsSearchBar({
     <div className="rounded-lg border border-stone-200/60 bg-white/80 backdrop-blur-sm shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
       <div className="px-6 py-5 border-b border-stone-100">
         <div className="text-lg font-semibold text-stone-800 font-headline font-[family-name:var(--font-plus-jakarta)]">Search suppliers</div>
-        <div className="mt-1 text-sm text-stone-500 font-[family-name:var(--font-plus-jakarta)]">Refine by keyword, category, area, city, affiliation, or theme.</div>
+        <div className="mt-1 text-sm text-stone-500 font-[family-name:var(--font-plus-jakarta)]">Refine by keyword, category, region, city, affiliation, or theme.</div>
       </div>
 
       <div className="p-6 space-y-4">
-        <div className="grid gap-3 items-end grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid gap-3 items-end grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           <label className="grid gap-1.5">
             <span className="text-xs font-medium text-stone-500 uppercase tracking-wide font-[family-name:var(--font-plus-jakarta)]">Keyword</span>
             <input
@@ -174,44 +183,35 @@ export default function VendorsSearchBar({
           </label>
 
           <label className="grid gap-1.5">
-            <span className="text-xs font-medium text-stone-500 uppercase tracking-wide font-[family-name:var(--font-plus-jakarta)]">Area</span>
+            <span className="text-xs font-medium text-stone-500 uppercase tracking-wide font-[family-name:var(--font-plus-jakarta)]">Region</span>
             <select
               value={region}
               onChange={(e) => {
                 setRegion(e.target.value);
-                setLocation("");
+                setCity(""); // Clear city when region changes
               }}
               className="h-11 rounded-md border border-stone-200 bg-stone-50 px-4 text-sm text-stone-700 outline-none transition-all focus:border-[#a68b6a] focus:bg-white focus:ring-2 focus:ring-[#a68b6a]/10 appearance-none cursor-pointer font-[family-name:var(--font-plus-jakarta)] truncate overflow-hidden w-full"
             >
-              <option value="" className="font-[family-name:var(--font-plus-jakarta)]">All areas</option>
+              <option value="" className="font-[family-name:var(--font-plus-jakarta)]">Select a Region</option>
               {regionOptions.map((r) => (
-                <option key={r.id} value={String(r.id)} className="font-[family-name:var(--font-plus-jakarta)]">
+                <option key={r.id} value={r.id} className="font-[family-name:var(--font-plus-jakarta)]">
                   {r.name}
                 </option>
               ))}
             </select>
           </label>
 
-          <label className="grid gap-1.5">
-            <span className="text-xs font-medium text-stone-500 uppercase tracking-wide font-[family-name:var(--font-plus-jakarta)]">City</span>
+          <label className={`grid gap-1.5 ${!region ? 'opacity-50 pointer-events-none' : ''}`}>
+            <span className="text-xs font-medium text-stone-500 uppercase tracking-wide font-[family-name:var(--font-plus-jakarta)]">City / Wedding Center</span>
             <select
-              value={location}
-              onChange={(e) => {
-                const selectedCity = e.target.value;
-                setLocation(selectedCity);
-                // Auto-select the region based on the chosen city
-                if (selectedCity && cities && cities.length > 0) {
-                  const city = cities.find((c) => c.name === selectedCity);
-                  if (city && city.region_id > 0) {
-                    setRegion(String(city.region_id));
-                  }
-                }
-              }}
-              className="h-11 w-full rounded-md border border-stone-200 bg-stone-50 px-4 text-sm text-stone-700 outline-none transition-all focus:border-[#a68b6a] focus:bg-white focus:ring-2 focus:ring-[#a68b6a]/10 appearance-none cursor-pointer font-[family-name:var(--font-plus-jakarta)]"
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              disabled={!region}
+              className="h-11 w-full rounded-md border border-stone-200 bg-stone-50 px-4 text-sm text-stone-700 outline-none transition-all focus:border-[#a68b6a] focus:bg-white focus:ring-2 focus:ring-[#a68b6a]/10 appearance-none cursor-pointer font-[family-name:var(--font-plus-jakarta)] truncate overflow-hidden disabled:bg-stone-100 disabled:cursor-not-allowed"
             >
-              <option value="" className="font-[family-name:var(--font-plus-jakarta)]">All cities</option>
+              <option value="" className="font-[family-name:var(--font-plus-jakarta)]">Select a City / Wedding Center</option>
               {cityOptions.map((c) => (
-                <option key={c.id} value={c.name} className="font-[family-name:var(--font-plus-jakarta)]">
+                <option key={c.id} value={c.id.toString()} className="font-[family-name:var(--font-plus-jakarta)]">
                   {c.name}
                 </option>
               ))}
@@ -286,12 +286,12 @@ export function VendorsSearchBarSkeleton() {
     <div className="rounded-lg border border-stone-200/60 bg-white/80 backdrop-blur-sm shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
       <div className="px-6 py-5 border-b border-stone-100">
         <div className="text-lg font-semibold text-stone-800 font-headline font-[family-name:var(--font-plus-jakarta)]">Search suppliers</div>
-        <div className="mt-1 text-sm text-stone-500 font-[family-name:var(--font-plus-jakarta)]">Refine by keyword, category, area, city, affiliation, or theme.</div>
+        <div className="mt-1 text-sm text-stone-500 font-[family-name:var(--font-plus-jakarta)]">Refine by keyword, category, region, city, affiliation, or theme.</div>
       </div>
 
       <div className="p-6 space-y-4">
-        <div className="grid gap-3 items-end grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {["Keyword", "Category", "Area", "City", "Affiliation", "Theme", "Sort"].map((label) => (
+        <div className="grid gap-3 items-end grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+          {["Keyword", "Category", "Region", "City", "Affiliation", "Theme", "Sort"].map((label) => (
             <div key={label} className="grid gap-1.5 animate-pulse">
               <span className="text-xs font-medium text-stone-500 uppercase tracking-wide font-[family-name:var(--font-plus-jakarta)]">
                 {label}

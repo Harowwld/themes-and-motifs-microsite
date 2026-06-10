@@ -28,157 +28,42 @@ function SelectMenu({
   options: { value: string; label: string }[];
   onChange: (value: string) => void;
 }) {
-  const [open, setOpen] = useState(false);
-  const rootRef = useRef<HTMLDivElement | null>(null);
-  const buttonRef = useRef<HTMLButtonElement | null>(null);
-  const [menuRect, setMenuRect] = useState<{ top: number; left: number; width: number; maxHeight: number } | null>(
-    null
-  );
-
-  const menuRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    if (!open) return;
-    const onPointerDown = (e: PointerEvent) => {
-      const el = rootRef.current;
-      const menuEl = menuRef.current;
-      if (!el) return;
-      const target = e.target as Node;
-      // Don't close if clicking inside the button or the menu (portal)
-      if (el.contains(target)) return;
-      if (menuEl && menuEl.contains(target)) return;
-      setOpen(false);
-    };
-    window.addEventListener("pointerdown", onPointerDown);
-    return () => window.removeEventListener("pointerdown", onPointerDown);
-  }, [open]);
-
-  useEffect(() => {
-    if (!open) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setMenuRect(null);
-      return;
-    }
-
-    const updateRect = () => {
-      const btn = buttonRef.current;
-      if (!btn) return;
-      const r = btn.getBoundingClientRect();
-
-      const isOffscreen = r.bottom < 0 || r.top > window.innerHeight;
-      if (isOffscreen) {
-        setOpen(false);
-        setMenuRect(null);
-        return;
-      }
-
-      const margin = 8;
-      const gap = 4;
-      const left = Math.max(margin, Math.min(r.left, window.innerWidth - margin - r.width));
-      const width = Math.min(r.width, window.innerWidth - margin * 2);
-
-      const availableBelow = Math.max(0, window.innerHeight - (r.bottom + gap) - margin);
-      const availableAbove = Math.max(0, r.top - gap - margin);
-
-      const defaultMax = 320;
-      const minUsable = 180;
-
-      const shouldFlip = availableBelow < minUsable && availableAbove > availableBelow;
-      const maxHeight = Math.min(defaultMax, shouldFlip ? availableAbove : availableBelow);
-      const rawTop = shouldFlip ? r.top - gap - maxHeight : r.bottom + gap;
-      const top = Math.max(margin, Math.min(rawTop, window.innerHeight - margin - Math.max(120, maxHeight)));
-
-      setMenuRect({ top, left, width, maxHeight });
-    };
-
-    updateRect();
-    window.addEventListener("resize", updateRect);
-    window.addEventListener("scroll", updateRect, true);
-    return () => {
-      window.removeEventListener("resize", updateRect);
-      window.removeEventListener("scroll", updateRect, true);
-    };
-  }, [open]);
-
-  const currentLabel = value ? options.find((o) => o.value === value)?.label : "";
   const hasValue = Boolean(value);
 
   return (
-    <div ref={rootRef} className="grid gap-1 min-w-0 relative">
+    <div className="grid gap-1 min-w-0 relative">
       <span className="text-[12px] font-medium text-white/70 font-[family-name:var(--font-plus-jakarta)]">{label}</span>
-      <motion.button
-        whileTap={{ scale: 0.97 }}
-        ref={buttonRef}
-        type="button"
-        aria-haspopup="listbox"
-        aria-expanded={open}
-        onClick={() => setOpen((v) => !v)}
-        className={`h-10 w-full rounded-md border border-white/20 bg-white/15 backdrop-blur-sm px-3 text-left text-[14px] outline-none transition-colors focus:border-white/50 focus:ring-1 focus:ring-white/30 ${hasValue ? "text-white" : "text-white/50"
+      <div className="relative">
+        <select
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className={`appearance-none h-10 w-full rounded-md border border-white/20 bg-white/15 backdrop-blur-sm px-3 pr-8 text-[14px] outline-none transition-colors focus:border-white/50 focus:ring-1 focus:ring-white/30 font-[family-name:var(--font-plus-jakarta)] cursor-pointer ${
+            hasValue ? "text-white" : "text-white/50"
           }`}
-      >
-        <span className="block truncate font-[family-name:var(--font-plus-jakarta)]">{currentLabel || placeholder}</span>
-      </motion.button>
-
-      <AnimatePresence>
-        {open && menuRect && typeof document !== "undefined" && (
-          createPortal(
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: -10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: -10 }}
-              transition={{ duration: 0.2, ease: EASE_OUT }}
-              ref={menuRef}
-              role="listbox"
-              className="fixed z-1000 rounded-lg border border-white/20 bg-white/90 backdrop-blur-lg shadow-xl overflow-hidden"
-              style={{
-                top: menuRect.top,
-                left: menuRect.left,
-                width: menuRect.width,
-                transformOrigin: "top", // Simplified origin for better reliability with portals
-              }}
-            >
-              <div className="overflow-auto py-1" style={{ maxHeight: menuRect.maxHeight }}>
-                <button
-                  type="button"
-                  className={`w-full px-3 py-2 text-left text-[14px] leading-5 whitespace-normal wrap-break-word text-gray-700 hover:bg-gray-100 transition-colors font-[family-name:var(--font-plus-jakarta)] ${value === "" ? "bg-gray-100" : ""
-                    }`}
-                  onClick={() => {
-                    onChange("");
-                    setOpen(false);
-                  }}
-                >
-                  {placeholder}
-                </button>
-                {options.map((opt) => (
-                  <button
-                    key={opt.value}
-                    type="button"
-                    className={`w-full px-3 py-2 text-left text-[14px] leading-5 whitespace-normal wrap-break-word text-gray-700 hover:bg-gray-100 transition-colors font-[family-name:var(--font-plus-jakarta)] ${opt.value === value ? "bg-gray-100" : ""
-                      }`}
-                    onClick={() => {
-                      onChange(opt.value);
-                      setOpen(false);
-                    }}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-            </motion.div>,
-            document.body
-          )
-        )}
-      </AnimatePresence>
+        >
+          <option value="" className="text-gray-900 bg-white">{placeholder}</option>
+          {options.map((opt) => (
+            <option key={opt.value} value={opt.value} className="text-gray-900 bg-white">
+              {opt.label}
+            </option>
+          ))}
+        </select>
+        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-white/70">
+          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
+          </svg>
+        </div>
+      </div>
     </div>
   );
 }
 
 export default function HeroSection({
   categories,
-  locations,
+  regions,
 }: {
   categories: Category[];
-  locations: string[];
+  regions: { id: number; name: string }[];
 }) {
   const router = useRouter();
   const [keyword, setKeyword] = useState("");
@@ -186,7 +71,7 @@ export default function HeroSection({
   const [location, setLocation] = useState("");
 
   const categoryOptions = useMemo(() => categories ?? [], [categories]);
-  const locationOptions = useMemo(() => locations ?? [], [locations]);
+  const locationOptions = useMemo(() => regions ?? [], [regions]);
 
   const categoryMenuOptions = useMemo(
     () => categoryOptions.map((c) => ({ value: c.slug, label: c.name })),
@@ -194,7 +79,7 @@ export default function HeroSection({
   );
 
   const locationMenuOptions = useMemo(
-    () => locationOptions.map((loc) => ({ value: loc, label: loc })),
+    () => locationOptions.map((r) => ({ value: r.id.toString(), label: r.name })),
     [locationOptions]
   );
 
@@ -202,7 +87,7 @@ export default function HeroSection({
     const params = new URLSearchParams();
     if (keyword.trim()) params.set("q", keyword.trim());
     if (category) params.set("category", category);
-    if (location) params.set("location", location);
+    if (location) params.set("region", location);
     params.set("scroll", "results");
     params.set("from", "landing");
     const qs = params.toString();
@@ -244,8 +129,8 @@ export default function HeroSection({
       </div>
       <div aria-hidden className="absolute inset-0 md:hidden">
         <Image
-          src="/hero-bg.jpg"
-          alt="Hero background mobile"
+          src="https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/hero/mobile-hero.webp"
+          alt="Hero background"
           fill
           priority
           unoptimized
@@ -324,17 +209,50 @@ export default function HeroSection({
           className="mt-5 sm:mt-7 grid grid-cols-3 gap-1.5 sm:gap-3 max-w-xl"
         >
           {[
-            { label: "Unlock", value: "Great Deals" },
-            { label: "Read", value: "Reviews" },
-            { label: "Start", value: "Planning" },
+            { 
+              label: "Unlock", 
+              value: "Great Deals", 
+              desc: "Scroll down to The Wedding Marketplace Great Deals",
+              onClick: () => {
+                document.getElementById('promos')?.scrollIntoView({ behavior: 'smooth' });
+              }
+            },
+            { 
+              label: "Read", 
+              value: "Reviews", 
+              desc: "Check out feedback per supplier",
+              onClick: () => router.push('/suppliers')
+            },
+            { 
+              label: "Start", 
+              value: "Planning", 
+              desc: "Use wedding planning tools",
+              onClick: () => router.push('/dashboard')
+            },
           ].map((stat, i) => (
             <motion.div
               key={i}
               whileHover={{ y: -2, backgroundColor: "rgba(255, 255, 255, 0.15)" }}
-              className="rounded-lg border border-white/20 bg-white/10 backdrop-blur-md px-2 sm:px-3 py-2 sm:py-3 transition-colors"
+              onClick={stat.onClick}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  stat.onClick();
+                }
+              }}
+              className="group cursor-pointer rounded-lg border border-white/20 bg-white/10 backdrop-blur-md px-2 sm:px-3 py-2 sm:py-3 transition-all duration-300 flex flex-col justify-start"
             >
               <div className="text-[10px] sm:text-[12px] font-medium text-white/60 font-[family-name:var(--font-plus-jakarta)]">{stat.label}</div>
               <div className="mt-0.5 text-[12px] sm:text-[14px] font-medium text-white font-[family-name:var(--font-plus-jakarta)]">{stat.value}</div>
+              <div className="grid grid-rows-[0fr] group-hover:grid-rows-[1fr] transition-all duration-300 ease-out">
+                <div className="overflow-hidden">
+                  <div className="pt-2 text-[10px] sm:text-[11px] leading-tight text-white/80 font-[family-name:var(--font-plus-jakarta)] opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-75">
+                    {stat.desc}
+                  </div>
+                </div>
+              </div>
             </motion.div>
           ))}
         </motion.div>
@@ -362,7 +280,7 @@ export default function HeroSection({
           >
             <span className="text-[12px] font-medium text-white/70">Keyword</span>
             <input
-              placeholder="Search vendor name (e.g. Nice Print)"
+              placeholder="Search Supplier Name (e.g. Themes & Motifs)"
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
               onKeyDown={(e) => {
@@ -389,9 +307,9 @@ export default function HeroSection({
               onChange={setCategory}
             />
             <SelectMenu
-              label="City"
+              label="Region"
               value={location}
-              placeholder="All cities"
+              placeholder="Select a Region"
               options={locationMenuOptions}
               onChange={setLocation}
             />

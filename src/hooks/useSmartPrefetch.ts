@@ -34,7 +34,7 @@ export function useSmartPrefetch() {
           if (!res.ok) throw new Error("Failed to fetch vendor");
           return res.json();
         },
-        staleTime: 1000 * 60 * 5, // 5 minutes
+        staleTime: 1000 * 60 * 1, // 1 minute
       });
     },
     [queryClient]
@@ -64,7 +64,7 @@ export function useSmartPrefetch() {
           if (!res.ok) throw new Error("Failed to fetch vendors");
           return res.json();
         },
-        staleTime: 1000 * 60 * 5,
+        staleTime: 1000 * 60 * 1,
       });
     },
     [queryClient]
@@ -85,7 +85,7 @@ export function useSmartPrefetch() {
         if (!res.ok) throw new Error("Failed to fetch moments");
         return res.json();
       },
-      staleTime: 1000 * 60 * 5,
+      staleTime: 1000 * 60 * 1,
     });
   }, [queryClient]);
 

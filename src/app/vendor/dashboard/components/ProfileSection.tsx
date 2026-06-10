@@ -53,7 +53,7 @@ export function ProfileSection({
   setLogoModalOpen: (v: boolean) => void;
   isPremium: boolean;
   regions?: {id: number, name: string}[];
-  cities?: {id: number, name: string, region_id: number}[];
+  cities?: {id: number, name: string, province_id: number}[];
 }) {
   const [secUrl, setSecUrl] = React.useState(subscription?.sec_doc_url || "");
   const [dtiUrl, setDtiUrl] = React.useState(subscription?.dti_doc_url || "");
@@ -234,34 +234,36 @@ export function ProfileSection({
               {regions ? (
                 <select 
                   className="h-11 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-4 text-[13px] transition-all duration-200 focus:border-[#a67c52] focus:bg-white focus:ring-4 focus:ring-[#a67c52]/10 outline-none" 
-                  value={form.location_text} 
+                  value={form.province_id || ""} 
                   onChange={(e) => {
-                    setForm((p: any) => ({ ...p, location_text: e.target.value, city: "" }));
+                    setForm((p: any) => ({ ...p, province_id: e.target.value ? Number(e.target.value) : null, city_id: null, city: "" }));
                   }}
                 >
                   <option value="">Select Region</option>
                   {regions.map((r) => (
-                    <option key={r.id} value={r.name}>{r.name}</option>
+                    <option key={r.id} value={r.id}>{r.name}</option>
                   ))}
                 </select>
               ) : (
-                <input className="h-11 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-4 text-[13px] transition-all duration-200 focus:border-[#a67c52] focus:bg-white focus:ring-4 focus:ring-[#a67c52]/10 outline-none" value={form.location_text} onChange={(e) => setForm((p: any) => ({ ...p, location_text: e.target.value }))} />
+                <input type="number" placeholder="Province ID" className="h-11 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-4 text-[13px] transition-all duration-200 focus:border-[#a67c52] focus:bg-white focus:ring-4 focus:ring-[#a67c52]/10 outline-none" value={form.province_id || ""} onChange={(e) => setForm((p: any) => ({ ...p, province_id: e.target.value ? Number(e.target.value) : null }))} />
               )}
             </Field>
             <Field label="City/Wedding Center">
               {cities && regions ? (
                 <select 
                   className="h-11 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-4 text-[13px] transition-all duration-200 focus:border-[#a67c52] focus:bg-white focus:ring-4 focus:ring-[#a67c52]/10 outline-none" 
-                  value={form.city} 
-                  onChange={(e) => setForm((p: any) => ({ ...p, city: e.target.value }))}
-                  disabled={!form.location_text}
+                  value={form.city_id || ""} 
+                  onChange={(e) => {
+                    const selectedCity = cities.find(c => c.id === Number(e.target.value));
+                    setForm((p: any) => ({ ...p, city_id: selectedCity ? selectedCity.id : null, city: selectedCity ? selectedCity.name : "" }));
+                  }}
+                  disabled={!form.province_id}
                 >
                   <option value="">Select City</option>
                   {(() => {
-                    const selectedRegion = regions.find(r => r.name === form.location_text);
-                    if (!selectedRegion) return null;
-                    return cities.filter(c => c.region_id === selectedRegion.id).map((c) => (
-                      <option key={c.id} value={c.name}>{c.name}</option>
+                    if (!form.province_id) return null;
+                    return cities.filter(c => c.province_id === form.province_id).map((c) => (
+                      <option key={c.id} value={c.id}>{c.name}</option>
                     ));
                   })()}
                 </select>

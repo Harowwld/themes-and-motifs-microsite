@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Tag } from "lucide-react";
 import { ThemedIdea } from "../sections/FeaturedThemesSection";
+import { proxiedImageUrl } from "@/lib/imageSizes";
 
 const EASE_OUT = [0.23, 1, 0.32, 1] as [number, number, number, number];
 const SPRING = { type: "spring" as const, stiffness: 300, damping: 30 };
@@ -45,7 +46,7 @@ function IdeaCard({ idea, isGrid = false, width }: { idea: ThemedIdea; isGrid?: 
       className={`relative group rounded-2xl overflow-hidden bg-white shadow-[0_4px_20px_rgba(0,0,0,0.02),0_2px_8px_rgba(0,0,0,0.02)] hover:shadow-[0_20px_40px_rgba(166,139,106,0.12)] transition-all duration-500 border border-black/[0.03] ${isGrid ? gridClasses : carouselClasses}`}
     >
       <div className="relative overflow-hidden aspect-[4/5] sm:aspect-[3/4]">
-        <Link href={`/suppliers/${idea.vendors.slug}`} className="block h-full w-full">
+        <Link href={`/suppliers/${idea.vendors.slug}?photoId=${idea.id}#photos`} className="block h-full w-full">
           <Image 
             src={idea.image_url} 
             alt={idea.caption || idea.themes.name} 
@@ -54,8 +55,6 @@ function IdeaCard({ idea, isGrid = false, width }: { idea: ThemedIdea; isGrid?: 
             className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
             draggable={false}
           />
-          {/* Subtle Vignette Gradient Overlay at the bottom */}
-          <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/25 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
         </Link>
         {/* Theme Tag Badge */}
         <Link 
@@ -66,19 +65,35 @@ function IdeaCard({ idea, isGrid = false, width }: { idea: ThemedIdea; isGrid?: 
           <Tag size={10} className="text-[#a68b6a] group-hover:text-white transition-colors" />
           {idea.themes.name}
         </Link>
-      </div>
-      
-      <div className="p-4">
-        <Link href={`/suppliers/${idea.vendors.slug}`} className="inline-block">
-          <span className="text-[14px] font-bold tracking-tight text-[#2c2c2c] group-hover:text-[#a68b6a] transition-colors duration-300 font-[family-name:var(--font-plus-jakarta)]">
-            {idea.vendors.business_name}
-          </span>
-        </Link>
-        {idea.caption && (
-          <p className="mt-2 text-[12px] leading-relaxed text-black/55 font-medium font-[family-name:var(--font-plus-jakarta)] line-clamp-2">
-            {idea.caption}
-          </p>
-        )}
+        
+        {/* Glassmorphism Name & Caption Area */}
+        <div className="absolute inset-x-2 bottom-2 z-20 pointer-events-none">
+          <Link href={`/suppliers/${idea.vendors.slug}`} className="block pointer-events-auto group/link">
+            <div className="bg-white/80 backdrop-blur-md border border-white/40 shadow-lg rounded-xl p-3 flex items-center gap-3 transition-all duration-300 hover:bg-white/90">
+              {idea.vendors.logo_url ? (
+                <div className="relative rounded-lg border border-gray-100 bg-white overflow-hidden flex-shrink-0 shadow-sm h-10 w-10 sm:h-12 sm:w-12">
+                  <Image
+                    src={proxiedImageUrl(idea.vendors.logo_url) ?? idea.vendors.logo_url}
+                    alt=""
+                    fill
+                    sizes="48px"
+                    className="object-cover"
+                  />
+                </div>
+              ) : null}
+              <div className="flex-1 min-w-0">
+                <span className="text-[13px] sm:text-[14px] font-bold tracking-tight text-[#1a1a1a] leading-tight group-hover/link:text-[#a68b6a] transition-colors duration-300 font-[family-name:var(--font-plus-jakarta)] truncate block">
+                  {idea.vendors.business_name}
+                </span>
+                {idea.caption && (
+                  <p className="mt-0.5 text-[11px] sm:text-[12px] leading-relaxed text-black/70 font-medium font-[family-name:var(--font-plus-jakarta)] line-clamp-2">
+                    {idea.caption}
+                  </p>
+                )}
+              </div>
+            </div>
+          </Link>
+        </div>
       </div>
     </motion.div>
   );

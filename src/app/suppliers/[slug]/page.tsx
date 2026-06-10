@@ -11,7 +11,8 @@ type VendorRow = {
   slug: string;
   logo_url: string | null;
   description: string | null;
-  location_text: string | null;
+  province: { name: string } | null;
+  city_rel: { name: string } | null;
   city: string | null;
   address: string | null;
   website_url: string | null;
@@ -149,7 +150,7 @@ async function VendorDetailData({ slug }: { slug: string }) {
   const { data: vendor } = await supabase
     .from("vendors")
     .select(
-      "id,business_name,slug,logo_url,description,location_text,city,address,website_url,contact_email,contact_phone,sec_dti_number,average_rating,review_count,save_count,document_verified,user_id,updated_at,year_established,cover_focus_x,cover_focus_y,cover_zoom,plan:plans(id,name)"
+      "id,business_name,slug,logo_url,description,province:provinces(name),city_rel:cities(name),city,address,website_url,contact_email,contact_phone,sec_dti_number,average_rating,review_count,save_count,document_verified,user_id,updated_at,year_established,cover_focus_x,cover_focus_y,cover_zoom,plan:plans(id,name)"
     )
     .eq("slug", slug)
     .eq("is_active", true)
@@ -249,7 +250,8 @@ const [categoriesRes, affiliationsRes, imagesRes, socialsRes, reviewsRes, promos
         slug: vendor.slug,
         logo_url: vendor.logo_url,
         description: vendor.description,
-        location_text: vendor.location_text,
+        province: vendor.province,
+        city_rel: vendor.city_rel,
         city: vendor.city,
         address: vendor.address,
         website_url: vendor.website_url,

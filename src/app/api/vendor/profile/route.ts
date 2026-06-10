@@ -7,7 +7,8 @@ type PatchBody = {
   business_name?: string;
   logo_url?: string | null;
   description?: string | null;
-  location_text?: string | null;
+  province_id?: number | null;
+  city_id?: number | null;
   city?: string | null;
   address?: string | null;
   website_url?: string | null;
@@ -136,7 +137,8 @@ export async function PATCH(req: Request) {
     if (typeof body.business_name === "string") patch.business_name = body.business_name.trim();
     if (typeof body.logo_url === "string" || body.logo_url === null) patch.logo_url = body.logo_url;
     if (typeof body.description === "string" || body.description === null) patch.description = body.description;
-    if (typeof body.location_text === "string" || body.location_text === null) patch.location_text = body.location_text;
+    if (typeof body.province_id === "number" || body.province_id === null) patch.province_id = body.province_id;
+    if (typeof body.city_id === "number" || body.city_id === null) patch.city_id = body.city_id;
     if (typeof body.city === "string" || body.city === null) patch.city = body.city;
     if (typeof body.address === "string" || body.address === null) patch.address = body.address;
     if (typeof body.website_url === "string" || body.website_url === null) patch.website_url = body.website_url;
@@ -207,7 +209,7 @@ export async function PATCH(req: Request) {
       .update(patch)
       .eq("id", vendor.id)
       .select(
-        "id,user_id,business_name,slug,logo_url,description,location_text,region_id,city,address,contact_email,contact_phone,website_url,plan_id,is_active,document_verified,cover_focus_x,cover_focus_y,cover_zoom,card_cover_focus_x,card_cover_focus_y,card_cover_zoom,portrait_cover_focus_x,portrait_cover_focus_y,portrait_cover_zoom,contact_person_1_name,contact_person_1_position,contact_person_2_name,contact_person_2_position,admin_email_1,admin_email_2,admin_email_3,admin_phone_1,admin_phone_2,admin_phone_3,year_established,view_count,save_count,click_count,inquiry_count,average_rating,review_count"
+        "id,user_id,business_name,slug,logo_url,description,province_id,city_id,province:provinces(name),city_rel:cities(name),city,address,contact_email,contact_phone,website_url,plan_id,is_active,document_verified,cover_focus_x,cover_focus_y,cover_zoom,card_cover_focus_x,card_cover_focus_y,card_cover_zoom,portrait_cover_focus_x,portrait_cover_focus_y,portrait_cover_zoom,contact_person_1_name,contact_person_1_position,contact_person_2_name,contact_person_2_position,admin_email_1,admin_email_2,admin_email_3,admin_phone_1,admin_phone_2,admin_phone_3,year_established,view_count,save_count,click_count,inquiry_count,average_rating,review_count"
       )
       .single();
 

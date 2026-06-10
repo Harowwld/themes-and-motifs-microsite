@@ -7,6 +7,7 @@ import { createPortal } from "react-dom";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { proxiedImageUrl } from "@/lib/imageSizes";
 import { createSupabaseBrowserClient } from "@/lib/supabaseBrowser";
+import { useSearchParams } from "next/navigation";
 
 // Type declarations for video APIs
 declare global {
@@ -168,6 +169,9 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500, vendor
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [userInteractedWithVideo, setUserInteractedWithVideo] = useState(false);
+  const searchParams = useSearchParams();
+  const initialPhotoId = searchParams?.get("photoId");
+  const hasOpenedInitialRef = useRef(false);
 
   const changeActiveIndex = useCallback((idx: number) => {
     setActiveIndex(idx);
@@ -255,6 +259,17 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500, vendor
     },
     [stopAutoplay]
   );
+
+  useEffect(() => {
+    if (initialPhotoId && displayedImages.length > 0 && !hasOpenedInitialRef.current) {
+      const idx = displayedImages.findIndex(img => img.id.toString() === initialPhotoId);
+      if (idx >= 0) {
+        changeActiveIndex(idx);
+        openLightbox(idx);
+      }
+      hasOpenedInitialRef.current = true;
+    }
+  }, [initialPhotoId, displayedImages, changeActiveIndex, openLightbox]);
 
   const goPrev = useCallback(() => {
     setLightboxIndex((i) => (i - 1 + displayedImages.length) % displayedImages.length);
@@ -540,15 +555,17 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500, vendor
                   </div>
 
                   {/* Caption & Counter */}
-                  <div className="mt-6 flex flex-col items-center gap-2">
+                  <div className="absolute bottom-6 sm:bottom-10 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-3 w-full max-w-3xl px-4 pointer-events-none">
                     {displayedImages[lightboxIndex]?.caption && (
-                      <p className="max-w-2xl px-6 text-center text-[15px] font-medium text-white/90">
-                        {displayedImages[lightboxIndex].caption}
-                      </p>
+                      <div className="bg-black/50 backdrop-blur-xl border border-white/10 rounded-2xl p-4 sm:px-6 shadow-2xl pointer-events-auto w-full text-center transition-all duration-300">
+                        <p className="text-[14px] sm:text-[15px] font-medium text-white/95 leading-relaxed font-[family-name:var(--font-plus-jakarta)]">
+                          {displayedImages[lightboxIndex].caption}
+                        </p>
+                      </div>
                     )}
-                    <span className="rounded-full bg-white/10 px-4 py-1.5 text-[13px] font-semibold text-white/80 backdrop-blur-md">
+                    <div className="rounded-full bg-black/50 border border-white/10 px-5 py-2 text-[12px] sm:text-[13px] font-bold text-white/90 backdrop-blur-xl shadow-xl pointer-events-auto font-[family-name:var(--font-plus-jakarta)] tracking-widest uppercase">
                       {lightboxIndex + 1} / {displayedImages.length}
-                    </span>
+                    </div>
                   </div>
                 </div>
 

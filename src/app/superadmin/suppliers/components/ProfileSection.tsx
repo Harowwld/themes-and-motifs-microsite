@@ -9,7 +9,7 @@ export function ProfileSection({
   editForm: any;
   setEditForm: (v: any) => void;
   regions?: {id: number, name: string}[];
-  cities?: {id: number, name: string, region_id: number}[];
+  cities?: {id: number, name: string, province_id: number}[];
 }) {
   return (
     <section className="grid gap-4">
@@ -54,21 +54,22 @@ export function ProfileSection({
           <span className="text-[12px] font-semibold text-black/55">Region</span>
           {regions && regions.length > 0 ? (
             <select
-              value={editForm.location_text}
-              onChange={(e) => setEditForm((f: any) => ({ ...f, location_text: e.target.value, city: "" }))}
+              value={editForm.province_id || ""}
+              onChange={(e) => setEditForm((f: any) => ({ ...f, province_id: e.target.value ? Number(e.target.value) : null, city_id: null, city: "" }))}
               className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px] bg-white outline-none"
             >
               <option value="">Select Region</option>
               {regions.map((r) => (
-                <option key={r.id} value={r.name}>{r.name}</option>
+                <option key={r.id} value={r.id}>{r.name}</option>
               ))}
             </select>
           ) : (
             <input
-              value={editForm.location_text}
-              onChange={(e) => setEditForm((f: any) => ({ ...f, location_text: e.target.value }))}
+              value={editForm.province_id || ""}
+              onChange={(e) => setEditForm((f: any) => ({ ...f, province_id: e.target.value ? Number(e.target.value) : null }))}
               className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]"
-              placeholder="e.g., Makati, Metro Manila"
+              placeholder="Province ID"
+              type="number"
             />
           )}
         </label>
@@ -76,17 +77,19 @@ export function ProfileSection({
           <span className="text-[12px] font-semibold text-black/55">City</span>
           {cities && regions && regions.length > 0 ? (
             <select
-              value={editForm.city}
-              onChange={(e) => setEditForm((f: any) => ({ ...f, city: e.target.value }))}
+              value={editForm.city_id || ""}
+              onChange={(e) => {
+                const selectedCity = cities.find(c => c.id === Number(e.target.value));
+                setEditForm((f: any) => ({ ...f, city_id: selectedCity ? selectedCity.id : null, city: selectedCity ? selectedCity.name : "" }))
+              }}
               className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px] bg-white outline-none"
-              disabled={!editForm.location_text}
+              disabled={!editForm.province_id}
             >
               <option value="">Select City</option>
               {(() => {
-                const selectedRegion = regions.find(r => r.name === editForm.location_text);
-                if (!selectedRegion) return null;
-                return cities.filter(c => c.region_id === selectedRegion.id).map((c) => (
-                  <option key={c.id} value={c.name}>{c.name}</option>
+                if (!editForm.province_id) return null;
+                return cities.filter(c => c.province_id === editForm.province_id).map((c) => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
                 ));
               })()}
             </select>

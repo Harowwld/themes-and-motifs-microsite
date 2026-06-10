@@ -12,7 +12,8 @@ type Vendor = {
   logo_url: string | null;
   description: string | null;
   city: string | null;
-  location_text: string | null;
+  province: { name: string } | null;
+  city_rel: { name: string } | null;
   contact_email: string | null;
   contact_phone: string | null;
   website_url: string | null;
@@ -60,7 +61,7 @@ export default async function MarketplaceItemDetailPage({ params }: Props) {
     .from("marketplace_items")
     .select(
       `id,title,summary,price,price_text,image_url,image_focus_x,image_focus_y,image_zoom,is_active,created_at,
-      vendor:vendor_id(id,business_name,slug,logo_url,description,city,location_text,contact_email,contact_phone,website_url)`
+      vendor:vendor_id(id,business_name,slug,logo_url,description,city,province:provinces(name),city_rel:cities(name),contact_email,contact_phone,website_url)`
     )
     .eq("id", id)
     .eq("is_active", true)
@@ -79,7 +80,7 @@ export default async function MarketplaceItemDetailPage({ params }: Props) {
 
   const vendorRaw = item.vendor;
   const vendor = Array.isArray(vendorRaw) ? vendorRaw[0] ?? null : vendorRaw;
-  const location = vendor?.city ?? vendor?.location_text;
+  const location = vendor?.city_rel?.name ?? vendor?.city ?? vendor?.province?.name;
 
   return (
     <div style={{ background: "#fafafa" }}>
@@ -254,7 +255,7 @@ async function MoreItems({ currentId }: { currentId: number }) {
   const { data: itemsData } = await supabase
     .from("marketplace_items")
     .select(
-      "id,title,summary,price,price_text,image_url,image_focus_x,image_focus_y,image_zoom,vendor:vendor_id(id,business_name,slug,logo_url,city,location_text)"
+      "id,title,summary,price,price_text,image_url,image_focus_x,image_focus_y,image_zoom,vendor:vendor_id(id,business_name,slug,logo_url,city,province:provinces(name),city_rel:cities(name))"
     )
     .eq("is_active", true)
     .neq("id", currentId)

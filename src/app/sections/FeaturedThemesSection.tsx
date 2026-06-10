@@ -10,7 +10,7 @@ export type ThemedIdea = {
   image_url: string;
   caption: string | null;
   themes: { id: number; name: string; slug: string };
-  vendors: { business_name: string; slug: string };
+  vendors: { business_name: string; slug: string; logo_url?: string | null };
 };
 
 export default function FeaturedThemesSection({ ideas }: { ideas?: ThemedIdea[] }) {
