@@ -10,7 +10,7 @@ export default function Loading() {
     <div style={{ background: "#fafafa" }}>
       <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
         <main className="pt-6 pb-12 sm:py-14 animate-pulse pointer-events-none">
-          <HeroSection categories={[]} regions={[]} />
+          <HeroSection categories={[]} regions={[]} isLoading={true} />
           <CategoryBrowserSkeleton />
 
           <div className="my-6 sm:my-12 h-px bg-gradient-to-r from-transparent via-black/15 to-transparent" />

@@ -61,9 +61,11 @@ function SelectMenu({
 export default function HeroSection({
   categories,
   regions,
+  isLoading = false,
 }: {
   categories: Category[];
   regions: { id: number; name: string }[];
+  isLoading?: boolean;
 }) {
   const router = useRouter();
   const [keyword, setKeyword] = useState("");
@@ -115,29 +117,33 @@ export default function HeroSection({
   };
 
   return (
-    <section className="relative overflow-hidden rounded-xl p-5 sm:p-6 lg:p-8 grid gap-6 sm:gap-8 lg:grid-cols-[1.2fr_0.8fr] items-start shadow-2xl">
-      <div aria-hidden className="absolute inset-0 hidden md:block">
-        <Image
-          src="https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/hero/desktop-hero.webp"
-          alt="Hero background"
-          fill
-          priority
-          unoptimized
-          fetchPriority="high"
-          className="object-cover object-center scale-105"
-        />
-      </div>
-      <div aria-hidden className="absolute inset-0 md:hidden">
-        <Image
-          src="https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/hero/mobile-hero.webp"
-          alt="Hero background"
-          fill
-          priority
-          unoptimized
-          fetchPriority="high"
-          className="object-cover object-center scale-105"
-        />
-      </div>
+    <section className={`relative overflow-hidden rounded-xl p-5 sm:p-6 lg:p-8 grid gap-6 sm:gap-8 lg:grid-cols-[1.2fr_0.8fr] items-start shadow-2xl ${isLoading ? "bg-black/[0.04]" : ""}`}>
+      {!isLoading && (
+        <>
+          <div aria-hidden className="absolute inset-0 hidden md:block">
+            <Image
+              src="https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/hero/desktop-hero.webp"
+              alt="Hero background"
+              fill
+              priority
+              unoptimized
+              fetchPriority="high"
+              className="object-cover object-center scale-105"
+            />
+          </div>
+          <div aria-hidden className="absolute inset-0 md:hidden">
+            <Image
+              src="https://tedsezmxctrgghyabjjb.supabase.co/storage/v1/object/public/vendor-assets/hero/desktop-hero.webp"
+              alt="Hero background"
+              fill
+              priority
+              unoptimized
+              fetchPriority="high"
+              className="object-cover object-center scale-105"
+            />
+          </div>
+        </>
+      )}
       <div
         aria-hidden
         className="absolute inset-0"
