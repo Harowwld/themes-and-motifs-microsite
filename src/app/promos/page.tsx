@@ -4,7 +4,7 @@ import { Metadata } from "next";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "The Wedding Marketplace | Themes & Motifs",
+  title: "The Wedding Marketplace | Themes & Motifs The Wedding App",
   description: "Evaluate, inquire, or book exclusive deals and special offers from trusted wedding suppliers.",
 };
  
@@ -151,7 +151,8 @@ async function PromosList({ query }: { query: string }) {
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {promos.map((promo, i) => {
         const tone = i % 3 === 0 ? "#a67c52" : i % 3 === 1 ? "#c17a4e" : "#8e6a46";
-        const vendor = promo.vendors?.[0];
+        const vendorRaw = promo.vendors as any;
+        const vendor = Array.isArray(vendorRaw) ? vendorRaw[0] : vendorRaw;
         const vendorName = vendor?.business_name;
         const coverUrl = proxiedImageUrl(promo.image_url) ?? "";
         const fx = clampPct(Number(promo.image_focus_x ?? 50));
@@ -309,7 +310,8 @@ async function MarketplaceList({ query }: { query: string }) {
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {items.map((item, i) => {
         const tone = i % 3 === 0 ? "#a67c52" : i % 3 === 1 ? "#c17a4e" : "#8e6a46";
-        const vendor = item.vendors?.[0];
+        const vendorRaw = item.vendors as any;
+        const vendor = Array.isArray(vendorRaw) ? vendorRaw[0] : vendorRaw;
         const vendorName = vendor?.business_name;
         const coverUrl = proxiedImageUrl(item.image_url) ?? "";
         const fx = clampPct(Number(item.image_focus_x ?? 50));
@@ -328,7 +330,7 @@ async function MarketplaceList({ query }: { query: string }) {
             >
               <div className="absolute top-0 left-0 z-10">
                 <div className="bg-[#a67c52] text-white text-[11px] font-bold px-3 py-1 rounded-br-xl">
-                  MARKETPLACE
+                  {vendorName || "MARKETPLACE"}
                 </div>
               </div>
 

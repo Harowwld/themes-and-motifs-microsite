@@ -198,7 +198,7 @@ const tabNames: Record<string, string> = {
 const tabDescriptions: Record<string, string> = {
   microsite_settings: "Configure your public microsite page—love story, entourage members, principal and secondary sponsors, and guest welcome message.",
   gift_registry: "Manage your wedding registry. View and manage items you've added from the marketplace, customize target amounts, and track guest contributions.",
-  event_registration: "Register for upcoming Themes & Motifs bridal fairs and wedding expos to get free entry passes.",
+  event_registration: "Register for upcoming Themes & Motifs The Wedding App bridal fairs and wedding expos to get free entry passes.",
   budget_planner: "Take control of your wedding budget. Log estimates, track payments, and visualize cost distribution seamlessly.",
   guest_list: "Keep a clean record of your guests, their contact information, dietary requirements, and RSVP counts.",
   rsvp: "Monitor RSVP status in real-time, view guest choices, and ensure a precise head count for seating.",
@@ -1743,7 +1743,7 @@ export default function DashboardPage() {
                                           T&M Event Registration
                                         </h3>
                                         <p className="text-[12px] text-neutral-500 leading-relaxed">
-                                          Register for upcoming Themes & Motifs bridal fairs, expos, and exclusive wedding events.
+                                          Register for upcoming Themes & Motifs The Wedding App bridal fairs, expos, and exclusive wedding events.
                                         </p>
                                       </div>
                                     </a>

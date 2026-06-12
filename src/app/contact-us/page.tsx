@@ -180,7 +180,7 @@ export default function ContactUsPage() {
                       </div>
                       <h4 className="mt-4 text-[16px] font-semibold text-[#2c2c2c]">Inquiry Sent Successfully!</h4>
                       <p className="mt-2 text-[13px] text-gray-500 max-w-sm">
-                        Thank you for contacting Themes & Motifs. We have received your inquiry and will respond to you as soon as possible.
+                        Thank you for contacting Themes & Motifs The Wedding App. We have received your inquiry and will respond to you as soon as possible.
                       </p>
                       <button
                         id="reset-form-btn"

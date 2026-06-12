@@ -37,7 +37,7 @@ const playfairDisplay = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Themes & Motifs | Wedding Vendor Directory",
+  title: "Themes & Motifs The Wedding App | Wedding Vendor Directory",
   description: "Discover curated wedding vendors, themes, and motifs for your perfect celebration",
   icons: {
     icon: "/favicon.png",

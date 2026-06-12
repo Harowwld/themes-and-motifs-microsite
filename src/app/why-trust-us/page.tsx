@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Why Trust Us | Themes & Motifs",
-  description: "Learn why Themes & Motifs is the most trusted wedding platform in the Philippines, backed by government affiliations and strict supplier verification.",
+  title: "Why Trust Us | Themes & Motifs The Wedding App",
+  description: "Learn why Themes & Motifs The Wedding App is the most trusted wedding platform in the Philippines, backed by government affiliations and strict supplier verification.",
 };
 
 export default function WhyTrustUsPage() {
@@ -20,7 +20,7 @@ export default function WhyTrustUsPage() {
             Why Trust Us
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-[16px] leading-relaxed text-gray-500">
-            For over two decades, Themes & Motifs has set the gold standard in the Philippine wedding industry. We ensure every couple connects only with legitimate, highly-vetted, and professional wedding suppliers.
+            For over two decades, Themes & Motifs The Wedding App has set the gold standard in the Philippine wedding industry. We ensure every couple connects only with legitimate, highly-vetted, and professional wedding suppliers.
           </p>
         </div>
       </section>

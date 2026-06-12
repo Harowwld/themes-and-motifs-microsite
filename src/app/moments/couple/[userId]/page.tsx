@@ -720,7 +720,7 @@ export default function CoupleMicrositePage() {
       const cleanLoc = profile.location || "TBA";
       document.title = `${displayTitle} | Wedding on ${cleanDate} at ${cleanLoc}`;
     } else {
-      document.title = "Wedding Microsite | Themes & Motifs";
+      document.title = "Wedding Microsite | Themes & Motifs The Wedding App";
     }
   }, [profile, displayTitle]);
 
@@ -1227,7 +1227,7 @@ export default function CoupleMicrositePage() {
                       </p>
                       <img
                         src="https://themesnmotifs.com/wp-content/uploads/elementor/thumbs/T_M-Logo-1-qzxx62xvcaywvxz23bwwe4nm1tu4exw9i42ghzw8g6.png"
-                        alt="Themes & Motifs"
+                        alt="Themes & Motifs The Wedding App"
                         className="h-6 w-auto opacity-65 select-none pointer-events-none"
                         referrerPolicy="no-referrer"
                       />

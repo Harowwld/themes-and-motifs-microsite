@@ -228,7 +228,7 @@ export default function EventRegistration({ userId }: EventRegistrationProps) {
       <div className="bg-white border border-black/5 rounded-2xl p-6 sm:p-8 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
         <div className="space-y-1.5 max-w-xl">
           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#a68b6a]/10 text-[#a68b6a] text-[10px] font-bold uppercase tracking-wider">
-            Themes & Motifs Fairs
+            Themes & Motifs The Wedding App Fairs
           </span>
           <h3 className="text-[20px] font-bold text-neutral-800 font-[family-name:var(--font-noto-serif)]">
             Bridal Fairs & Wedding Expos
@@ -350,7 +350,7 @@ export default function EventRegistration({ userId }: EventRegistrationProps) {
         {fairs.length === 0 ? (
           <div className="bg-white border border-black/5 rounded-2xl p-10 text-center space-y-3">
             <p className="text-[13px] text-neutral-400 leading-relaxed max-w-md mx-auto">
-              There are currently no active bridal fairs or event registrations scheduled in the system. Check back later for the next big Themes & Motifs show!
+              There are currently no active bridal fairs or event registrations scheduled in the system. Check back later for the next big Themes & Motifs The Wedding App show!
             </p>
           </div>
         ) : (
@@ -394,7 +394,7 @@ export default function EventRegistration({ userId }: EventRegistrationProps) {
                       </h5>
 
                       <p className="text-[12.5px] text-neutral-500 leading-relaxed font-[family-name:var(--font-plus-jakarta)] font-normal line-clamp-2">
-                        {fair.description || "Join us at this prestigious Themes & Motifs bridal event. Avail of massive booking discounts, view spectacular design pavilions, and meet local top suppliers in person."}
+                        {fair.description || "Join us at this prestigious Themes & Motifs The Wedding App bridal event. Avail of massive booking discounts, view spectacular design pavilions, and meet local top suppliers in person."}
                       </p>
 
                       <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 pt-1.5 text-[12px] font-semibold text-neutral-600">

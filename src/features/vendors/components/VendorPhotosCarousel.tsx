@@ -39,7 +39,7 @@ function getVideoEmbedUrl(url: string, enableApi: boolean = false): string | nul
   if (!u) return null;
 
   // YouTube URLs
-  const youtubeMatch = u.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/);
+  const youtubeMatch = u.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/);
   if (youtubeMatch) {
     const videoId = youtubeMatch[1];
     const baseUrl = `https://www.youtube.com/embed/${videoId}`;
@@ -50,7 +50,7 @@ function getVideoEmbedUrl(url: string, enableApi: boolean = false): string | nul
   }
 
   // Vimeo URLs
-  const vimeoMatch = u.match(/vimeo\.com\/(\d+)/);
+  const vimeoMatch = u.match(/(?:vimeo\.com\/|player\.vimeo\.com\/video\/)(\d+)/);
   if (vimeoMatch) {
     const videoId = vimeoMatch[1];
     const baseUrl = `https://player.vimeo.com/video/${videoId}`;
@@ -73,13 +73,13 @@ function getVideoThumbnailUrl(url: string): string | null {
   if (!u) return null;
 
   // YouTube thumbnails
-  const youtubeMatch = u.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+  const youtubeMatch = u.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/);
   if (youtubeMatch) {
     return `https://img.youtube.com/vi/${youtubeMatch[1]}/mqdefault.jpg`;
   }
 
   // Vimeo thumbnails
-  const vimeoMatch = u.match(/vimeo\.com\/(\d+)/);
+  const vimeoMatch = u.match(/(?:vimeo\.com\/|player\.vimeo\.com\/video\/)(\d+)/);
   if (vimeoMatch) {
     return `https://vumbnail.com/vimeo/video_${vimeoMatch[1]}.jpg`;
   }

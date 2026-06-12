@@ -10,7 +10,7 @@ function VideoThumbnail({ url, title }: { url: string; title: string | null }) {
     if (!url) return;
 
     // YouTube check
-    const ytReg = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const ytReg = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/;
     const ytMatch = url.match(ytReg);
     if (ytMatch && ytMatch[2].length === 11) {
       setThumb(`https://img.youtube.com/vi/${ytMatch[2]}/hqdefault.jpg`);
@@ -18,7 +18,7 @@ function VideoThumbnail({ url, title }: { url: string; title: string | null }) {
     }
 
     // Vimeo check
-    const vimeoReg = /vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/([^\/]*)\/videos\/|album\/(\d+)\/video\/|showcase\/(\d+)\/video\/|)(\d+)/;
+    const vimeoReg = /(?:vimeo\.com|player\.vimeo\.com\/video)\/(?:channels\/(?:\w+\/)?|groups\/([^\/]*)\/videos\/|album\/(\d+)\/video\/|showcase\/(\d+)\/video\/|)(\d+)/;
     const vimeoMatch = url.match(vimeoReg);
     if (vimeoMatch && vimeoMatch[4]) {
       const vimeoId = vimeoMatch[4];

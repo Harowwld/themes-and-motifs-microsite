@@ -175,7 +175,7 @@ export default function SuperadminRegistrationsPage() {
               Event Registrations
             </div>
             <div className="mt-1 text-[12px] text-black/45">
-              View and export guest registrations for Themes & Motifs bridal fairs and wedding expos.
+              View and export guest registrations for Themes & Motifs The Wedding App bridal fairs and wedding expos.
             </div>
           </div>
           <div className="flex items-center gap-2">

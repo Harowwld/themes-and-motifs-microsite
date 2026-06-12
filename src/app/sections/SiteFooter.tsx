@@ -51,7 +51,7 @@ export default function SiteFooter() {
             © 2026 Themes &amp; Motifs
           </div>
           <div className="text-gray-400">
-            The Wedding App powered by Themes & Motifs
+            The wedding app
           </div>
         </div>
 

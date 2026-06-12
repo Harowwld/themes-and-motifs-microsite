@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "About Us | Themes & Motifs",
-  description: "Learn more about Themes & Motifs, the Philippines' most prestigious wedding resource company and DOT-accredited MICE organizer.",
+  title: "About Us | Themes & Motifs The Wedding App",
+  description: "Learn more about Themes & Motifs The Wedding App, the Philippines' most prestigious wedding resource company and DOT-accredited MICE organizer.",
 };
 
 export default function AboutUsPage() {
@@ -17,7 +17,7 @@ export default function AboutUsPage() {
             Pioneering Wedding Resource
           </span>
           <h1 id="about-us-title" className="mt-3 text-3xl font-bold tracking-tight text-[#2c2c2c] sm:text-5xl font-headline">
-            About Themes & Motifs
+            About Themes & Motifs The Wedding App
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-[16px] leading-relaxed text-gray-500">
             Welcome to the Philippines' most prestigious wedding resource company and bridal fair organizer. Since 2001, we have dedicated ourselves to connecting couples with high-fidelity, trusted, and professional wedding suppliers.
@@ -39,7 +39,7 @@ export default function AboutUsPage() {
                 </div>
                 <h3 className="mt-6 text-[18px] font-semibold text-[#2c2c2c] font-headline">DOT Accredited Organizer</h3>
                 <p className="mt-4 text-[14px] leading-relaxed text-gray-500">
-                  Themes & Motifs is the first and only wedding planner and bridal fair organizer in the Philippines officially accredited by the Department of Tourism as a <strong>MICE Organizer</strong> (Meetings, Incentives, Conferences, and Exhibitions).
+                  Themes & Motifs The Wedding App is the first and only wedding planner and bridal fair organizer in the Philippines officially accredited by the Department of Tourism as a <strong>MICE Organizer</strong> (Meetings, Incentives, Conferences, and Exhibitions).
                 </p>
               </div>
             </div>
@@ -80,7 +80,7 @@ export default function AboutUsPage() {
             <h2 className="text-2xl font-bold text-[#2c2c2c] font-headline">Our Digital and Offline Ecosystem</h2>
             <div className="mt-6 space-y-6 text-[15px] leading-relaxed text-gray-600">
               <p>
-                Themes & Motifs bridges traditional large-scale exhibition prestige with cutting-edge digital wedding solutions. Through our offline wedding expos, soon-to-wed couples can meet thousands of qualified service providers in person.
+                Themes & Motifs The Wedding App bridges traditional large-scale exhibition prestige with cutting-edge digital wedding solutions. Through our offline wedding expos, soon-to-wed couples can meet thousands of qualified service providers in person.
               </p>
               <div className="grid gap-6 sm:grid-cols-2 mt-8">
                 <div className="rounded-lg bg-gray-50 p-6 border border-gray-100">

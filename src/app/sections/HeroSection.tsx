@@ -286,7 +286,7 @@ export default function HeroSection({
           >
             <span className="text-[12px] font-medium text-white/70">Keyword</span>
             <input
-              placeholder="Search Supplier Name (e.g. Themes & Motifs)"
+              placeholder="Search Supplier Name (e.g. Themes & Motifs The Wedding App)"
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
               onKeyDown={(e) => {

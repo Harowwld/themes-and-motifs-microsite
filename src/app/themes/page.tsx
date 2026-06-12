@@ -3,7 +3,7 @@ import Link from "next/link";
 import { createSupabaseServerClient } from "../../lib/supabaseServer";
 
 export const metadata: Metadata = {
-  title: "Wedding Themes Gallery | Themes & Motifs",
+  title: "Wedding Themes Gallery | Themes & Motifs The Wedding App",
   description: "Browse gorgeous wedding ideas, color palettes, and styled shoots curated by the best wedding suppliers in the Philippines.",
 };
 

@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
   
   return { 
-    title: `${theme.name} | Themes & Motifs`,
+    title: `${theme.name} | Themes & Motifs The Wedding App`,
     description: `Discover inspiration from our trusted vendors for the ${theme.name} theme.`
   };
 }

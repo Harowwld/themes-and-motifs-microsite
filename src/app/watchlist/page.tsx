@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Watchlist | Themes & Motifs",
-  description: "Themes & Motifs Watchlist of Erring Accounts.",
+  title: "Watchlist | Themes & Motifs The Wedding App",
+  description: "Themes & Motifs The Wedding App Watchlist of Erring Accounts.",
 };
 
 export default function WatchlistPage() {

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Growth Ambassadors | Themes & Motifs",
+  title: "Growth Ambassadors | Themes & Motifs The Wedding App",
   description: "Meet our provincial sales representatives and growth ambassadors.",
 };
 
@@ -53,7 +53,7 @@ export default function GrowthAmbassadorsPage() {
             Growth Ambassadors
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-[16px] leading-relaxed text-gray-500">
-            Meet our dedicated provincial sales representatives. Reach out to the ambassador in your region to learn how Themes & Motifs can help elevate your wedding business.
+            Meet our dedicated provincial sales representatives. Reach out to the ambassador in your region to learn how Themes & Motifs The Wedding App can help elevate your wedding business.
           </p>
         </div>
       </section>

@@ -18,14 +18,14 @@ export default function TermsPage() {
               <section>
                 <h2 className="text-[16px] font-semibold text-[#2c2c2c]">1. Acceptance of Terms</h2>
                 <p className="mt-2">
-                  By accessing and using Themes & Motifs (&quot;we,&quot; &quot;us,&quot; or &quot;our&quot;), you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by these terms, please do not use this service.
+                  By accessing and using Themes & Motifs The Wedding App (&quot;we,&quot; &quot;us,&quot; or &quot;our&quot;), you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by these terms, please do not use this service.
                 </p>
               </section>
 
               <section>
                 <h2 className="text-[16px] font-semibold text-[#2c2c2c]">2. Description of Service</h2>
                 <p className="mt-2">
-                  Themes & Motifs is a wedding vendor directory platform that connects couples with wedding suppliers. We provide a searchable database of vendors, promotional deals, and related services to help couples plan their wedding.
+                  Themes & Motifs The Wedding App is a wedding vendor directory platform that connects couples with wedding suppliers. We provide a searchable database of vendors, promotional deals, and related services to help couples plan their wedding.
                 </p>
               </section>
 
@@ -58,21 +58,21 @@ export default function TermsPage() {
               <section>
                 <h2 className="text-[16px] font-semibold text-[#2c2c2c]">5. Payment and Billing</h2>
                 <p className="mt-2">
-                  Some vendors on our platform may offer premium services. Payment terms vary by vendor. Themes & Motifs is not responsible for transactions between users and vendors. Users should verify payment terms directly with the vendor before making any payments.
+                  Some vendors on our platform may offer premium services. Payment terms vary by vendor. Themes & Motifs The Wedding App is not responsible for transactions between users and vendors. Users should verify payment terms directly with the vendor before making any payments.
                 </p>
               </section>
 
               <section>
                 <h2 className="text-[16px] font-semibold text-[#2c2c2c]">6. Intellectual Property</h2>
                 <p className="mt-2">
-                  All content on this website, including logos, images, text, and software, is the property of Themes & Motifs or its content suppliers. Unauthorized reproduction, distribution, or modification is prohibited.
+                  All content on this website, including logos, images, text, and software, is the property of Themes & Motifs The Wedding App or its content suppliers. Unauthorized reproduction, distribution, or modification is prohibited.
                 </p>
               </section>
 
               <section>
                 <h2 className="text-[16px] font-semibold text-[#2c2c2c]">7. Limitation of Liability</h2>
                 <p className="mt-2">
-                  Themes & Motifs provides the platform &quot;as is&quot; without any warranties, express or implied. We do not guarantee the accuracy, completeness, or reliability of any vendor information. Users engage with vendors at their own risk.
+                  Themes & Motifs The Wedding App provides the platform &quot;as is&quot; without any warranties, express or implied. We do not guarantee the accuracy, completeness, or reliability of any vendor information. Users engage with vendors at their own risk.
                 </p>
               </section>
 

@@ -6,7 +6,7 @@ import LandingPage from "./LandingPage";
 import ClientHomeRedirect from "./ClientHomeRedirect";
 
 export const metadata: Metadata = {
-  title: "Themes & Motifs | Discover Wedding Vendors",
+  title: "Themes & Motifs The Wedding App | Discover Wedding Vendors",
   description: "Find the best wedding suppliers, caterers, photographers, and venues in the Philippines for your dream wedding.",
 };
 

@@ -340,12 +340,12 @@ export default function SiteHeader() {
           <Link
             className="flex items-center"
             href="/"
-            aria-label="Themes & Motifs"
+            aria-label="Themes & Motifs The Wedding App"
             prefetch={true}
           >
             <img
               src="/logo.png"
-              alt="Themes & Motifs"
+              alt="Themes & Motifs The Wedding App"
               className="h-10 sm:h-12 w-auto"
               loading="eager"
               referrerPolicy="no-referrer"

@@ -133,7 +133,7 @@ export default function PublicMomentsPage() {
         {/* Page Main Brand Header */}
         <div className="text-center max-w-2xl mx-auto mb-10 select-none animate-fade-in-up">
           <span className="text-[#a68b6a] text-xs font-bold uppercase tracking-widest bg-[#a68b6a]/5 px-3 py-1 rounded-full">
-            Themes & Motifs Directory
+            Themes & Motifs The Wedding App
           </span>
           <h1 className="text-[36px] sm:text-[46px] font-bold text-[#2c2c2c] mt-4 font-[family-name:var(--font-noto-serif)] leading-tight">
             Wedding Moments

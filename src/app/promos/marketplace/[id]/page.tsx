@@ -102,7 +102,7 @@ export default async function MarketplaceItemDetailPage({ params }: Props) {
                   {/* Badge */}
                   <div className="absolute top-0 left-0 z-10">
                     <div className="bg-[#a67c52] text-white text-[12px] font-bold px-4 py-1.5 rounded-br-xl">
-                      MARKETPLACE
+                      {vendor?.business_name || "MARKETPLACE"}
                     </div>
                   </div>
 
@@ -292,7 +292,7 @@ async function MoreItems({ currentId }: { currentId: number }) {
           >
             <div className="absolute top-0 left-0 z-10">
               <div className="bg-[#a67c52] text-white text-[10px] font-bold px-2.5 py-0.5 rounded-br-xl">
-                MARKETPLACE
+                {vendorName || "MARKETPLACE"}
               </div>
             </div>
 

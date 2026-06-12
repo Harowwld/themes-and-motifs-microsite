@@ -38,7 +38,7 @@ export default function AdBanner({ pageContext, onClose }: AdBannerProps) {
       isEvent: false,
       badge: "Partner Showcase",
       title: "Discover DOT-Accredited Suppliers",
-      desc: "Find certified, trusted photographers, coordinators, and venues on Themes & Motifs to guarantee a seamless and worry-free wedding celebration.",
+      desc: "Find certified, trusted photographers, coordinators, and venues on Themes & Motifs The Wedding App to guarantee a seamless and worry-free wedding celebration.",
       cta: "Explore Marketplace",
       href: "/suppliers",
       icon: Compass,
@@ -262,7 +262,7 @@ export default function AdBanner({ pageContext, onClose }: AdBannerProps) {
                   <span className="text-neutral-300">·</span>
                   <span className="flex items-center gap-1 text-[#a67c52]">
                     <Award size={12} />
-                    Themes & Motifs Event
+                    Themes & Motifs The Wedding App Event
                   </span>
                 </div>
               )}
