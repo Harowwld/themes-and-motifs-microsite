@@ -103,12 +103,14 @@ export function useVendorDashboard() {
   
   const [albumModalOpen, setAlbumModalOpen] = useState(false);
   const [albumTitle, setAlbumTitle] = useState("");
+  const [createAlbumThemeId, setCreateAlbumThemeId] = useState<number | undefined>(undefined);
   const [albumEditorOpen, setAlbumEditorOpen] = useState(false);
   const [deleteAlbumModalOpen, setDeleteAlbumModalOpen] = useState(false);
   const [albumToDelete, setAlbumToDelete] = useState<{ id: number; title: string } | null>(null);
   const [renameAlbumModalOpen, setRenameAlbumModalOpen] = useState(false);
   const [albumToRename, setAlbumToRename] = useState<Album | null>(null);
   const [renameAlbumTitle, setRenameAlbumTitle] = useState("");
+  const [renameAlbumThemeId, setRenameAlbumThemeId] = useState<number | undefined>(undefined);
 
   const [cropperOpen, setCropperOpen] = useState(false);
   const [cardCropperOpen, setCardCropperOpen] = useState(false);
@@ -569,10 +571,11 @@ export function useVendorDashboard() {
     try {
       const res = await apiFetch<{ album: Album }>("/api/vendor/albums", token, {
         method: "POST",
-        body: JSON.stringify({ title: albumTitle.trim() }),
+        body: JSON.stringify({ title: albumTitle.trim(), theme_id: createAlbumThemeId }),
       });
       setAlbums((prev) => [res.album, ...prev]);
       setAlbumTitle("");
+      setCreateAlbumThemeId(undefined);
       setAlbumModalOpen(false);
     } catch (e: any) {
       toast.error(e?.message ?? "Failed to create album.");
@@ -603,10 +606,15 @@ export function useVendorDashboard() {
     }
   };
 
-  const renameAlbum = async () => {
+  const renameAlbum = async (directId?: number, directTitle?: string, directThemeId?: number | null) => {
     if (!token) return;
-    if (!albumToRename) return;
-    if (!renameAlbumTitle.trim()) {
+    
+    const id = directId !== undefined ? directId : albumToRename?.id;
+    const title = directTitle !== undefined ? directTitle : renameAlbumTitle.trim();
+    const theme_id = directThemeId !== undefined ? directThemeId : renameAlbumThemeId;
+
+    if (!id) return;
+    if (!title.trim()) {
       toast.error("Album title is required");
       return;
     }
@@ -614,13 +622,17 @@ export function useVendorDashboard() {
     try {
       const res = await apiFetch<{ album: Album }>("/api/vendor/albums", token, {
         method: "PATCH",
-        body: JSON.stringify({ id: albumToRename.id, title: renameAlbumTitle.trim() }),
+        body: JSON.stringify({ id, title: title.trim(), theme_id }),
       });
-      setAlbums((prev) => prev.map((a) => (a.id === albumToRename.id ? { ...a, title: res.album.title, slug: res.album.slug } : a)));
-      setRenameAlbumModalOpen(false);
-      setAlbumToRename(null);
-      setRenameAlbumTitle("");
-      toast.success("Album renamed successfully.");
+      setAlbums((prev) => prev.map((a) => (a.id === id ? { ...a, title: res.album.title, slug: res.album.slug, theme_id: res.album.theme_id } : a)));
+      
+      if (directId === undefined) {
+        setRenameAlbumModalOpen(false);
+        setAlbumToRename(null);
+        setRenameAlbumTitle("");
+        setRenameAlbumThemeId(undefined);
+      }
+      toast.success(directId !== undefined ? "Album theme updated." : "Album renamed successfully.");
     } catch (e: any) {
       toast.error(e?.message ?? "Failed to rename album.");
     } finally {
@@ -940,12 +952,14 @@ export function useVendorDashboard() {
     albumPhotos,
     albumModalOpen,
     albumTitle,
+    createAlbumThemeId,
     albumEditorOpen,
     deleteAlbumModalOpen,
     albumToDelete,
     renameAlbumModalOpen,
     albumToRename,
     renameAlbumTitle,
+    renameAlbumThemeId,
     cropperOpen,
     setCropperOpen,
     cardCropperOpen,
@@ -974,6 +988,7 @@ export function useVendorDashboard() {
     setCategories,
     setAlbumModalOpen,
     setAlbumTitle,
+    setCreateAlbumThemeId,
     setAlbumEditorOpen,
     setSelectedAlbum,
     setDeleteAlbumModalOpen,
@@ -981,6 +996,7 @@ export function useVendorDashboard() {
     setRenameAlbumModalOpen,
     setAlbumToRename,
     setRenameAlbumTitle,
+    setRenameAlbumThemeId,
     setLogoModalOpen,
     setPhotoModalOpen,
     setEditingPhotoIndex,

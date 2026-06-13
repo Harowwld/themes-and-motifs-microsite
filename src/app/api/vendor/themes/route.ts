@@ -88,6 +88,30 @@ export async function PUT(req: Request) {
       if (insertError) {
         return Response.json({ error: insertError.message }, { status: 500 });
       }
+
+      // Auto-unselect themes from photos and albums if they are no longer in the pool
+      await supabase
+        .from("vendor_images")
+        .update({ theme_id: null })
+        .eq("vendor_id", vendor.id)
+        .not("theme_id", "in", `(${themeIds.join(",")})`);
+      
+      await supabase
+        .from("vendor_albums")
+        .update({ theme_id: null })
+        .eq("vendor_id", vendor.id)
+        .not("theme_id", "in", `(${themeIds.join(",")})`);
+    } else {
+      // If no themes selected, clear all theme associations
+      await supabase
+        .from("vendor_images")
+        .update({ theme_id: null })
+        .eq("vendor_id", vendor.id);
+        
+      await supabase
+        .from("vendor_albums")
+        .update({ theme_id: null })
+        .eq("vendor_id", vendor.id);
     }
 
     // Fetch updated themes for this vendor

@@ -48,6 +48,10 @@ export function PhotoSection({
   setAlbumToRename,
   setRenameAlbumTitle,
   renameAlbum,
+  createAlbumThemeId,
+  setCreateAlbumThemeId,
+  renameAlbumThemeId,
+  setRenameAlbumThemeId,
 }: {
   images: any[];
   setImages: any;
@@ -90,6 +94,10 @@ export function PhotoSection({
   setAlbumToRename: (v: Album | null) => void;
   setRenameAlbumTitle: (v: string) => void;
   renameAlbum: () => void;
+  createAlbumThemeId?: number;
+  setCreateAlbumThemeId?: (id: number | undefined) => void;
+  renameAlbumThemeId?: number;
+  setRenameAlbumThemeId?: (id: number | undefined) => void;
 }) {
   const [subTab, setSubTab] = React.useState<"photos" | "albums">("photos");
 
@@ -98,7 +106,7 @@ export function PhotoSection({
       {/* Unified Tab Header */}
       <div className="px-6 pt-5 border-b border-black/[0.04] bg-[#fafafa]/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="font-serif text-[18px] font-semibold tracking-tight text-[#2c2c2c]">Photos and Themes</h2>
+          <h2 className="font-serif text-[18px] font-semibold tracking-tight text-[#2c2c2c]">Post Photos and Themes</h2>
           <div className="mt-1 text-[12px] text-black/45">Showcase your masterpiece collections and albums.</div>
         </div>
         
@@ -132,44 +140,6 @@ export function PhotoSection({
       <div className="p-6">
         {subTab === "photos" ? (
           <div className="grid gap-6">
-            {/* Specializes In Selector */}
-            <div className="rounded-xl border border-black/[0.06] bg-[#fafafa]/30 p-5">
-              <h3 className="text-[11px] font-bold text-black/40 uppercase tracking-widest mb-1.5">Specializes In</h3>
-              <div className="text-[12px] text-black/45 mb-4">Select up to 10 themes that best describe your business. These active themes will also define the options available to tag each of your photos.</div>
-              
-              <div className="flex flex-wrap gap-2">
-                {allThemes.map((t) => {
-                  const isSelected = themes.some((x) => x.id === t.id);
-                  return (
-                    <button
-                      key={t.id}
-                      type="button"
-                      onClick={() => {
-                        let nextThemes: Theme[];
-                        if (isSelected) {
-                          nextThemes = themes.filter((x) => x.id !== t.id);
-                        } else {
-                          if (themes.length >= 10) return;
-                          nextThemes = [...themes, t];
-                        }
-                        setThemes(nextThemes);
-                        void saveThemes(nextThemes);
-                      }}
-                      className={`px-3 py-1.5 rounded-lg text-[12px] font-bold transition-all border flex items-center gap-1.5 cursor-pointer active:scale-95 ${
-                        isSelected
-                          ? "bg-[#7c3aed]/10 text-[#7c3aed] border-[#7c3aed]/30 shadow-sm"
-                          : "bg-white text-black/40 border-black/[0.06] hover:border-[#a67c52]/40 hover:text-[#a67c52]"
-                      }`}
-                    >
-                      {t.name}
-                      {isSelected && (
-                        <span className="w-1 h-1 rounded-full bg-[#7c3aed]" />
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
               {images
@@ -179,7 +149,22 @@ export function PhotoSection({
                   <div key={originalIdx} className="relative aspect-square rounded-lg border border-black/[0.05] overflow-hidden bg-[#fafafa] group shadow-sm hover:shadow-md transition-all duration-300">
                     <img src={img.image_url} alt={img.caption || `Photo ${originalIdx + 1}`} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
 
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3 gap-2">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3 gap-2">
+                      {themes && themes.length > 0 && (
+                        <select
+                          className="w-full h-8 rounded-lg border-none bg-white/95 px-2 text-[11px] font-bold text-[#2c2c2c] outline-none shadow-sm cursor-pointer"
+                          value={img.theme_id || ""}
+                          onChange={(e) => {
+                            const newThemeId = e.target.value ? Number(e.target.value) : null;
+                            const nextImages = images.map((r, i) => (i === originalIdx ? { ...r, theme_id: newThemeId } : r));
+                            setImages(nextImages);
+                            void saveImages(nextImages);
+                          }}
+                        >
+                          <option value="">No Theme</option>
+                          {themes.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                        </select>
+                      )}
                       <div className="flex gap-2 w-full">
                         <button
                           type="button"
@@ -187,7 +172,7 @@ export function PhotoSection({
                             setEditingPhotoIndex(originalIdx);
                             setPhotoModalOpen(true);
                           }}
-                          className="w-full h-8 rounded-lg bg-white text-[11px] font-bold text-[#2c2c2c] shadow-sm hover:bg-[#fafafa] transition-colors"
+                          className="w-full h-8 rounded-lg bg-white/95 text-[11px] font-bold text-[#2c2c2c] shadow-sm hover:bg-white transition-colors"
                         >
                           Edit Details
                         </button>
@@ -225,6 +210,45 @@ export function PhotoSection({
                   <span>{saving ? "Saving Portfolio…" : "Save Photo Changes"}</span>
                 </span>
               </button>
+            </div>
+
+            {/* Specializes In Selector (Moved Below Photos) */}
+            <div className="rounded-xl border border-black/[0.06] bg-[#fafafa]/30 p-5 mt-4">
+              <h3 className="text-[11px] font-bold text-black/40 uppercase tracking-widest mb-1.5">Specializes In</h3>
+              <div className="text-[12px] text-black/45 mb-4">Select up to 10 themes that best describe your business. These active themes will also define the options available to tag each of your photos.</div>
+              
+              <div className="flex flex-wrap gap-2">
+                {allThemes.map((t) => {
+                  const isSelected = themes.some((x) => x.id === t.id);
+                  return (
+                    <button
+                      key={t.id}
+                      type="button"
+                      onClick={() => {
+                        let nextThemes: Theme[];
+                        if (isSelected) {
+                          nextThemes = themes.filter((x) => x.id !== t.id);
+                        } else {
+                          if (themes.length >= 10) return;
+                          nextThemes = [...themes, t];
+                        }
+                        setThemes(nextThemes);
+                        void saveThemes(nextThemes);
+                      }}
+                      className={`px-3 py-1.5 rounded-lg text-[12px] font-bold transition-all border flex items-center gap-1.5 cursor-pointer active:scale-95 ${
+                        isSelected
+                          ? "bg-[#7c3aed]/10 text-[#7c3aed] border-[#7c3aed]/30 shadow-sm"
+                          : "bg-white text-black/40 border-black/[0.06] hover:border-[#a67c52]/40 hover:text-[#a67c52]"
+                      }`}
+                    >
+                      {t.name}
+                      {isSelected && (
+                        <span className="w-1 h-1 rounded-full bg-[#7c3aed]" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             <PhotoModal
@@ -296,6 +320,11 @@ export function PhotoSection({
             setAlbumToRename={setAlbumToRename}
             setRenameAlbumTitle={setRenameAlbumTitle}
             renameAlbum={renameAlbum}
+            availableThemes={themes}
+            createAlbumThemeId={createAlbumThemeId}
+            setCreateAlbumThemeId={setCreateAlbumThemeId}
+            renameAlbumThemeId={renameAlbumThemeId}
+            setRenameAlbumThemeId={setRenameAlbumThemeId}
           />
         )}
       </div>

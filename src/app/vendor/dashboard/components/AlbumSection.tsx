@@ -31,7 +31,12 @@ export function AlbumSection({
   setAlbumToRename,
   setRenameAlbumTitle,
   renameAlbum,
-  isMerged = false
+  isMerged = false,
+  availableThemes,
+  createAlbumThemeId,
+  setCreateAlbumThemeId,
+  renameAlbumThemeId,
+  setRenameAlbumThemeId,
 }: {
   albums: Album[];
   setAlbumModalOpen: (v: boolean) => void;
@@ -61,8 +66,13 @@ export function AlbumSection({
   setRenameAlbumModalOpen: (v: boolean) => void;
   setAlbumToRename: (v: Album | null) => void;
   setRenameAlbumTitle: (v: string) => void;
-  renameAlbum: () => void;
+  renameAlbum: (directId?: number, directTitle?: string, directThemeId?: number | null) => void;
   isMerged?: boolean;
+  availableThemes?: {id: number; name: string}[];
+  createAlbumThemeId?: number;
+  setCreateAlbumThemeId?: (id: number | undefined) => void;
+  renameAlbumThemeId?: number;
+  setRenameAlbumThemeId?: (id: number | undefined) => void;
 }) {
   const [localPhotos, setLocalPhotos] = React.useState<AlbumPhoto[]>([]);
 
@@ -98,7 +108,22 @@ export function AlbumSection({
                 </div>
                 <div>
                   <div className="text-[14px] font-bold text-[#2c2c2c]">{album.title}</div>
-                  <div className="text-[11px] font-bold text-black/30 uppercase tracking-wider">{album.photo_count} photo{album.photo_count !== 1 ? "s" : ""}</div>
+                  <div className="flex items-center gap-3 mt-0.5">
+                    <div className="text-[11px] font-bold text-black/30 uppercase tracking-wider">{album.photo_count} photo{album.photo_count !== 1 ? "s" : ""}</div>
+                    {availableThemes && availableThemes.length > 0 && (
+                      <select
+                        className="h-6 rounded border border-black/10 bg-[#fafafa] px-1 text-[10px] font-bold text-[#a67c52] outline-none cursor-pointer hover:bg-white transition-colors"
+                        value={album.theme_id || ""}
+                        onChange={(e) => {
+                          const newThemeId = e.target.value ? Number(e.target.value) : null;
+                          renameAlbum(album.id, album.title, newThemeId);
+                        }}
+                      >
+                        <option value="">No Theme</option>
+                        {availableThemes.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                      </select>
+                    )}
+                  </div>
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -118,11 +143,14 @@ export function AlbumSection({
                   onClick={() => {
                     setAlbumToRename(album);
                     setRenameAlbumTitle(album.title);
+                    if (setRenameAlbumThemeId) {
+                      setRenameAlbumThemeId(album.theme_id || undefined);
+                    }
                     setRenameAlbumModalOpen(true);
                   }}
                   className="h-9 px-4 rounded-lg bg-white border border-black/[0.08] text-[12px] font-bold text-[#6e4f33] hover:bg-[#fafafa] transition-all duration-300 shadow-sm"
                 >
-                  Rename
+                  Edit Details
                 </button>
                 <button
                   type="button"
@@ -205,6 +233,22 @@ export function AlbumSection({
                   autoFocus
                 />
               </div>
+
+              {availableThemes && availableThemes.length > 0 && setCreateAlbumThemeId && (
+                <div className="flex flex-col gap-1.5 mt-4">
+                  <label className="text-[11px] font-black uppercase tracking-[0.2em] text-[#a67c52]">Theme (Specializes In)</label>
+                  <select
+                    className="h-11 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-4 text-[14px] outline-none focus:border-[#a67c52] focus:bg-white focus:ring-4 focus:ring-[#a67c52]/10 transition-all duration-200"
+                    value={createAlbumThemeId || ""}
+                    onChange={(e) => setCreateAlbumThemeId(e.target.value ? Number(e.target.value) : undefined)}
+                  >
+                    <option value="">No Theme</option>
+                    {availableThemes.map(t => (
+                      <option key={t.id} value={t.id}>{t.name}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </div>
             <div className="px-8 py-6 border-t border-black/[0.04] flex items-center justify-end gap-3 bg-[#fafafa]/10">
               <button
@@ -364,9 +408,9 @@ export function AlbumSection({
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity" onClick={() => setRenameAlbumModalOpen(false)} />
           <div className="relative w-full max-w-sm rounded-lg bg-white shadow-2xl overflow-hidden transform transition-all">
             <div className="px-8 py-6 border-b border-black/[0.04] bg-[#fafafa]/30">
-              <h2 className="font-serif text-[18px] font-bold text-[#2c2c2c]">Rename Album</h2>
+              <h2 className="font-serif text-[18px] font-bold text-[#2c2c2c]">Edit Album Details</h2>
               <p className="mt-1 text-[12px] text-black/45">
-                Change the title of your collection.
+                Update the title and theme of your collection.
               </p>
             </div>
             <div className="px-8 py-6">
@@ -381,6 +425,22 @@ export function AlbumSection({
                   autoFocus
                 />
               </div>
+
+              {availableThemes && availableThemes.length > 0 && setRenameAlbumThemeId && (
+                <div className="flex flex-col gap-1.5 mt-4">
+                  <label className="text-[11px] font-black uppercase tracking-[0.2em] text-[#a67c52]">Theme (Specializes In)</label>
+                  <select
+                    className="h-11 w-full rounded-lg border border-black/[0.08] bg-[#fafafa]/50 px-4 text-[14px] outline-none focus:border-[#a67c52] focus:bg-white focus:ring-4 focus:ring-[#a67c52]/10 transition-all duration-200"
+                    value={renameAlbumThemeId || ""}
+                    onChange={(e) => setRenameAlbumThemeId(e.target.value ? Number(e.target.value) : undefined)}
+                  >
+                    <option value="">No Theme</option>
+                    {availableThemes.map(t => (
+                      <option key={t.id} value={t.id}>{t.name}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </div>
             <div className="px-8 py-6 border-t border-black/[0.04] flex items-center justify-end gap-3 bg-[#fafafa]/10">
               <button
@@ -394,7 +454,7 @@ export function AlbumSection({
               <button
                 type="button"
                 disabled={saving || !renameAlbumTitle.trim()}
-                onClick={renameAlbum}
+                onClick={() => renameAlbum()}
                 className="h-11 px-8 rounded-lg bg-[#a67c52] text-white text-[14px] font-bold shadow-lg shadow-[#a67c52]/20 hover:bg-[#8e6a46] hover:shadow-xl transition-all duration-300 disabled:opacity-60"
               >
                 {saving ? "Saving..." : "Save Changes"}

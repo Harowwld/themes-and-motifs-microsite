@@ -44,6 +44,15 @@ export default function SuperadminVendorsPage() {
     editThemes,
     setEditThemes,
     allThemes,
+    editAlbums,
+    setEditAlbums,
+    editAlbumPhotos,
+    setEditAlbumPhotos,
+    createAlbum,
+    deleteAlbum,
+    renameAlbum,
+    loadAlbumPhotos,
+    saveAlbumPhotos,
     regions,
     cities,
     verificationDocuments,
@@ -130,6 +139,15 @@ export default function SuperadminVendorsPage() {
         editThemes={editThemes}
         setEditThemes={setEditThemes}
         allThemes={allThemes}
+        editAlbums={editAlbums}
+        setEditAlbums={setEditAlbums}
+        editAlbumPhotos={editAlbumPhotos}
+        setEditAlbumPhotos={setEditAlbumPhotos}
+        createAlbum={createAlbum}
+        deleteAlbum={deleteAlbum}
+        renameAlbum={renameAlbum}
+        loadAlbumPhotos={loadAlbumPhotos}
+        saveAlbumPhotos={saveAlbumPhotos}
         regions={regions}
         cities={cities}
         editPromos={editPromos}

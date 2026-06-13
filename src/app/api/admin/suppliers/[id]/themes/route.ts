@@ -116,6 +116,30 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
       if (insertError) {
         return Response.json({ error: insertError.message }, { status: 500 });
       }
+
+      // Auto-unselect themes from photos and albums if they are no longer in the pool
+      await supabase
+        .from("vendor_images")
+        .update({ theme_id: null })
+        .eq("vendor_id", vendorId)
+        .not("theme_id", "in", `(${themeIds.join(",")})`);
+      
+      await supabase
+        .from("vendor_albums")
+        .update({ theme_id: null })
+        .eq("vendor_id", vendorId)
+        .not("theme_id", "in", `(${themeIds.join(",")})`);
+    } else {
+      // If no themes selected, clear all theme associations
+      await supabase
+        .from("vendor_images")
+        .update({ theme_id: null })
+        .eq("vendor_id", vendorId);
+        
+      await supabase
+        .from("vendor_albums")
+        .update({ theme_id: null })
+        .eq("vendor_id", vendorId);
     }
 
         try {

@@ -141,6 +141,10 @@ export default function VendorDashboardPage() {
     saveCategories,
     saveImages,
     saveVideos,
+    createAlbumThemeId,
+    setCreateAlbumThemeId,
+    renameAlbumThemeId,
+    setRenameAlbumThemeId,
   } = useVendorDashboard();
   
   const [activeTab, setActiveTab] = React.useState("analytics");
@@ -172,7 +176,7 @@ export default function VendorDashboardPage() {
 
   const tabs = [
     { id: "analytics", label: "Analytics", icon: BarChart3 },
-    { id: "photos", label: "Photos and Themes", icon: ImageIcon },
+    { id: "photos", label: "Post Photos and Themes", icon: ImageIcon },
     { id: "promos", label: "Exclusive Deals", icon: Ticket },
     { id: "marketplace", label: "Marketplace Items", icon: Store },
     { id: "profile", label: "Business Profile", icon: User },
@@ -282,7 +286,7 @@ export default function VendorDashboardPage() {
                             promos={promos}
                             marketplaceItems={marketplaceItems}
                             images={images}
-                            socials={socials}
+                            socials={socials.map((s, i) => ({ ...s, id: i }))}
                             videos={videos}
                             albums={albums}
                             categories={categories}
@@ -290,7 +294,7 @@ export default function VendorDashboardPage() {
                         );
                       case "photos":
                         return (
-                          <PhotoSection 
+                          <PhotoSection
                             images={images}
                             setImages={setImages}
                             photoModalOpen={photoModalOpen}
@@ -299,14 +303,10 @@ export default function VendorDashboardPage() {
                             setEditingPhotoIndex={setEditingPhotoIndex}
                             saving={saving}
                             saveImages={saveImages}
-
-                            // Theme properties
                             themes={themes}
                             setThemes={setThemes}
                             allThemes={allThemes}
                             saveThemes={saveThemes}
-
-                            // Album properties
                             albums={albums}
                             setAlbumModalOpen={setAlbumModalOpen}
                             setSelectedAlbum={setSelectedAlbum}
@@ -332,6 +332,10 @@ export default function VendorDashboardPage() {
                             setAlbumToRename={setAlbumToRename}
                             setRenameAlbumTitle={setRenameAlbumTitle}
                             renameAlbum={renameAlbum}
+                            createAlbumThemeId={createAlbumThemeId}
+                            setCreateAlbumThemeId={setCreateAlbumThemeId}
+                            renameAlbumThemeId={renameAlbumThemeId}
+                            setRenameAlbumThemeId={setRenameAlbumThemeId}
                           />
                         );
                       case "videos":
@@ -425,7 +429,7 @@ export default function VendorDashboardPage() {
                       case "social":
                         return (
                           <SocialSection 
-                            socials={socials}
+                            socials={socials.map((s, i) => ({ ...s, id: i }))}
                             setSocials={setSocials}
                             socialPlatformChoices={socialPlatformChoices}
                             setSocialPlatformChoices={setSocialPlatformChoices}

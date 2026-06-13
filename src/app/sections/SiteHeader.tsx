@@ -329,7 +329,11 @@ export default function SiteHeader() {
   };
 
   return (
-    <header className="sticky top-0 z-50 inset-x-0 backdrop-blur-md bg-white/90 supports-backdrop-filter:bg-white/90 border-b border-gray-100">
+    <>
+      <link rel="preconnect" href="https://www.themesnmotifs.com" />
+      <link rel="dns-prefetch" href="https://www.themesnmotifs.com" />
+      {mounted && <link rel="prefetch" href="https://www.themesnmotifs.com" as="document" />}
+      <header className="sticky top-0 z-50 inset-x-0 backdrop-blur-md bg-white/90 supports-backdrop-filter:bg-white/90 border-b border-gray-100">
       <div className="mx-auto h-16 flex items-center justify-between sm:grid sm:grid-cols-[20%_60%_20%] px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, x: -10 }}
@@ -614,5 +618,6 @@ export default function SiteHeader() {
         )}
       </AnimatePresence>
     </header>
+    </>
   );
 }

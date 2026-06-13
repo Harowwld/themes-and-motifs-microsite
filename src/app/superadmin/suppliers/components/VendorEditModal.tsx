@@ -12,7 +12,7 @@ import {
   Briefcase 
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Vendor, VerificationDocument, Promo, Theme, Affiliation, VendorImage, VendorVideo, VendorSocial } from "../hooks/useSuperadminSuppliers";
+import { Vendor, VerificationDocument, Promo, Theme, Affiliation, VendorImage, VendorVideo, VendorSocial, Album, AlbumPhoto } from "../hooks/useSuperadminSuppliers";
 import { ProfileSection } from "./ProfileSection";
 import { ContactSection } from "./ContactSection";
 import { VerificationSection } from "./VerificationSection";
@@ -128,6 +128,15 @@ export function VendorEditModal({
   saveVendorSocials: (silent?: boolean) => Promise<boolean>;
   saveVendorAffiliations: (silent?: boolean) => Promise<boolean>;
   saveVendorThemes: (silent?: boolean) => Promise<boolean>;
+  editAlbums: Album[];
+  setEditAlbums: (v: any) => void;
+  editAlbumPhotos: AlbumPhoto[];
+  setEditAlbumPhotos: (v: any) => void;
+  createAlbum: (title: string, theme_id?: number) => Promise<void>;
+  deleteAlbum: (id: number) => Promise<void>;
+  renameAlbum: (id: number, title: string, theme_id?: number) => Promise<void>;
+  loadAlbumPhotos: (id: number) => Promise<void>;
+  saveAlbumPhotos: (id: number, urls: string[]) => Promise<boolean>;
   saveAll: (closeAfter?: boolean) => Promise<boolean>;
   saveAllAndClose: () => Promise<void>;
 }) {
@@ -216,6 +225,15 @@ export function VendorEditModal({
                           allThemes={allThemes}
                           editThemes={editThemes}
                           setEditThemes={setEditThemes}
+                          editAlbums={editAlbums}
+                          setEditAlbums={setEditAlbums}
+                          editAlbumPhotos={editAlbumPhotos}
+                          setEditAlbumPhotos={setEditAlbumPhotos}
+                          createAlbum={createAlbum}
+                          deleteAlbum={deleteAlbum}
+                          renameAlbum={renameAlbum}
+                          loadAlbumPhotos={loadAlbumPhotos}
+                          saveAlbumPhotos={saveAlbumPhotos}
                         />
                       );
                     case "promos":

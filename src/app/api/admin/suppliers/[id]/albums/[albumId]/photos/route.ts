@@ -1,5 +1,5 @@
-import { createSupabaseAdminClient } from "../../../../../../../lib/supabaseAdmin";
-import { assertAdminOrEditorRequest } from "../../../../../../../lib/editorAuth";
+import { createSupabaseAdminClient } from "@/lib/supabaseAdmin";
+import { assertAdminOrEditorRequest } from "@/lib/editorAuth";
 
 export const dynamic = "force-dynamic";
 

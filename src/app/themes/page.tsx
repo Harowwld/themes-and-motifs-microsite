@@ -22,8 +22,27 @@ export default async function ThemesPage() {
     .select("theme_id, image_url, vendors(business_name, slug)")
     .not("theme_id", "is", null);
 
-  // Group images by theme to find a representative one (latest or first)
+  // Fetch albums with vendor info
+  const { data: albumRows } = await supabase
+    .from("vendor_albums")
+    .select("theme_id, cover_url, vendors(business_name, slug)")
+    .not("theme_id", "is", null);
+
+  // Group items by theme to find a representative one (latest or first)
   const imageMap = new Map<number, { image_url: string; vendor: { business_name: string; slug: string } | null }>();
+  
+  albumRows?.forEach((row: any) => {
+    if (row.theme_id && row.cover_url && !imageMap.has(row.theme_id)) {
+      imageMap.set(row.theme_id, {
+        image_url: row.cover_url,
+        vendor: row.vendors ? {
+          business_name: row.vendors.business_name,
+          slug: row.vendors.slug
+        } : null
+      });
+    }
+  });
+
   imageRows?.forEach((row: any) => {
     if (row.theme_id && row.image_url && !imageMap.has(row.theme_id)) {
       imageMap.set(row.theme_id, {
@@ -42,7 +61,7 @@ export default async function ThemesPage() {
       id: t.id,
       name: t.name,
       slug: t.slug,
-      count: imageRows?.filter((r) => r.theme_id === t.id).length || 0,
+      count: (imageRows?.filter((r) => r.theme_id === t.id).length || 0) + (albumRows?.filter((r) => r.theme_id === t.id).length || 0),
       image_url: imgInfo?.image_url || null,
       vendor: imgInfo?.vendor || null,
     };
@@ -114,7 +133,7 @@ export default async function ThemesPage() {
                       hasImage ? "text-white/70" : "text-black/40"
                     }`}
                   >
-                    {theme.count} {theme.count === 1 ? "inspiration photo" : "inspiration photos"}
+                    {theme.count} {theme.count === 1 ? "inspiration item" : "inspiration items"}
                   </p>
                 </div>
               </div>
