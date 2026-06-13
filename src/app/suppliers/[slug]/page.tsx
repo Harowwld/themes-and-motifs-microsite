@@ -68,6 +68,12 @@ type PromoRow = {
   image_zoom: number | null;
 };
 
+type ReplyRow = {
+  id: number;
+  reply_text: string;
+  created_at: string;
+};
+
 type ReviewRow = {
   id: number;
   rating: number;
@@ -75,9 +81,8 @@ type ReviewRow = {
   created_at: string;
   vendor_reply_text?: string | null;
   vendor_reply_at?: string | null;
-  users?: {
-    email: string;
-  }[] | null;
+  users?: { email: string }[] | null;
+  review_replies?: ReplyRow[] | null;
 };
 
 type ThemeRow = {
@@ -186,7 +191,7 @@ const [categoriesRes, affiliationsRes, imagesRes, socialsRes, reviewsRes, promos
       .limit(20),
     supabase
       .from("reviews")
-      .select("id,rating,review_text,created_at,users(email),vendor_reply_text,vendor_reply_at")
+      .select("id,rating,review_text,created_at,users(email),vendor_reply_text,vendor_reply_at,review_replies(id,reply_text,created_at)")
       .eq("vendor_id", vendor.id)
       .eq("status", "published")
       .order("created_at", { ascending: false })

@@ -66,6 +66,7 @@ type SearchVendorsRow = {
   cover_image_url: string | null;
   document_verified: string | null;
   total_count: number | null;
+  year_established: string | null;
 };
 
 type VendorsQueryResult = {

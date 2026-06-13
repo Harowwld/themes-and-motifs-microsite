@@ -23,7 +23,7 @@ export default function RegisterSuccessPage() {
           <div className="p-7">
             <div className="text-[18px] font-semibold tracking-[-0.01em] text-[#2c2c2c]">Successfully registered</div>
             <div className="mt-2 text-[13px] leading-6 text-black/60">
-              Thanks! Your vendor registration has been submitted. We’ll review it and get back to you.
+              Thanks! Your vendor registration has been submitted. Please check your email to confirm your account. We’ll review it and get back to you.
             </div>
             <div className="mt-4 text-[12px] text-black/45">Redirecting to the homepage in 5 seconds…</div>
 
