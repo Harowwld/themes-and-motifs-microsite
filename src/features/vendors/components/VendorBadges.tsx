@@ -57,14 +57,14 @@ export default function VendorBadges({
   // 3. Established Professional (25+ or 10+)
   if (businessAge >= 25) {
     badges.push(
-      <span key="est25" className="shrink-0 relative" style={{ height: size, width: size }} title="Established Professional (25+ Years in Business)">
-        <Image src="/badges/established-25-badge.png" alt="25+ Years Established" fill sizes={`${size}px`} className="object-contain" />
+      <span key="est25" className="shrink-0 relative" style={{ height: size, width: size }} title="Established (≥ 25 years old)">
+        <Image src="/badges/established-25-badge.png" alt="Established (≥ 25 years old)" fill sizes={`${size}px`} className="object-contain" />
       </span>
     );
   } else if (hasEstablished || businessAge >= 10) {
     badges.push(
-      <span key="est10" className="shrink-0 relative" style={{ height: size, width: size }} title="Established Professional (10+ Years in Business)">
-        <Image src="/badges/established-10-badge.png" alt="10+ Years Established" fill sizes={`${size}px`} className="object-contain" />
+      <span key="est10" className="shrink-0 relative" style={{ height: size, width: size }} title="Established (≥ 10 years old)">
+        <Image src="/badges/established-10-badge.png" alt="Established (≥ 10 years old)" fill sizes={`${size}px`} className="object-contain" />
       </span>
     );
   }
