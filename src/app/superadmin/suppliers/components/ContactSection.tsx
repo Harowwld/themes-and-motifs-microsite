@@ -1,16 +1,11 @@
 import React from "react";
-import { proxiedImageUrl } from "@/lib/imageSizes";
 
 export function ContactSection({
   editForm,
-  setEditForm,
-  setLogoUrlInput,
-  setLogoModalOpen
+  setEditForm
 }: {
   editForm: any;
   setEditForm: (v: any) => void;
-  setLogoUrlInput: (v: string) => void;
-  setLogoModalOpen: (v: boolean) => void;
 }) {
   return (
     <div className="grid gap-8">
@@ -44,32 +39,6 @@ export function ContactSection({
               onChange={(e) => setEditForm((f: any) => ({ ...f, website_url: e.target.value }))}
               className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]"
             />
-          </label>
-          <label className="grid gap-1.5">
-            <span className="text-[12px] font-semibold text-black/55">Logo</span>
-            <div className="flex items-center gap-3">
-              <div className="w-[80px] h-[80px] rounded-[3px] border border-black/10 overflow-hidden bg-black/5 flex items-center justify-center">
-                {editForm.logo_url ? (
-                  <img
-                    src={proxiedImageUrl(editForm.logo_url) ?? editForm.logo_url}
-                    alt="Logo"
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <span className="text-[10px] text-black/40">No logo</span>
-                )}
-              </div>
-              <button
-                type="button"
-                onClick={() => {
-                  setLogoUrlInput(editForm.logo_url);
-                  setLogoModalOpen(true);
-                }}
-                className="h-9 px-4 rounded-[3px] border border-black/10 bg-white text-[12px] font-semibold text-black/70 hover:bg-black/5 transition-colors"
-              >
-                Edit Logo
-              </button>
-            </div>
           </label>
         </div>
       </section>

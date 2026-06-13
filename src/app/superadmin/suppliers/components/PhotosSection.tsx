@@ -127,7 +127,7 @@ export function PhotosSection({
       {editThemes && setEditThemes && allThemes && (
         <section className="grid gap-4 mt-8 pt-6 border-t border-black/5">
           <div className="text-[13px] font-semibold text-[#2c2c2c] border-b border-black/5 pb-2">
-            Storefront Themes
+            Specializes In
           </div>
           <div className="flex flex-wrap gap-2">
             {allThemes.map((theme) => {

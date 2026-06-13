@@ -14,16 +14,26 @@ import {
   Percent,
   MessageCircle
 } from "lucide-react";
-import { Inquiry, Review, VendorProfile } from "../types";
+import { Inquiry, Review, VendorProfile, VendorPromo, MarketplaceItem, VendorImage, SocialLink, VendorVideo, Album, Category } from "../types";
 
 type Props = {
   vendor: VendorProfile | null;
   inquiries: Inquiry[];
   reviews: Review[];
   isPremium: boolean;
+  promos?: VendorPromo[];
+  marketplaceItems?: MarketplaceItem[];
+  images?: VendorImage[];
+  socials?: SocialLink[];
+  videos?: VendorVideo[];
+  albums?: Album[];
+  categories?: Category[];
 };
 
-export function AnalyticsSection({ vendor, inquiries, reviews, isPremium }: Props) {
+export function AnalyticsSection({ 
+  vendor, inquiries, reviews, isPremium,
+  promos = [], marketplaceItems = [], images = [], socials = [], videos = [], albums = [], categories = []
+}: Props) {
   // 1. Calculate active statistics from database inquiries list
   const totalInquiries = inquiries.length;
   const newInquiries = inquiries.filter(i => i.status === "new" || i.status === "new_inquiry").length;
@@ -83,8 +93,78 @@ export function AnalyticsSection({ vendor, inquiries, reviews, isPremium }: Prop
   const daysOfWeek = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const maxWeeklyVal = Math.max(...weeklyInquiryData, 5); // Ensure scale height is at least 5 for visibility
 
+  // 4. Profile Completeness Calculation
+  const checks = [
+    { label: "Add business logo", complete: !!vendor?.logo_url },
+    { label: "Write a business description", complete: !!vendor?.description && vendor.description.length > 20 },
+    { label: "Select service categories", complete: categories.length > 0 },
+    { label: "Add social media links", complete: socials.length > 0 },
+    { label: "Upload portfolio photos", complete: images.length >= 3 },
+    { label: "Publish a promo or marketplace item", complete: promos.length > 0 || marketplaceItems.length > 0 },
+  ];
+  const completedChecks = checks.filter(c => c.complete).length;
+  const completenessScore = Math.round((completedChecks / checks.length) * 100);
+
+  // 5. Content Summary
+  const totalDeals = promos.length + marketplaceItems.length;
+  const totalMedia = images.length + videos.length;
+
   return (
     <div className="space-y-8 font-[family-name:var(--font-plus-jakarta)]">
+
+      {/* Profile Completeness Section */}
+      <div className="bg-white border border-black/[0.06] rounded-2xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.015)] relative overflow-hidden">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="flex-1 space-y-2">
+            <h3 className="text-[17px] font-bold text-[#2c2c2c] flex items-center gap-2">
+              Profile Completeness
+              <span className={`text-[12px] px-2 py-0.5 rounded-full font-bold ${completenessScore === 100 ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-[#a67c52]'}`}>
+                {completenessScore}%
+              </span>
+            </h3>
+            <p className="text-[13px] text-neutral-500 max-w-xl">
+              A complete profile ranks higher in search results and builds more trust with couples. Complete the following checklist to maximize your visibility.
+            </p>
+          </div>
+          
+          <div className="shrink-0 relative w-24 h-24 flex items-center justify-center">
+            <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+              <path
+                className="text-neutral-100"
+                strokeWidth="3"
+                stroke="currentColor"
+                fill="none"
+                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+              />
+              <path
+                className={completenessScore === 100 ? "text-emerald-500" : "text-[#a67c52]"}
+                strokeWidth="3"
+                strokeDasharray={`${completenessScore}, 100`}
+                strokeLinecap="round"
+                stroke="currentColor"
+                fill="none"
+                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+              />
+            </svg>
+            <div className="absolute inset-0 flex items-center justify-center flex-col">
+              <span className="text-[20px] font-bold text-[#2c2c2c]">{completenessScore}%</span>
+            </div>
+          </div>
+        </div>
+
+        {completenessScore < 100 && (
+          <div className="mt-6 pt-6 border-t border-black/5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+            {checks.map((check, idx) => (
+              <div key={idx} className={`flex items-center gap-2.5 text-[12.5px] ${check.complete ? 'text-neutral-400' : 'text-[#2c2c2c] font-medium'}`}>
+                <div className={`shrink-0 w-4 h-4 rounded-full flex items-center justify-center border ${check.complete ? 'bg-emerald-50 border-emerald-200 text-emerald-500' : 'border-black/20 text-transparent'}`}>
+                  {check.complete && <CheckCircle size={10} strokeWidth={3} />}
+                </div>
+                {check.label}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
       
       {/* Premium Tier Spotlight Banner */}
       {!isPremium && (
@@ -279,6 +359,88 @@ export function AnalyticsSection({ vendor, inquiries, reviews, isPremium }: Prop
             </div>
 
           </div>
+        </div>
+
+      </div>
+
+      {/* Content Summary & Conversion Funnel */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
+        
+        {/* Content Summary */}
+        <div className="bg-white border border-black/[0.06] rounded-2xl p-6 shadow-[0_8px_30px_rgba(0,0,0,0.015)] space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h4 className="text-[14px] font-bold text-[#2c2c2c]">Content Summary</h4>
+              <p className="text-[11px] text-neutral-400">Total published assets on your storefront</p>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div className="p-4 rounded-xl bg-[#fafafa] border border-black/5 flex flex-col items-center justify-center text-center">
+              <span className="text-[32px] font-black text-[#2c2c2c]">{totalMedia}</span>
+              <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-widest mt-1">Photos & Videos</span>
+            </div>
+            <div className="p-4 rounded-xl bg-[#fafafa] border border-black/5 flex flex-col items-center justify-center text-center">
+              <span className="text-[32px] font-black text-[#2c2c2c]">{totalDeals}</span>
+              <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-widest mt-1">Active Deals & Items</span>
+            </div>
+            <div className="p-4 rounded-xl bg-[#fafafa] border border-black/5 flex flex-col items-center justify-center text-center">
+              <span className="text-[32px] font-black text-[#2c2c2c]">{socials.length}</span>
+              <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-widest mt-1">Social Links</span>
+            </div>
+            <div className="p-4 rounded-xl bg-[#fafafa] border border-black/5 flex flex-col items-center justify-center text-center">
+              <span className="text-[32px] font-black text-[#2c2c2c]">{categories.length}</span>
+              <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-widest mt-1">Categories</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Conversion Funnel */}
+        <div className="bg-white border border-black/[0.06] rounded-2xl p-6 shadow-[0_8px_30px_rgba(0,0,0,0.015)] space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h4 className="text-[14px] font-bold text-[#2c2c2c]">Conversion Funnel</h4>
+              <p className="text-[11px] text-neutral-400">How views translate into inquiries</p>
+            </div>
+          </div>
+
+          <div className="space-y-3 pt-2">
+            {/* Step 1: Views */}
+            <div className="relative flex flex-col gap-1">
+              <div className="flex items-center justify-between text-[12px] font-bold z-10 px-4 py-2 text-white">
+                <span>Profile Views</span>
+                <span>{profileViews}</span>
+              </div>
+              <div className="absolute inset-0 bg-[#a67c52] rounded-lg w-full" />
+            </div>
+
+            {/* Step 2: Engagements */}
+            <div className="relative flex flex-col gap-1 mx-4">
+              <div className="flex items-center justify-between text-[12px] font-bold z-10 px-4 py-2 text-white">
+                <span>Engagements (Saves + Clicks)</span>
+                <span>{shortlistSaves + portfolioClicks}</span>
+              </div>
+              <div 
+                className="absolute inset-0 bg-[#a67c52]/80 rounded-lg" 
+                style={{ width: profileViews > 0 ? `${Math.max(15, ((shortlistSaves + portfolioClicks) / profileViews) * 100)}%` : '100%' }}
+              />
+            </div>
+
+            {/* Step 3: Inquiries */}
+            <div className="relative flex flex-col gap-1 mx-8">
+              <div className="flex items-center justify-between text-[12px] font-bold z-10 px-4 py-2 text-white">
+                <span>Direct Inquiries</span>
+                <span>{totalInquiries}</span>
+              </div>
+              <div 
+                className="absolute inset-0 bg-[#a67c52]/60 rounded-lg" 
+                style={{ width: profileViews > 0 ? `${Math.max(10, (totalInquiries / profileViews) * 100)}%` : '100%' }}
+              />
+            </div>
+          </div>
+          <p className="text-[11.5px] text-neutral-400 text-center italic mt-2">
+            Currently converting {conversionRate}% of profile views into direct inquiries.
+          </p>
         </div>
 
       </div>

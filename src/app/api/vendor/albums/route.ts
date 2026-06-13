@@ -8,6 +8,8 @@ type AlbumRow = {
   title: string;
   slug: string;
   created_at: string;
+  theme_id?: number | null;
+  theme?: any | null;
 };
 
 function slugify(input: string) {
@@ -40,7 +42,10 @@ export async function GET(req: Request) {
 
     const { data, error } = await supabase
       .from("vendor_albums")
-      .select("id,vendor_id,title,slug,created_at")
+      .select(`
+        id,vendor_id,title,slug,created_at,theme_id,
+        theme:themes(id,name,slug)
+      `)
       .eq("vendor_id", vendor.id)
       .order("created_at", { ascending: false });
 
@@ -62,7 +67,13 @@ export async function GET(req: Request) {
 
     return Response.json(
       {
-        albums: albumRows.map((a) => ({ ...a, photo_count: countsByAlbumId.get(a.id) ?? 0 })),
+        albums: albumRows.map((a) => {
+          return { 
+            ...a, 
+            photo_count: countsByAlbumId.get(a.id) ?? 0,
+            theme: Array.isArray(a.theme) ? a.theme[0] : (a.theme ?? null)
+          };
+        }),
       },
       { status: 200 }
     );
@@ -72,7 +83,7 @@ export async function GET(req: Request) {
   }
 }
 
-type PostBody = { title?: string };
+type PostBody = { title?: string; theme_id?: number | null };
 
 export async function POST(req: Request) {
   try {
@@ -90,8 +101,8 @@ export async function POST(req: Request) {
 
     const { data, error } = await supabase
       .from("vendor_albums")
-      .insert({ vendor_id: vendor.id, title, slug })
-      .select("id,vendor_id,title,slug,created_at")
+      .insert({ vendor_id: vendor.id, title, slug, theme_id: body.theme_id || null })
+      .select("id,vendor_id,title,slug,created_at,theme_id")
       .single();
 
     if (error) return Response.json({ error: error.message }, { status: 500 });
@@ -103,7 +114,7 @@ export async function POST(req: Request) {
   }
 }
 
-type PatchBody = { id?: number; title?: string };
+type PatchBody = { id?: number; title?: string; theme_id?: number | null };
 
 export async function PATCH(req: Request) {
   try {
@@ -121,12 +132,17 @@ export async function PATCH(req: Request) {
       return Response.json({ error: "Title is required" }, { status: 400 });
     }
 
+    const updatePayload: any = { title };
+    if (body.theme_id !== undefined) {
+      updatePayload.theme_id = body.theme_id || null;
+    }
+
     const { data, error } = await supabase
       .from("vendor_albums")
-      .update({ title })
+      .update(updatePayload)
       .eq("id", id)
       .eq("vendor_id", vendor.id)
-      .select("id,vendor_id,title,slug,created_at")
+      .select("id,vendor_id,title,slug,created_at,theme_id")
       .maybeSingle();
 
     if (error) return Response.json({ error: error.message }, { status: 500 });

@@ -89,7 +89,7 @@ export default function RegisterForm({ categories, provinces, cities, plans, aff
   const formRef = useRef<HTMLDivElement>(null);
   const [form, setForm] = useState<FormState>({
     ...initialState,
-    planId: preselectedPlan ?? "",
+    planId: preselectedPlan ?? plans.find((p) => p.name.toLowerCase().includes("premium"))?.id.toString() ?? "",
   });
   const [coverModalOpen, setCoverModalOpen] = useState(false);
   const [logoModalOpen, setLogoModalOpen] = useState(false);
@@ -102,8 +102,13 @@ export default function RegisterForm({ categories, provinces, cities, plans, aff
   useEffect(() => {
     if (preselectedPlan) {
       setForm((prev) => ({ ...prev, planId: preselectedPlan }));
+    } else {
+      const defaultPremium = plans.find(p => p.name.toLowerCase().includes('premium'));
+      if (defaultPremium && !form.planId) {
+        setForm((prev) => ({ ...prev, planId: defaultPremium.id.toString() }));
+      }
     }
-  }, [preselectedPlan]);
+  }, [preselectedPlan, plans, form.planId]);
 
   const cityOptions = useMemo(() => {
     const base = cities ?? [];
@@ -150,8 +155,7 @@ export default function RegisterForm({ categories, provinces, cities, plans, aff
     if (!form.planId) errors.add("planId");
     if (!form.contactEmail.trim()) errors.add("contactEmail");
     if (!form.contactPhone.trim()) errors.add("contactPhone");
-    if (!form.secDtiNumber.trim()) errors.add("secDtiNumber");
-    if (!form.tin.trim()) errors.add("tin");
+
     if (!form.contactPerson.trim()) errors.add("contactPerson");
     if (!form.address.trim()) errors.add("address");
     if (!form.provinceId) errors.add("provinceId");
@@ -619,11 +623,14 @@ export default function RegisterForm({ categories, provinces, cities, plans, aff
             onChange={(e) => set("planId", e.target.value)}
           >
             <option value="">Select a plan</option>
-            {plans.map((p) => (
-              <option key={p.id} value={String(p.id)}>
-                {p.name}
-              </option>
-            ))}
+            {plans.map((p) => {
+              const isStandard = p.name.toLowerCase().includes('standard') || p.name.toLowerCase().includes('free');
+              return (
+                <option key={p.id} value={String(p.id)} disabled={isStandard} className={isStandard ? "text-black/30 bg-black/5" : ""}>
+                  {p.name} {isStandard ? "(Disabled for Beta)" : ""}
+                </option>
+              );
+            })}
           </select>
         </Field>
 

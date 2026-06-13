@@ -143,7 +143,7 @@ export default function VendorDashboardPage() {
     saveVideos,
   } = useVendorDashboard();
   
-  const [activeTab, setActiveTab] = React.useState("photos");
+  const [activeTab, setActiveTab] = React.useState("analytics");
 
   React.useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -171,6 +171,7 @@ export default function VendorDashboardPage() {
   };
 
   const tabs = [
+    { id: "analytics", label: "Analytics", icon: BarChart3 },
     { id: "photos", label: "Photos and Themes", icon: ImageIcon },
     { id: "promos", label: "Exclusive Deals", icon: Ticket },
     { id: "marketplace", label: "Marketplace Items", icon: Store },
@@ -178,7 +179,6 @@ export default function VendorDashboardPage() {
     { id: "social", label: "Social Links", icon: Globe },
     { id: "categories", label: "Service Categories", icon: Tag },
     { id: "videos", label: "Video Highlights", icon: Film },
-    { id: "analytics", label: "Analytics", icon: BarChart3 },
     { id: "inquiries", label: "Client Inquiries", icon: MessageCircle },
     { id: "reviews", label: "Couple Reviews", icon: Star },
   ];
@@ -279,6 +279,13 @@ export default function VendorDashboardPage() {
                             inquiries={inquiries}
                             reviews={reviews}
                             isPremium={isPremium}
+                            promos={promos}
+                            marketplaceItems={marketplaceItems}
+                            images={images}
+                            socials={socials}
+                            videos={videos}
+                            albums={albums}
+                            categories={categories}
                           />
                         );
                       case "photos":

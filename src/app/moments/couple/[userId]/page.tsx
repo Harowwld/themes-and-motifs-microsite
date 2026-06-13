@@ -365,10 +365,13 @@ export default function CoupleMicrositePage() {
   const [profile, setProfile] = useState<any>(null);
   const [moments, setMoments] = useState<Moment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [profileLoading, setProfileLoading] = useState(true);
+
+  const [isSuperadmin, setIsSuperadmin] = useState(false);
 
   const isOwner = useMemo(() => {
-    return !!(user && user.id === userId);
-  }, [user, userId]);
+    return !!(user && (user.id === userId || isSuperadmin));
+  }, [user, userId, isSuperadmin]);
 
   // Tab State matching mockup exactly
   const [activeTab, setActiveTab] = useState<"our_story" | "entourage" | "sponsors" | "our_message" | "registry">("our_story");
@@ -617,6 +620,22 @@ export default function CoupleMicrositePage() {
       
       if (!cancelled) {
         setUser(session?.user);
+
+        let localIsSuperadmin = false;
+        if (session?.user) {
+          try {
+            const { data } = await supabase
+              .from("superadmins")
+              .select("id")
+              .eq("auth_user_id", session.user.id)
+              .eq("is_active", true)
+              .maybeSingle();
+            localIsSuperadmin = !!data;
+          } catch (e) {
+            console.error('Error checking superadmin:', e);
+          }
+        }
+        setIsSuperadmin(localIsSuperadmin);
         
         // Fetch soon-to-wed profile details for the couple ID in URL
         if (userId) {
@@ -629,10 +648,27 @@ export default function CoupleMicrositePage() {
 
             if (!profileErr && profileData && !cancelled) {
               setProfile(profileData);
+            } else if (!profileData && localIsSuperadmin && !cancelled) {
+              // Try fetching via superadmin API to bypass RLS
+              try {
+                const res = await fetch(`/api/admin/soon-to-wed-profile?userId=${userId}`);
+                if (res.ok) {
+                  const json = await res.json();
+                  if (json.profile && !cancelled) {
+                    setProfile(json.profile);
+                  }
+                }
+              } catch (adminErr) {
+                console.error("Error fetching profile via admin API:", adminErr);
+              }
             }
           } catch (error) {
             console.error('Error checking user profile:', error);
+          } finally {
+            if (!cancelled) setProfileLoading(false);
           }
+        } else {
+          if (!cancelled) setProfileLoading(false);
         }
       }
     }
@@ -827,7 +863,7 @@ export default function CoupleMicrositePage() {
     }
   };
 
-  if (loading) {
+  if (loading || profileLoading) {
     return <CoupleMicrositeSkeleton />;
   }
 

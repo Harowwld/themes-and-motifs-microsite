@@ -1290,6 +1290,7 @@ export type Database = {
           created_at: string
           id: number
           slug: string
+          theme_id: number | null
           title: string
           vendor_id: number
         }
@@ -1297,6 +1298,7 @@ export type Database = {
           created_at?: string
           id?: number
           slug: string
+          theme_id?: number | null
           title: string
           vendor_id: number
         }
@@ -1304,10 +1306,18 @@ export type Database = {
           created_at?: string
           id?: number
           slug?: string
+          theme_id?: number | null
           title?: string
           vendor_id?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "vendor_albums_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "themes"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "vendor_albums_vendor_id_fkey"
             columns: ["vendor_id"]
@@ -1890,6 +1900,7 @@ export type Database = {
           inquiry_count: number | null
           is_active: boolean | null
           is_featured: boolean | null
+          latitude: number | null
           logo_url: string | null
           longitude: number | null
           map_url: string | null
@@ -1945,6 +1956,7 @@ export type Database = {
           inquiry_count?: number | null
           is_active?: boolean | null
           is_featured?: boolean | null
+          latitude?: number | null
           logo_url?: string | null
           longitude?: number | null
           map_url?: string | null
@@ -2000,6 +2012,7 @@ export type Database = {
           inquiry_count?: number | null
           is_active?: boolean | null
           is_featured?: boolean | null
+          latitude?: number | null
           logo_url?: string | null
           longitude?: number | null
           map_url?: string | null
@@ -2468,6 +2481,7 @@ export type Database = {
         Row: {
           average_rating: number | null
           business_name: string | null
+          city_id: number | null
           contact_email: string | null
           contact_phone: string | null
           description: string | null
@@ -2476,6 +2490,7 @@ export type Database = {
           is_featured: boolean | null
           owner_email: string | null
           plan_name: string | null
+          province_id: number | null
           review_count: number | null
           save_count: number | null
           slug: string | null
@@ -2483,7 +2498,22 @@ export type Database = {
           view_count: number | null
           website_url: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "vendors_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vendors_province_id_fkey"
+            columns: ["province_id"]
+            isOneToOne: false
+            referencedRelation: "provinces"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Functions: {
@@ -2532,7 +2562,7 @@ export type Database = {
         Args: {
           p_affiliation_slug?: string
           p_category_slug?: string
-          p_city?: string
+          p_city_id?: number
           p_from?: number
           p_location?: string
           p_province_id?: number
@@ -2548,6 +2578,7 @@ export type Database = {
           card_cover_focus_y: number
           card_cover_zoom: number
           city: string
+          city_id: number
           cover_focus_x: number
           cover_focus_y: number
           cover_image_url: string
@@ -2559,6 +2590,7 @@ export type Database = {
           portrait_cover_focus_x: number
           portrait_cover_focus_y: number
           portrait_cover_zoom: number
+          province_id: number
           review_count: number
           save_count: number
           slug: string

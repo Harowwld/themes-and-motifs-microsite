@@ -58,6 +58,23 @@ export type VendorVideo = {
   display_order: number;
 };
 
+export type Album = {
+  id: number;
+  title: string;
+  slug: string;
+  photo_count: number;
+  created_at: string;
+  theme_id?: number | null;
+  theme?: Theme | null;
+};
+
+export type AlbumPhoto = {
+  id: number;
+  album_id: number;
+  image_url: string;
+  display_order: number;
+};
+
 export type VendorSocial = {
   id?: number;
   platform: string;
@@ -194,6 +211,8 @@ export function useSuperadminSuppliers() {
   const [affiliationInput, setAffiliationInput] = useState("");
   const [editThemes, setEditThemes] = useState<Theme[]>([]);
   const [allThemes, setAllThemes] = useState<Theme[]>([]);
+  const [editAlbums, setEditAlbums] = useState<Album[]>([]);
+  const [editAlbumPhotos, setEditAlbumPhotos] = useState<AlbumPhoto[]>([]);
   const [verificationDocuments, setVerificationDocuments] = useState<VerificationDocument[]>([]);
   const [editPromos, setEditPromos] = useState<Promo[]>([]);
   const [promoForm, setPromoForm] = useState<Partial<Promo>>({
@@ -308,6 +327,8 @@ export function useSuperadminSuppliers() {
           allAffiliations: Affiliation[];
           themes: VendorTheme[];
           allThemes: Theme[];
+          albums: Album[];
+          albumPhotos: AlbumPhoto[];
           verificationDocuments: VerificationDocument[];
           subscription: { 
             id: number; 
@@ -411,6 +432,9 @@ export function useSuperadminSuppliers() {
       setEditThemes(normalizedThemes);
       setAllThemes(res.allThemes ?? []);
 
+      setEditAlbums(res.albums ?? []);
+      setEditAlbumPhotos(res.albumPhotos ?? []);
+
       setVerificationDocuments(res.verificationDocuments ?? []);
       setEditPromos(promosRes.promos ?? []);
       resetPromoForm();
@@ -425,6 +449,79 @@ export function useSuperadminSuppliers() {
     setEditModalOpen(false);
     setEditingVendor(null);
   }
+
+  const createAlbum = async (title: string, theme_id?: number) => {
+    if (!editingVendor) return;
+    try {
+      const res = await apiFetch<{ album: Album }>(`/api/admin/suppliers/${editingVendor.id}/albums`, {
+        method: "POST",
+        body: JSON.stringify({ title, theme_id }),
+      });
+      setEditAlbums((prev) => [res.album, ...prev]);
+      toast.success("Album created successfully.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to create album.");
+    }
+  };
+
+  const deleteAlbum = async (albumId: number) => {
+    if (!editingVendor) return;
+    try {
+      await apiFetch(`/api/admin/suppliers/${editingVendor.id}/albums?id=${albumId}`, {
+        method: "DELETE",
+      });
+      setEditAlbums((prev) => prev.filter((a) => a.id !== albumId));
+      toast.success("Album deleted.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to delete album.");
+    }
+  };
+
+  const renameAlbum = async (albumId: number, title: string, theme_id?: number) => {
+    if (!editingVendor) return;
+    try {
+      const res = await apiFetch<{ album: Album }>(`/api/admin/suppliers/${editingVendor.id}/albums`, {
+        method: "PATCH",
+        body: JSON.stringify({ id: albumId, title, theme_id }),
+      });
+      setEditAlbums((prev) =>
+        prev.map((a) => (a.id === albumId ? { ...a, title: res.album.title, slug: res.album.slug, theme_id: res.album.theme_id } : a))
+      );
+      toast.success("Album updated.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to update album.");
+    }
+  };
+
+  const loadAlbumPhotos = async (albumId: number) => {
+    if (!editingVendor) return;
+    try {
+      const res = await apiFetch<{ album: any; photos: AlbumPhoto[] }>(
+        `/api/admin/suppliers/${editingVendor.id}/albums/${albumId}/photos`
+      );
+      setEditAlbumPhotos(res.photos ?? []);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to load album photos.");
+    }
+  };
+
+  const saveAlbumPhotos = async (albumId: number, urls: string[]): Promise<boolean> => {
+    if (!editingVendor) return false;
+    try {
+      await apiFetch(`/api/admin/suppliers/${editingVendor.id}/albums/${albumId}/photos`, {
+        method: "POST",
+        body: JSON.stringify({ urls }),
+      });
+      toast.success("Album photos saved.");
+      await loadAlbumPhotos(albumId);
+      
+      setEditAlbums((prev) => prev.map(a => a.id === albumId ? { ...a, photo_count: urls.length } : a));
+      return true;
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to save album photos.");
+      return false;
+    }
+  };
 
   async function saveVendorProfile(silent = false): Promise<boolean> {
     if (!editingVendor) return false;
@@ -874,6 +971,15 @@ export function useSuperadminSuppliers() {
     editThemes,
     setEditThemes,
     allThemes,
+    editAlbums,
+    setEditAlbums,
+    editAlbumPhotos,
+    setEditAlbumPhotos,
+    createAlbum,
+    deleteAlbum,
+    renameAlbum,
+    loadAlbumPhotos,
+    saveAlbumPhotos,
     regions,
     cities,
     verificationDocuments,

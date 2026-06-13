@@ -70,6 +70,15 @@ export function VendorEditModal({
   saveVendorSocials,
   saveVendorAffiliations,
   saveVendorThemes,
+  editAlbums,
+  setEditAlbums,
+  editAlbumPhotos,
+  setEditAlbumPhotos,
+  createAlbum,
+  deleteAlbum,
+  renameAlbum,
+  loadAlbumPhotos,
+  saveAlbumPhotos,
   saveAll,
   saveAllAndClose
 }: {
@@ -228,9 +237,9 @@ export function VendorEditModal({
                         />
                       );
                     case "profile":
-                      return <ProfileSection editForm={editForm} setEditForm={setEditForm} regions={regions} cities={cities} />;
+                      return <ProfileSection editForm={editForm} setEditForm={setEditForm} regions={regions} cities={cities} setLogoUrlInput={setLogoUrlInput} setLogoModalOpen={setLogoModalOpen} />;
                     case "contact":
-                      return <ContactSection editForm={editForm} setEditForm={setEditForm} setLogoUrlInput={setLogoUrlInput} setLogoModalOpen={setLogoModalOpen} />;
+                      return <ContactSection editForm={editForm} setEditForm={setEditForm} />;
                     case "verification":
                       return (
                         <VerificationSection 

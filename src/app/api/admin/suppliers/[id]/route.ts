@@ -188,7 +188,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 
     const supabase = createSupabaseAdminClient();
 
-    const [vendorRes, imagesRes, videosRes, socialsRes, affiliationsRes, allAffiliationsRes, themesRes, allThemesRes, verificationDocsRes, subscriptionRes] = await Promise.all([
+    const [vendorRes, imagesRes, videosRes, socialsRes, affiliationsRes, allAffiliationsRes, themesRes, allThemesRes, verificationDocsRes, subscriptionRes, albumsRes, albumPhotosRes] = await Promise.all([
       supabase
         .from("vendors")
         .select("*")
@@ -237,6 +237,19 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
         .order("created_at", { ascending: false })
         .limit(1)
         .maybeSingle(),
+      supabase
+        .from("vendor_albums")
+        .select(`
+          id, title, slug, created_at, theme_id,
+          theme:themes(id, name, slug)
+        `)
+        .eq("vendor_id", vendorId)
+        .order("created_at", { ascending: false }),
+      supabase
+        .from("vendor_album_photos")
+        .select("id, album_id, image_url, display_order")
+        .eq("vendor_id", vendorId)
+        .order("display_order", { ascending: true }),
     ]);
 
     if (vendorRes.error) {
@@ -256,6 +269,8 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
       allAffiliations: allAffiliationsRes.data ?? [],
       themes: themesRes.data ?? [],
       allThemes: allThemesRes.data ?? [],
+      albums: albumsRes.data ?? [],
+      albumPhotos: albumPhotosRes.data ?? [],
       verificationDocuments: verificationDocsRes.data ?? [],
       subscription: subscriptionRes.data ?? null,
     }, { status: 200 });

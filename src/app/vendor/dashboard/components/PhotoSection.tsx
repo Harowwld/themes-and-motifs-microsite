@@ -132,9 +132,9 @@ export function PhotoSection({
       <div className="p-6">
         {subTab === "photos" ? (
           <div className="grid gap-6">
-            {/* Storefront Themes Selector */}
+            {/* Specializes In Selector */}
             <div className="rounded-xl border border-black/[0.06] bg-[#fafafa]/30 p-5">
-              <h3 className="text-[11px] font-bold text-black/40 uppercase tracking-widest mb-1.5">Themes</h3>
+              <h3 className="text-[11px] font-bold text-black/40 uppercase tracking-widest mb-1.5">Specializes In</h3>
               <div className="text-[12px] text-black/45 mb-4">Select up to 10 themes that best describe your business. These active themes will also define the options available to tag each of your photos.</div>
               
               <div className="flex flex-wrap gap-2">

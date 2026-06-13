@@ -47,7 +47,7 @@ export function DashboardSkeleton() {
                   { label: "Couple Reviews" },
                   { label: "Business Profile" },
                   { label: "Service Categories" },
-                  { label: "Storefront Themes" },
+                  { label: "Specializes In" },
                   { label: "Social Links" },
                 ].map((tab, i) => {
                   return (

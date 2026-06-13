@@ -118,6 +118,8 @@ export type Album = {
   slug: string;
   photo_count: number;
   created_at: string;
+  theme_id?: number | null;
+  theme?: Theme | null;
 };
 
 export type AlbumPhoto = {

@@ -1,15 +1,20 @@
 import React from "react";
+import { proxiedImageUrl } from "@/lib/imageSizes";
 
 export function ProfileSection({
   editForm,
   setEditForm,
   regions,
-  cities
+  cities,
+  setLogoUrlInput,
+  setLogoModalOpen
 }: {
   editForm: any;
   setEditForm: (v: any) => void;
   regions?: {id: number, name: string}[];
   cities?: {id: number, name: string, province_id: number}[];
+  setLogoUrlInput: (v: string) => void;
+  setLogoModalOpen: (v: boolean) => void;
 }) {
   return (
     <section className="grid gap-4">
@@ -34,6 +39,33 @@ export function ProfileSection({
           />
         </label>
       </div>
+
+      <label className="grid gap-1.5">
+        <span className="text-[12px] font-semibold text-black/55">Logo</span>
+        <div className="flex items-center gap-3">
+          <div className="w-[80px] h-[80px] rounded-[3px] border border-black/10 overflow-hidden bg-black/5 flex items-center justify-center">
+            {editForm.logo_url ? (
+              <img
+                src={proxiedImageUrl(editForm.logo_url) ?? editForm.logo_url}
+                alt="Logo"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <span className="text-[10px] text-black/40">No logo</span>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              setLogoUrlInput(editForm.logo_url);
+              setLogoModalOpen(true);
+            }}
+            className="h-9 px-4 rounded-[3px] border border-black/10 bg-white text-[12px] font-semibold text-black/70 hover:bg-black/5 transition-colors"
+          >
+            Edit Logo
+          </button>
+        </div>
+      </label>
 
       <label className="grid gap-1.5">
         <span className="text-[12px] font-semibold text-black/55">Why Trust Us</span>
