@@ -55,6 +55,7 @@ export async function GET(request: NextRequest) {
           starting_price,
           price_range,
           document_verified,
+          year_established,
           plan:plans(name)
         )
       `)

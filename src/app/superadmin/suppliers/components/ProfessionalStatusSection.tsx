@@ -45,6 +45,26 @@ export function ProfessionalStatusSection({
       <div className="text-[13px] font-semibold text-[#2c2c2c] border-b border-black/5 pb-2">
         Professional Status
       </div>
+      
+      <div className="sm:w-1/2 mt-2 mb-2">
+        <label className="grid gap-1.5">
+          <span className="text-[12px] font-semibold text-black/55">Year Established <span className="text-[#b42318]">*</span></span>
+          <input
+            type="text"
+            pattern="[0-9]*"
+            maxLength={4}
+            placeholder="YYYY (e.g. 2015)"
+            value={editForm.year_established || ""}
+            onChange={(e) => {
+              const val = e.target.value.replace(/\D/g, "").slice(0, 4);
+              setEditForm((f: any) => ({ ...f, year_established: val }));
+            }}
+            className="h-10 rounded-[3px] border border-black/10 px-3 text-[13px]"
+            required
+          />
+        </label>
+      </div>
+
       <div className="grid gap-3">
         <div className="grid gap-4 sm:grid-cols-2">
           {/* VERIFIED */}

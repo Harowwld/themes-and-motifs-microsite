@@ -25,16 +25,17 @@ export default async function ThemesPage() {
   // Fetch albums with vendor info
   const { data: albumRows } = await supabase
     .from("vendor_albums")
-    .select("theme_id, cover_url, vendors(business_name, slug)")
+    .select("theme_id, vendors(business_name, slug), vendor_album_photos(image_url)")
     .not("theme_id", "is", null);
 
   // Group items by theme to find a representative one (latest or first)
   const imageMap = new Map<number, { image_url: string; vendor: { business_name: string; slug: string } | null }>();
   
   albumRows?.forEach((row: any) => {
-    if (row.theme_id && row.cover_url && !imageMap.has(row.theme_id)) {
+    const coverUrl = row.vendor_album_photos?.[0]?.image_url;
+    if (row.theme_id && coverUrl && !imageMap.has(row.theme_id)) {
       imageMap.set(row.theme_id, {
-        image_url: row.cover_url,
+        image_url: coverUrl,
         vendor: row.vendors ? {
           business_name: row.vendors.business_name,
           slug: row.vendors.slug

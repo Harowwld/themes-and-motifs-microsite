@@ -6,6 +6,7 @@ import { toast } from "@/lib/toast";
 import { createSupabaseBrowserClient } from "@/lib/supabaseBrowser";
 import { proxiedImageUrl } from "@/lib/imageSizes";
 import { shouldShowVerifiedBadge } from "@/lib/vendorUtils";
+import VendorBadges from "@/features/vendors/components/VendorBadges";
 import { motion, AnimatePresence } from "framer-motion";
 import { authCache } from "@/lib/cache";
 import {
@@ -64,6 +65,7 @@ type SavedVendor = {
     starting_price: number | null;
     price_range: string | null;
     document_verified?: string | null;
+    year_established?: string | number | null;
     plan: { name: string } | null;
   };
 };
@@ -131,16 +133,12 @@ function VendorCard({ vendor, onRemove }: { vendor: SavedVendor["vendor"]; onRem
           </div>
           <div className="flex items-center gap-1 text-[14px] sm:text-[15px] font-semibold text-neutral-800 leading-5 line-clamp-1 mb-1 font-[family-name:var(--font-plus-jakarta)]">
             <span className="truncate">{vendor.business_name}</span>
-            {(() => {
-              if (shouldShowVerifiedBadge(vendor.document_verified, isPremium)) {
-                return (
-                  <span className="inline-flex items-center justify-center h-5 w-5 shrink-0" title={isPremium ? "Verified Premium Vendor" : "Verified Vendor"}>
-                    <img src="/verified-badge.svg" alt="Verified" className="h-full w-full object-contain" loading="lazy" draggable={false} />
-                  </span>
-                );
-              }
-              return null;
-            })()}
+            <VendorBadges 
+              documentVerified={vendor.document_verified} 
+              isPremium={isPremium} 
+              yearEstablished={vendor.year_established} 
+              size={20} 
+            />
           </div>
           <div className="flex items-center gap-1 text-[11px] sm:text-[12px] text-neutral-500 font-[family-name:var(--font-plus-jakarta)]">
             <span className="font-semibold text-[#a68b6a]">{rating.toFixed(1)}</span>

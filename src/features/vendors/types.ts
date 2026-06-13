@@ -38,6 +38,7 @@ export type VendorListItem = {
   card_cover_focus_y?: number | null;
   card_cover_zoom?: number | null;
   plan?: { id: number; name: string } | { id: number; name: string }[] | null;
+  year_established?: string | number | null;
 };
 
 export type FeaturedVendor = VendorListItem & {

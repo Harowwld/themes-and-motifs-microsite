@@ -11,6 +11,7 @@ import type { VendorCardVendor } from "../types";
 import { proxiedImageUrl } from "@/lib/imageSizes";
 import { shouldShowVerifiedBadge } from "@/lib/vendorUtils";
 import { toast } from "@/lib/toast";
+import VendorBadges from "./VendorBadges";
 
 type Props = {
   vendor: VendorCardVendor;
@@ -233,22 +234,12 @@ export default function VendorCard({ vendor, toneSeed, fixedHeight, featured }: 
           <h3 className="text-[13px] sm:text-[15px] font-bold text-gray-900 tracking-tight line-clamp-1 font-[family-name:var(--font-plus-jakarta)]">
             {vendor.business_name}
           </h3>
-          {(() => {
-            if (shouldShowVerifiedBadge(vendor.document_verified, isPremium)) {
-              return (
-                <span className="shrink-0" title={isPremium ? "Verified Premium Vendor" : "Verified Vendor"}>
-                  <Image
-                    src="/verified-badge.svg"
-                    alt="Verified"
-                    width={18}
-                    height={18}
-                    className="object-contain"
-                  />
-                </span>
-              );
-            }
-            return null;
-          })()}
+          <VendorBadges 
+            documentVerified={vendor.document_verified} 
+            isPremium={isPremium} 
+            yearEstablished={vendor.year_established} 
+            size={36} 
+          />
         </div>
 
         <div className="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-[12px] text-gray-500 font-[family-name:var(--font-plus-jakarta)]">

@@ -6,6 +6,7 @@ import { motion, useAnimationControls } from "framer-motion";
 import type { FeaturedVendor } from "../types";
 import { proxiedImageUrl } from "@/lib/imageSizes";
 import { shouldShowVerifiedBadge } from "@/lib/vendorUtils";
+import VendorBadges from "./VendorBadges";
 
 const SPRING = { type: "spring" as const, stiffness: 300, damping: 30 };
 
@@ -120,18 +121,12 @@ function VendorCard({
                 <div className="text-[14px] sm:text-[16px] font-bold text-gray-900 uppercase tracking-tight truncate font-[family-name:var(--font-plus-jakarta)] flex-1 min-w-0">
                   {vendor.business_name}
                 </div>
-                {shouldShowVerifiedBadge(vendor.document_verified, isPremium) && (
-                  <span className="inline-flex items-center justify-center h-5 w-5 shrink-0" aria-label="Verified">
-                    <div className="relative h-full w-full">
-                      <Image
-                        src="/verified-badge.svg"
-                        alt="Verified"
-                        fill
-                        sizes="20px"
-                      />
-                    </div>
-                  </span>
-                )}
+                <VendorBadges 
+                  documentVerified={vendor.document_verified} 
+                  isPremium={isPremium} 
+                  yearEstablished={vendor.year_established} 
+                  size={40} 
+                />
               </div>
               <div className="flex items-center gap-1.5 text-[12px] sm:text-[14px] text-gray-500 font-[family-name:var(--font-plus-jakarta)]">
                 <span className="font-bold text-[#a68b6a]">{rating.toFixed(1)}</span>

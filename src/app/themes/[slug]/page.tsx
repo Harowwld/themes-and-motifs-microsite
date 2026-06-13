@@ -37,7 +37,7 @@ export default async function ThemeGalleryPage({ params }: { params: Promise<{ s
   // Get albums for this theme, joining with vendors
   const { data: albumRows } = await supabase
     .from("vendor_albums")
-    .select("id, cover_url, title, created_at, vendors(business_name, slug, logo_url)")
+    .select("id, title, created_at, vendors(business_name, slug, logo_url), vendor_album_photos(image_url)")
     .eq("theme_id", theme.id);
 
   const images = (imageRows || []).map((img: any) => ({
@@ -52,11 +52,11 @@ export default async function ThemeGalleryPage({ params }: { params: Promise<{ s
   const albums = (albumRows || []).map((alb: any) => ({
     id: alb.id,
     type: "album",
-    url: alb.cover_url,
+    url: alb.vendor_album_photos?.[0]?.image_url || "",
     caption: alb.title,
     created_at: alb.created_at,
     vendor: alb.vendors
-  }));
+  })).filter(alb => alb.url); // Only include albums that have at least one photo
 
   const photos = [...images, ...albums].sort((a, b) => 
     new Date(b.created_at).getTime() - new Date(a.created_at).getTime()

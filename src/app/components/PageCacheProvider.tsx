@@ -50,8 +50,10 @@ function preloadVendorAssets() {
     requestIdleCallback(() => {
       // Preload common vendor detail images/styles
       const preloadLinks = [
-        { rel: "prefetch", href: "/verified-badge.svg" },
-        { rel: "prefetch", href: "/gold-10-year-badge.svg" },
+        { rel: "prefetch", href: "/badges/verified-badge.png" },
+        { rel: "prefetch", href: "/badges/premium-badge.png" },
+        { rel: "prefetch", href: "/badges/established-10-badge.png" },
+        { rel: "prefetch", href: "/badges/established-25-badge.png" },
       ];
 
       preloadLinks.forEach(({ rel, href }) => {

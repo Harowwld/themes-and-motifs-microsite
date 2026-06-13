@@ -171,7 +171,9 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500, vendor
   const [userInteractedWithVideo, setUserInteractedWithVideo] = useState(false);
   const searchParams = useSearchParams();
   const initialPhotoId = searchParams?.get("photoId");
+  const initialAlbumId = searchParams?.get("albumId");
   const hasOpenedInitialRef = useRef(false);
+  const hasOpenedInitialAlbumRef = useRef(false);
 
   const changeActiveIndex = useCallback((idx: number) => {
     setActiveIndex(idx);
@@ -270,6 +272,21 @@ export default function VendorPhotosCarousel({ images, intervalMs = 4500, vendor
       hasOpenedInitialRef.current = true;
     }
   }, [initialPhotoId, displayedImages, changeActiveIndex, openLightbox]);
+
+  useEffect(() => {
+    if (initialAlbumId && albums.length > 0 && !hasOpenedInitialAlbumRef.current) {
+      const targetAlbum = albums.find(a => a.id.toString() === initialAlbumId);
+      if (targetAlbum) {
+        setSelectedAlbumId(targetAlbum.id);
+        
+        // Open the lightbox to the first photo of the album, mimicking the photoId behavior
+        const idx = 0;
+        changeActiveIndex(idx);
+        openLightbox(idx);
+      }
+      hasOpenedInitialAlbumRef.current = true;
+    }
+  }, [initialAlbumId, albums, changeActiveIndex, openLightbox]);
 
   const goPrev = useCallback(() => {
     setLightboxIndex((i) => (i - 1 + displayedImages.length) % displayedImages.length);
