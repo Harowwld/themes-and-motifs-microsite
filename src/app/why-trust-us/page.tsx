@@ -79,49 +79,37 @@ export default function WhyTrustUsPage() {
             We work closely with the following national agencies to ensure legal compliance, business legitimacy, and the continuous promotion of the Philippines as a premier wedding destination.
           </p>
 
-          <div className="mt-12 grid grid-cols-2 gap-8 sm:grid-cols-4 items-center justify-items-center opacity-80">
+          <div className="mt-12 grid grid-cols-2 gap-8 sm:grid-cols-4 items-center justify-items-center opacity-90">
             {/* DOT */}
-            <div className="flex flex-col items-center gap-3">
-              <div className="w-24 h-24 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center p-4 shadow-inner">
-                {/* Placeholder for DOT Logo */}
-                <svg className="w-10 h-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+            <div className="flex flex-col items-center gap-3 text-center">
+              <div className="w-24 h-24 rounded-full bg-white border border-gray-100 flex items-center justify-center p-3 shadow-sm hover:shadow-md transition-shadow">
+                <img src="/agencies/dot.png" alt="Department of Tourism (DOT) Logo" className="w-full h-full object-contain" />
               </div>
-              <span className="text-[13px] font-medium text-gray-600">Dept. of Tourism<br/>(DOT)</span>
+              <span className="text-[13px] font-medium text-gray-700">Dept. of Tourism<br/>(DOT)</span>
             </div>
 
             {/* DTI */}
-            <div className="flex flex-col items-center gap-3">
-              <div className="w-24 h-24 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center p-4 shadow-inner">
-                {/* Placeholder for DTI Logo */}
-                <svg className="w-10 h-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
+            <div className="flex flex-col items-center gap-3 text-center">
+              <div className="w-24 h-24 rounded-full bg-white border border-gray-100 flex items-center justify-center p-3 shadow-sm hover:shadow-md transition-shadow">
+                <img src="/agencies/dti.png" alt="Department of Trade and Industry (DTI) Logo" className="w-full h-full object-contain" />
               </div>
-              <span className="text-[13px] font-medium text-gray-600">Dept. of Trade & Industry<br/>(DTI)</span>
+              <span className="text-[13px] font-medium text-gray-700">Dept. of Trade & Industry<br/>(DTI)</span>
             </div>
 
             {/* SEC */}
-            <div className="flex flex-col items-center gap-3">
-              <div className="w-24 h-24 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center p-4 shadow-inner">
-                {/* Placeholder for SEC Logo */}
-                <svg className="w-10 h-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
+            <div className="flex flex-col items-center gap-3 text-center">
+              <div className="w-24 h-24 rounded-full bg-white border border-gray-100 flex items-center justify-center p-3 shadow-sm hover:shadow-md transition-shadow">
+                <img src="/agencies/sec.png" alt="Securities and Exchange Commission (SEC) Logo" className="w-full h-full object-contain" />
               </div>
-              <span className="text-[13px] font-medium text-gray-600">Securities & Exchange<br/>Commission (SEC)</span>
+              <span className="text-[13px] font-medium text-gray-700">Securities & Exchange<br/>Commission (SEC)</span>
             </div>
 
             {/* BIR */}
-            <div className="flex flex-col items-center gap-3">
-              <div className="w-24 h-24 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center p-4 shadow-inner">
-                {/* Placeholder for BIR Logo */}
-                <svg className="w-10 h-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
+            <div className="flex flex-col items-center gap-3 text-center">
+              <div className="w-24 h-24 rounded-full bg-white border border-gray-100 flex items-center justify-center p-3 shadow-sm hover:shadow-md transition-shadow">
+                <img src="/agencies/bir.png" alt="Bureau of Internal Revenue (BIR) Logo" className="w-full h-full object-contain" />
               </div>
-              <span className="text-[13px] font-medium text-gray-600">Bureau of Internal<br/>Revenue (BIR)</span>
+              <span className="text-[13px] font-medium text-gray-700">Bureau of Internal<br/>Revenue (BIR)</span>
             </div>
           </div>
           

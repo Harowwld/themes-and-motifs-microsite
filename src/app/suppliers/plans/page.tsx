@@ -30,64 +30,109 @@ export default function VendorPlansPage() {
   const premiumFeatures = planFeatures.filter((f) => f.premium);
 
   return (
-    <div style={{ background: "#fafafa", minHeight: "calc(100vh - 124px)", display: "flex", flexDirection: "column" }}>
-      <div className="flex-1 mx-auto w-full max-w-6xl px-5 sm:px-8 flex flex-col justify-center">
-        <main className="py-6 sm:py-10">
+    <div className="min-h-screen bg-[#fafafa] font-[family-name:var(--font-plus-jakarta)] flex flex-col">
+      {/* Header */}
+      <section className="relative overflow-hidden bg-white py-8 sm:py-10 border-b border-gray-100">
+        <div className="absolute inset-0 bg-[radial-gradient(#a68b6a_1px,transparent_1px)] [background-size:24px_24px] opacity-[0.05]" />
+        <div className="relative mx-auto max-w-5xl px-4 text-center sm:px-6 lg:px-8">
           <FadeInOnView>
-            <section>
-              <div className="text-center mb-6">
-                <h1 className="text-[24px] font-semibold text-[#2c2c2c]">Pricing Plans</h1>
-                <p className="mt-2 text-[14px] text-black/60 font-[family-name:var(--font-plus-jakarta)]">Choose the plan that fits your business needs</p>
-              </div>
-
-              <div className="flex flex-col md:flex-row gap-5 justify-center max-w-4xl mx-auto">
-                <div className="flex-1 rounded-lg border border-black/10 p-5 min-w-0 flex flex-col">
-                  <div className="text-[11px] font-medium text-black/40 uppercase tracking-wider font-[family-name:var(--font-plus-jakarta)]">Free</div>
-                  <div className="mt-1 text-[18px] font-medium text-[#2c2c2c] font-[family-name:var(--font-noto-serif)]">Standard</div>
-                  <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2">
-                    {freeFeatures.map((f) => (
-                      <div key={f.label} className="flex items-start gap-2 text-[12px] text-black/60 font-[family-name:var(--font-plus-jakarta)]">
-                        <svg className="h-3.5 w-3.5 text-black/40 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                        </svg>
-                        <span className="leading-tight">{f.label}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="mt-auto pt-4">
-                    <a href="/register?plan=1" className="block w-full h-8 text-[12px] font-medium text-white bg-black/70 rounded-md hover:bg-black/80 transition-colors text-center leading-8 font-[family-name:var(--font-plus-jakarta)]">
-                      Select Standard
-                    </a>
-                  </div>
-                </div>
-
-                <div className="flex-1 rounded-lg border-2 border-[#a68b6a]/50 bg-[#a68b6a]/5 p-5 min-w-0 relative flex flex-col">
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                    <span className="text-[10px] font-semibold text-white bg-[#a68b6a] px-2.5 py-1 rounded-full shadow-sm font-[family-name:var(--font-plus-jakarta)]">Elite Choice</span>
-                  </div>
-                  <div className="text-[11px] font-medium text-[#a68b6a] uppercase tracking-wider mt-1 font-[family-name:var(--font-plus-jakarta)]">Premium</div>
-                  <div className="mt-1 text-[18px] font-medium text-[#2c2c2c] font-[family-name:var(--font-noto-serif)]">Leads Generator</div>
-                  <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2">
-                    {premiumFeatures.map((f) => (
-                      <div key={f.label} className="flex items-start gap-2 text-[12px] text-black/70 font-[family-name:var(--font-plus-jakarta)]">
-                        <svg className="h-3.5 w-3.5 text-[#a68b6a] shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                        </svg>
-                        <span className="leading-tight">{f.label}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="mt-auto pt-4">
-                    <a href="/register?plan=2" className="block w-full h-8 text-[12px] font-medium text-white bg-[#a68b6a] rounded-md hover:bg-[#957a5c] transition-colors text-center leading-8 font-[family-name:var(--font-plus-jakarta)]">
-                      Get Leads / Potential Clients
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </section>
+            <span className="text-xs font-semibold uppercase tracking-wider text-[#a68b6a]">
+              Supplier Packages
+            </span>
+            <h1 className="mt-3 text-3xl font-bold tracking-tight text-[#2c2c2c] sm:text-5xl font-[family-name:var(--font-noto-serif)]">
+              Pricing Plans
+            </h1>
+            <p className="mx-auto mt-4 max-w-xl text-[15px] leading-relaxed text-gray-500">
+              Choose the plan that fits your business needs and start connecting with couples today.
+            </p>
           </FadeInOnView>
-        </main>
-      </div>
+        </div>
+      </section>
+
+      {/* Plans Section */}
+      <section className="py-8 sm:py-12 flex-1">
+        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+          <div className="grid gap-8 md:grid-cols-2 max-w-4xl mx-auto items-stretch">
+            {/* Standard Plan */}
+            <FadeInOnView>
+              <div className="group relative flex flex-col h-full rounded-2xl border border-gray-100 bg-white p-8 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md hover:border-gray-200">
+                <div className="mb-6">
+                  <div className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Free</div>
+                  <h3 className="mt-2 text-2xl font-bold text-[#2c2c2c] font-[family-name:var(--font-noto-serif)]">Standard</h3>
+                  <p className="mt-2 text-[13px] text-gray-500 leading-relaxed">
+                    Essential features to get your business listed and discovered by couples.
+                  </p>
+                </div>
+                
+                <div className="flex-1">
+                  <ul className="space-y-3">
+                    {freeFeatures.map((f) => (
+                      <li key={f.label} className="flex items-start gap-3 text-[13px] text-gray-600">
+                        <svg className="h-4 w-4 text-gray-300 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span className="leading-tight">{f.label}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                
+                <div className="mt-8 pt-6 border-t border-gray-50">
+                  <a 
+                    href="/register?plan=1" 
+                    className="flex w-full items-center justify-center h-11 text-[13px] font-semibold text-[#2c2c2c] bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100 hover:text-black transition-all duration-200 active:scale-[0.97]"
+                  >
+                    Select Standard
+                  </a>
+                </div>
+              </div>
+            </FadeInOnView>
+
+            {/* Premium Plan */}
+            <FadeInOnView>
+              <div className="group relative flex flex-col h-full rounded-2xl border border-[#a68b6a]/30 bg-white p-8 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-[#a68b6a]/50 overflow-hidden">
+                {/* Premium Accent Background */}
+                <div className="absolute inset-0 bg-gradient-to-b from-[#a68b6a]/[0.05] to-transparent pointer-events-none" />
+                
+                <div className="relative mb-6">
+                  <div className="flex items-center justify-between">
+                    <div className="text-[11px] font-semibold text-[#a68b6a] uppercase tracking-wider">Premium</div>
+                    <span className="inline-flex items-center rounded-full bg-[#a68b6a] px-3 py-1 text-[10px] font-bold text-white uppercase tracking-wide shadow-sm">
+                      Elite Choice
+                    </span>
+                  </div>
+                  <h3 className="mt-2 text-2xl font-bold text-[#2c2c2c] font-[family-name:var(--font-noto-serif)]">Leads Generator</h3>
+                  <p className="mt-2 text-[13px] text-gray-500 leading-relaxed">
+                    Maximize your reach, get featured placements, and access powerful lead generation tools.
+                  </p>
+                </div>
+                
+                <div className="relative flex-1">
+                  <ul className="space-y-3">
+                    {premiumFeatures.map((f) => (
+                      <li key={f.label} className="flex items-start gap-3 text-[13px] text-gray-700">
+                        <svg className="h-4 w-4 text-[#a68b6a] shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span className="leading-tight">{f.label}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                
+                <div className="relative mt-8 pt-6 border-t border-gray-100">
+                  <a 
+                    href="/register?plan=2" 
+                    className="flex w-full items-center justify-center h-11 text-[13px] font-semibold text-white bg-[#a68b6a] rounded-lg hover:bg-[#957a5c] transition-all duration-200 shadow-sm hover:shadow active:scale-[0.97]"
+                  >
+                    Get Leads / Potential Clients
+                  </a>
+                </div>
+              </div>
+            </FadeInOnView>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
